@@ -1,9 +1,9 @@
 <!-- Clinic Admin Portal: Manage Doctors -->
-<div class="card" style="margin-bottom: 24px;">
-  <div style="border-bottom: 1px solid var(--gray-200); padding-bottom: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+<div class="card p-5 border-0 mb-4">
+  <div class="d-flex justify-between align-center border-bottom pb-4 mb-4 flex-wrap gap-3">
     <div>
-      <h2 style="font-size: 1.6rem; color: var(--primary);">Doctor Placement Manager</h2>
-      <p style="color: var(--text-muted); font-size: 0.9rem;">Assign registered doctors to clinic branches</p>
+      <h2 class="fs-xl text-primary m-0">Doctor Placement Manager</h2>
+      <p class="text-muted fs-sm mt-1">Assign registered doctors to clinic branches</p>
     </div>
     <button class="btn btn-primary" (click)="openAddModal()" [disabled]="!linkForm.get('clinicId')?.value">
       + Assign Doctor
@@ -11,15 +11,15 @@
   </div>
 
   <!-- Selection Form -->
-  <form [formGroup]="linkForm" (change)="loadMappings()" class="form-group" style="max-width: 400px; margin-bottom: 24px;">
+  <form [formGroup]="linkForm" (change)="loadMappings()" class="form-group mb-4" style="max-width: 400px;">
     <label class="form-label" for="clinicSelect">Select Clinic Focus</label>
-    <select id="clinicSelect" formControlName="clinicId" class="form-control" (change)="onClinicChange()">
+    <select id="clinicSelect" formControlName="clinicId" class="form-control m-0" (change)="onClinicChange()">
       <option *ngFor="let c of clinics" [value]="c.clinicId">{{ c.nameEn }}</option>
     </select>
   </form>
 
   <!-- Mappings Table -->
-  <div class="table-responsive">
+  <div class="table-responsive border-0">
     <table class="table">
       <thead>
         <tr>
@@ -31,7 +31,7 @@
       </thead>
       <tbody>
         <tr *ngFor="let dc of doctorClinics">
-          <td style="font-weight: 600; color: var(--primary);">
+          <td class="fw-bold text-primary">
             {{ getDoctorName(dc.doctorId) }}
           </td>
           <td>{{ dc.branchNameEn }}</td>
@@ -41,13 +41,13 @@
             </span>
           </td>
           <td>
-            <button class="btn btn-outline btn-danger btn-sm" style="padding: 4px 8px; font-size: 0.75rem;" (click)="unlinkDoctor(dc.dcId)">
+            <button class="btn btn-outline btn-danger btn-sm" (click)="unlinkDoctor(dc.dcId)">
               Remove
             </button>
           </td>
         </tr>
         <tr *ngIf="doctorClinics.length === 0">
-          <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 24px;">
+          <td colspan="4" class="text-center p-4 text-muted">
             No doctors currently assigned to branches in this clinic.
           </td>
         </tr>
@@ -57,39 +57,41 @@
 </div>
 
 <!-- Assign Doctor Modal -->
-<div *ngIf="isAddModalOpen" class="flex-center" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.5); z-index: 2000; padding: 20px;">
-  <div class="card" style="max-width: 500px; width: 100%;">
-    <h3 style="font-size: 1.4rem; color: var(--primary); margin-bottom: 16px;">Assign Doctor to Branch</h3>
-    
-    <form [formGroup]="linkForm" (ngSubmit)="submitLink()">
-      <!-- Select Doctor -->
-      <div class="form-group">
-        <label class="form-label" for="docSelect">Select Doctor</label>
-        <select id="docSelect" formControlName="doctorId" class="form-control">
-          <option value="">-- Choose Doctor --</option>
-          <option *ngFor="let d of doctors" [value]="d.doctorId">{{ d.title }}. {{ d.fullName }}</option>
-        </select>
-      </div>
+<div *ngIf="isAddModalOpen" class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="fs-xl text-primary m-0">Assign Doctor to Branch</h3>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="linkForm" (ngSubmit)="submitLink()">
+        <!-- Select Doctor -->
+        <div class="form-group">
+          <label class="form-label" for="docSelect">Select Doctor</label>
+          <select id="docSelect" formControlName="doctorId" class="form-control">
+            <option value="">-- Choose Doctor --</option>
+            <option *ngFor="let d of doctors" [value]="d.doctorId">{{ d.title }}. {{ d.fullName }}</option>
+          </select>
+        </div>
 
-      <!-- Select Branch -->
-      <div class="form-group">
-        <label class="form-label" for="branchSelect">Select Clinic Branch</label>
-        <select id="branchSelect" formControlName="branchId" class="form-control">
-          <option value="">-- Choose Branch --</option>
-          <option *ngFor="let b of branches" [value]="b.branchId">{{ b.branchNameEn }}</option>
-        </select>
-      </div>
+        <!-- Select Branch -->
+        <div class="form-group">
+          <label class="form-label" for="branchSelect">Select Clinic Branch</label>
+          <select id="branchSelect" formControlName="branchId" class="form-control">
+            <option value="">-- Choose Branch --</option>
+            <option *ngFor="let b of branches" [value]="b.branchId">{{ b.branchNameEn }}</option>
+          </select>
+        </div>
 
-      <div class="form-group">
-        <label style="display: flex; gap: 8px; align-items: center; cursor: pointer;">
-          <input type="checkbox" formControlName="isActive"> Is Active Placement
-        </label>
-      </div>
-
-      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
-        <button type="button" class="btn btn-outline" (click)="closeAddModal()">Cancel</button>
-        <button type="submit" class="btn btn-accent" [disabled]="linkForm.invalid">Assign Placement</button>
-      </div>
-    </form>
+        <div class="form-group m-0">
+          <label class="d-flex align-center gap-2 cursor-pointer m-0">
+            <input type="checkbox" formControlName="isActive" class="m-0"> Is Active Placement
+          </label>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" (click)="closeAddModal()">Cancel</button>
+      <button type="button" class="btn btn-accent" (click)="submitLink()" [disabled]="linkForm.invalid">Assign Placement</button>
+    </div>
   </div>
 </div>

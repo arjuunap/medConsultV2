@@ -1,0 +1,132 @@
+<div>
+  <div class="d-flex justify-between align-center mb-4">
+    <h2 class="fs-xl text-primary m-0">Tele-Consultations</h2>
+    <button class="btn btn-primary" (click)="openBookModal()">+ Book Consultation</button>
+  </div>
+
+  <div class="d-flex gap-4" style="height: 75vh;">
+    <!-- Consultations List -->
+    <div class="card flex-1 d-flex flex-col border-0 overflow-hidden p-0">
+      <div class="card-header border-bottom p-3 bg-light">
+        <h3 class="fs-md m-0">My Consultations</h3>
+      </div>
+      <div class="card-body p-0 overflow-y-auto">
+        <div *ngIf="consultations.length === 0" class="p-4 text-center text-muted">
+          No consultations found.
+        </div>
+        
+        <div *ngFor="let c of consultations" 
+             class="list-item p-3 border-bottom cursor-pointer" 
+             [class.bg-app]="selectedConsultation?.consultationId === c.consultationId"
+             (click)="selectConsultation(c)">
+          <div class="d-flex justify-between mb-2">
+            <strong class="text-dark">Dr. {{ c.doctorName }}</strong>
+            <span class="badge" [ngClass]="{
+              'badge-success': c.status === 'OPEN',
+              'badge-warning': c.status === 'IN_PROGRESS',
+              'badge-secondary': c.status === 'CLOSED'
+            }">{{ c.status }}</span>
+          </div>
+          <div class="text-muted fs-sm mb-1">{{ c.subject }}</div>
+          <div class="fs-xs text-muted">Opened: {{ c.openedAt | date:'mediumDate' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Consultation Chat -->
+    <div class="card flex-2 d-flex flex-col border-0 overflow-hidden p-0" *ngIf="selectedConsultation">
+      <div class="card-header d-flex justify-between align-center border-bottom p-4">
+        <div>
+          <h3 class="fs-lg text-primary m-0">{{ selectedConsultation.subject }}</h3>
+          <div class="fs-sm text-muted mt-1">Dr. {{ selectedConsultation.doctorName }}</div>
+        </div>
+        <span class="badge badge-danger" *ngIf="selectedConsultation.isUrgent">Urgent</span>
+      </div>
+      
+      <div id="messages-container" class="card-body flex-1 overflow-y-auto p-4 d-flex flex-col gap-3" style="background-color: var(--bg-secondary);">
+        <div *ngIf="messages.length === 0" class="text-center text-muted">
+          No messages yet. Send a message to start the consultation.
+        </div>
+        
+        <div *ngFor="let msg of messages" 
+             class="d-flex flex-col"
+             style="max-width: 75%;"
+             [style.align-self]="msg.senderId === authService.currentUser()?.userId ? 'flex-end' : 'flex-start'">
+          
+          <div class="fs-xs text-muted mb-1 ml-1">
+            {{ msg.senderName }} • {{ msg.sentAt | date:'shortTime' }}
+          </div>
+          <div class="p-3 shadow-sm"
+               [ngStyle]="{
+                 'background-color': msg.senderId === authService.currentUser()?.userId ? 'var(--primary)' : 'white',
+                 'color': msg.senderId === authService.currentUser()?.userId ? 'white' : 'var(--text-color)',
+                 'border-bottom-right-radius': msg.senderId === authService.currentUser()?.userId ? '4px' : '12px',
+                 'border-bottom-left-radius': msg.senderId !== authService.currentUser()?.userId ? '4px' : '12px',
+                 'border-top-left-radius': '12px',
+                 'border-top-right-radius': '12px'
+               }">
+            {{ msg.body }}
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer p-3 border-top bg-white" *ngIf="selectedConsultation.status !== 'CLOSED'">
+        <form [formGroup]="messageForm" (ngSubmit)="sendMessage()" class="d-flex gap-2 m-0">
+          <input type="text" formControlName="body" class="form-control m-0 flex-1" placeholder="Type a message...">
+          <button type="submit" class="btn btn-primary" [disabled]="messageForm.invalid">Send</button>
+        </form>
+      </div>
+      <div class="card-footer p-3 border-top text-center text-muted bg-light" *ngIf="selectedConsultation.status === 'CLOSED'">
+        This consultation has been closed.
+      </div>
+    </div>
+    
+    <div class="card flex-2 d-flex align-center justify-center text-muted border-0" *ngIf="!selectedConsultation">
+      Select a consultation from the list to view messages.
+    </div>
+  </div>
+</div>
+
+<!-- Book Consultation Modal -->
+<div class="modal-backdrop" *ngIf="showBookModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="fs-xl text-primary m-0">Book a Tele-Consultation</h3>
+      <button class="btn-close" (click)="closeBookModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="bookForm" (ngSubmit)="submitBookConsultation()">
+        
+        <div class="form-group">
+          <label class="form-label">Select Doctor</label>
+          <select class="form-control" formControlName="doctorId">
+            <option value="">-- Choose a Doctor --</option>
+            <option *ngFor="let doc of doctors" [value]="doc.doctorId">
+              {{ doc.title || 'Dr.' }} {{ doc.fullName }}
+            </option>
+          </select>
+          <div class="error-text" *ngIf="bookForm.get('doctorId')?.touched && bookForm.get('doctorId')?.invalid">
+            Doctor selection is required.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Subject / Reason for Consultation</label>
+          <input type="text" class="form-control" formControlName="subject" placeholder="Briefly describe your issue">
+          <div class="error-text" *ngIf="bookForm.get('subject')?.touched && bookForm.get('subject')?.invalid">
+            Subject is required.
+          </div>
+        </div>
+
+        <div class="form-group d-flex align-center gap-2 m-0">
+          <input type="checkbox" id="urgentCheck" formControlName="isUrgent">
+          <label class="form-label m-0" for="urgentCheck">Mark as Urgent</label>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" (click)="closeBookModal()">Cancel</button>
+      <button type="button" class="btn btn-primary" (click)="submitBookConsultation()" [disabled]="bookForm.invalid">Book Consultation</button>
+    </div>
+  </div>
+</div>

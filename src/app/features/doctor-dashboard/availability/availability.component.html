@@ -1,8 +1,8 @@
-<div class="card" style="margin-bottom: 24px;">
-  <div style="border-bottom: 1px solid var(--gray-200); padding-bottom: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+<div class="card p-5 border-0 mb-4">
+  <div class="d-flex justify-between align-center flex-wrap gap-3 border-bottom pb-3 mb-4">
     <div>
-      <h2 style="font-size: 1.6rem; color: var(--primary);">Availability & Slot Manager</h2>
-      <p style="color: var(--text-muted); font-size: 0.9rem;">Set up your available consult hours for booking</p>
+      <h2 class="fs-xl text-primary m-0">Availability & Slot Manager</h2>
+      <p class="text-muted fs-sm mt-1">Set up your available consult hours for booking</p>
     </div>
     <button class="btn btn-primary" (click)="openAddModal()" [disabled]="!filterForm.get('dcId')?.value">
       + Add Time Slot
@@ -10,76 +10,80 @@
   </div>
 
   <!-- Filter Form -->
-  <form [formGroup]="filterForm" (change)="loadSlots()" class="form-row" style="align-items: center; gap: 16px; margin-bottom: 24px;">
-    <div class="form-group" style="flex: 2;">
+  <form [formGroup]="filterForm" (change)="loadSlots()" class="d-flex align-center gap-3 mb-4">
+    <div class="form-group m-0 flex-2">
       <label class="form-label" for="dcId">Select Clinic Location</label>
-      <select id="dcId" formControlName="dcId" class="form-control">
+      <select id="dcId" formControlName="dcId" class="form-control m-0">
         <option value="">-- Choose Location --</option>
         <option *ngFor="let dc of doctorClinics" [value]="dc.dcId">{{ dc.clinicNameEn }} - {{ dc.branchNameEn }}</option>
       </select>
     </div>
-    <div class="form-group" style="flex: 1;">
+    <div class="form-group m-0 flex-1">
       <label class="form-label" for="filterDate">Select Date</label>
-      <input type="date" id="filterDate" formControlName="date" class="form-control">
+      <input type="date" id="filterDate" formControlName="date" class="form-control m-0">
     </div>
   </form>
 
   <!-- Slots Grid List -->
-  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px;">
-    <div *ngFor="let slot of slots" class="card" style="border: 1px solid var(--gray-200); padding: 16px; display: flex; flex-direction: column; gap: 12px;">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-weight: 700; font-size: 1.1rem; color: var(--primary);">
+  <div class="d-grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));">
+    <div *ngFor="let slot of slots" class="card p-4 border d-flex flex-col gap-3 shadow-sm">
+      <div class="d-flex justify-between align-center">
+        <span class="fw-bold fs-md text-primary">
           {{ slot.startTime.substring(0, 5) }} - {{ slot.endTime.substring(0, 5) }}
         </span>
         <span class="badge" [class.badge-success]="slot.status === 'AVAILABLE'" [class.badge-danger]="slot.status === 'BOOKED'">
           {{ slot.status }}
         </span>
       </div>
-      <div style="font-size: 0.85rem; color: var(--gray-600);">
+      <div class="fs-sm text-muted">
         Session: <span class="badge badge-info">{{ slot.sessionType }}</span>
       </div>
 
-      <div style="display: flex; justify-content: flex-end; border-top: 1px solid var(--gray-100); padding-top: 8px;">
-        <button class="btn btn-outline btn-danger btn-sm" style="padding: 4px 8px; font-size: 0.75rem;" (click)="deleteSlot(slot.slotId)" [disabled]="slot.status === 'BOOKED'">
+      <div class="d-flex justify-end border-top pt-2">
+        <button class="btn btn-outline btn-danger btn-sm" (click)="deleteSlot(slot.slotId)" [disabled]="slot.status === 'BOOKED'">
           Delete Slot
         </button>
       </div>
     </div>
 
     <!-- Empty State -->
-    <div *ngIf="slots.length === 0" style="grid-column: 1 / -1; text-align: center; padding: 48px; color: var(--text-muted); border: 2px dashed var(--gray-200); border-radius: 8px;">
+    <div *ngIf="slots.length === 0" class="text-center p-6 text-muted border border-dashed rounded-md w-100" style="grid-column: 1 / -1;">
       No availability slots registered for this date and location. Click "+ Add Time Slot" above to define one.
     </div>
   </div>
 </div>
 
 <!-- Add Slot Modal -->
-<div *ngIf="isAddModalOpen" class="flex-center" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.5); z-index: 2000; padding: 20px;">
-  <div class="card" style="max-width: 400px; width: 100%;">
-    <h3 style="font-size: 1.4rem; color: var(--primary); margin-bottom: 16px;">Add Availability Slot</h3>
+<div *ngIf="isAddModalOpen" class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="fs-xl text-primary m-0">Add Availability Slot</h3>
+    </div>
     
-    <form [formGroup]="slotForm" (ngSubmit)="submitSlot()">
-      <div class="form-group">
-        <label class="form-label" for="startTime">Start Time (HH:MM:SS)</label>
-        <input type="text" id="startTime" formControlName="startTime" class="form-control" placeholder="E.g. 09:00:00">
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="endTime">End Time (HH:MM:SS)</label>
-        <input type="text" id="endTime" formControlName="endTime" class="form-control" placeholder="E.g. 09:30:00">
-      </div>
-      
-      <!-- Session Type Select -->
-      <div class="form-group">
-        <label class="form-label" for="sessType">Session Type</label>
-        <select id="sessType" formControlName="sessionType" class="form-control">
-          <option *ngFor="let st of sessionTypes" [value]="st">{{ st.replace('_', ' ') }}</option>
-        </select>
-      </div>
+    <div class="modal-body">
+      <form [formGroup]="slotForm" (ngSubmit)="submitSlot()">
+        <div class="form-group">
+          <label class="form-label" for="startTime">Start Time (HH:MM:SS)</label>
+          <input type="text" id="startTime" formControlName="startTime" class="form-control" placeholder="E.g. 09:00:00">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="endTime">End Time (HH:MM:SS)</label>
+          <input type="text" id="endTime" formControlName="endTime" class="form-control" placeholder="E.g. 09:30:00">
+        </div>
+        
+        <!-- Session Type Select -->
+        <div class="form-group m-0">
+          <label class="form-label" for="sessType">Session Type</label>
+          <select id="sessType" formControlName="sessionType" class="form-control">
+            <option *ngFor="let st of sessionTypes" [value]="st">{{ st.replace('_', ' ') }}</option>
+          </select>
+        </div>
+      </form>
+    </div>
 
-      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
-        <button type="button" class="btn btn-outline" (click)="closeAddModal()">Cancel</button>
-        <button type="submit" class="btn btn-accent" [disabled]="slotForm.invalid">Add Slot</button>
-      </div>
-    </form>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" (click)="closeAddModal()">Cancel</button>
+      <button type="button" class="btn btn-accent" (click)="submitSlot()" [disabled]="slotForm.invalid">Add Slot</button>
+    </div>
   </div>
 </div>

@@ -1,14 +1,14 @@
 <!-- Doctor Patient EMR Viewer template -->
-<div class="card" style="margin-bottom: 24px;">
-  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+<div class="card p-5 border-0 mb-4">
+  <div class="d-flex justify-between align-center flex-wrap gap-3">
     <div>
-      <h2 style="font-size: 1.6rem; color: var(--primary);">Patient Medical Directory</h2>
-      <p style="color: var(--text-muted); font-size: 0.9rem;">Select a registered patient to review or document clinical records</p>
+      <h2 class="fs-xl text-primary m-0">Patient Medical Directory</h2>
+      <p class="text-muted fs-sm mt-1">Select a registered patient to review or document clinical records</p>
     </div>
     
     <!-- Select patient dropdown -->
     <div style="min-width: 250px;">
-      <select class="form-control" (change)="onPatientSelect($event)">
+      <select class="form-control m-0" (change)="onPatientSelect($event)">
         <option value="">-- Choose Patient --</option>
         <option *ngFor="let p of patientList" [value]="p.patientId">{{ p.patientName }}</option>
       </select>
@@ -17,23 +17,23 @@
 </div>
 
 <!-- EMR chart dashboard if patient is selected -->
-<div *ngIf="selectedPatientId" style="display: flex; flex-direction: column; gap: 24px;">
+<div *ngIf="selectedPatientId" class="d-flex flex-col gap-4">
   <!-- Profile summary card -->
-  <div class="card" style="background: linear-gradient(135deg, var(--white), var(--gray-50)); border-left: 5px solid var(--accent);">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
+  <div class="card p-5 border-0" style="background: linear-gradient(135deg, var(--white), var(--gray-50)); border-left: 5px solid var(--accent);">
+    <div class="d-flex justify-between align-start flex-wrap gap-4">
       <div>
-        <h3 style="font-size: 1.4rem; color: var(--primary); margin-bottom: 8px;">Chart: {{ selectedPatientName }}</h3>
-        <p style="color: var(--text-muted); font-size: 0.9rem;" *ngIf="healthProfile">
+        <h3 class="fs-lg text-primary mb-2">Chart: {{ selectedPatientName }}</h3>
+        <p class="text-muted fs-sm m-0" *ngIf="healthProfile">
           Height: {{ healthProfile.heightCm }} cm | Weight: {{ healthProfile.weightKg }} kg | BMI: {{ healthProfile.bmi | number:'1.1-2' }}
         </p>
-        <div style="display: flex; gap: 12px; margin-top: 10px; flex-wrap: wrap;">
+        <div class="d-flex gap-2 mt-3 flex-wrap">
           <span class="badge badge-success" *ngIf="healthProfile">Smoking: {{ healthProfile.smokingStatus }}</span>
           <span class="badge badge-info" *ngIf="healthProfile">Alcohol: {{ healthProfile.alcoholStatus }}</span>
         </div>
       </div>
 
       <!-- Quick Action Buttons -->
-      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+      <div class="d-flex gap-2 flex-wrap">
         <button class="btn btn-primary btn-sm" (click)="openModal('vital')">Record Vitals</button>
         <button class="btn btn-accent btn-sm" (click)="openModal('prescription')">Write Prescription</button>
         <button class="btn btn-outline btn-sm" (click)="openModal('lab')">Upload Lab Report</button>
@@ -41,266 +41,275 @@
     </div>
 
     <!-- Allergies & Conditions -->
-    <div class="grid-responsive" style="grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 24px; border-top: 1px solid var(--gray-200); padding-top: 20px;">
+    <div class="d-grid mt-4 pt-4 border-top" style="grid-template-columns: 1fr 1fr; gap: 20px;">
       <div>
-        <h4 style="font-size: 0.95rem; text-transform: uppercase; color: var(--gray-600); margin-bottom: 8px;">Allergies ({{ allergies.length }})</h4>
-        <div *ngFor="let al of allergies" style="font-size: 0.85rem; margin-bottom: 4px;">
+        <h4 class="fs-sm text-uppercase text-muted mb-2">Allergies ({{ allergies.length }})</h4>
+        <div *ngFor="let al of allergies" class="fs-sm mb-1">
           🔴 <strong>{{ al.allergen }}</strong> ({{ al.severity }}) - {{ al.reaction }}
         </div>
-        <div *ngIf="allergies.length === 0" style="font-size: 0.85rem; color: var(--text-muted);">No allergies recorded.</div>
+        <div *ngIf="allergies.length === 0" class="fs-sm text-muted">No allergies recorded.</div>
       </div>
       <div>
-        <h4 style="font-size: 0.95rem; text-transform: uppercase; color: var(--gray-600); margin-bottom: 8px;">Chronic Conditions ({{ chronicConditions.length }})</h4>
-        <div *ngFor="let cc of chronicConditions" style="font-size: 0.85rem; margin-bottom: 4px;">
+        <h4 class="fs-sm text-uppercase text-muted mb-2">Chronic Conditions ({{ chronicConditions.length }})</h4>
+        <div *ngFor="let cc of chronicConditions" class="fs-sm mb-1">
           ⚫ <strong>{{ cc.conditionName }}</strong> [{{ cc.icd10Code }}] - Status: {{ cc.status }}
         </div>
-        <div *ngIf="chronicConditions.length === 0" style="font-size: 0.85rem; color: var(--text-muted);">No conditions recorded.</div>
+        <div *ngIf="chronicConditions.length === 0" class="fs-sm text-muted">No conditions recorded.</div>
       </div>
     </div>
   </div>
 
-  <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+  <div class="d-flex gap-4 flex-wrap">
     <!-- Left column: Prescriptions list -->
-    <div class="card" style="flex: 1.5; min-width: 320px;">
-      <h3 style="font-size: 1.2rem; color: var(--primary); margin-bottom: 16px; border-bottom: 1px solid var(--gray-200); padding-bottom: 8px;">Prescription History</h3>
-      <div *ngFor="let rx of prescriptions" style="border: 1px solid var(--gray-200); border-radius: 8px; padding: 16px; margin-bottom: 12px;">
-        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">
+    <div class="card p-4 border-0 flex-1-5" style="min-width: 320px;">
+      <h3 class="fs-lg text-primary mb-3 border-bottom pb-2">Prescription History</h3>
+      <div *ngFor="let rx of prescriptions" class="border rounded-md p-3 mb-3">
+        <div class="d-flex justify-between fs-sm text-muted mb-2">
           <span>Issued: {{ rx.issuedDate }}</span>
           <span class="badge badge-success">{{ rx.status }}</span>
         </div>
-        <div style="font-size: 0.95rem; font-weight: 700; margin-bottom: 6px;">Diagnosis: {{ rx.diagnosisNotes }}</div>
+        <div class="fs-sm fw-bold mb-2">Diagnosis: {{ rx.diagnosisNotes }}</div>
         
         <!-- Nested Items -->
-        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--gray-200);">
-          <div *ngFor="let item of selectedRxItems[rx.prescriptionId]" style="font-size: 0.85rem; color: var(--gray-700); margin-bottom: 4px;">
+        <div class="mt-2 pt-2 border-top" style="border-top-style: dashed !important;">
+          <div *ngFor="let item of selectedRxItems[rx.prescriptionId]" class="fs-sm text-dark mb-1">
             💊 {{ item.drugName }} ({{ item.dosage }}) - {{ item.frequency }} for {{ item.durationDays }} Days
           </div>
         </div>
       </div>
-      <div *ngIf="prescriptions.length === 0" style="text-align: center; color: var(--text-muted); padding: 24px 0;">No prescription records found.</div>
+      <div *ngIf="prescriptions.length === 0" class="text-center text-muted p-4">No prescription records found.</div>
     </div>
 
     <!-- Right column: Vitals and Labs -->
-    <div style="flex: 1.2; display: flex; flex-direction: column; gap: 24px; min-width: 320px;">
+    <div class="flex-1-2 d-flex flex-col gap-4" style="min-width: 320px;">
       <!-- Vitals log -->
-      <div class="card">
-        <h3 style="font-size: 1.2rem; color: var(--primary); margin-bottom: 16px; border-bottom: 1px solid var(--gray-200); padding-bottom: 8px;">Recorded Vitals History</h3>
-        <div style="display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto;">
-          <div *ngFor="let v of vitals" style="border-bottom: 1px solid var(--gray-100); padding-bottom: 6px; font-size: 0.85rem;">
-            <div style="display: flex; justify-content: space-between; font-weight: 700; color: var(--gray-800);">
+      <div class="card p-4 border-0">
+        <h3 class="fs-lg text-primary mb-3 border-bottom pb-2">Recorded Vitals History</h3>
+        <div class="d-flex flex-col gap-2 overflow-y-auto" style="max-height: 300px;">
+          <div *ngFor="let v of vitals" class="border-bottom pb-2 fs-sm">
+            <div class="d-flex justify-between fw-bold text-dark">
               <span>BP: {{ v.bloodPressureSystolic }}/{{ v.bloodPressureDiastolic }} mmHg</span>
               <span>HR: {{ v.heartRateBpm }} BPM</span>
             </div>
-            <div style="display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.75rem; margin-top: 2px;">
+            <div class="d-flex justify-between text-muted fs-xs mt-1">
               <span>Glucose: {{ v.bloodGlucoseMmol || 'N/A' }} | Temp: {{ v.temperatureC || 'N/A' }}°C</span>
               <span>{{ v.recordedAt | date }}</span>
             </div>
           </div>
-          <div *ngIf="vitals.length === 0" style="text-align: center; color: var(--text-muted); padding: 12px 0;">No vitals documented.</div>
+          <div *ngIf="vitals.length === 0" class="text-center text-muted py-3">No vitals documented.</div>
         </div>
       </div>
 
       <!-- Lab results -->
-      <div class="card">
-        <h3 style="font-size: 1.2rem; color: var(--primary); margin-bottom: 16px; border-bottom: 1px solid var(--gray-200); padding-bottom: 8px;">Lab Reports</h3>
-        <div *ngFor="let lab of labResults" style="font-size: 0.85rem; border-bottom: 1px solid var(--gray-100); padding-bottom: 8px; margin-bottom: 8px;">
-          <div style="display: flex; justify-content: space-between; font-weight: 700;">
+      <div class="card p-4 border-0">
+        <h3 class="fs-lg text-primary mb-3 border-bottom pb-2">Lab Reports</h3>
+        <div *ngFor="let lab of labResults" class="fs-sm border-bottom pb-2 mb-2">
+          <div class="d-flex justify-between fw-bold">
             <span>{{ lab.labName }} - {{ lab.reportType }}</span>
             <span class="badge" [class.badge-danger]="lab.overallFlag === 'CRITICAL'" [class.badge-success]="lab.overallFlag === 'NORMAL'">{{ lab.overallFlag }}</span>
           </div>
-          <div style="color: var(--text-muted); font-size: 0.75rem; margin-top: 2px;">Date: {{ lab.reportDate }}</div>
-          <div style="margin-top: 4px; background-color: var(--gray-50); padding: 4px 8px; border-radius: 4px; font-style: italic;">
+          <div class="text-muted fs-xs mt-1">Date: {{ lab.reportDate }}</div>
+          <div class="mt-1 bg-light p-2 rounded-md font-style-italic text-dark">
             {{ lab.doctorAnnotation || 'No annotation' }}
           </div>
         </div>
-        <div *ngIf="labResults.length === 0" style="text-align: center; color: var(--text-muted); padding: 12px 0;">No reports found.</div>
+        <div *ngIf="labResults.length === 0" class="text-center text-muted py-3">No reports found.</div>
       </div>
     </div>
   </div>
 </div>
 
 <!-- Log Vitals Modal -->
-<div *ngIf="activeModal === 'vital'" class="flex-center" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.5); z-index: 2000; padding: 20px;">
-  <div class="card" style="max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto;">
-    <h3 style="font-size: 1.4rem; color: var(--primary); margin-bottom: 16px;">Document Vitals Metric</h3>
-    <form [formGroup]="vitalForm" (ngSubmit)="submitVital()">
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Systolic BP (mmHg)</label>
-          <input type="number" formControlName="bloodPressureSystolic" class="form-control">
+<div *ngIf="activeModal === 'vital'" class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="fs-xl text-primary m-0">Document Vitals Metric</h3>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="vitalForm" (ngSubmit)="submitVital()">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Systolic BP (mmHg)</label>
+            <input type="number" formControlName="bloodPressureSystolic" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Diastolic BP (mmHg)</label>
+            <input type="number" formControlName="bloodPressureDiastolic" class="form-control">
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Diastolic BP (mmHg)</label>
-          <input type="number" formControlName="bloodPressureDiastolic" class="form-control">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Heart Rate (BPM)</label>
+            <input type="number" formControlName="heartRateBpm" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Glucose (mmol/L)</label>
+            <input type="number" step="0.1" formControlName="bloodGlucoseMmol" class="form-control">
+          </div>
         </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Heart Rate (BPM)</label>
-          <input type="number" formControlName="heartRateBpm" class="form-control">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">HbA1c (%)</label>
+            <input type="number" step="0.1" formControlName="hba1cPercent" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Weight (kg)</label>
+            <input type="number" formControlName="weightKg" class="form-control">
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Glucose (mmol/L)</label>
-          <input type="number" step="0.1" formControlName="bloodGlucoseMmol" class="form-control">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Temperature (°C)</label>
+            <input type="number" step="0.1" formControlName="temperatureC" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Oxygen Saturation (%)</label>
+            <input type="number" formControlName="oxygenSaturation" class="form-control">
+          </div>
         </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">HbA1c (%)</label>
-          <input type="number" step="0.1" formControlName="hba1cPercent" class="form-control">
+        <div class="form-group m-0">
+          <label class="form-label">Notes</label>
+          <textarea formControlName="notes" class="form-control" rows="2"></textarea>
         </div>
-        <div class="form-group">
-          <label class="form-label">Weight (kg)</label>
-          <input type="number" formControlName="weightKg" class="form-control">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Temperature (°C)</label>
-          <input type="number" step="0.1" formControlName="temperatureC" class="form-control">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Oxygen Saturation (%)</label>
-          <input type="number" formControlName="oxygenSaturation" class="form-control">
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Notes</label>
-        <textarea formControlName="notes" class="form-control" rows="2"></textarea>
-      </div>
-      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
-        <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
-        <button type="submit" class="btn btn-accent" [disabled]="vitalForm.invalid">Save Entry</button>
-      </div>
-    </form>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
+      <button type="button" class="btn btn-accent" (click)="submitVital()" [disabled]="vitalForm.invalid">Save Entry</button>
+    </div>
   </div>
 </div>
 
 <!-- Write Prescription Modal -->
-<div *ngIf="activeModal === 'prescription'" class="flex-center" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.5); z-index: 2000; padding: 20px;">
-  <div class="card" style="max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto;">
-    <h3 style="font-size: 1.4rem; color: var(--primary); margin-bottom: 16px;">Write E-Prescription</h3>
-    
-    <!-- Stage 1: Shell creation -->
-    <div *ngIf="!createdRxId">
-      <form [formGroup]="rxForm" (ngSubmit)="submitPrescription()">
-        <div class="form-group">
-          <label class="form-label">Valid Until Date</label>
-          <input type="date" formControlName="validUntil" class="form-control">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Clinical Diagnosis Notes</label>
-          <textarea formControlName="diagnosisNotes" class="form-control" rows="3" placeholder="Symptoms, diagnostic findings..."></textarea>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Pharmacist Instructions</label>
-          <textarea formControlName="pharmacistNotes" class="form-control" rows="2" placeholder="Substitutions, warnings..."></textarea>
-        </div>
-        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
-          <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
-          <button type="submit" class="btn btn-accent" [disabled]="rxForm.invalid">Create Shell</button>
-        </div>
-      </form>
+<div *ngIf="activeModal === 'prescription'" class="modal-backdrop">
+  <div class="modal-content" style="max-width: 600px;">
+    <div class="modal-header">
+      <h3 class="fs-xl text-primary m-0">Write E-Prescription</h3>
     </div>
-
-    <!-- Stage 2: Adding Items -->
-    <div *ngIf="createdRxId">
-      <div style="margin-bottom: 20px; background-color: var(--gray-50); padding: 12px; border-radius: 8px;">
-        <h4 style="font-size: 0.9rem; color: var(--primary); margin-bottom: 6px;">Added Items ({{ rxItemsList.length }})</h4>
-        <div *ngFor="let item of rxItemsList" style="font-size: 0.8rem; border-bottom: 1px solid var(--gray-200); padding-bottom: 4px; margin-bottom: 4px;">
-          💊 {{ item.drugName }} ({{ item.dosage }}) - {{ item.frequency }} for {{ item.durationDays }} Days
-        </div>
+    <div class="modal-body">
+      <!-- Stage 1: Shell creation -->
+      <div *ngIf="!createdRxId">
+        <form [formGroup]="rxForm" (ngSubmit)="submitPrescription()">
+          <div class="form-group">
+            <label class="form-label">Valid Until Date</label>
+            <input type="date" formControlName="validUntil" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Clinical Diagnosis Notes</label>
+            <textarea formControlName="diagnosisNotes" class="form-control" rows="3" placeholder="Symptoms, diagnostic findings..."></textarea>
+          </div>
+          <div class="form-group m-0">
+            <label class="form-label">Pharmacist Instructions</label>
+            <textarea formControlName="pharmacistNotes" class="form-control" rows="2" placeholder="Substitutions, warnings..."></textarea>
+          </div>
+          <div class="modal-footer px-0 pb-0 mt-4">
+            <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
+            <button type="submit" class="btn btn-accent" [disabled]="rxForm.invalid">Create Shell</button>
+          </div>
+        </form>
       </div>
 
-      <form [formGroup]="rxItemForm" (ngSubmit)="addRxItem(); $event.preventDefault()">
-        <div class="form-group">
-          <label class="form-label">Drug / Medicine Name</label>
-          <input type="text" formControlName="drugName" class="form-control" placeholder="E.g. Amoxicillin 500mg">
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Dosage</label>
-            <input type="text" formControlName="dosage" class="form-control" placeholder="E.g. 1 tablet">
+      <!-- Stage 2: Adding Items -->
+      <div *ngIf="createdRxId">
+        <div class="mb-4 bg-light p-3 rounded-md">
+          <h4 class="fs-sm text-primary mb-2">Added Items ({{ rxItemsList.length }})</h4>
+          <div *ngFor="let item of rxItemsList" class="fs-sm border-bottom pb-1 mb-1">
+            💊 {{ item.drugName }} ({{ item.dosage }}) - {{ item.frequency }} for {{ item.durationDays }} Days
           </div>
-          <div class="form-group">
-            <label class="form-label">Route</label>
-            <select formControlName="route" class="form-control">
-              <option value="ORAL">Oral</option>
-              <option value="INTRAVENOUS">Intravenous</option>
-              <option value="TOPICAL">Topical</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Frequency</label>
-            <input type="text" formControlName="frequency" class="form-control" placeholder="E.g. Twice daily">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Duration (Days)</label>
-            <input type="number" formControlName="durationDays" class="form-control">
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Total Quantity</label>
-            <input type="number" formControlName="quantity" class="form-control">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Refills Allowed</label>
-            <input type="number" formControlName="refillsAllowed" class="form-control">
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Special Instructions</label>
-          <input type="text" formControlName="specialInstructions" class="form-control" placeholder="E.g. Take after meal">
         </div>
 
-        <div style="display: flex; justify-content: space-between; gap: 12px; margin-top: 24px;">
-          <button type="submit" class="btn btn-outline" [disabled]="rxItemForm.invalid">+ Add Item</button>
-          <button type="button" class="btn btn-accent" (click)="finishPrescription()">Finish Prescription</button>
-        </div>
-      </form>
+        <form [formGroup]="rxItemForm" (ngSubmit)="addRxItem(); $event.preventDefault()">
+          <div class="form-group">
+            <label class="form-label">Drug / Medicine Name</label>
+            <input type="text" formControlName="drugName" class="form-control" placeholder="E.g. Amoxicillin 500mg">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Dosage</label>
+              <input type="text" formControlName="dosage" class="form-control" placeholder="E.g. 1 tablet">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Route</label>
+              <select formControlName="route" class="form-control">
+                <option value="ORAL">Oral</option>
+                <option value="INTRAVENOUS">Intravenous</option>
+                <option value="TOPICAL">Topical</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Frequency</label>
+              <input type="text" formControlName="frequency" class="form-control" placeholder="E.g. Twice daily">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Duration (Days)</label>
+              <input type="number" formControlName="durationDays" class="form-control">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Total Quantity</label>
+              <input type="number" formControlName="quantity" class="form-control">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Refills Allowed</label>
+              <input type="number" formControlName="refillsAllowed" class="form-control">
+            </div>
+          </div>
+          <div class="form-group m-0">
+            <label class="form-label">Special Instructions</label>
+            <input type="text" formControlName="specialInstructions" class="form-control" placeholder="E.g. Take after meal">
+          </div>
+
+          <div class="d-flex justify-between gap-3 mt-4 pt-3 border-top">
+            <button type="submit" class="btn btn-outline" [disabled]="rxItemForm.invalid">+ Add Item</button>
+            <button type="button" class="btn btn-accent" (click)="finishPrescription()">Finish Prescription</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- Upload Lab Result Modal -->
-<div *ngIf="activeModal === 'lab'" class="flex-center" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.5); z-index: 2000; padding: 20px;">
-  <div class="card" style="max-width: 500px; width: 100%;">
-    <h3 style="font-size: 1.4rem; color: var(--primary); margin-bottom: 16px;">Upload Lab Report</h3>
-    
-    <form [formGroup]="labForm" (ngSubmit)="submitLab()">
-      <div class="form-group">
-        <label class="form-label">Lab Facility Name</label>
-        <input type="text" formControlName="labName" class="form-control" placeholder="E.g. Al Borg Diagnostics">
-      </div>
-      <div class="form-row">
+<div *ngIf="activeModal === 'lab'" class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="fs-xl text-primary m-0">Upload Lab Report</h3>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="labForm" (ngSubmit)="submitLab()">
         <div class="form-group">
-          <label class="form-label">Report Type / Test Category</label>
-          <input type="text" formControlName="reportType" class="form-control" placeholder="E.g. Lipid Profile">
+          <label class="form-label">Lab Facility Name</label>
+          <input type="text" formControlName="labName" class="form-control" placeholder="E.g. Al Borg Diagnostics">
         </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Report Type / Test Category</label>
+            <input type="text" formControlName="reportType" class="form-control" placeholder="E.g. Lipid Profile">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Report Date</label>
+            <input type="date" formControlName="reportDate" class="form-control">
+          </div>
+        </div>
+        
+        <!-- File Selector -->
         <div class="form-group">
-          <label class="form-label">Report Date</label>
-          <input type="date" formControlName="reportDate" class="form-control">
+          <label class="form-label">Select Report Attachment (PDF/Image)</label>
+          <input type="file" (change)="onFileSelected($event)" class="form-control">
         </div>
-      </div>
-      
-      <!-- File Selector -->
-      <div class="form-group">
-        <label class="form-label">Select Report Attachment (PDF/Image)</label>
-        <input type="file" (change)="onFileSelected($event)" class="form-control">
-      </div>
 
-      <div class="form-group">
-        <label class="form-label">Clinical Annotation Notes</label>
-        <textarea formControlName="doctorAnnotation" class="form-control" rows="2"></textarea>
-      </div>
-
-      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
-        <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
-        <button type="submit" class="btn btn-accent" [disabled]="labForm.invalid">Upload Report</button>
-      </div>
-    </form>
+        <div class="form-group m-0">
+          <label class="form-label">Clinical Annotation Notes</label>
+          <textarea formControlName="doctorAnnotation" class="form-control" rows="2"></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
+      <button type="button" class="btn btn-accent" (click)="submitLab()" [disabled]="labForm.invalid">Upload Report</button>
+    </div>
   </div>
 </div>

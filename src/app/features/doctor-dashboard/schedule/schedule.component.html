@@ -1,10 +1,10 @@
-<div class="card">
-  <div style="border-bottom: 1px solid var(--gray-200); padding-bottom: 12px; margin-bottom: 24px;">
-    <h2 style="font-size: 1.6rem; color: var(--primary);">Doctor Consultation Schedule</h2>
-    <p style="color: var(--text-muted); font-size: 0.9rem;">View and manage today's incoming patient bookings</p>
+<div class="card p-5 border-0 mb-4">
+  <div class="border-bottom pb-3 mb-4">
+    <h2 class="fs-xl text-primary m-0">Doctor Consultation Schedule</h2>
+    <p class="text-muted fs-sm mt-1">View and manage today's incoming patient bookings</p>
   </div>
 
-  <div class="table-responsive">
+  <div class="table-responsive border-0">
     <table class="table">
       <thead>
         <tr>
@@ -18,7 +18,7 @@
       </thead>
       <tbody>
         <tr *ngFor="let app of upcomingAppointments">
-          <td style="font-weight: 600; color: var(--primary);">{{ app.patientName }}</td>
+          <td class="fw-bold text-primary">{{ app.patientName }}</td>
           <td>{{ app.scheduledDate | date:'longDate' }}</td>
           <td>{{ app.startTime.substring(0, 5) }}</td>
           <td>
@@ -30,39 +30,36 @@
             </span>
           </td>
           <td>
-            <div style="display: flex; gap: 8px;">
+            <div class="d-flex gap-2">
               <button 
                 *ngIf="app.status === 'SCHEDULED'" 
-                class="btn btn-primary btn-sm" 
-                style="padding: 6px 12px; font-size: 0.8rem;"
+                class="btn btn-primary btn-sm"
                 (click)="changeStatus(app.appointmentId, 'CONFIRMED')"
               >
                 Confirm
               </button>
               <button 
                 *ngIf="app.status === 'CONFIRMED'" 
-                class="btn btn-accent btn-sm" 
-                style="padding: 6px 12px; font-size: 0.8rem;"
+                class="btn btn-accent btn-sm"
                 (click)="changeStatus(app.appointmentId, 'COMPLETED')"
               >
                 Complete
               </button>
               <button 
                 *ngIf="app.status === 'CONFIRMED' || app.status === 'SCHEDULED'" 
-                class="btn btn-outline btn-danger btn-sm" 
-                style="padding: 6px 12px; font-size: 0.8rem;"
+                class="btn btn-outline btn-danger btn-sm"
                 (click)="changeStatus(app.appointmentId, 'NO_SHOW')"
               >
                 No Show
               </button>
-              <span *ngIf="app.status === 'COMPLETED' || app.status === 'CANCELLED' || app.status === 'NO_SHOW'" style="color: var(--text-muted); font-size: 0.85rem;">
+              <span *ngIf="app.status === 'COMPLETED' || app.status === 'CANCELLED' || app.status === 'NO_SHOW'" class="text-muted fs-xs">
                 No actions available
               </span>
             </div>
           </td>
         </tr>
         <tr *ngIf="upcomingAppointments.length === 0">
-          <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 32px;">
+          <td colspan="6" class="text-center p-5 text-muted bg-light rounded">
             No consultations registered in your schedule today.
           </td>
         </tr>

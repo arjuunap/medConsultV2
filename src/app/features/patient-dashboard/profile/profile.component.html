@@ -1,8 +1,8 @@
-<div class="card" style="max-width: 800px; margin: 0 auto;">
-  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--gray-200); padding-bottom: 16px; margin-bottom: 24px;">
+<div class="card p-5 border-0" style="max-width: 800px; margin: 0 auto;">
+  <div class="d-flex justify-between align-center border-bottom pb-4 mb-5">
     <div>
-      <h2 style="font-size: 1.6rem; color: var(--primary);">Patient Consultation Profile</h2>
-      <p style="color: var(--text-muted); font-size: 0.9rem;">Your general patient registration records</p>
+      <h2 class="fs-xl text-primary m-0">Patient Consultation Profile</h2>
+      <p class="text-muted fs-sm mt-1 m-0">Your general patient registration records</p>
     </div>
     <button *ngIf="!isEditMode" class="btn btn-primary" (click)="enableEdit()">
       Edit Profile
@@ -20,7 +20,7 @@
           formControlName="dateOfBirth" 
           class="form-control"
         >
-        <div *ngIf="profileForm.get('dateOfBirth')?.touched && profileForm.get('dateOfBirth')?.invalid" style="color: var(--danger); font-size: 0.8rem; margin-top: 4px;">
+        <div *ngIf="profileForm.get('dateOfBirth')?.touched && profileForm.get('dateOfBirth')?.invalid" class="error-text">
           Date of birth is required.
         </div>
       </div>
@@ -45,7 +45,7 @@
           class="form-control"
           placeholder="E.g. 1092837493"
         >
-        <div *ngIf="profileForm.get('nationalId')?.touched && profileForm.get('nationalId')?.invalid" style="color: var(--danger); font-size: 0.8rem; margin-top: 4px;">
+        <div *ngIf="profileForm.get('nationalId')?.touched && profileForm.get('nationalId')?.invalid" class="error-text">
           Valid National ID is required (numbers/letters, 5-20 chars).
         </div>
       </div>
@@ -60,22 +60,22 @@
           class="form-control"
           placeholder="Saudi Arabia"
         >
-        <div *ngIf="profileForm.get('nationality')?.touched && profileForm.get('nationality')?.invalid" style="color: var(--danger); font-size: 0.8rem; margin-top: 4px;">
+        <div *ngIf="profileForm.get('nationality')?.touched && profileForm.get('nationality')?.invalid" class="error-text">
           Nationality is required.
         </div>
       </div>
     </div>
 
     <!-- Marital status -->
-    <div class="form-group">
+    <div class="form-group mb-5">
       <label class="form-label" for="maritalStatus">Marital Status</label>
       <select id="maritalStatus" formControlName="maritalStatus" class="form-control">
         <option *ngFor="let ms of maritalStatuses" [value]="ms">{{ ms }}</option>
       </select>
     </div>
 
-    <div style="margin-top: 24px; border-top: 1px solid var(--gray-200); padding-top: 16px; margin-bottom: 24px;">
-      <h3 style="font-size: 1.15rem; color: var(--primary); margin-bottom: 16px;">Emergency Contact</h3>
+    <div class="border-top pt-4 mb-5">
+      <h3 class="fs-lg text-primary mb-4">Emergency Contact</h3>
       
       <div class="form-row">
         <div class="form-group">
@@ -87,7 +87,7 @@
             class="form-control"
             placeholder="Jane Doe"
           >
-          <div *ngIf="profileForm.get('emergencyContactName')?.touched && profileForm.get('emergencyContactName')?.invalid" style="color: var(--danger); font-size: 0.8rem; margin-top: 4px;">
+          <div *ngIf="profileForm.get('emergencyContactName')?.touched && profileForm.get('emergencyContactName')?.invalid" class="error-text">
             Emergency contact name is required.
           </div>
         </div>
@@ -101,7 +101,7 @@
             class="form-control"
             placeholder="+966 50 000 0000"
           >
-          <div *ngIf="profileForm.get('emergencyContactPhone')?.touched && profileForm.get('emergencyContactPhone')?.invalid" style="color: var(--danger); font-size: 0.8rem; margin-top: 4px;">
+          <div *ngIf="profileForm.get('emergencyContactPhone')?.touched && profileForm.get('emergencyContactPhone')?.invalid" class="error-text">
             Valid phone number is required.
           </div>
         </div>
@@ -109,7 +109,7 @@
     </div>
 
     <!-- Notes -->
-    <div class="form-group">
+    <div class="form-group m-0">
       <label class="form-label" for="notes">Additional Health Notes (Optional)</label>
       <textarea 
         id="notes" 
@@ -121,7 +121,7 @@
     </div>
 
     <!-- Submit/Cancel controls -->
-    <div *ngIf="isEditMode" style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; border-top: 1px solid var(--gray-200); padding-top: 16px;">
+    <div *ngIf="isEditMode" class="d-flex justify-end gap-3 mt-5 pt-4 border-top">
       <button *ngIf="profileExists" type="button" class="btn btn-outline" (click)="cancelEdit()">
         Cancel
       </button>

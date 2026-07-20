@@ -32,12 +32,15 @@ export class LayoutComponent {
           { label: 'Home Dashboard', route: '/patient/home' },
           { label: 'My Medical Records (EMR)', route: '/patient/emr' },
           { label: 'Book Appointment', route: '/patient/book-appointment' },
+          { label: 'Tele-Consultations', route: '/patient/consultations' },
           { label: 'My General Profile', route: '/patient/profile' },
           { label: 'Personal Health Metrics', route: '/patient/health-profile' }
         ];
       case UserRole.DOCTOR:
         return [
           { label: 'Consultation Schedule', route: '/doctor/schedule' },
+          { label: 'My Consultations', route: '/doctor/consultations' },
+          { label: 'Case Rooms', route: '/doctor/caserooms' },
           { label: 'Patient EMR Records', route: '/doctor/patients' },
           { label: 'Availability & Slots', route: '/doctor/availability' }
         ];

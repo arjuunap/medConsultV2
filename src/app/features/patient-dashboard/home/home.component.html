@@ -1,92 +1,87 @@
 <!-- Patient Home Dashboard template -->
 
 <!-- Welcome & Profile summary -->
-<div style="display: flex; gap: 24px; margin-bottom: 32px; flex-wrap: wrap;">
+<div class="d-flex flex-wrap gap-5 mb-6">
   <!-- Welcome Card -->
-  <div class="card"
-    style="flex: 2; min-width: 320px; display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, var(--primary-light), var(--white));">
+  <div class="card flex-2 d-flex flex-row align-center justify-between p-5 border-0"
+    style="min-width: 320px; background: linear-gradient(135deg, var(--primary-light), var(--white));">
     <div>
-      <h2 style="font-size: 1.8rem; margin-bottom: 4px; color: var(--primary);">
+      <h2 class="fs-2xl text-primary mb-1">
         Hello, {{ currentUser()?.fullName || 'Welcome!' }}
       </h2>
       
       <!-- If profile is initialized -->
       <div *ngIf="!needProfileInit">
-        <p style="color: var(--text-muted);">National ID: {{ patientProfile?.nationalId || 'N/A' }} | Nationality: {{
+        <p class="text-muted fs-sm m-0">National ID: {{ patientProfile?.nationalId || 'N/A' }} | Nationality: {{
           patientProfile?.nationality || 'N/A' }}</p>
-        <p style="font-size: 0.9rem; color: var(--primary); font-weight: 700; margin-top: 8px;">Blood Group: {{
+        <p class="fs-sm text-primary fw-bold mt-2 m-0">Blood Group: {{
           patientProfile?.bloodType || 'Unknown' }} | Status: {{ patientProfile?.maritalStatus || 'N/A' }}</p>
       </div>
 
       <!-- If profile is NOT initialized -->
       <div *ngIf="needProfileInit">
-        <p style="color: var(--text-muted);">Welcome to MedConsult! You are logged in, but your patient medical profile has not been initialized yet.</p>
-        <p style="font-size: 0.9rem; color: var(--warning); font-weight: 700; margin-top: 8px;">Please complete your profile to book consultations and view records.</p>
+        <p class="text-muted fs-sm m-0">Welcome to MedConsult! You are logged in, but your patient medical profile has not been initialized yet.</p>
+        <p class="fs-sm text-warning fw-bold mt-2 m-0">Please complete your profile to book consultations and view records.</p>
       </div>
     </div>
     <div style="font-size: 3.5rem; opacity: 0.2; pointer-events: none;">🏥</div>
   </div>
 
   <!-- Vitals summary card (Only visible if profile exists) -->
-  <div *ngIf="!needProfileInit" class="card" style="flex: 1; min-width: 260px;">
-    <h3
-      style="font-size: 1.1rem; color: var(--primary); margin-bottom: 12px; border-bottom: 1px solid var(--gray-200); padding-bottom: 6px;">
-      Latest Recorded Vitals</h3>
-    <div *ngIf="latestVitals; else noVitals" style="display: flex; flex-direction: column; gap: 8px;">
-      <div style="display: flex; justify-content: space-between;">
-        <span style="color: var(--text-muted);">BP (Syst/Diast):</span>
-        <span style="font-weight: 700;">{{ latestVitals.bloodPressureSystolic }}/{{
+  <div *ngIf="!needProfileInit" class="card flex-1 p-4 border-0" style="min-width: 260px;">
+    <h3 class="fs-md text-primary mb-3 pb-2 border-bottom">Latest Recorded Vitals</h3>
+    
+    <div *ngIf="latestVitals; else noVitals" class="d-flex flex-col gap-2 fs-sm">
+      <div class="d-flex justify-between">
+        <span class="text-muted">BP (Syst/Diast):</span>
+        <span class="fw-bold">{{ latestVitals.bloodPressureSystolic }}/{{
           latestVitals.bloodPressureDiastolic }} mmHg</span>
       </div>
-      <div style="display: flex; justify-content: space-between;">
-        <span style="color: var(--text-muted);">Heart Rate:</span>
-        <span style="font-weight: 700; color: var(--danger);">{{ latestVitals.heartRateBpm }} BPM</span>
+      <div class="d-flex justify-between">
+        <span class="text-muted">Heart Rate:</span>
+        <span class="fw-bold text-danger">{{ latestVitals.heartRateBpm }} BPM</span>
       </div>
-      <div style="display: flex; justify-content: space-between;">
-        <span style="color: var(--text-muted);">Weight:</span>
-        <span style="font-weight: 700;">{{ latestVitals.weightKg }} kg</span>
+      <div class="d-flex justify-between">
+        <span class="text-muted">Weight:</span>
+        <span class="fw-bold">{{ latestVitals.weightKg }} kg</span>
       </div>
-      <div
-        style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--gray-100); padding-top: 6px;">
+      <div class="d-flex justify-between fs-xs text-muted border-top pt-2 mt-1">
         <span>Recorded:</span>
         <span>{{ latestVitals.recordedAt | date:'medium' }}</span>
       </div>
     </div>
     <ng-template #noVitals>
-      <div style="text-align: center; color: var(--text-muted); padding: 12px 0;">
+      <div class="text-center text-muted py-3 fs-sm">
         No vitals recorded yet.
       </div>
     </ng-template>
   </div>
 
   <!-- Profile Setup Side-Card (Only visible if profile is NOT initialized) -->
-  <div *ngIf="needProfileInit" class="card" style="flex: 1; min-width: 260px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-left: 5px solid var(--warning); background-color: #fffbeb;">
-    <h3 style="font-size: 1.1rem; color: #b45309; margin-bottom: 8px; font-weight: 700;">Action Required</h3>
-    <p style="text-align: center; font-size: 0.85rem; color: #78350f; margin-bottom: 12px;">Initialize your profile to unlock bookings.</p>
+  <div *ngIf="needProfileInit" class="card flex-1 d-flex flex-col justify-center align-center border-0 p-4" style="min-width: 260px; border-left: 5px solid var(--warning); background-color: #fffbeb;">
+    <h3 class="fs-md mb-2 fw-bold" style="color: #b45309;">Action Required</h3>
+    <p class="text-center fs-sm mb-3" style="color: #78350f;">Initialize your profile to unlock bookings.</p>
     <a routerLink="/patient/profile" class="btn btn-primary btn-sm">Setup Profile</a>
   </div>
 </div>
 
 <!-- Profile Setup Required Banner (only shown if needed) -->
-<div *ngIf="needProfileInit" class="card"
-  style="border-left: 5px solid var(--warning); padding: 32px; text-align: center; margin-bottom: 24px; background-color: #fffbeb;">
-  <h3 style="color: #b45309; margin-bottom: 8px;">Profile Setup Required</h3>
-  <p style="color: #78350f; margin-bottom: 20px;">You haven't initialized your medical consultation profile
+<div *ngIf="needProfileInit" class="card p-6 text-center mb-5 border-0" style="border-left: 5px solid var(--warning); background-color: #fffbeb;">
+  <h3 class="mb-2" style="color: #b45309;">Profile Setup Required</h3>
+  <p class="mb-4" style="color: #78350f;">You haven't initialized your medical consultation profile
     yet. Please set up your birth date, blood type, and emergency contacts to unlock appointment booking.</p>
-  <a routerLink="/patient/profile" class="btn btn-primary">Initialize Profile Now</a>
+  <a routerLink="/patient/profile" class="btn btn-primary mx-auto">Initialize Profile Now</a>
 </div>
 
 <div *ngIf="!needProfileInit">
-
   <!-- Upcoming Appointments -->
-  <div class="card" style="margin-bottom: 32px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-      <h3 style="font-size: 1.4rem; color: var(--primary);">Upcoming Consultations ({{ upcomingAppointments.length }})
-      </h3>
+  <div class="card p-5 mb-6 border-0">
+    <div class="d-flex justify-between align-center mb-4">
+      <h3 class="fs-xl text-primary m-0">Upcoming Consultations ({{ upcomingAppointments.length }})</h3>
       <a routerLink="/patient/book-appointment" class="btn btn-accent btn-sm">Book New Appointment</a>
     </div>
 
-    <div class="table-responsive">
+    <div class="table-responsive border-0">
       <table class="table">
         <thead>
           <tr>
@@ -100,7 +95,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let app of upcomingAppointments">
-            <td style="font-weight: 600; color: var(--primary);">{{ app.doctorName }}</td>
+            <td class="fw-semibold text-primary">{{ app.doctorName }}</td>
             <td>{{ app.scheduledDate | date:'fullDate' }}</td>
             <td>{{ app.startTime.substring(0, 5) }}</td>
             <td>
@@ -110,14 +105,14 @@
               <span class="badge badge-success">{{ app.status }}</span>
             </td>
             <td>
-              <button class="btn btn-outline btn-danger btn-sm" style="padding: 6px 12px; font-size: 0.8rem;"
+              <button class="btn btn-outline btn-danger btn-sm"
                 (click)="openCancelModal(app)">
                 Cancel
               </button>
             </td>
           </tr>
           <tr *ngIf="upcomingAppointments.length === 0">
-            <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">
+            <td colspan="6" class="text-center text-muted p-5">
               No upcoming appointments booked. Need to see a doctor? Book a slot above.
             </td>
           </tr>
@@ -128,29 +123,32 @@
 </div>
 
 <!-- Appointment Cancel Modal -->
-<div *ngIf="selectedCancelAppointment" class="flex-center"
-  style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.5); z-index: 2000; padding: 20px;">
-  <div class="card" style="max-width: 500px; width: 100%; position: relative;">
-    <h3 style="font-size: 1.4rem; color: var(--danger); margin-bottom: 12px;">Cancel Appointment</h3>
-    <p style="color: var(--text-muted); margin-bottom: 20px;">Are you sure you want to cancel your consultation with
-      <strong style="color: var(--gray-800);">{{ selectedCancelAppointment.doctorName }}</strong> on {{
-      selectedCancelAppointment.scheduledDate }}?</p>
+<div *ngIf="selectedCancelAppointment" class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="fs-xl text-danger m-0">Cancel Appointment</h3>
+    </div>
+    
+    <div class="modal-body">
+      <p class="text-muted mb-4 fs-sm">Are you sure you want to cancel your consultation with
+        <strong class="text-dark">{{ selectedCancelAppointment.doctorName }}</strong> on {{
+        selectedCancelAppointment.scheduledDate }}?</p>
 
-    <form [formGroup]="cancelForm" (ngSubmit)="submitCancel()">
-      <div class="form-group">
-        <label class="form-label" for="cancelReason">Reason for Cancellation</label>
-        <textarea id="cancelReason" formControlName="cancelReason" class="form-control"
-          placeholder="Please explain why you are cancelling..." rows="3"></textarea>
-        <div *ngIf="cancelForm.get('cancelReason')?.touched && cancelForm.get('cancelReason')?.invalid"
-          style="color: var(--danger); font-size: 0.8rem; margin-top: 4px;">
-          Cancellation reason is required (max 255 chars).
+      <form [formGroup]="cancelForm" (ngSubmit)="submitCancel()">
+        <div class="form-group m-0">
+          <label class="form-label" for="cancelReason">Reason for Cancellation</label>
+          <textarea id="cancelReason" formControlName="cancelReason" class="form-control"
+            placeholder="Please explain why you are cancelling..." rows="3"></textarea>
+          <div *ngIf="cancelForm.get('cancelReason')?.touched && cancelForm.get('cancelReason')?.invalid" class="error-text">
+            Cancellation reason is required (max 255 chars).
+          </div>
         </div>
-      </div>
+      </form>
+    </div>
 
-      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
-        <button type="button" class="btn btn-outline" (click)="closeCancelModal()">Go Back</button>
-        <button type="submit" class="btn btn-danger">Confirm Cancellation</button>
-      </div>
-    </form>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" (click)="closeCancelModal()">Go Back</button>
+      <button type="button" class="btn btn-danger" (click)="submitCancel()">Confirm Cancellation</button>
+    </div>
   </div>
 </div>

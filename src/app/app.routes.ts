@@ -45,6 +45,10 @@ export const routes: Routes = [
       {
         path: 'emr',
         loadComponent: () => import('./features/patient-dashboard/emr/emr.component').then(m => m.EmrComponent)
+      },
+      {
+        path: 'consultations',
+        loadComponent: () => import('./features/patient-dashboard/consultations/consultations.component').then(m => m.ConsultationsComponent)
       }
     ]
   },
@@ -69,6 +73,14 @@ export const routes: Routes = [
       {
         path: 'availability',
         loadComponent: () => import('./features/doctor-dashboard/availability/availability.component').then(m => m.AvailabilityComponent)
+      },
+      {
+        path: 'consultations',
+        loadComponent: () => import('./features/doctor-dashboard/consultations/doctor-consultations/doctor-consultations.component').then(m => m.DoctorConsultationsComponent)
+      },
+      {
+        path: 'caserooms',
+        loadComponent: () => import('./features/doctor-dashboard/caserooms/case-rooms/case-rooms.component').then(m => m.CaseRoomsComponent)
       }
     ]
   },

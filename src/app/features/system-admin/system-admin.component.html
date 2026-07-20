@@ -1,9 +1,9 @@
 <!-- System Admin Reference Configuration Panel -->
-<div class="card">
-  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--gray-200); padding-bottom: 16px; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+<div class="card p-5 border-0 mb-4">
+  <div class="d-flex justify-between align-center border-bottom pb-4 mb-4 flex-wrap gap-3">
     <div>
-      <h2 style="font-size: 1.6rem; color: var(--primary);">Global Registry Configurations</h2>
-      <p style="color: var(--text-muted); font-size: 0.9rem;">Manage standard reference values for cities, medical specialties, language options, and insurance panels</p>
+      <h2 class="fs-xl text-primary m-0">Global Registry Configurations</h2>
+      <p class="text-muted fs-sm mt-1">Manage standard reference values for cities, medical specialties, language options, and insurance panels</p>
     </div>
     
     <!-- Add new registry entry -->
@@ -13,7 +13,7 @@
   </div>
 
   <!-- Registry tabs -->
-  <div style="display: flex; gap: 12px; border-bottom: 2px solid var(--gray-200); margin-bottom: 20px; padding-bottom: 1px;">
+  <div class="d-flex gap-2 border-bottom border-2 mb-4 pb-1">
     <button class="btn" [class.btn-primary]="activeTab==='cities'" [class.btn-outline]="activeTab!=='cities'" (click)="switchTab('cities')">🇸🇦 Cities</button>
     <button class="btn" [class.btn-primary]="activeTab==='specialties'" [class.btn-outline]="activeTab!=='specialties'" (click)="switchTab('specialties')">🩺 Specialties</button>
     <button class="btn" [class.btn-primary]="activeTab==='languages'" [class.btn-outline]="activeTab!=='languages'" (click)="switchTab('languages')">🗣️ Languages</button>
@@ -23,7 +23,7 @@
   <!-- ==================== CITIES & LOCALITIES ==================== -->
   <div *ngIf="activeTab === 'cities'">
     <!-- View: List of Cities -->
-    <div *ngIf="!selectedCityForLocalities" class="table-responsive">
+    <div *ngIf="!selectedCityForLocalities" class="table-responsive border-0">
       <table class="table">
         <thead>
           <tr>
@@ -35,13 +35,13 @@
         </thead>
         <tbody>
           <tr *ngFor="let c of cities">
-            <td style="font-weight: 700; color: var(--primary);">{{ c.nameEn }}</td>
+            <td class="fw-bold text-primary">{{ c.nameEn }}</td>
             <td>{{ c.nameAr }}</td>
             <td>{{ c.countryCode }}</td>
             <td>
-              <button class="btn btn-outline btn-sm" style="padding: 4px 8px; font-size: 0.75rem; margin-right: 8px;" (click)="viewLocalities(c)">Localities</button>
-              <button class="btn btn-outline btn-sm" style="padding: 4px 8px; font-size: 0.75rem; margin-right: 8px;" (click)="openEditModal('city', c)">Edit</button>
-              <button class="btn btn-outline btn-danger btn-sm" style="padding: 4px 8px; font-size: 0.75rem;" (click)="deleteItem(c.cityId)">Delete</button>
+              <button class="btn btn-outline btn-sm mr-2" (click)="viewLocalities(c)">Localities</button>
+              <button class="btn btn-outline btn-sm mr-2" (click)="openEditModal('city', c)">Edit</button>
+              <button class="btn btn-outline btn-danger btn-sm" (click)="deleteItem(c.cityId)">Delete</button>
             </td>
           </tr>
         </tbody>
@@ -49,10 +49,10 @@
     </div>
 
     <!-- View: List of Localities for a City -->
-    <div *ngIf="selectedCityForLocalities" class="table-responsive">
-      <div style="margin-bottom: 16px;">
+    <div *ngIf="selectedCityForLocalities" class="table-responsive border-0">
+      <div class="mb-3 d-flex align-center gap-2">
         <button class="btn btn-outline btn-sm" (click)="backToCities()">← Back to Cities</button>
-        <span style="margin-left: 12px; font-weight: 600; color: var(--primary);">Localities in {{ selectedCityForLocalities.nameEn }}</span>
+        <span class="fw-bold text-primary">Localities in {{ selectedCityForLocalities.nameEn }}</span>
       </div>
       <table class="table">
         <thead>
@@ -65,16 +65,16 @@
         </thead>
         <tbody>
           <tr *ngFor="let loc of localities">
-            <td style="font-weight: 700; color: var(--primary);">{{ loc.nameEn }}</td>
+            <td class="fw-bold text-primary">{{ loc.nameEn }}</td>
             <td>{{ loc.nameAr }}</td>
             <td>{{ loc.postalCode || 'N/A' }}</td>
             <td>
-              <button class="btn btn-outline btn-sm" style="padding: 4px 8px; font-size: 0.75rem; margin-right: 8px;" (click)="openEditModal('locality', loc)">Edit</button>
-              <button class="btn btn-outline btn-danger btn-sm" style="padding: 4px 8px; font-size: 0.75rem;" (click)="deleteItem(loc.localityId)">Delete</button>
+              <button class="btn btn-outline btn-sm mr-2" (click)="openEditModal('locality', loc)">Edit</button>
+              <button class="btn btn-outline btn-danger btn-sm" (click)="deleteItem(loc.localityId)">Delete</button>
             </td>
           </tr>
           <tr *ngIf="localities.length === 0">
-            <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 16px;">No localities found for this city.</td>
+            <td colspan="4" class="text-center p-4 text-muted">No localities found for this city.</td>
           </tr>
         </tbody>
       </table>
@@ -84,7 +84,7 @@
   <!-- ==================== SPECIALTIES & SUBSPECIALTIES ==================== -->
   <div *ngIf="activeTab === 'specialties'">
     <!-- View: List of Specialties -->
-    <div *ngIf="!selectedSpecialtyForSub" class="table-responsive">
+    <div *ngIf="!selectedSpecialtyForSub" class="table-responsive border-0">
       <table class="table">
         <thead>
           <tr>
@@ -97,12 +97,12 @@
         <tbody>
           <tr *ngFor="let s of specialties">
             <td>{{ s.code }}</td>
-            <td style="font-weight: 700; color: var(--primary);">{{ s.nameEn }}</td>
+            <td class="fw-bold text-primary">{{ s.nameEn }}</td>
             <td>{{ s.category }}</td>
             <td>
-              <button class="btn btn-outline btn-sm" style="padding: 4px 8px; font-size: 0.75rem; margin-right: 8px;" (click)="viewSubSpecialties(s)">SubSpecialties</button>
-              <button class="btn btn-outline btn-sm" style="padding: 4px 8px; font-size: 0.75rem; margin-right: 8px;" (click)="openEditModal('specialty', s)">Edit</button>
-              <button class="btn btn-outline btn-danger btn-sm" style="padding: 4px 8px; font-size: 0.75rem;" (click)="deleteItem(s.specialtyId)">Delete</button>
+              <button class="btn btn-outline btn-sm mr-2" (click)="viewSubSpecialties(s)">SubSpecialties</button>
+              <button class="btn btn-outline btn-sm mr-2" (click)="openEditModal('specialty', s)">Edit</button>
+              <button class="btn btn-outline btn-danger btn-sm" (click)="deleteItem(s.specialtyId)">Delete</button>
             </td>
           </tr>
         </tbody>
@@ -110,10 +110,10 @@
     </div>
 
     <!-- View: List of SubSpecialties for a Specialty -->
-    <div *ngIf="selectedSpecialtyForSub" class="table-responsive">
-      <div style="margin-bottom: 16px;">
+    <div *ngIf="selectedSpecialtyForSub" class="table-responsive border-0">
+      <div class="mb-3 d-flex align-center gap-2">
         <button class="btn btn-outline btn-sm" (click)="backToSpecialties()">← Back to Specialties</button>
-        <span style="margin-left: 12px; font-weight: 600; color: var(--primary);">SubSpecialties in {{ selectedSpecialtyForSub.nameEn }}</span>
+        <span class="fw-bold text-primary">SubSpecialties in {{ selectedSpecialtyForSub.nameEn }}</span>
       </div>
       <table class="table">
         <thead>
@@ -126,7 +126,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let sub of subSpecialties">
-            <td style="font-weight: 700; color: var(--primary);">{{ sub.nameEn }}</td>
+            <td class="fw-bold text-primary">{{ sub.nameEn }}</td>
             <td>{{ sub.nameAr }}</td>
             <td>
               <span class="badge" [class.badge-success]="sub.isActive" [class.badge-danger]="!sub.isActive">
@@ -134,12 +134,12 @@
               </span>
             </td>
             <td>
-              <button class="btn btn-outline btn-sm" style="padding: 4px 8px; font-size: 0.75rem; margin-right: 8px;" (click)="openEditModal('subSpecialty', sub)">Edit</button>
-              <button class="btn btn-outline btn-danger btn-sm" style="padding: 4px 8px; font-size: 0.75rem;" (click)="deleteItem(sub.subSpecialtyId)">Delete</button>
+              <button class="btn btn-outline btn-sm mr-2" (click)="openEditModal('subSpecialty', sub)">Edit</button>
+              <button class="btn btn-outline btn-danger btn-sm" (click)="deleteItem(sub.subSpecialtyId)">Delete</button>
             </td>
           </tr>
           <tr *ngIf="subSpecialties.length === 0">
-            <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 16px;">No sub-specialties found.</td>
+            <td colspan="4" class="text-center p-4 text-muted">No sub-specialties found.</td>
           </tr>
         </tbody>
       </table>
@@ -147,7 +147,7 @@
   </div>
 
   <!-- ==================== LANGUAGES ==================== -->
-  <div *ngIf="activeTab === 'languages'" class="table-responsive">
+  <div *ngIf="activeTab === 'languages'" class="table-responsive border-0">
     <table class="table">
       <thead>
         <tr>
@@ -159,12 +159,12 @@
       </thead>
       <tbody>
         <tr *ngFor="let l of languages">
-          <td style="font-weight: 700; color: var(--primary);">{{ l.nameEn }}</td>
+          <td class="fw-bold text-primary">{{ l.nameEn }}</td>
           <td>{{ l.nameAr }}</td>
           <td>{{ l.code }}</td>
           <td>
-            <button class="btn btn-outline btn-sm" style="padding: 4px 8px; font-size: 0.75rem; margin-right: 8px;" (click)="openEditModal('language', l)">Edit</button>
-            <button class="btn btn-outline btn-danger btn-sm" style="padding: 4px 8px; font-size: 0.75rem;" (click)="deleteItem(l.languageId)">Delete</button>
+            <button class="btn btn-outline btn-sm mr-2" (click)="openEditModal('language', l)">Edit</button>
+            <button class="btn btn-outline btn-danger btn-sm" (click)="deleteItem(l.languageId)">Delete</button>
           </td>
         </tr>
       </tbody>
@@ -172,7 +172,7 @@
   </div>
 
   <!-- ==================== INSURANCES ==================== -->
-  <div *ngIf="activeTab === 'insurances'" class="table-responsive">
+  <div *ngIf="activeTab === 'insurances'" class="table-responsive border-0">
     <table class="table">
       <thead>
         <tr>
@@ -185,11 +185,11 @@
       </thead>
       <tbody>
         <tr *ngFor="let ins of insurances">
-          <td style="font-weight: 700; color: var(--primary);">{{ ins.nameEn }}</td>
+          <td class="fw-bold text-primary">{{ ins.nameEn }}</td>
           <td>{{ ins.nameAr }}</td>
           <td>
             <span *ngIf="ins.logoUrl">📁 {{ ins.logoUrl }}</span>
-            <span *ngIf="!ins.logoUrl" style="color: var(--gray-400);">No Logo</span>
+            <span *ngIf="!ins.logoUrl" class="text-muted">No Logo</span>
           </td>
           <td>
             <span class="badge" [class.badge-success]="ins.isActive" [class.badge-danger]="!ins.isActive">
@@ -197,8 +197,8 @@
             </span>
           </td>
           <td>
-            <button class="btn btn-outline btn-sm" style="padding: 4px 8px; font-size: 0.75rem; margin-right: 8px;" (click)="openEditModal('insurance', ins)">Edit</button>
-            <button class="btn btn-outline btn-danger btn-sm" style="padding: 4px 8px; font-size: 0.75rem;" (click)="deleteItem(ins.providerId)">Delete</button>
+            <button class="btn btn-outline btn-sm mr-2" (click)="openEditModal('insurance', ins)">Edit</button>
+            <button class="btn btn-outline btn-danger btn-sm" (click)="deleteItem(ins.providerId)">Delete</button>
           </td>
         </tr>
       </tbody>
@@ -210,163 +210,187 @@
 <!-- ==================== MODALS ==================== -->
 
 <!-- City Modal -->
-<div *ngIf="activeModal === 'city'" class="flex-center" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.5); z-index: 2000; padding: 20px;">
-  <div class="card" style="max-width: 400px; width: 100%;">
-    <h3 style="font-size: 1.4rem; color: var(--primary); margin-bottom: 16px;">
-      {{ isEdit ? 'Edit City' : 'Add City' }}
-    </h3>
-    <form [formGroup]="cityForm" (ngSubmit)="submitCity()">
-      <div class="form-group">
-        <label class="form-label">City Name (EN)</label>
-        <input type="text" formControlName="nameEn" class="form-control">
-      </div>
-      <div class="form-group">
-        <label class="form-label">City Name (AR)</label>
-        <input type="text" formControlName="nameAr" class="form-control">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Country Code</label>
-        <input type="text" formControlName="countryCode" class="form-control" placeholder="E.g. SA">
-      </div>
-      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
-        <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
-        <button type="submit" class="btn btn-accent" [disabled]="cityForm.invalid">Save</button>
-      </div>
-    </form>
+<div *ngIf="activeModal === 'city'" class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="fs-xl text-primary m-0">
+        {{ isEdit ? 'Edit City' : 'Add City' }}
+      </h3>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="cityForm" (ngSubmit)="submitCity()">
+        <div class="form-group">
+          <label class="form-label">City Name (EN)</label>
+          <input type="text" formControlName="nameEn" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label">City Name (AR)</label>
+          <input type="text" formControlName="nameAr" class="form-control">
+        </div>
+        <div class="form-group m-0">
+          <label class="form-label">Country Code</label>
+          <input type="text" formControlName="countryCode" class="form-control" placeholder="E.g. SA">
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
+      <button type="button" class="btn btn-accent" (click)="submitCity()" [disabled]="cityForm.invalid">Save</button>
+    </div>
   </div>
 </div>
 
 <!-- Locality Modal -->
-<div *ngIf="activeModal === 'locality'" class="flex-center" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.5); z-index: 2000; padding: 20px;">
-  <div class="card" style="max-width: 400px; width: 100%;">
-    <h3 style="font-size: 1.4rem; color: var(--primary); margin-bottom: 16px;">
-      {{ isEdit ? 'Edit Locality' : 'Add Locality' }}
-    </h3>
-    <form [formGroup]="localityForm" (ngSubmit)="submitLocality()">
-      <div class="form-group">
-        <label class="form-label">Locality Name (EN)</label>
-        <input type="text" formControlName="nameEn" class="form-control">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Locality Name (AR)</label>
-        <input type="text" formControlName="nameAr" class="form-control">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Postal Code</label>
-        <input type="text" formControlName="postalCode" class="form-control">
-      </div>
-      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
-        <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
-        <button type="submit" class="btn btn-accent" [disabled]="localityForm.invalid">Save</button>
-      </div>
-    </form>
+<div *ngIf="activeModal === 'locality'" class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="fs-xl text-primary m-0">
+        {{ isEdit ? 'Edit Locality' : 'Add Locality' }}
+      </h3>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="localityForm" (ngSubmit)="submitLocality()">
+        <div class="form-group">
+          <label class="form-label">Locality Name (EN)</label>
+          <input type="text" formControlName="nameEn" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Locality Name (AR)</label>
+          <input type="text" formControlName="nameAr" class="form-control">
+        </div>
+        <div class="form-group m-0">
+          <label class="form-label">Postal Code</label>
+          <input type="text" formControlName="postalCode" class="form-control">
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
+      <button type="button" class="btn btn-accent" (click)="submitLocality()" [disabled]="localityForm.invalid">Save</button>
+    </div>
   </div>
 </div>
 
 <!-- Specialty Modal -->
-<div *ngIf="activeModal === 'specialty'" class="flex-center" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.5); z-index: 2000; padding: 20px;">
-  <div class="card" style="max-width: 500px; width: 100%;">
-    <h3 style="font-size: 1.4rem; color: var(--primary); margin-bottom: 16px;">{{ isEdit ? 'Edit Specialty' : 'Add Specialty' }}</h3>
-    <form [formGroup]="specialtyForm" (ngSubmit)="submitSpecialty()">
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Code</label>
-          <input type="text" formControlName="code" class="form-control">
+<div *ngIf="activeModal === 'specialty'" class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="fs-xl text-primary m-0">{{ isEdit ? 'Edit Specialty' : 'Add Specialty' }}</h3>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="specialtyForm" (ngSubmit)="submitSpecialty()">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Code</label>
+            <input type="text" formControlName="code" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select formControlName="category" class="form-control">
+              <option *ngFor="let cat of SPECIALTY_CATEGORIES" [value]="cat">{{ cat }}</option>
+            </select>
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Category</label>
-          <select formControlName="category" class="form-control">
-            <option *ngFor="let cat of SPECIALTY_CATEGORIES" [value]="cat">{{ cat }}</option>
-          </select>
+        <div class="form-row">
+          <div class="form-group m-0">
+            <label class="form-label">Specialty Name (EN)</label>
+            <input type="text" formControlName="nameEn" class="form-control">
+          </div>
+          <div class="form-group m-0">
+            <label class="form-label">Specialty Name (AR)</label>
+            <input type="text" formControlName="nameAr" class="form-control">
+          </div>
         </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Specialty Name (EN)</label>
-          <input type="text" formControlName="nameEn" class="form-control">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Specialty Name (AR)</label>
-          <input type="text" formControlName="nameAr" class="form-control">
-        </div>
-      </div>
-      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
-        <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
-        <button type="submit" class="btn btn-accent" [disabled]="specialtyForm.invalid">Save</button>
-      </div>
-    </form>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
+      <button type="button" class="btn btn-accent" (click)="submitSpecialty()" [disabled]="specialtyForm.invalid">Save</button>
+    </div>
   </div>
 </div>
 
 <!-- SubSpecialty Modal -->
-<div *ngIf="activeModal === 'subSpecialty'" class="flex-center" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.5); z-index: 2000; padding: 20px;">
-  <div class="card" style="max-width: 400px; width: 100%;">
-    <h3 style="font-size: 1.4rem; color: var(--primary); margin-bottom: 16px;">{{ isEdit ? 'Edit SubSpecialty' : 'Add SubSpecialty' }}</h3>
-    <form [formGroup]="subSpecialtyForm" (ngSubmit)="submitSubSpecialty()">
-      <div class="form-group">
-        <label class="form-label">SubSpecialty Name (EN)</label>
-        <input type="text" formControlName="nameEn" class="form-control">
-      </div>
-      <div class="form-group">
-        <label class="form-label">SubSpecialty Name (AR)</label>
-        <input type="text" formControlName="nameAr" class="form-control">
-      </div>
-      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
-        <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
-        <button type="submit" class="btn btn-accent" [disabled]="subSpecialtyForm.invalid">Save</button>
-      </div>
-    </form>
+<div *ngIf="activeModal === 'subSpecialty'" class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="fs-xl text-primary m-0">{{ isEdit ? 'Edit SubSpecialty' : 'Add SubSpecialty' }}</h3>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="subSpecialtyForm" (ngSubmit)="submitSubSpecialty()">
+        <div class="form-group">
+          <label class="form-label">SubSpecialty Name (EN)</label>
+          <input type="text" formControlName="nameEn" class="form-control">
+        </div>
+        <div class="form-group m-0">
+          <label class="form-label">SubSpecialty Name (AR)</label>
+          <input type="text" formControlName="nameAr" class="form-control">
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
+      <button type="button" class="btn btn-accent" (click)="submitSubSpecialty()" [disabled]="subSpecialtyForm.invalid">Save</button>
+    </div>
   </div>
 </div>
 
 <!-- Language Modal -->
-<div *ngIf="activeModal === 'language'" class="flex-center" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.5); z-index: 2000; padding: 20px;">
-  <div class="card" style="max-width: 400px; width: 100%;">
-    <h3 style="font-size: 1.4rem; color: var(--primary); margin-bottom: 16px;">{{ isEdit ? 'Edit Language' : 'Add Language' }}</h3>
-    <form [formGroup]="languageForm" (ngSubmit)="submitLanguage()">
-      <div class="form-group">
-        <label class="form-label">Language Name (EN)</label>
-        <input type="text" formControlName="nameEn" class="form-control" placeholder="E.g. English">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Language Name (AR)</label>
-        <input type="text" formControlName="nameAr" class="form-control" placeholder="E.g. الإنجليزية">
-      </div>
-      <div class="form-group">
-        <label class="form-label">ISO Code</label>
-        <input type="text" formControlName="code" class="form-control" placeholder="E.g. en">
-      </div>
-      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
-        <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
-        <button type="submit" class="btn btn-accent" [disabled]="languageForm.invalid">Save</button>
-      </div>
-    </form>
+<div *ngIf="activeModal === 'language'" class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="fs-xl text-primary m-0">{{ isEdit ? 'Edit Language' : 'Add Language' }}</h3>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="languageForm" (ngSubmit)="submitLanguage()">
+        <div class="form-group">
+          <label class="form-label">Language Name (EN)</label>
+          <input type="text" formControlName="nameEn" class="form-control" placeholder="E.g. English">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Language Name (AR)</label>
+          <input type="text" formControlName="nameAr" class="form-control" placeholder="E.g. الإنجليزية">
+        </div>
+        <div class="form-group m-0">
+          <label class="form-label">ISO Code</label>
+          <input type="text" formControlName="code" class="form-control" placeholder="E.g. en">
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
+      <button type="button" class="btn btn-accent" (click)="submitLanguage()" [disabled]="languageForm.invalid">Save</button>
+    </div>
   </div>
 </div>
 
 <!-- Insurance Modal -->
-<div *ngIf="activeModal === 'insurance'" class="flex-center" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.5); z-index: 2000; padding: 20px;">
-  <div class="card" style="max-width: 500px; width: 100%;">
-    <h3 style="font-size: 1.4rem; color: var(--primary); margin-bottom: 16px;">{{ isEdit ? 'Edit Insurance Panel' : 'Add Insurance Panel' }}</h3>
-    <form [formGroup]="insuranceForm" (ngSubmit)="submitInsurance()">
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Provider Name (EN)</label>
-          <input type="text" formControlName="nameEn" class="form-control">
+<div *ngIf="activeModal === 'insurance'" class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="fs-xl text-primary m-0">{{ isEdit ? 'Edit Insurance Panel' : 'Add Insurance Panel' }}</h3>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="insuranceForm" (ngSubmit)="submitInsurance()">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Provider Name (EN)</label>
+            <input type="text" formControlName="nameEn" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Provider Name (AR)</label>
+            <input type="text" formControlName="nameAr" class="form-control">
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Provider Name (AR)</label>
-          <input type="text" formControlName="nameAr" class="form-control">
+        <div class="form-group m-0">
+          <label class="form-label">Logo Upload</label>
+          <input type="file" (change)="onLogoSelected($event)" class="form-control">
         </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Logo Upload</label>
-        <input type="file" (change)="onLogoSelected($event)" class="form-control">
-      </div>
-      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
-        <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
-        <button type="submit" class="btn btn-accent" [disabled]="insuranceForm.invalid">Save</button>
-      </div>
-    </form>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
+      <button type="button" class="btn btn-accent" (click)="submitInsurance()" [disabled]="insuranceForm.invalid">Save</button>
+    </div>
   </div>
 </div>

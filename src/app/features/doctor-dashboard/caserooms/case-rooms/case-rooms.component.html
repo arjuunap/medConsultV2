@@ -1,0 +1,167 @@
+<div>
+  <div class="d-flex justify-between align-center mb-4">
+    <div>
+      <h2 class="fs-xl text-primary m-0">Collaborative Case Rooms</h2>
+      <p class="text-muted fs-sm mt-1">Discuss complex patient cases with other specialists.</p>
+    </div>
+    <button class="btn btn-primary" (click)="openCreateModal()">+ Open Case Room</button>
+  </div>
+
+  <div class="d-flex gap-4" style="height: 75vh;">
+    <!-- Case Rooms List -->
+    <div class="card flex-1 d-flex flex-col border-0 overflow-hidden p-0">
+      <div class="card-header border-bottom p-3 bg-light">
+        <h3 class="fs-md m-0">Active Cases</h3>
+      </div>
+      <div class="card-body p-0 overflow-y-auto">
+        <div *ngIf="caseRooms.length === 0" class="p-4 text-center text-muted">
+          No case rooms available.
+        </div>
+        
+        <div *ngFor="let room of caseRooms" 
+             class="list-item p-3 border-bottom cursor-pointer" 
+             [class.bg-app]="selectedRoom?.caseRoomId === room.caseRoomId"
+             (click)="selectRoom(room)">
+          <div class="d-flex justify-between mb-2">
+            <strong class="text-dark truncate" style="max-width: 70%;">{{ room.title }}</strong>
+            <span class="badge" [ngClass]="{
+              'badge-danger': room.priority === 'CRITICAL',
+              'badge-warning': room.priority === 'URGENT',
+              'badge-primary': room.priority === 'ROUTINE'
+            }">{{ room.priority }}</span>
+          </div>
+          <div class="text-muted fs-sm mb-1">Patient: {{ room.patientName }}</div>
+          <div class="fs-xs text-muted d-flex justify-between">
+            <span>By Dr. {{ room.openedByName }}</span>
+            <span [ngStyle]="{'color': room.status === 'ACTIVE' ? 'var(--success)' : 'var(--text-muted)'}">{{ room.status }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Case Room View -->
+    <div class="card flex-2 d-flex flex-col border-0 overflow-hidden p-0" *ngIf="selectedRoom">
+      <div class="card-header border-bottom p-4">
+        <div class="d-flex justify-between align-start">
+          <div>
+            <h3 class="fs-lg text-primary m-0 mb-2">{{ selectedRoom.title }}</h3>
+            <div class="fs-sm text-muted">
+              <strong>Patient:</strong> {{ selectedRoom.patientName }} | 
+              <strong>Opened By:</strong> Dr. {{ selectedRoom.openedByName }}
+            </div>
+            <p class="fs-sm mt-2 mb-0" *ngIf="selectedRoom.description">{{ selectedRoom.description }}</p>
+          </div>
+          
+          <form [formGroup]="statusForm" class="d-flex align-center gap-2 m-0">
+            <select formControlName="status" class="form-control form-control-sm m-0 w-auto">
+              <option *ngFor="let s of statusOptions" [value]="s">{{ s }}</option>
+            </select>
+            <button class="btn btn-primary btn-sm" type="button" (click)="updateRoomStatus()">Update</button>
+          </form>
+        </div>
+      </div>
+      
+      <div id="caseroom-posts-container" class="card-body flex-1 overflow-y-auto p-4 d-flex flex-col gap-3" style="background-color: var(--bg-secondary);">
+        <div *ngIf="posts.length === 0" class="text-center text-muted">
+          No posts in this case room yet. Start the discussion!
+        </div>
+        
+        <div *ngFor="let post of posts" 
+             class="d-flex flex-col" style="max-width: 85%;">
+          
+          <div class="fs-xs text-muted mb-1 d-flex gap-2 align-center">
+            <strong class="text-dark">Dr. {{ post.authorName }}</strong>
+            <span>{{ post.postedAt | date:'medium' }}</span>
+            <span class="badge" style="font-size: 0.7em;" [ngClass]="{
+              'badge-secondary': post.postType === 'NOTE',
+              'badge-warning': post.postType === 'ACTION_ITEM',
+              'badge-primary': post.postType === 'FILE'
+            }">{{ post.postType }}</span>
+          </div>
+          
+          <div class="p-3 bg-white rounded-md shadow-sm border-left" style="border-left-width: 4px;"
+               [style.border-left-color]="post.postType === 'ACTION_ITEM' ? 'var(--warning)' : 'var(--primary)'">
+            {{ post.body }}
+            
+            <div *ngIf="post.postType === 'ACTION_ITEM' && post.actionAssignedToName" 
+                 class="mt-3 pt-3 border-top d-flex justify-between fs-sm" style="border-top-style: dashed !important;">
+              <span><strong>Assigned to:</strong> Dr. {{ post.actionAssignedToName }}</span>
+              <span><strong>Due:</strong> {{ post.actionDueDate }}</span>
+              <span class="badge badge-warning">{{ post.actionStatus }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer p-3 border-top bg-white" *ngIf="selectedRoom.status !== 'RESOLVED' && selectedRoom.status !== 'ARCHIVED'">
+        <form [formGroup]="postForm" (ngSubmit)="submitPost()" class="d-flex align-start gap-2 m-0">
+          <select formControlName="postType" class="form-control m-0" style="width: 150px;">
+            <option *ngFor="let pt of postTypeOptions" [value]="pt">{{ pt }}</option>
+          </select>
+          <textarea formControlName="body" class="form-control m-0 flex-1" placeholder="Write a post..." rows="2" style="resize: none;"></textarea>
+          <button type="submit" class="btn btn-primary h-100" [disabled]="postForm.invalid">Post</button>
+        </form>
+      </div>
+      
+      <div class="card-footer p-3 border-top text-center text-muted bg-light" *ngIf="selectedRoom.status === 'RESOLVED' || selectedRoom.status === 'ARCHIVED'">
+        This Case Room is resolved or archived. No new posts can be added.
+      </div>
+    </div>
+    
+    <div class="card flex-2 d-flex align-center justify-center text-muted border-0" *ngIf="!selectedRoom">
+      Select a case room to view discussion and details.
+    </div>
+  </div>
+</div>
+
+<!-- Open Case Room Modal -->
+<div class="modal-backdrop" *ngIf="showCreateModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="fs-xl text-primary m-0">Open New Case Room</h3>
+      <button class="btn-close" (click)="closeCreateModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="createForm" (ngSubmit)="submitCreateRoom()">
+        
+        <div class="form-group">
+          <label class="form-label">Select Patient</label>
+          <select class="form-control" formControlName="patientId">
+            <option value="">-- Choose Patient --</option>
+            <option *ngFor="let p of patientsList" [value]="p.patientId">
+              {{ p.patientName }}
+            </option>
+          </select>
+          <div class="error-text" *ngIf="createForm.get('patientId')?.touched && createForm.get('patientId')?.invalid">
+            Patient selection is required.
+          </div>
+          <small class="text-muted d-block mt-1">* List is populated from your upcoming appointments.</small>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Case Title</label>
+          <input type="text" class="form-control" formControlName="title" placeholder="e.g. Unexplained chronic fatigue">
+          <div class="error-text" *ngIf="createForm.get('title')?.touched && createForm.get('title')?.invalid">
+            Title is required.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Description (Optional)</label>
+          <textarea class="form-control" formControlName="description" rows="3" placeholder="Provide preliminary details"></textarea>
+        </div>
+
+        <div class="form-group m-0">
+          <label class="form-label">Priority</label>
+          <select class="form-control" formControlName="priority">
+            <option *ngFor="let p of priorityOptions" [value]="p">{{ p }}</option>
+          </select>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" (click)="closeCreateModal()">Cancel</button>
+      <button type="button" class="btn btn-primary" (click)="submitCreateRoom()" [disabled]="createForm.invalid">Open Room</button>
+    </div>
+  </div>
+</div>
