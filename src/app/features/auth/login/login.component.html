@@ -1,0 +1,64 @@
+<div class="auth-wrapper">
+  <!-- Brand Section -->
+  <div class="auth-side-image">
+    <div style="max-width: 440px;">
+      <h2 style="font-size: 2.8rem; margin-bottom: 20px; line-height: 1.2;">Your Health, Simply Managed</h2>
+      <p style="font-size: 1.1rem; opacity: 0.9;">Book appointments, view medical records, and log treatments. Experience healthcare simplified.</p>
+    </div>
+  </div>
+
+  <!-- Login Form Section -->
+  <div class="auth-side-form">
+    <div class="auth-form-card">
+      <h2 style="font-size: 2rem; margin-bottom: 8px;">Login to MedConsult</h2>
+      <p style="color: var(--text-muted); margin-bottom: 32px;">Please enter your credentials to access your account</p>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <!-- Error Alert -->
+        <div *ngIf="errorMessage" class="badge badge-danger" style="width: 100%; padding: 12px; margin-bottom: 20px; text-transform: none; border-radius: 8px;">
+          {{ errorMessage }}
+        </div>
+
+        <!-- Email Field -->
+        <div class="form-group">
+          <label class="form-label" for="email">Email Address</label>
+          <input 
+            type="email" 
+            id="email" 
+            formControlName="email" 
+            class="form-control" 
+            placeholder="name@example.com"
+          >
+          <div *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid" style="color: var(--danger); font-size: 0.8rem; margin-top: 4px;">
+            Please enter a valid email address.
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group" style="margin-bottom: 32px;">
+          <label class="form-label" for="password">Password</label>
+          <input 
+            type="password" 
+            id="password" 
+            formControlName="password" 
+            class="form-control" 
+            placeholder="••••••••"
+          >
+          <div *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid" style="color: var(--danger); font-size: 0.8rem; margin-top: 4px;">
+            Password must be at least 6 characters.
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px;">
+          Sign In
+        </button>
+
+        <p style="margin-top: 24px; text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+          Don't have an account? 
+          <a routerLink="/register" style="font-weight: 600; color: var(--accent);">Create an account</a>
+        </p>
+      </form>
+    </div>
+  </div>
+</div>

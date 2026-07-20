@@ -1,0 +1,209 @@
+<div *ngIf="needProfileInit" class="card" style="border-left: 5px solid var(--warning); padding: 32px; text-align: center;">
+  <h3 style="color: var(--warning); margin-bottom: 8px;">Registration Required</h3>
+  <p style="color: var(--text-muted); margin-bottom: 20px;">Please initialize your General Patient Profile before entering your medical metrics.</p>
+  <a routerLink="/patient/profile" class="btn btn-primary">Setup Profile</a>
+</div>
+
+<div *ngIf="!needProfileInit" style="display: flex; flex-direction: column; gap: 32px;">
+  
+  <div style="display: flex; gap: 32px; flex-wrap: wrap;">
+    <!-- Left Panel: General Health Profile Form -->
+    <div class="card" style="flex: 1.5; min-width: 320px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--gray-200); padding-bottom: 12px; margin-bottom: 20px;">
+        <h3 style="font-size: 1.3rem; color: var(--primary);">Health Metrics & History</h3>
+        <button *ngIf="!isProfileEdit" class="btn btn-primary btn-sm" (click)="enableProfileEdit()">Edit Metrics</button>
+      </div>
+
+      <form [formGroup]="healthForm" (ngSubmit)="submitHealthProfile()">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="heightCm">Height (cm)</label>
+            <input type="number" id="heightCm" formControlName="heightCm" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="weightKg">Weight (kg)</label>
+            <input type="number" id="weightKg" formControlName="weightKg" class="form-control">
+          </div>
+          <div class="form-group" *ngIf="healthProfile">
+            <label class="form-label">Calculated BMI</label>
+            <div class="form-control" style="background-color: var(--gray-50); font-weight: 700;">
+              {{ healthProfile.bmi | number:'1.1-2' }}
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="smokingStatus">Smoking Status</label>
+            <select id="smokingStatus" formControlName="smokingStatus" class="form-control">
+              <option *ngFor="let s of smokingStatuses" [value]="s">{{ s }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="alcoholStatus">Alcohol Intake</label>
+            <select id="alcoholStatus" formControlName="alcoholStatus" class="form-control">
+              <option *ngFor="let a of alcoholStatuses" [value]="a">{{ a }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="surgicalHistory">Surgical History</label>
+          <textarea id="surgicalHistory" formControlName="surgicalHistory" class="form-control" rows="2" placeholder="List any past surgeries..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="familyHistory">Family History</label>
+          <textarea id="familyHistory" formControlName="familyHistory" class="form-control" rows="2" placeholder="List hereditary conditions in your family..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="additionalNotes">Additional Notes</label>
+          <textarea id="additionalNotes" formControlName="additionalNotes" class="form-control" rows="2" placeholder="Other medical notes..."></textarea>
+        </div>
+
+        <div *ngIf="isProfileEdit" style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 16px; border-top: 1px solid var(--gray-200); padding-top: 12px;">
+          <button *ngIf="profileExists" type="button" class="btn btn-outline" (click)="cancelProfileEdit()">Cancel</button>
+          <button type="submit" class="btn btn-accent" [disabled]="healthForm.invalid">Save Changes</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Right Panel: Allergies & Chronic Conditions lists -->
+    <div style="flex: 1.2; display: flex; flex-direction: column; gap: 32px; min-width: 320px;">
+      
+      <!-- Allergies card -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--gray-200); padding-bottom: 10px; margin-bottom: 16px;">
+          <h3 style="font-size: 1.2rem; color: var(--primary);">Known Allergies</h3>
+          <button class="btn btn-accent btn-sm" style="padding: 6px 12px; font-size: 0.8rem;" (click)="openAllergyModal()">+ Add Allergy</button>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div *ngFor="let al of allergies" style="border: 1px solid var(--gray-200); border-radius: var(--radius-md); padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-weight: 700; color: var(--gray-800);">{{ al.allergen }}</div>
+              <span class="badge" [class.badge-danger]="al.severity==='SEVERE'" [class.badge-warning]="al.severity==='MODERATE'" [class.badge-success]="al.severity==='MILD'">
+                {{ al.severity }} | {{ al.allergyType }}
+              </span>
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Reaction: {{ al.reaction }}</div>
+            </div>
+            <button class="btn btn-outline btn-danger btn-sm" style="padding: 4px 8px; font-size: 0.75rem;" (click)="deleteAllergy(al.allergyId)">&times;</button>
+          </div>
+
+          <div *ngIf="allergies.length === 0" style="text-align: center; color: var(--text-muted); padding: 12px 0; font-size: 0.9rem;">
+            No allergies listed.
+          </div>
+        </div>
+      </div>
+
+      <!-- Chronic Conditions card -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--gray-200); padding-bottom: 10px; margin-bottom: 16px;">
+          <h3 style="font-size: 1.2rem; color: var(--primary);">Chronic Conditions</h3>
+          <button class="btn btn-accent btn-sm" style="padding: 6px 12px; font-size: 0.8rem;" (click)="openConditionModal()">+ Add Condition</button>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div *ngFor="let cc of chronicConditions" style="border: 1px solid var(--gray-200); border-radius: var(--radius-md); padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-weight: 700; color: var(--gray-800);">{{ cc.conditionName }}</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">ICD-10 Code: {{ cc.icd10Code }} | Diagnosed: {{ cc.diagnosisDate | date }}</div>
+              <span class="badge badge-success" style="margin-top: 4px; font-size: 0.65rem;">{{ cc.status }}</span>
+            </div>
+            <button class="btn btn-outline btn-danger btn-sm" style="padding: 4px 8px; font-size: 0.75rem;" (click)="deleteCondition(cc.conditionId)">&times;</button>
+          </div>
+
+          <div *ngIf="chronicConditions.length === 0" style="text-align: center; color: var(--text-muted); padding: 12px 0; font-size: 0.9rem;">
+            No chronic conditions listed.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Add Allergy Modal -->
+<div *ngIf="isAllergyModalOpen" class="flex-center" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.5); z-index: 2000; padding: 20px;">
+  <div class="card" style="max-width: 500px; width: 100%;">
+    <h3 style="font-size: 1.4rem; color: var(--primary); margin-bottom: 16px;">Add Known Allergy</h3>
+    
+    <form [formGroup]="allergyForm" (ngSubmit)="submitAllergy()">
+      <div class="form-group">
+        <label class="form-label" for="allergen">Allergen Name</label>
+        <input type="text" id="allergen" formControlName="allergen" class="form-control" placeholder="E.g. Penicillin, Peanuts">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="allergyType">Allergy Type</label>
+          <select id="allergyType" formControlName="allergyType" class="form-control">
+            <option *ngFor="let t of allergyTypes" [value]="t">{{ t }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="severity">Severity</label>
+          <select id="severity" formControlName="severity" class="form-control">
+            <option *ngFor="let s of severities" [value]="s">{{ s }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="reaction">Allergic Reaction Details</label>
+        <input type="text" id="reaction" formControlName="reaction" class="form-control" placeholder="E.g. Skin rashes, Anaphylaxis">
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+        <button type="button" class="btn btn-outline" (click)="closeAllergyModal()">Cancel</button>
+        <button type="submit" class="btn btn-accent" [disabled]="allergyForm.invalid">Add Allergy</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Add Condition Modal -->
+<div *ngIf="isConditionModalOpen" class="flex-center" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.5); z-index: 2000; padding: 20px;">
+  <div class="card" style="max-width: 500px; width: 100%;">
+    <h3 style="font-size: 1.4rem; color: var(--primary); margin-bottom: 16px;">Register Chronic Condition</h3>
+    
+    <form [formGroup]="conditionForm" (ngSubmit)="submitCondition()">
+      <div class="form-group">
+        <label class="form-label" for="conditionName">Condition Name</label>
+        <input type="text" id="conditionName" formControlName="conditionName" class="form-control" placeholder="E.g. Diabetes Mellitus Type II">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="icd10Code">ICD-10 Code</label>
+          <input type="text" id="icd10Code" formControlName="icd10Code" class="form-control" placeholder="E.g. E11.9">
+          <div *ngIf="conditionForm.get('icd10Code')?.touched && conditionForm.get('icd10Code')?.invalid" style="color: var(--danger); font-size: 0.75rem; margin-top: 4px;">
+            Must be a valid ICD-10 format.
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="diagnosisDate">Diagnosis Date</label>
+          <input type="date" id="diagnosisDate" formControlName="diagnosisDate" class="form-control">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="status">Condition Status</label>
+        <select id="status" formControlName="status" class="form-control">
+          <option *ngFor="let s of conditionStatuses" [value]="s">{{ s }}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="condNotes">Notes</label>
+        <textarea id="condNotes" formControlName="notes" class="form-control" rows="2" placeholder="Relevant comments..."></textarea>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+        <button type="button" class="btn btn-outline" (click)="closeConditionModal()">Cancel</button>
+        <button type="submit" class="btn btn-accent" [disabled]="conditionForm.invalid">Add Condition</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,291 @@
+<!-- Clinic Admin Portal: Manage Clinics -->
+<div style="display: flex; gap: 32px; flex-wrap: wrap;">
+  
+  <!-- Left Side: Clinic list sidebar -->
+  <div style="flex: 1; min-width: 250px; display: flex; flex-direction: column; gap: 12px;">
+    <div class="card">
+      <h3 style="font-size: 1.15rem; color: var(--primary); margin-bottom: 16px;">My Managed Clinics</h3>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div 
+          *ngFor="let c of clinics" 
+          class="card card-hover" 
+          [style.border-left]="selectedClinic?.clinicId === c.clinicId ? '4px solid var(--accent)' : '1px solid var(--gray-200)'"
+          [style.background-color]="selectedClinic?.clinicId === c.clinicId ? 'var(--bg-app)' : 'var(--white)'"
+          style="cursor: pointer; padding: 12px 16px;"
+          (click)="selectClinic(c)"
+        >
+          <strong style="color: var(--primary);">{{ c.nameEn }}</strong>
+          <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">License: {{ c.mohLicenseNumber }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Side: Clinic operations -->
+  <div style="flex: 3; min-width: 320px;" *ngIf="selectedClinic">
+    <div class="card" style="margin-bottom: 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--gray-200); padding-bottom: 16px; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <h2 style="font-size: 1.6rem; color: var(--primary);">{{ selectedClinic.nameEn }}</h2>
+          <p style="color: var(--text-muted); font-size: 0.90rem;">{{ selectedClinic.descriptionEn }}</p>
+          <p style="font-size: 0.85rem; color: var(--primary); font-weight: 700; margin-top: 6px;">📞 {{ selectedClinic.phonePrimary }} | ✉️ {{ selectedClinic.email }}</p>
+        </div>
+        <button class="btn btn-primary btn-sm" (click)="openModal('editClinic')">Edit Profile</button>
+      </div>
+
+      <!-- Sub tabs -->
+      <div style="display: flex; gap: 12px; border-bottom: 2px solid var(--gray-200); margin-bottom: 20px; padding-bottom: 1px;">
+        <button class="btn" [class.btn-primary]="activeSubTab==='branches'" [class.btn-outline]="activeSubTab!=='branches'" (click)="switchSubTab('branches')">Branches ({{ branches.length }})</button>
+        <button class="btn" [class.btn-primary]="activeSubTab==='specialties'" [class.btn-outline]="activeSubTab!=='specialties'" (click)="switchSubTab('specialties')">Specialties ({{ clinicSpecialties.length }})</button>
+        <button class="btn" [class.btn-primary]="activeSubTab==='insurances'" [class.btn-outline]="activeSubTab!=='insurances'" (click)="switchSubTab('insurances')">Insurances ({{ clinicInsurances.length }})</button>
+      </div>
+
+      <!-- TAB Content: Branches -->
+      <div *ngIf="activeSubTab === 'branches'">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h3 style="font-size: 1.15rem; color: var(--primary);">Facility Locations</h3>
+          <button class="btn btn-accent btn-sm" (click)="openModal('addBranch')">+ Add Branch</button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Branch Name</th>
+                <th>Address</th>
+                <th>Phone</th>
+                <th>Primary</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let b of branches">
+                <td style="font-weight: 600; color: var(--primary);">{{ b.branchNameEn }}</td>
+                <td>{{ b.addressLine1 }}, {{ b.addressLine2 }}</td>
+                <td>{{ b.phone || 'N/A' }}</td>
+                <td>
+                  <span class="badge" [class.badge-success]="b.isPrimary" [class.badge-info]="!b.isPrimary">
+                    {{ b.isPrimary ? 'Yes' : 'No' }}
+                  </span>
+                </td>
+                <td>
+                  <button class="btn btn-outline btn-danger btn-sm" style="padding: 4px 8px; font-size: 0.75rem;" (click)="deleteBranch(b.branchId)">Delete</button>
+                </td>
+              </tr>
+              <tr *ngIf="branches.length === 0">
+                <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 16px;">No branch locations added.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB Content: Specialties -->
+      <div *ngIf="activeSubTab === 'specialties'">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h3 style="font-size: 1.15rem; color: var(--primary);">Linked Specialties</h3>
+          <button class="btn btn-accent btn-sm" (click)="openModal('addSpecialty')">+ Link Specialty</button>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div *ngFor="let s of clinicSpecialties" style="border: 1px solid var(--gray-200); border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <strong style="color: var(--primary);">{{ getSpecialtyName(s.specialtyId) }}</strong>
+            </div>
+            <button class="btn btn-outline btn-danger btn-sm" style="padding: 4px 8px; font-size: 0.75rem;" (click)="deleteSpecialty(s.specialtyId)">Unlink</button>
+          </div>
+          <div *ngIf="clinicSpecialties.length === 0" style="text-align: center; color: var(--text-muted); padding: 16px;">No specialties linked to this clinic.</div>
+        </div>
+      </div>
+
+      <!-- TAB Content: Insurances -->
+      <div *ngIf="activeSubTab === 'insurances'">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h3 style="font-size: 1.15rem; color: var(--primary);">Supported Insurance Networks</h3>
+          <button class="btn btn-accent btn-sm" (click)="openModal('addInsurance')">+ Link Provider</button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Provider</th>
+                <th>Network Class</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let ins of clinicInsurances">
+                <td style="font-weight: 600; color: var(--primary);">{{ getInsuranceName(ins.providerId) }}</td>
+                <td>{{ ins.networkClass || 'N/A' }}</td>
+                <td>
+                  <span class="badge" [class.badge-success]="ins.isActive" [class.badge-danger]="!ins.isActive">{{ ins.isActive ? 'Active' : 'Suspended' }}</span>
+                </td>
+                <td>
+                  <button class="btn btn-outline btn-danger btn-sm" style="padding: 4px 8px; font-size: 0.75rem;" (click)="deleteInsurance(ins.providerId)">Unlink</button>
+                </td>
+              </tr>
+              <tr *ngIf="clinicInsurances.length === 0">
+                <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 16px;">No insurance policies linked.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Edit Clinic Modal -->
+<div *ngIf="activeModal === 'editClinic'" class="flex-center" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.5); z-index: 2000; padding: 20px;">
+  <div class="card" style="max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto;">
+    <h3 style="font-size: 1.4rem; color: var(--primary); margin-bottom: 16px;">Edit Clinic Profile</h3>
+    <form [formGroup]="clinicForm" (ngSubmit)="submitClinicUpdate()">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Name (EN)</label>
+          <input type="text" formControlName="nameEn" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Name (AR)</label>
+          <input type="text" formControlName="nameAr" class="form-control">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Logo Upload</label>
+        <input type="file" (change)="onLogoSelected($event)" class="form-control">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description (EN)</label>
+        <textarea formControlName="descriptionEn" class="form-control" rows="2"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Primary Phone</label>
+          <input type="text" formControlName="phonePrimary" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" formControlName="email" class="form-control">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">MOH License</label>
+          <input type="text" formControlName="mohLicenseNumber" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label">VAT Number</label>
+          <input type="text" formControlName="vatNumber" class="form-control">
+        </div>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+        <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-accent" [disabled]="clinicForm.invalid">Save Profile</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Add Branch Modal -->
+<div *ngIf="activeModal === 'addBranch'" class="flex-center" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.5); z-index: 2000; padding: 20px;">
+  <div class="card" style="max-width: 500px; width: 100%;">
+    <h3 style="font-size: 1.4rem; color: var(--primary); margin-bottom: 16px;">Add Clinic Branch</h3>
+    <form [formGroup]="branchForm" (ngSubmit)="submitBranch()">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Branch Name (EN)</label>
+          <input type="text" formControlName="branchNameEn" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Branch Name (AR)</label>
+          <input type="text" formControlName="branchNameAr" class="form-control">
+        </div>
+      </div>
+      
+      <!-- Select City and Locality -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">City</label>
+          <select formControlName="cityId" class="form-control" (change)="onCityChange($event)">
+            <option value="">-- Choose City --</option>
+            <option *ngFor="let c of globalCities" [value]="c.cityId">{{ c.nameEn }} ({{ c.nameAr }})</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Locality</label>
+          <select formControlName="localityId" class="form-control">
+            <option value="">-- Choose Locality --</option>
+            <option *ngFor="let loc of branchLocalities" [value]="loc.localityId">{{ loc.nameEn }} ({{ loc.nameAr }})</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Address Line 1</label>
+        <input type="text" formControlName="addressLine1" class="form-control">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Address Line 2</label>
+        <input type="text" formControlName="addressLine2" class="form-control">
+      </div>
+
+      <div class="form-group">
+        <label style="display: flex; gap: 8px; align-items: center; cursor: pointer;">
+          <input type="checkbox" formControlName="isPrimary"> Is Primary Branch Location
+        </label>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+        <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-accent" [disabled]="branchForm.invalid">Add Branch</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Link Specialty Modal -->
+<div *ngIf="activeModal === 'addSpecialty'" class="flex-center" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.5); z-index: 2000; padding: 20px;">
+  <div class="card" style="max-width: 400px; width: 100%;">
+    <h3 style="font-size: 1.4rem; color: var(--primary); margin-bottom: 16px;">Link Specialty</h3>
+    <form [formGroup]="specialtyForm" (ngSubmit)="submitSpecialty()">
+      <div class="form-group">
+        <label class="form-label">Choose Specialty</label>
+        <select formControlName="specialtyId" class="form-control">
+          <option value="">-- Choose specialty --</option>
+          <option *ngFor="let s of globalSpecialties" [value]="s.specialtyId">{{ s.nameEn }}</option>
+        </select>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+        <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-accent" [disabled]="specialtyForm.invalid">Link Specialty</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Link Insurance Modal -->
+<div *ngIf="activeModal === 'addInsurance'" class="flex-center" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.5); z-index: 2000; padding: 20px;">
+  <div class="card" style="max-width: 400px; width: 100%;">
+    <h3 style="font-size: 1.4rem; color: var(--primary); margin-bottom: 16px;">Associate Insurance</h3>
+    <form [formGroup]="insuranceForm" (ngSubmit)="submitInsurance()">
+      <div class="form-group">
+        <label class="form-label">Insurance Provider</label>
+        <select formControlName="providerId" class="form-control">
+          <option value="">-- Choose Provider --</option>
+          <option *ngFor="let ins of globalInsurances" [value]="ins.providerId">{{ ins.nameEn }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Network Class</label>
+        <input type="text" formControlName="networkClass" class="form-control" placeholder="E.g. VIP, Class A">
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+        <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-accent" [disabled]="insuranceForm.invalid">Associate Provider</button>
+      </div>
+    </form>
+  </div>
+</div>

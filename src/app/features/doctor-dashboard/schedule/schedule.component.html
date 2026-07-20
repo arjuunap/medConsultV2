@@ -1,0 +1,72 @@
+<div class="card">
+  <div style="border-bottom: 1px solid var(--gray-200); padding-bottom: 12px; margin-bottom: 24px;">
+    <h2 style="font-size: 1.6rem; color: var(--primary);">Doctor Consultation Schedule</h2>
+    <p style="color: var(--text-muted); font-size: 0.9rem;">View and manage today's incoming patient bookings</p>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Patient Name</th>
+          <th>Date</th>
+          <th>Time Slot</th>
+          <th>Session Type</th>
+          <th>Current Status</th>
+          <th>Update Status Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let app of upcomingAppointments">
+          <td style="font-weight: 600; color: var(--primary);">{{ app.patientName }}</td>
+          <td>{{ app.scheduledDate | date:'longDate' }}</td>
+          <td>{{ app.startTime.substring(0, 5) }}</td>
+          <td>
+            <span class="badge badge-info">{{ app.sessionType }}</span>
+          </td>
+          <td>
+            <span class="badge" [class.badge-success]="app.status==='CONFIRMED' || app.status==='COMPLETED'" [class.badge-warning]="app.status==='SCHEDULED'" [class.badge-danger]="app.status==='CANCELLED' || app.status==='NO_SHOW'">
+              {{ app.status }}
+            </span>
+          </td>
+          <td>
+            <div style="display: flex; gap: 8px;">
+              <button 
+                *ngIf="app.status === 'SCHEDULED'" 
+                class="btn btn-primary btn-sm" 
+                style="padding: 6px 12px; font-size: 0.8rem;"
+                (click)="changeStatus(app.appointmentId, 'CONFIRMED')"
+              >
+                Confirm
+              </button>
+              <button 
+                *ngIf="app.status === 'CONFIRMED'" 
+                class="btn btn-accent btn-sm" 
+                style="padding: 6px 12px; font-size: 0.8rem;"
+                (click)="changeStatus(app.appointmentId, 'COMPLETED')"
+              >
+                Complete
+              </button>
+              <button 
+                *ngIf="app.status === 'CONFIRMED' || app.status === 'SCHEDULED'" 
+                class="btn btn-outline btn-danger btn-sm" 
+                style="padding: 6px 12px; font-size: 0.8rem;"
+                (click)="changeStatus(app.appointmentId, 'NO_SHOW')"
+              >
+                No Show
+              </button>
+              <span *ngIf="app.status === 'COMPLETED' || app.status === 'CANCELLED' || app.status === 'NO_SHOW'" style="color: var(--text-muted); font-size: 0.85rem;">
+                No actions available
+              </span>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="upcomingAppointments.length === 0">
+          <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 32px;">
+            No consultations registered in your schedule today.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

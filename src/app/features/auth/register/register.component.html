@@ -1,0 +1,119 @@
+<div class="auth-wrapper">
+  <!-- Brand Section -->
+  <div class="auth-side-image">
+    <div style="max-width: 440px;">
+      <h2 style="font-size: 2.8rem; margin-bottom: 20px; line-height: 1.2;">Join MedConsult V2</h2>
+      <p style="font-size: 1.1rem; opacity: 0.9;">Sign up today to manage consultations, build medical records, and connect with premier doctors seamlessly.</p>
+    </div>
+  </div>
+
+  <!-- Register Form Section -->
+  <div class="auth-side-form" style="padding: 30px 60px; overflow-y: auto; height: 100vh;">
+    <div class="auth-form-card" style="margin: auto 0;">
+      <h2 style="font-size: 2rem; margin-bottom: 8px;">Create an Account</h2>
+      <p style="color: var(--text-muted); margin-bottom: 24px;">Please fill in the details below to register</p>
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <!-- Error Alert -->
+        <div *ngIf="errorMessage" class="badge badge-danger" style="width: 100%; padding: 12px; margin-bottom: 20px; text-transform: none; border-radius: 8px;">
+          {{ errorMessage }}
+        </div>
+
+        <!-- Full Name Field -->
+        <div class="form-group">
+          <label class="form-label" for="fullName">Full Name</label>
+          <input 
+            type="text" 
+            id="fullName" 
+            formControlName="fullName" 
+            class="form-control" 
+            placeholder="John Doe"
+          >
+          <div *ngIf="registerForm.get('fullName')?.touched && registerForm.get('fullName')?.invalid" style="color: var(--danger); font-size: 0.8rem; margin-top: 4px;">
+            Full name is required (min 2 characters).
+          </div>
+        </div>
+
+        <!-- Email Field -->
+        <div class="form-group">
+          <label class="form-label" for="email">Email Address</label>
+          <input 
+            type="email" 
+            id="email" 
+            formControlName="email" 
+            class="form-control" 
+            placeholder="john.doe@example.com"
+          >
+          <div *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.invalid" style="color: var(--danger); font-size: 0.8rem; margin-top: 4px;">
+            Please enter a valid email address.
+          </div>
+        </div>
+
+        <!-- Phone Field -->
+        <div class="form-group">
+          <label class="form-label" for="phone">Phone Number</label>
+          <input 
+            type="tel" 
+            id="phone" 
+            formControlName="phone" 
+            class="form-control" 
+            placeholder="+966 50 000 0000"
+          >
+          <div *ngIf="registerForm.get('phone')?.touched && registerForm.get('phone')?.invalid" style="color: var(--danger); font-size: 0.8rem; margin-top: 4px;">
+            Please enter a valid phone number.
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <input 
+            type="password" 
+            id="password" 
+            formControlName="password" 
+            class="form-control" 
+            placeholder="••••••••"
+          >
+          <div *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.invalid" style="color: var(--danger); font-size: 0.8rem; margin-top: 4px;">
+            Password must be at least 6 characters.
+          </div>
+        </div>
+
+        <!-- Dual selection row: Role & Gender -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="role">Sign up as</label>
+            <select id="role" formControlName="role" class="form-control">
+              <option *ngFor="let role of roles" [value]="role.value">{{ role.label }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="gender">Gender</label>
+            <select id="gender" formControlName="gender" class="form-control">
+              <option *ngFor="let gender of genders" [value]="gender.value">{{ gender.label }}</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Preferred Language Field -->
+        <div class="form-group">
+          <label class="form-label" for="preferredLang">Preferred Language</label>
+          <select id="preferredLang" formControlName="preferredLang" class="form-control">
+            <option value="en">English (EN)</option>
+            <option value="ar">Arabic (AR)</option>
+          </select>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; margin-top: 10px;">
+          Create Account
+        </button>
+
+        <p style="margin-top: 20px; text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+          Already have an account? 
+          <a routerLink="/login" style="font-weight: 600; color: var(--accent);">Sign In</a>
+        </p>
+      </form>
+    </div>
+  </div>
+</div>

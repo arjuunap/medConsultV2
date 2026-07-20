@@ -1,0 +1,12 @@
+export type CityRequestDto = any;
+export type CityResponseDto = any;
+export type LocalityRequestDto = any;
+export type LocalityResponseDto = any;
+export type SpecialtyRequestDto = any;
+export type SpecialtyResponseDto = any;
+export type SubSpecialtyRequestDto = any;
+export type SubSpecialtyResponseDto = any;
+export type LanguageRequestDto = any;
+export type LanguageResponseDto = any;
+export type InsuranceProviderRequestDto = any;
+export type InsuranceProviderResponseDto = any;

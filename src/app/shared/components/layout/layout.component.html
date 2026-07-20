@@ -1,0 +1,53 @@
+<div class="layout-container">
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar">
+    <div class="brand-section">
+      <h1 class="brand-title">
+        <span class="brand-logo-dot"></span>
+        MedConsult V2
+      </h1>
+    </div>
+
+    <nav class="menu-section">
+      <a 
+        *ngFor="let item of menuItems()" 
+        [routerLink]="item.route" 
+        routerLinkActive="active" 
+        class="menu-item"
+      >
+        <span>{{ item.label }}</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="btn btn-outline"  style="width: 100%; border-color: rgba(255,255,255,0.2); color: white;" (click)="handleLogout()">
+        Logout
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main View Area -->
+  <div class="main-area">
+    <!-- Top Header Bar -->
+    <header class="header">
+      <div class="page-title">
+        Dashboard
+      </div>
+
+      <div class="user-profile" *ngIf="authService.currentUser() as user">
+        <div class="user-avatar">
+          {{ userInitials() }}
+        </div>
+        <div class="user-details">
+          <span class="user-name">{{ user.fullName }}</span>
+          <span class="user-role-badge">{{ user.role.replace('_', ' ') }}</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Nested Content Area -->
+    <main class="content-viewport">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

@@ -1,0 +1,250 @@
+<!-- EMR Records template -->
+<div *ngIf="needProfileInit" class="card" style="border-left: 5px solid var(--warning); padding: 32px; text-align: center;">
+  <h3 style="color: var(--warning); margin-bottom: 8px;">Registration Required</h3>
+  <p style="color: var(--text-muted); margin-bottom: 20px;">Please initialize your General Patient Profile before accessing your Electronic Medical Records (EMR).</p>
+  <a routerLink="/patient/profile" class="btn btn-primary">Setup Profile</a>
+</div>
+
+<div *ngIf="!needProfileInit">
+  <!-- Tab navigation -->
+  <div style="display: flex; gap: 16px; border-bottom: 2px solid var(--gray-200); margin-bottom: 24px; padding-bottom: 1px;">
+    <button 
+      class="btn" 
+      [class.btn-primary]="activeTab === 'prescriptions'" 
+      [class.btn-outline]="activeTab !== 'prescriptions'"
+      style="border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-bottom: -2px;"
+      (click)="switchTab('prescriptions')"
+    >
+      💊 Prescriptions & Adherence
+    </button>
+    <button 
+      class="btn" 
+      [class.btn-primary]="activeTab === 'vitals'" 
+      [class.btn-outline]="activeTab !== 'vitals'"
+      style="border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-bottom: -2px;"
+      (click)="switchTab('vitals')"
+    >
+      📊 Vitals History Log
+    </button>
+    <button 
+      class="btn" 
+      [class.btn-primary]="activeTab === 'labs'" 
+      [class.btn-outline]="activeTab !== 'labs'"
+      style="border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-bottom: -2px;"
+      (click)="switchTab('labs')"
+    >
+      🔬 Lab Test Reports
+    </button>
+  </div>
+
+  <!-- TAB 1: PRESCRIPTIONS -->
+  <div *ngIf="activeTab === 'prescriptions'" style="display: flex; flex-direction: column; gap: 24px;">
+    <div *ngFor="let rx of prescriptions" class="card" style="border-left: 5px solid var(--primary);">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--gray-100); padding-bottom: 12px; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <h3 style="color: var(--primary); font-size: 1.25rem;">Prescription Reference: {{ rx.naphiesReference || 'Local Record' }}</h3>
+          <span style="color: var(--text-muted); font-size: 0.85rem;">Issued: {{ rx.issuedDate | date:'longDate' }} | Valid Until: {{ rx.validUntil | date:'longDate' }}</span>
+        </div>
+        <span class="badge" [class.badge-success]="rx.status === 'ACTIVE'" [class.badge-danger]="rx.status === 'EXPIRED'">{{ rx.status }}</span>
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <h4 style="font-size: 0.85rem; text-transform: uppercase; color: var(--gray-600); margin-bottom: 4px;">Diagnosis & Clinical Notes</h4>
+        <p style="font-size: 0.95rem; background-color: var(--gray-50); padding: 12px; border-radius: 8px;">{{ rx.diagnosisNotes || 'No notes available.' }}</p>
+      </div>
+
+      <!-- Prescription Items -->
+      <div>
+        <h4 style="font-size: 0.95rem; text-transform: uppercase; color: var(--gray-600); margin-bottom: 8px;">Prescribed Medications</h4>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div *ngFor="let item of selectedRxItems[rx.prescriptionId]" style="border: 1px solid var(--gray-200); border-radius: var(--radius-md); padding: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+              <div>
+                <strong style="color: var(--primary); font-size: 1.05rem;">{{ item.drugName }}</strong>
+                <div style="font-size: 0.9rem; color: var(--gray-700); margin-top: 4px;">
+                  Dosage: {{ item.dosage }} | Route: {{ item.route }} | Frequency: {{ item.frequency }}
+                </div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">
+                  Duration: {{ item.durationDays }} Days | Refills: {{ item.refillsUsed }}/{{ item.refillsAllowed }} Used
+                </div>
+                <div *ngIf="item.specialInstructions" style="font-size: 0.8rem; background-color: var(--accent-light); color: var(--primary); padding: 4px 8px; border-radius: 4px; display: inline-block; margin-top: 6px;">
+                  ⚠️ {{ item.specialInstructions }}
+                </div>
+              </div>
+
+              <!-- Adherence Logging Area -->
+              <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+                <div style="display: flex; gap: 8px;">
+                  <button class="btn btn-accent btn-sm" style="padding: 6px 12px;" (click)="logAdherence(item.itemId, true)">
+                    Took Today
+                  </button>
+                  <button class="btn btn-outline btn-danger btn-sm" style="padding: 6px 12px;" (click)="logAdherence(item.itemId, false, 'Patient skipped')">
+                    Skipped
+                  </button>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">
+                  Latest log: 
+                  <span *ngIf="adherenceLogs[item.itemId] && adherenceLogs[item.itemId].length > 0; else noLogs">
+                    {{ adherenceLogs[item.itemId][0].taken ? 'Taken' : 'Skipped' }} on {{ adherenceLogs[item.itemId][0].logDate | date }}
+                  </span>
+                  <ng-template #noLogs>None recorded</ng-template>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div *ngIf="prescriptions.length === 0" style="text-align: center; color: var(--text-muted); padding: 48px;">
+      No prescriptions found on your EMR file.
+    </div>
+  </div>
+
+  <!-- TAB 2: VITALS LOG -->
+  <div *ngIf="activeTab === 'vitals'">
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--gray-200); padding-bottom: 12px; margin-bottom: 20px;">
+        <h3 style="font-size: 1.3rem; color: var(--primary);">Vital Metrics History</h3>
+        <button class="btn btn-primary btn-sm" (click)="openVitalModal()">+ Add New Entry</button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>BP (mmHg)</th>
+              <th>HR (BPM)</th>
+              <th>Glucose (mmol/L)</th>
+              <th>Weight (kg)</th>
+              <th>Temp (°C)</th>
+              <th>O2 Sat (%)</th>
+              <th>Source</th>
+              <th>Recorded Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let v of vitals">
+              <td style="font-weight: 700;">{{ v.bloodPressureSystolic }}/{{ v.bloodPressureDiastolic }}</td>
+              <td style="color: var(--danger); font-weight: 600;">{{ v.heartRateBpm }}</td>
+              <td>{{ v.bloodGlucoseMmol || 'N/A' }}</td>
+              <td>{{ v.weightKg || 'N/A' }}</td>
+              <td>{{ v.temperatureC || 'N/A' }}</td>
+              <td>{{ v.oxygenSaturation || 'N/A' }}%</td>
+              <td>
+                <span class="badge" [class.badge-success]="v.source==='PATIENT_APP'" [class.badge-info]="v.source==='DOCTOR_ENTRY'">
+                  {{ v.source.replace('_', ' ') }}
+                </span>
+              </td>
+              <td>{{ v.recordedAt | date:'medium' }}</td>
+            </tr>
+            <tr *ngIf="vitals.length === 0">
+              <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                No vitals records listed. Click above to log your first metric.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: LAB REPORTS -->
+  <div *ngIf="activeTab === 'labs'" style="display: flex; flex-direction: column; gap: 20px;">
+    <div *ngFor="let lab of labResults" class="card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--gray-100); padding-bottom: 12px; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <h3 style="color: var(--primary); font-size: 1.2rem;">{{ lab.labName }}</h3>
+          <span style="color: var(--text-muted); font-size: 0.85rem;">Report: {{ lab.reportType }} | Date: {{ lab.reportDate | date }}</span>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <span class="badge" [class.badge-danger]="lab.overallFlag === 'CRITICAL'" [class.badge-warning]="lab.overallFlag === 'ABNORMAL'" [class.badge-success]="lab.overallFlag === 'NORMAL'">
+            {{ lab.overallFlag }}
+          </span>
+          <span class="badge badge-info">{{ lab.status }}</span>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <h4 style="font-size: 0.85rem; text-transform: uppercase; color: var(--gray-600); margin-bottom: 4px;">Doctor's Annotations</h4>
+        <p style="font-size: 0.95rem; background-color: var(--gray-50); padding: 12px; border-radius: 8px;">
+          {{ lab.doctorAnnotation || 'No clinical annotation added.' }}
+        </p>
+      </div>
+
+      <div *ngIf="lab.fileId" style="border-top: 1px solid var(--gray-100); padding-top: 12px; display: flex; justify-content: flex-end;">
+        <button class="btn btn-outline btn-sm" (click)="downloadLabFile(lab.fileId)">
+          📁 Download Attachment File
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="labResults.length === 0" style="text-align: center; color: var(--text-muted); padding: 48px;">
+      No lab report files uploaded on your file.
+    </div>
+  </div>
+
+</div>
+
+<!-- Record Vitals Modal -->
+<div *ngIf="isVitalModalOpen" class="flex-center" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.5); z-index: 2000; padding: 20px;">
+  <div class="card" style="max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto;">
+    <h3 style="font-size: 1.4rem; color: var(--primary); margin-bottom: 16px;">Log New Vital Entry</h3>
+    
+    <form [formGroup]="vitalForm" (ngSubmit)="submitVital()">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="bpSystolic">Systolic BP (mmHg)</label>
+          <input type="number" id="bpSystolic" formControlName="bloodPressureSystolic" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="bpDiastolic">Diastolic BP (mmHg)</label>
+          <input type="number" id="bpDiastolic" formControlName="bloodPressureDiastolic" class="form-control">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="hrBpm">Heart Rate (BPM)</label>
+          <input type="number" id="hrBpm" formControlName="heartRateBpm" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="glucose">Blood Glucose (mmol/L)</label>
+          <input type="number" step="0.1" id="glucose" formControlName="bloodGlucoseMmol" class="form-control">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="hba1c">HbA1c (%)</label>
+          <input type="number" step="0.1" id="hba1c" formControlName="hba1cPercent" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="weight">Weight (kg)</label>
+          <input type="number" id="weight" formControlName="weightKg" class="form-control">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="temp">Body Temp (°C)</label>
+          <input type="number" step="0.1" id="temp" formControlName="temperatureC" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="o2Sat">Oxygen Saturation (%)</label>
+          <input type="number" id="o2Sat" formControlName="oxygenSaturation" class="form-control">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="vitalNotes">Log Notes</label>
+        <textarea id="vitalNotes" formControlName="notes" class="form-control" rows="2" placeholder="Feelings, context..."></textarea>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+        <button type="button" class="btn btn-outline" (click)="closeVitalModal()">Cancel</button>
+        <button type="submit" class="btn btn-accent" [disabled]="vitalForm.invalid">Record Vitals</button>
+      </div>
+    </form>
+  </div>
+</div>

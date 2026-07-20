@@ -1,0 +1,137 @@
+<!-- Landing Public Page Layout -->
+<header class="header" style="box-shadow: var(--shadow-sm); z-index: 1000; width: 100%;">
+  <div class="brand-title">
+    <span class="brand-logo-dot"></span>
+    MedConsult V2
+  </div>
+
+  <div class="user-profile">
+    <ng-container *ngIf="authService.isLoggedIn(); else guestNav">
+      <!-- Redirect user directly based on their role -->
+      <a 
+        [routerLink]="authService.currentUser()?.role === 'PATIENT' ? '/patient/home' : (authService.currentUser()?.role === 'DOCTOR' ? '/doctor/schedule' : '/clinic-admin/clinics')" 
+        class="btn btn-primary"
+      >
+        Go to Portal Dashboard
+      </a>
+    </ng-container>
+    <ng-template #guestNav>
+      <a routerLink="/login" class="btn btn-outline" style="margin-right: 12px;">Sign In</a>
+      <a routerLink="/register" class="btn btn-accent">Create Account</a>
+    </ng-template>
+  </div>
+</header>
+
+<!-- Hero Banner -->
+<section style="background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; padding: 80px 20px; text-align: center;">
+  <div style="max-width: 800px; margin: 0 auto;">
+    <h1 style="color: white; font-size: 3rem; margin-bottom: 16px; font-weight: 800; line-height: 1.2;">Find and Book Trusted Clinics</h1>
+    <p style="font-size: 1.2rem; opacity: 0.9; margin-bottom: 32px; font-family: 'Outfit', sans-serif;">Search by specialties, explore clinic profiles, and consult with the best healthcare professionals.</p>
+    
+    <!-- Inline Search Form -->
+    <form [formGroup]="searchForm" (submit)="executeSearch(); $event.preventDefault()" class="card" style="display: flex; gap: 16px; align-items: center; max-width: 700px; margin: 0 auto; padding: 16px; border-radius: 16px; flex-wrap: wrap;">
+      <div style="flex: 2; min-width: 200px;">
+        <input 
+          type="text" 
+          formControlName="name" 
+          class="form-control" 
+          placeholder="Search clinic name..." 
+          style="border-color: var(--gray-200);"
+        >
+      </div>
+      <div style="flex: 1; min-width: 150px;">
+        <select formControlName="specialtyId" class="form-control" style="border-color: var(--gray-200);">
+          <option value="">All Specialties</option>
+          <option *ngFor="let spec of specialties" [value]="spec.specialtyId">{{ spec.nameEn }}</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary" style="padding: 12px 24px;">Search</button>
+    </form>
+  </div>
+</section>
+
+<!-- Content Grid -->
+<main class="container" style="padding-top: 48px; padding-bottom: 80px;">
+  <h2 style="font-size: 1.8rem; margin-bottom: 24px;">Explore Available Clinics</h2>
+
+  <div class="grid-responsive">
+    <!-- Clinic Cards -->
+    <div 
+      *ngFor="let clinic of clinics" 
+      class="card card-hover" 
+      style="cursor: pointer; display: flex; flex-direction: column; gap: 16px; justify-content: space-between; border-left: 5px solid var(--primary);"
+      (click)="selectClinic(clinic.clinicId)"
+    >
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+          <h3 style="font-size: 1.25rem;">{{ clinic.nameEn }}</h3>
+          <span class="badge badge-success" style="font-size: 0.7rem; font-weight: 800;">
+            ★ {{ clinic.overallRating || 'New' }}
+          </span>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 12px;">
+          {{ clinic.descriptionEn || 'No description available for this clinic.' | slice:0:120 }}...
+        </p>
+      </div>
+
+      <div style="border-top: 1px solid var(--gray-100); padding-top: 12px; display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--gray-600);">
+        <span>📞 {{ clinic.phonePrimary }}</span>
+        <span style="color: var(--accent); font-weight: 700;">View Details &rarr;</span>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="clinics.length === 0" style="grid-column: 1 / -1; text-align: center; padding: 48px; color: var(--text-muted);">
+      No clinics found matching your criteria. Try another search.
+    </div>
+  </div>
+</main>
+
+<!-- Clinic Detail Modal Backdrop -->
+<div *ngIf="selectedClinicDetail" class="flex-center" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.5); z-index: 2000; padding: 20px;">
+  <!-- Modal Card -->
+  <div class="card" style="max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; animation: slideIn 0.3s forwards;">
+    <!-- Close icon -->
+    <button (click)="closeDetail()" style="position: absolute; top: 20px; right: 20px; background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-500);">&times;</button>
+    
+    <div style="border-bottom: 1px solid var(--gray-200); padding-bottom: 16px; margin-bottom: 20px;">
+      <h2 style="font-size: 1.8rem; color: var(--primary);">{{ selectedClinicDetail.nameEn }}</h2>
+      <p style="color: var(--text-muted);">{{ selectedClinicDetail.nameAr }}</p>
+    </div>
+
+    <!-- Description -->
+    <div style="margin-bottom: 24px;">
+      <h4 style="font-size: 0.95rem; text-transform: uppercase; color: var(--gray-600); margin-bottom: 6px;">About Clinic</h4>
+      <p style="font-size: 0.95rem; color: var(--gray-800);">{{ selectedClinicDetail.descriptionEn }}</p>
+    </div>
+
+    <!-- Contact Info -->
+    <div class="grid-responsive" style="grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+      <div>
+        <h4 style="font-size: 0.95rem; text-transform: uppercase; color: var(--gray-600); margin-bottom: 4px;">Primary Contact</h4>
+        <p style="font-size: 0.95rem;">📞 {{ selectedClinicDetail.phonePrimary }}</p>
+        <p style="font-size: 0.95rem;">✉️ {{ selectedClinicDetail.email }}</p>
+      </div>
+      <div>
+        <h4 style="font-size: 0.95rem; text-transform: uppercase; color: var(--gray-600); margin-bottom: 4px;">MOH License</h4>
+        <p style="font-size: 0.95rem;">📜 {{ selectedClinicDetail.mohLicenseNumber }}</p>
+        <span *ngIf="selectedClinicDetail.mohVerified" class="badge badge-success" style="margin-top: 4px;">Verified</span>
+      </div>
+    </div>
+
+    <!-- Branches section -->
+    <div style="margin-bottom: 24px;">
+      <h4 style="font-size: 0.95rem; text-transform: uppercase; color: var(--gray-600); margin-bottom: 10px;">Branches ({{ selectedClinicDetail.branches.length }})</h4>
+      <div *ngFor="let branch of selectedClinicDetail.branches" style="background-color: var(--gray-50); padding: 12px; border-radius: 8px; margin-bottom: 8px; font-size: 0.9rem;">
+        <div style="font-weight: 700; color: var(--primary);">{{ branch.branchNameEn }} <span *ngIf="branch.isPrimary" class="badge badge-info" style="font-size: 0.6rem; padding: 2px 6px;">Primary</span></div>
+        <div style="color: var(--gray-600);">📍 {{ branch.addressLine1 }}, {{ branch.addressLine2 }}</div>
+        <div style="color: var(--gray-500); font-size: 0.8rem;">Phone: {{ branch.phone || 'N/A' }}</div>
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid var(--gray-200); padding-top: 16px;">
+      <button class="btn btn-outline" (click)="closeDetail()">Close</button>
+      <a routerLink="/login" class="btn btn-accent">Login to Book Appointment</a>
+    </div>
+  </div>
+</div>

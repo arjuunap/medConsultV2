@@ -1,0 +1,156 @@
+<!-- Patient Home Dashboard template -->
+
+<!-- Welcome & Profile summary -->
+<div style="display: flex; gap: 24px; margin-bottom: 32px; flex-wrap: wrap;">
+  <!-- Welcome Card -->
+  <div class="card"
+    style="flex: 2; min-width: 320px; display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, var(--primary-light), var(--white));">
+    <div>
+      <h2 style="font-size: 1.8rem; margin-bottom: 4px; color: var(--primary);">
+        Hello, {{ currentUser()?.fullName || 'Welcome!' }}
+      </h2>
+      
+      <!-- If profile is initialized -->
+      <div *ngIf="!needProfileInit">
+        <p style="color: var(--text-muted);">National ID: {{ patientProfile?.nationalId || 'N/A' }} | Nationality: {{
+          patientProfile?.nationality || 'N/A' }}</p>
+        <p style="font-size: 0.9rem; color: var(--primary); font-weight: 700; margin-top: 8px;">Blood Group: {{
+          patientProfile?.bloodType || 'Unknown' }} | Status: {{ patientProfile?.maritalStatus || 'N/A' }}</p>
+      </div>
+
+      <!-- If profile is NOT initialized -->
+      <div *ngIf="needProfileInit">
+        <p style="color: var(--text-muted);">Welcome to MedConsult! You are logged in, but your patient medical profile has not been initialized yet.</p>
+        <p style="font-size: 0.9rem; color: var(--warning); font-weight: 700; margin-top: 8px;">Please complete your profile to book consultations and view records.</p>
+      </div>
+    </div>
+    <div style="font-size: 3.5rem; opacity: 0.2; pointer-events: none;">🏥</div>
+  </div>
+
+  <!-- Vitals summary card (Only visible if profile exists) -->
+  <div *ngIf="!needProfileInit" class="card" style="flex: 1; min-width: 260px;">
+    <h3
+      style="font-size: 1.1rem; color: var(--primary); margin-bottom: 12px; border-bottom: 1px solid var(--gray-200); padding-bottom: 6px;">
+      Latest Recorded Vitals</h3>
+    <div *ngIf="latestVitals; else noVitals" style="display: flex; flex-direction: column; gap: 8px;">
+      <div style="display: flex; justify-content: space-between;">
+        <span style="color: var(--text-muted);">BP (Syst/Diast):</span>
+        <span style="font-weight: 700;">{{ latestVitals.bloodPressureSystolic }}/{{
+          latestVitals.bloodPressureDiastolic }} mmHg</span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span style="color: var(--text-muted);">Heart Rate:</span>
+        <span style="font-weight: 700; color: var(--danger);">{{ latestVitals.heartRateBpm }} BPM</span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span style="color: var(--text-muted);">Weight:</span>
+        <span style="font-weight: 700;">{{ latestVitals.weightKg }} kg</span>
+      </div>
+      <div
+        style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--gray-100); padding-top: 6px;">
+        <span>Recorded:</span>
+        <span>{{ latestVitals.recordedAt | date:'medium' }}</span>
+      </div>
+    </div>
+    <ng-template #noVitals>
+      <div style="text-align: center; color: var(--text-muted); padding: 12px 0;">
+        No vitals recorded yet.
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- Profile Setup Side-Card (Only visible if profile is NOT initialized) -->
+  <div *ngIf="needProfileInit" class="card" style="flex: 1; min-width: 260px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-left: 5px solid var(--warning); background-color: #fffbeb;">
+    <h3 style="font-size: 1.1rem; color: #b45309; margin-bottom: 8px; font-weight: 700;">Action Required</h3>
+    <p style="text-align: center; font-size: 0.85rem; color: #78350f; margin-bottom: 12px;">Initialize your profile to unlock bookings.</p>
+    <a routerLink="/patient/profile" class="btn btn-primary btn-sm">Setup Profile</a>
+  </div>
+</div>
+
+<!-- Profile Setup Required Banner (only shown if needed) -->
+<div *ngIf="needProfileInit" class="card"
+  style="border-left: 5px solid var(--warning); padding: 32px; text-align: center; margin-bottom: 24px; background-color: #fffbeb;">
+  <h3 style="color: #b45309; margin-bottom: 8px;">Profile Setup Required</h3>
+  <p style="color: #78350f; margin-bottom: 20px;">You haven't initialized your medical consultation profile
+    yet. Please set up your birth date, blood type, and emergency contacts to unlock appointment booking.</p>
+  <a routerLink="/patient/profile" class="btn btn-primary">Initialize Profile Now</a>
+</div>
+
+<div *ngIf="!needProfileInit">
+
+  <!-- Upcoming Appointments -->
+  <div class="card" style="margin-bottom: 32px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h3 style="font-size: 1.4rem; color: var(--primary);">Upcoming Consultations ({{ upcomingAppointments.length }})
+      </h3>
+      <a routerLink="/patient/book-appointment" class="btn btn-accent btn-sm">Book New Appointment</a>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Doctor Name</th>
+            <th>Consultation Date</th>
+            <th>Start Time</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let app of upcomingAppointments">
+            <td style="font-weight: 600; color: var(--primary);">{{ app.doctorName }}</td>
+            <td>{{ app.scheduledDate | date:'fullDate' }}</td>
+            <td>{{ app.startTime.substring(0, 5) }}</td>
+            <td>
+              <span class="badge badge-info">{{ app.appointmentType.replace('_', ' ') }}</span>
+            </td>
+            <td>
+              <span class="badge badge-success">{{ app.status }}</span>
+            </td>
+            <td>
+              <button class="btn btn-outline btn-danger btn-sm" style="padding: 6px 12px; font-size: 0.8rem;"
+                (click)="openCancelModal(app)">
+                Cancel
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="upcomingAppointments.length === 0">
+            <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">
+              No upcoming appointments booked. Need to see a doctor? Book a slot above.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Appointment Cancel Modal -->
+<div *ngIf="selectedCancelAppointment" class="flex-center"
+  style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.5); z-index: 2000; padding: 20px;">
+  <div class="card" style="max-width: 500px; width: 100%; position: relative;">
+    <h3 style="font-size: 1.4rem; color: var(--danger); margin-bottom: 12px;">Cancel Appointment</h3>
+    <p style="color: var(--text-muted); margin-bottom: 20px;">Are you sure you want to cancel your consultation with
+      <strong style="color: var(--gray-800);">{{ selectedCancelAppointment.doctorName }}</strong> on {{
+      selectedCancelAppointment.scheduledDate }}?</p>
+
+    <form [formGroup]="cancelForm" (ngSubmit)="submitCancel()">
+      <div class="form-group">
+        <label class="form-label" for="cancelReason">Reason for Cancellation</label>
+        <textarea id="cancelReason" formControlName="cancelReason" class="form-control"
+          placeholder="Please explain why you are cancelling..." rows="3"></textarea>
+        <div *ngIf="cancelForm.get('cancelReason')?.touched && cancelForm.get('cancelReason')?.invalid"
+          style="color: var(--danger); font-size: 0.8rem; margin-top: 4px;">
+          Cancellation reason is required (max 255 chars).
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
+        <button type="button" class="btn btn-outline" (click)="closeCancelModal()">Go Back</button>
+        <button type="submit" class="btn btn-danger">Confirm Cancellation</button>
+      </div>
+    </form>
+  </div>
+</div>

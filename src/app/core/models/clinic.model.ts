@@ -1,0 +1,11 @@
+export type ClinicRequestDto = any;
+export type ClinicResponseDto = any;
+export type ClinicBranchRequestDto = any;
+export type ClinicBranchResponseDto = any;
+export type ClinicOperatingHourRequestDto = any;
+export type ClinicOperatingHourResponseDto = any;
+export type ClinicSpecialtyResponseDto = any;
+export type ClinicLanguageResponseDto = any;
+export type ClinicInsuranceRequestDto = any;
+export type ClinicInsuranceResponseDto = any;
+export type ClinicDetailResponse = any;
