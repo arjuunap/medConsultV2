@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CaseRoomService } from '../../../../core/services/case-room.service';
@@ -20,7 +20,7 @@ import {
   templateUrl: './case-rooms.component.html',
   styleUrls: []
 })
-export class CaseRoomsComponent implements OnInit {
+export class CaseRoomsComponent implements OnInit, OnDestroy {
   private caseRoomService = inject(CaseRoomService);
   private uiService = inject(UiService);
   public authService = inject(AuthService);
@@ -55,9 +55,15 @@ export class CaseRoomsComponent implements OnInit {
     status: ['', Validators.required]
   });
 
+  private pollInterval: any;
+
   ngOnInit(): void {
     this.loadCaseRooms();
     this.loadDoctorPatients();
+  }
+
+  ngOnDestroy(): void {
+    this.stopPolling();
   }
 
   loadDoctorPatients(): void {
@@ -79,9 +85,7 @@ export class CaseRoomsComponent implements OnInit {
     // Fetch all for now, maybe filtered by doctor later
     this.caseRoomService.searchCaseRooms({
       page: 0,
-      size: 50,
-      sortBy: 'createdAt',
-      sortDir: 'DESC'
+      size: 50
     }).subscribe({
       next: (page) => {
         this.caseRooms = page.content || [];
@@ -95,19 +99,41 @@ export class CaseRoomsComponent implements OnInit {
     this.selectedRoom = room;
     this.statusForm.patchValue({ status: room.status });
     this.loadPosts(room.caseRoomId);
+    this.startPolling(room.caseRoomId);
   }
 
-  loadPosts(roomId: string): void {
-    this.uiService.showLoading();
+  loadPosts(roomId: string, isPolling = false): void {
+    if (!isPolling) this.uiService.showLoading();
     this.caseRoomService.getPostsForRoom(roomId, 0, 100).subscribe({
       next: (page) => {
-        // Assume posts come sorted, or we reverse them if needed. Usually ascending for chat.
-        this.posts = page.content ? page.content.reverse() : [];
-        this.uiService.hideLoading();
-        this.scrollToBottom();
+        const newPosts = page.content ? page.content.reverse() : [];
+        const isNewMessage = this.posts.length !== newPosts.length;
+        this.posts = newPosts;
+        
+        if (!isPolling) this.uiService.hideLoading();
+        
+        if (!isPolling || isNewMessage) {
+           this.scrollToBottom();
+        }
       },
-      error: () => this.uiService.hideLoading()
+      error: () => {
+        if (!isPolling) this.uiService.hideLoading();
+      }
     });
+  }
+
+  startPolling(roomId: string): void {
+    this.stopPolling();
+    this.pollInterval = setInterval(() => {
+      this.loadPosts(roomId, true);
+    }, 3000);
+  }
+
+  stopPolling(): void {
+    if (this.pollInterval) {
+      clearInterval(this.pollInterval);
+      this.pollInterval = null;
+    }
   }
 
   submitPost(): void {

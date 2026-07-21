@@ -1,63 +1,57 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { 
   ConsultationRequestDto, 
   ConsultationResponseDto, 
-  ConsultationSearchRequest, 
-  UpdateConsultationStatusRequest,
-  ConsultationMessageRequestDto,
-  ConsultationMessageResponseDto
+  ConsultationMessageRequestDto, 
+  ConsultationMessageResponseDto,
+  UpdateConsultationStatusRequest 
 } from '../models/consultation.model';
-import { Page } from '../models/common.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ConsultationService {
-  private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/api/medconsult/consultations`;
+
+  constructor(private http: HttpClient) { }
 
   // --- Consultations ---
-
-  openConsultation(dto: ConsultationRequestDto): Observable<ConsultationResponseDto> {
-    return this.http.post<ConsultationResponseDto>(`${this.apiUrl}/book`, dto);
+  
+  bookConsultation(dto: ConsultationRequestDto): Observable<ConsultationResponseDto> {
+    return this.http.post<ConsultationResponseDto>(`${environment.apiUrl}/api/medconsult/consultations/book`, dto);
   }
 
   getConsultationById(id: string): Observable<ConsultationResponseDto> {
-    return this.http.get<ConsultationResponseDto>(`${this.apiUrl}/${id}`);
+    return this.http.get<ConsultationResponseDto>(`${environment.apiUrl}/api/medconsult/consultations/${id}`);
   }
 
-  searchConsultations(searchRequest: ConsultationSearchRequest): Observable<Page<ConsultationResponseDto>> {
-    return this.http.post<Page<ConsultationResponseDto>>(`${this.apiUrl}/search`, searchRequest);
+  updateStatus(id: string, dto: UpdateConsultationStatusRequest): Observable<ConsultationResponseDto> {
+    return this.http.patch<ConsultationResponseDto>(`${environment.apiUrl}/api/medconsult/consultations/${id}/status`, dto);
   }
 
-  updateStatus(id: string, statusRequest: UpdateConsultationStatusRequest): Observable<ConsultationResponseDto> {
-    return this.http.patch<ConsultationResponseDto>(`${this.apiUrl}/${id}/status`, statusRequest);
+  getConsultationsByPatient(patientId: string, page = 0, size = 10): Observable<any> {
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    return this.http.get<any>(`${environment.apiUrl}/api/medconsult/consultations/patient/${patientId}`, { params });
   }
 
-  getConsultationsByPatient(patientId: string, page: number = 0, size: number = 10): Observable<Page<ConsultationResponseDto>> {
-    const params = new HttpParams().set('page', page.toString()).set('size', size.toString());
-    return this.http.get<Page<ConsultationResponseDto>>(`${this.apiUrl}/patient/${patientId}`, { params });
+  getConsultationsByDoctor(doctorId: string, page = 0, size = 10): Observable<any> {
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    return this.http.get<any>(`${environment.apiUrl}/api/medconsult/consultations/doctor/${doctorId}`, { params });
   }
 
-  getConsultationsByDoctor(doctorId: string, page: number = 0, size: number = 10): Observable<Page<ConsultationResponseDto>> {
-    const params = new HttpParams().set('page', page.toString()).set('size', size.toString());
-    return this.http.get<Page<ConsultationResponseDto>>(`${this.apiUrl}/doctor/${doctorId}`, { params });
-  }
-
-  // --- Messages ---
+  // --- Consultation Messages ---
 
   sendMessage(dto: ConsultationMessageRequestDto): Observable<ConsultationMessageResponseDto> {
-    return this.http.post<ConsultationMessageResponseDto>(`${this.apiUrl}/messages/`, dto);
+    return this.http.post<ConsultationMessageResponseDto>(`${environment.apiUrl}/api/medconsult/consultations/messages/`, dto);
   }
 
   getMessagesForConsultation(consultationId: string): Observable<ConsultationMessageResponseDto[]> {
-    return this.http.get<ConsultationMessageResponseDto[]>(`${this.apiUrl}/messages/consultation/${consultationId}`);
+    return this.http.get<ConsultationMessageResponseDto[]>(`${environment.apiUrl}/api/medconsult/consultations/messages/consultation/${consultationId}`);
   }
 
-  markMessageAsRead(messageId: string): Observable<ConsultationMessageResponseDto> {
-    return this.http.patch<ConsultationMessageResponseDto>(`${this.apiUrl}/messages/${messageId}/read`, {});
+  markAsRead(messageId: string): Observable<ConsultationMessageResponseDto> {
+    return this.http.patch<ConsultationMessageResponseDto>(`${environment.apiUrl}/api/medconsult/consultations/messages/${messageId}/read`, {});
   }
 }

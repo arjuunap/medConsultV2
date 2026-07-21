@@ -2,6 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import {
+  CityRequestDto, CityResponseDto,
+  LocalityRequestDto, LocalityResponseDto,
+  LanguageRequestDto, LanguageResponseDto,
+  SpecialtyRequestDto, SpecialtyResponseDto,
+  SubSpecialtyRequestDto, SubSpecialtyResponseDto,
+  InsuranceProviderRequestDto, InsuranceProviderResponseDto
+} from '../models/reference.model';
 
 @Injectable({
   providedIn: 'root'
@@ -10,20 +18,20 @@ export class ReferenceService {
   private http = inject(HttpClient);
 
   // ── Cities ──────────────────────────────────────────────────────────
-  getAllCities(): Observable<any[]> {
-    return this.http.get<any[]>(`${environment.apiUrl}/api/medconsult/cities/all`);
+  getAllCities(): Observable<CityResponseDto[]> {
+    return this.http.get<CityResponseDto[]>(`${environment.apiUrl}/api/medconsult/cities/all`);
   }
 
-  getCity(cityId: string): Observable<any> {
-    return this.http.get<any>(`${environment.apiUrl}/api/medconsult/cities/${cityId}`);
+  getCity(cityId: string): Observable<CityResponseDto> {
+    return this.http.get<CityResponseDto>(`${environment.apiUrl}/api/medconsult/cities/${cityId}`);
   }
 
-  addCity(dto: any): Observable<any> {
-    return this.http.post<any>(`${environment.apiUrl}/api/medconsult/cities/add`, dto);
+  addCity(dto: CityRequestDto): Observable<CityResponseDto> {
+    return this.http.post<CityResponseDto>(`${environment.apiUrl}/api/medconsult/cities/add`, dto);
   }
 
-  updateCity(cityId: string, dto: any): Observable<any> {
-    return this.http.patch<any>(`${environment.apiUrl}/api/medconsult/cities/${cityId}/edit`, dto);
+  updateCity(cityId: string, dto: CityRequestDto): Observable<CityResponseDto> {
+    return this.http.patch<CityResponseDto>(`${environment.apiUrl}/api/medconsult/cities/${cityId}/edit`, dto);
   }
 
   deleteCity(cityId: string): Observable<string> {
@@ -31,20 +39,20 @@ export class ReferenceService {
   }
 
   // ── Localities ──────────────────────────────────────────────────────
-  getLocalities(cityId: string): Observable<any[]> {
-    return this.http.get<any[]>(`${environment.apiUrl}/api/medconsult/cities/${cityId}/localities`);
+  getLocalities(cityId: string): Observable<LocalityResponseDto[]> {
+    return this.http.get<LocalityResponseDto[]>(`${environment.apiUrl}/api/medconsult/cities/${cityId}/localities`);
   }
 
-  getLocality(localityId: string): Observable<any> {
-    return this.http.get<any>(`${environment.apiUrl}/api/medconsult/cities/locality/${localityId}`);
+  getLocality(localityId: string): Observable<LocalityResponseDto> {
+    return this.http.get<LocalityResponseDto>(`${environment.apiUrl}/api/medconsult/cities/locality/${localityId}`);
   }
 
-  addLocality(dto: any): Observable<any> {
-    return this.http.post<any>(`${environment.apiUrl}/api/medconsult/cities/locality/add`, dto);
+  addLocality(dto: LocalityRequestDto): Observable<LocalityResponseDto> {
+    return this.http.post<LocalityResponseDto>(`${environment.apiUrl}/api/medconsult/cities/locality/add`, dto);
   }
 
-  updateLocality(localityId: string, dto: any): Observable<any> {
-    return this.http.patch<any>(`${environment.apiUrl}/api/medconsult/cities/locality/${localityId}/edit`, dto);
+  updateLocality(localityId: string, dto: LocalityRequestDto): Observable<LocalityResponseDto> {
+    return this.http.patch<LocalityResponseDto>(`${environment.apiUrl}/api/medconsult/cities/locality/${localityId}/edit`, dto);
   }
 
   deleteLocality(localityId: string): Observable<string> {
@@ -52,16 +60,16 @@ export class ReferenceService {
   }
 
   // ── Languages ───────────────────────────────────────────────────────
-  getAllLanguages(): Observable<any[]> {
-    return this.http.get<any[]>(`${environment.apiUrl}/api/medconsult/languages/all`);
+  getAllLanguages(): Observable<LanguageResponseDto[]> {
+    return this.http.get<LanguageResponseDto[]>(`${environment.apiUrl}/api/medconsult/languages/all`);
   }
 
-  addLanguage(dto: any): Observable<any> {
-    return this.http.post<any>(`${environment.apiUrl}/api/medconsult/languages/add`, dto);
+  addLanguage(dto: LanguageRequestDto): Observable<LanguageResponseDto> {
+    return this.http.post<LanguageResponseDto>(`${environment.apiUrl}/api/medconsult/languages/add`, dto);
   }
 
-  updateLanguage(id: string, dto: any): Observable<any> {
-    return this.http.patch<any>(`${environment.apiUrl}/api/medconsult/languages/${id}/edit`, dto);
+  updateLanguage(id: string, dto: LanguageRequestDto): Observable<LanguageResponseDto> {
+    return this.http.patch<LanguageResponseDto>(`${environment.apiUrl}/api/medconsult/languages/${id}/edit`, dto);
   }
 
   deleteLanguage(id: string): Observable<string> {
@@ -69,16 +77,16 @@ export class ReferenceService {
   }
 
   // ── Specialties ─────────────────────────────────────────────────────
-  getAllSpecialties(): Observable<any[]> {
-    return this.http.get<any[]>(`${environment.apiUrl}/api/medconsult/specialties/all`);
+  getAllSpecialties(): Observable<SpecialtyResponseDto[]> {
+    return this.http.get<SpecialtyResponseDto[]>(`${environment.apiUrl}/api/medconsult/specialties/all`);
   }
 
-  addSpecialty(dto: any): Observable<any> {
-    return this.http.post<any>(`${environment.apiUrl}/api/medconsult/specialties/add`, dto);
+  addSpecialty(dto: SpecialtyRequestDto): Observable<SpecialtyResponseDto> {
+    return this.http.post<SpecialtyResponseDto>(`${environment.apiUrl}/api/medconsult/specialties/add`, dto);
   }
 
-  updateSpecialty(specialityId: string, dto: any): Observable<any> {
-    return this.http.patch<any>(`${environment.apiUrl}/api/medconsult/specialties/${specialityId}/edit`, dto);
+  updateSpecialty(specialityId: string, dto: SpecialtyRequestDto): Observable<SpecialtyResponseDto> {
+    return this.http.patch<SpecialtyResponseDto>(`${environment.apiUrl}/api/medconsult/specialties/${specialityId}/edit`, dto);
   }
 
   deleteSpecialty(specialityId: string): Observable<string> {
@@ -86,16 +94,16 @@ export class ReferenceService {
   }
 
   // ── Sub-Specialties ─────────────────────────────────────────────────
-  getSubSpecialties(specialityId: string): Observable<any[]> {
-    return this.http.get<any[]>(`${environment.apiUrl}/api/medconsult/specialties/${specialityId}/sub-specialities`);
+  getSubSpecialties(specialityId: string): Observable<SubSpecialtyResponseDto[]> {
+    return this.http.get<SubSpecialtyResponseDto[]>(`${environment.apiUrl}/api/medconsult/specialties/${specialityId}/sub-specialities`);
   }
 
-  addSubSpecialty(dto: any): Observable<any> {
-    return this.http.post<any>(`${environment.apiUrl}/api/medconsult/specialties/sub/add`, dto);
+  addSubSpecialty(dto: SubSpecialtyRequestDto): Observable<SubSpecialtyResponseDto> {
+    return this.http.post<SubSpecialtyResponseDto>(`${environment.apiUrl}/api/medconsult/specialties/sub/add`, dto);
   }
 
-  updateSubSpecialty(subSpecialtyId: string, dto: any): Observable<any> {
-    return this.http.patch<any>(`${environment.apiUrl}/api/medconsult/specialties/sub/${subSpecialtyId}/edit`, dto);
+  updateSubSpecialty(subSpecialtyId: string, dto: SubSpecialtyRequestDto): Observable<SubSpecialtyResponseDto> {
+    return this.http.patch<SubSpecialtyResponseDto>(`${environment.apiUrl}/api/medconsult/specialties/sub/${subSpecialtyId}/edit`, dto);
   }
 
   deleteSubSpecialty(subSpecialtyId: string): Observable<string> {
@@ -103,30 +111,30 @@ export class ReferenceService {
   }
 
   // ── Insurance Providers ─────────────────────────────────────────────
-  getAllInsuranceProviders(): Observable<any[]> {
-    return this.http.get<any[]>(`${environment.apiUrl}/api/medconsult/insurance-providers/all`);
+  getAllInsuranceProviders(): Observable<InsuranceProviderResponseDto[]> {
+    return this.http.get<InsuranceProviderResponseDto[]>(`${environment.apiUrl}/api/medconsult/insurance-providers/all`);
   }
 
-  getInsuranceProvider(id: string): Observable<any> {
-    return this.http.get<any>(`${environment.apiUrl}/api/medconsult/insurance-providers/${id}`);
+  getInsuranceProvider(id: string): Observable<InsuranceProviderResponseDto> {
+    return this.http.get<InsuranceProviderResponseDto>(`${environment.apiUrl}/api/medconsult/insurance-providers/${id}`);
   }
 
-  addInsuranceProvider(dto: any, file?: File): Observable<any> {
+  addInsuranceProvider(dto: InsuranceProviderRequestDto, file?: File): Observable<InsuranceProviderResponseDto> {
     const formData = new FormData();
     formData.append('body', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
     if (file) {
       formData.append('file', file);
     }
-    return this.http.post<any>(`${environment.apiUrl}/api/medconsult/insurance-providers/add-provider`, formData);
+    return this.http.post<InsuranceProviderResponseDto>(`${environment.apiUrl}/api/medconsult/insurance-providers/add-provider`, formData);
   }
 
-  updateInsuranceProvider(id: string, dto: any, file?: File): Observable<any> {
+  updateInsuranceProvider(id: string, dto: InsuranceProviderRequestDto, file?: File): Observable<InsuranceProviderResponseDto> {
     const formData = new FormData();
     formData.append('body', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
     if (file) {
       formData.append('file', file);
     }
-    return this.http.put<any>(`${environment.apiUrl}/api/medconsult/insurance-providers/${id}/update`, formData);
+    return this.http.put<InsuranceProviderResponseDto>(`${environment.apiUrl}/api/medconsult/insurance-providers/${id}/update`, formData);
   }
 
   deleteInsuranceProvider(id: string): Observable<string> {

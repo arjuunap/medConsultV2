@@ -4,7 +4,10 @@
   <!-- Left Side: Clinic list sidebar -->
   <div class="flex-1 d-flex flex-col gap-3" style="min-width: 250px;">
     <div class="card border-0">
-      <h3 class="fs-lg text-primary mb-3">My Managed Clinics</h3>
+      <div class="d-flex justify-between align-center mb-3">
+        <h3 class="fs-lg text-primary m-0">My Managed Clinics</h3>
+        <button class="btn btn-sm btn-primary" (click)="openModal('addClinic')">+ Add</button>
+      </div>
       <div class="d-flex flex-col gap-2">
         <div 
           *ngFor="let c of clinics" 
@@ -33,10 +36,11 @@
       </div>
 
       <!-- Sub tabs -->
-      <div class="d-flex gap-2 border-bottom border-2 mb-4 pb-1">
+      <div class="d-flex gap-2 border-bottom border-2 mb-4 pb-1 overflow-x-auto">
         <button class="btn" [class.btn-primary]="activeSubTab==='branches'" [class.btn-outline]="activeSubTab!=='branches'" (click)="switchSubTab('branches')">Branches ({{ branches.length }})</button>
         <button class="btn" [class.btn-primary]="activeSubTab==='specialties'" [class.btn-outline]="activeSubTab!=='specialties'" (click)="switchSubTab('specialties')">Specialties ({{ clinicSpecialties.length }})</button>
         <button class="btn" [class.btn-primary]="activeSubTab==='insurances'" [class.btn-outline]="activeSubTab!=='insurances'" (click)="switchSubTab('insurances')">Insurances ({{ clinicInsurances.length }})</button>
+        <button class="btn" [class.btn-primary]="activeSubTab==='languages'" [class.btn-outline]="activeSubTab!=='languages'" (click)="switchSubTab('languages')">Languages ({{ clinicLanguages.length }})</button>
       </div>
 
       <!-- TAB Content: Branches -->
@@ -67,7 +71,8 @@
                     {{ b.isPrimary ? 'Yes' : 'No' }}
                   </span>
                 </td>
-                <td>
+                <td class="d-flex gap-2">
+                  <button class="btn btn-outline btn-sm" (click)="openEditHoursModal(b)">Hours</button>
                   <button class="btn btn-outline btn-danger btn-sm" (click)="deleteBranch(b.branchId)">Delete</button>
                 </td>
               </tr>
@@ -133,18 +138,36 @@
         </div>
       </div>
 
+      <!-- TAB Content: Languages -->
+      <div *ngIf="activeSubTab === 'languages'">
+        <div class="d-flex justify-between align-center mb-4">
+          <h3 class="fs-lg text-primary m-0">Supported Languages</h3>
+          <button class="btn btn-accent btn-sm" (click)="openModal('addLanguage')">+ Link Language</button>
+        </div>
+
+        <div class="d-flex flex-col gap-2">
+          <div *ngFor="let lang of clinicLanguages" class="card border p-3 d-flex justify-between align-center">
+            <div>
+              <strong class="text-primary">{{ getLanguageName(lang.languageId) }}</strong>
+            </div>
+            <button class="btn btn-outline btn-danger btn-sm" (click)="deleteLanguage(lang.languageId)">Unlink</button>
+          </div>
+          <div *ngIf="clinicLanguages.length === 0" class="text-center p-4 text-muted">No languages linked to this clinic.</div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
 
-<!-- Edit Clinic Modal -->
-<div *ngIf="activeModal === 'editClinic'" class="modal-backdrop">
+<!-- Add/Edit Clinic Modal -->
+<div *ngIf="activeModal === 'addClinic' || activeModal === 'editClinic'" class="modal-backdrop">
   <div class="modal-content" style="max-width: 600px;">
     <div class="modal-header">
-      <h3 class="fs-xl text-primary m-0">Edit Clinic Profile</h3>
+      <h3 class="fs-xl text-primary m-0">{{ activeModal === 'addClinic' ? 'Add New Clinic' : 'Edit Clinic Profile' }}</h3>
     </div>
     <div class="modal-body">
-      <form [formGroup]="clinicForm" (ngSubmit)="submitClinicUpdate()">
+      <form [formGroup]="clinicForm" (ngSubmit)="activeModal === 'addClinic' ? submitClinic() : submitClinicUpdate()">
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">Name (EN)</label>
@@ -187,7 +210,9 @@
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
-      <button type="button" class="btn btn-accent" (click)="submitClinicUpdate()" [disabled]="clinicForm.invalid">Save Profile</button>
+      <button type="button" class="btn btn-accent" (click)="activeModal === 'addClinic' ? submitClinic() : submitClinicUpdate()" [disabled]="clinicForm.invalid">
+        {{ activeModal === 'addClinic' ? 'Create Clinic' : 'Save Profile' }}
+      </button>
     </div>
   </div>
 </div>
@@ -300,6 +325,89 @@
     <div class="modal-footer">
       <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
       <button type="button" class="btn btn-accent" (click)="submitInsurance()" [disabled]="insuranceForm.invalid">Associate Provider</button>
+    </div>
+  </div>
+</div>
+
+<!-- Link Language Modal -->
+<div *ngIf="activeModal === 'addLanguage'" class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="fs-xl text-primary m-0">Link Language</h3>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="languageForm" (ngSubmit)="submitLanguage()">
+        <div class="form-group m-0">
+          <label class="form-label">Choose Language</label>
+          <select formControlName="languageId" class="form-control">
+            <option value="">-- Choose language --</option>
+            <option *ngFor="let l of globalLanguages" [value]="l.languageId">{{ l.nameEn }}</option>
+          </select>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
+      <button type="button" class="btn btn-accent" (click)="submitLanguage()" [disabled]="languageForm.invalid">Link Language</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Branch Hours Modal -->
+<div *ngIf="activeModal === 'editBranchHours'" class="modal-backdrop">
+  <div class="modal-content" style="max-width: 700px;">
+    <div class="modal-header">
+      <h3 class="fs-xl text-primary m-0">Edit Working Hours</h3>
+      <div class="fs-sm text-muted mt-1" *ngIf="selectedBranchForHours">
+        Branch: {{ selectedBranchForHours.branchNameEn }}
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="table-responsive border-0">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Day</th>
+              <th>Closed?</th>
+              <th>Open</th>
+              <th>Close</th>
+              <th>Break Start</th>
+              <th>Break End</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let h of branchHoursFormList">
+              <td class="fw-bold">
+                {{ h.dayOfWeek === 1 ? 'Monday' : 
+                   h.dayOfWeek === 2 ? 'Tuesday' : 
+                   h.dayOfWeek === 3 ? 'Wednesday' : 
+                   h.dayOfWeek === 4 ? 'Thursday' : 
+                   h.dayOfWeek === 5 ? 'Friday' : 
+                   h.dayOfWeek === 6 ? 'Saturday' : 'Sunday' }}
+              </td>
+              <td class="text-center">
+                <input type="checkbox" [(ngModel)]="h.isClosed" class="m-0 cursor-pointer">
+              </td>
+              <td>
+                <input type="time" [(ngModel)]="h.openTime" [disabled]="h.isClosed" class="form-control p-1">
+              </td>
+              <td>
+                <input type="time" [(ngModel)]="h.closeTime" [disabled]="h.isClosed" class="form-control p-1">
+              </td>
+              <td>
+                <input type="time" [(ngModel)]="h.breakStart" [disabled]="h.isClosed" class="form-control p-1">
+              </td>
+              <td>
+                <input type="time" [(ngModel)]="h.breakEnd" [disabled]="h.isClosed" class="form-control p-1">
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
+      <button type="button" class="btn btn-accent" (click)="submitBranchHours()">Save Hours</button>
     </div>
   </div>
 </div>

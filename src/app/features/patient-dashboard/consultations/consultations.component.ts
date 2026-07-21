@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ConsultationService } from '../../../core/services/consultation.service';
@@ -15,7 +15,7 @@ import { AuthService } from '../../../core/services/auth.service';
   templateUrl: './consultations.component.html',
   styleUrls: [] // will use standard global styles for UI (glassmorphism/premium design if possible)
 })
-export class ConsultationsComponent implements OnInit {
+export class ConsultationsComponent implements OnInit, OnDestroy {
   private consultationService = inject(ConsultationService);
   private doctorService = inject(DoctorService);
   private patientService = inject(PatientService);
@@ -43,9 +43,15 @@ export class ConsultationsComponent implements OnInit {
 
   public showBookModal = false;
 
+  private pollInterval: any;
+
   ngOnInit(): void {
     this.loadPatientProfile();
     this.loadDoctors();
+  }
+
+  ngOnDestroy(): void {
+    this.stopPolling();
   }
 
   loadPatientProfile(): void {
@@ -84,18 +90,39 @@ export class ConsultationsComponent implements OnInit {
   selectConsultation(c: ConsultationResponseDto): void {
     this.selectedConsultation = c;
     this.loadMessages(c.consultationId);
+    this.startPolling(c.consultationId);
   }
 
-  loadMessages(consultationId: string): void {
-    this.uiService.showLoading();
+  loadMessages(consultationId: string, isPolling = false): void {
+    if (!isPolling) this.uiService.showLoading();
     this.consultationService.getMessagesForConsultation(consultationId).subscribe({
       next: (msgs) => {
+        const isNewMessage = this.messages.length !== msgs.length;
         this.messages = msgs;
-        this.uiService.hideLoading();
-        this.scrollToBottom();
+        if (!isPolling) this.uiService.hideLoading();
+        
+        if (!isPolling || isNewMessage) {
+           this.scrollToBottom();
+        }
       },
-      error: () => this.uiService.hideLoading()
+      error: () => {
+        if (!isPolling) this.uiService.hideLoading();
+      }
     });
+  }
+
+  startPolling(consultationId: string): void {
+    this.stopPolling();
+    this.pollInterval = setInterval(() => {
+      this.loadMessages(consultationId, true);
+    }, 3000); // poll every 3 seconds
+  }
+
+  stopPolling(): void {
+    if (this.pollInterval) {
+      clearInterval(this.pollInterval);
+      this.pollInterval = null;
+    }
   }
 
   sendMessage(): void {
@@ -134,7 +161,7 @@ export class ConsultationsComponent implements OnInit {
     this.uiService.showLoading();
     const val = this.bookForm.value;
     
-    this.consultationService.openConsultation({
+    this.consultationService.bookConsultation({
       patientId: this.patientId,
       doctorId: val.doctorId,
       subject: val.subject,

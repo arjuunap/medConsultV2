@@ -1,89 +1,283 @@
-<div class="card p-5 border-0 mb-4">
-  <div class="d-flex justify-between align-center flex-wrap gap-3 border-bottom pb-3 mb-4">
-    <div>
-      <h2 class="fs-xl text-primary m-0">Availability & Slot Manager</h2>
-      <p class="text-muted fs-sm mt-1">Set up your available consult hours for booking</p>
-    </div>
-    <button class="btn btn-primary" (click)="openAddModal()" [disabled]="!filterForm.get('dcId')?.value">
-      + Add Time Slot
-    </button>
-  </div>
-
-  <!-- Filter Form -->
-  <form [formGroup]="filterForm" (change)="loadSlots()" class="d-flex align-center gap-3 mb-4">
-    <div class="form-group m-0 flex-2">
-      <label class="form-label" for="dcId">Select Clinic Location</label>
-      <select id="dcId" formControlName="dcId" class="form-control m-0">
-        <option value="">-- Choose Location --</option>
-        <option *ngFor="let dc of doctorClinics" [value]="dc.dcId">{{ dc.clinicNameEn }} - {{ dc.branchNameEn }}</option>
-      </select>
-    </div>
-    <div class="form-group m-0 flex-1">
-      <label class="form-label" for="filterDate">Select Date</label>
-      <input type="date" id="filterDate" formControlName="date" class="form-control m-0">
-    </div>
-  </form>
-
-  <!-- Slots Grid List -->
-  <div class="d-grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));">
-    <div *ngFor="let slot of slots" class="card p-4 border d-flex flex-col gap-3 shadow-sm">
-      <div class="d-flex justify-between align-center">
-        <span class="fw-bold fs-md text-primary">
-          {{ slot.startTime.substring(0, 5) }} - {{ slot.endTime.substring(0, 5) }}
-        </span>
-        <span class="badge" [class.badge-success]="slot.status === 'AVAILABLE'" [class.badge-danger]="slot.status === 'BOOKED'">
-          {{ slot.status }}
-        </span>
-      </div>
-      <div class="fs-sm text-muted">
-        Session: <span class="badge badge-info">{{ slot.sessionType }}</span>
-      </div>
-
-      <div class="d-flex justify-end border-top pt-2">
-        <button class="btn btn-outline btn-danger btn-sm" (click)="deleteSlot(slot.slotId)" [disabled]="slot.status === 'BOOKED'">
-          Delete Slot
-        </button>
-      </div>
-    </div>
-
-    <!-- Empty State -->
-    <div *ngIf="slots.length === 0" class="text-center p-6 text-muted border border-dashed rounded-md w-100" style="grid-column: 1 / -1;">
-      No availability slots registered for this date and location. Click "+ Add Time Slot" above to define one.
-    </div>
-  </div>
+<div class="mb-8 p-8 rounded-2xl shadow-sm relative overflow-hidden bg-gradient-to-br from-indigo-50 to-white border border-indigo-100/50">
+  <div class="absolute -top-10 -right-10 w-40 h-40 bg-indigo-100 rounded-full blur-3xl opacity-50"></div>
+  <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-purple-100 rounded-full blur-3xl opacity-50"></div>
+  <h2 class="relative text-3xl font-extrabold text-gray-800 tracking-tight">My Availability & Schedule</h2>
+  <p class="relative mt-2 text-indigo-600 font-medium">Manage your clinic schedules, time off, and booking slots efficiently.</p>
 </div>
 
-<!-- Add Slot Modal -->
-<div *ngIf="isAddModalOpen" class="modal-backdrop">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3 class="fs-xl text-primary m-0">Add Availability Slot</h3>
+<!-- Clinic Selection -->
+<div class="bg-white/80 backdrop-blur-md p-6 rounded-2xl shadow-sm border border-gray-100 mb-8 transition-all duration-300 hover:shadow-md">
+  <form [formGroup]="clinicSelectForm" class="flex flex-col md:flex-row gap-4 items-end">
+    <div class="flex-grow w-full">
+      <label class="block text-sm font-semibold text-gray-700 mb-2">Select Clinic/Branch to Manage</label>
+      <div class="relative">
+        <select formControlName="dcId" (change)="onClinicChange()" class="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300">
+          <option value="">-- Choose a Clinic/Branch --</option>
+          <option *ngFor="let c of doctorClinics" [value]="c.dcId">
+            {{ c.clinicNameEn }} - {{ c.branchNameEn }} ({{ c.department }})
+          </option>
+        </select>
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+          <i class="fas fa-chevron-down text-sm"></i>
+        </div>
+      </div>
     </div>
-    
-    <div class="modal-body">
-      <form [formGroup]="slotForm" (ngSubmit)="submitSlot()">
-        <div class="form-group">
-          <label class="form-label" for="startTime">Start Time (HH:MM:SS)</label>
-          <input type="text" id="startTime" formControlName="startTime" class="form-control" placeholder="E.g. 09:00:00">
+  </form>
+</div>
+
+<!-- Main Content Area -->
+<div *ngIf="selectedDcId" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 animate-fade-in-up">
+  
+  <!-- Tabs -->
+  <ul class="flex flex-wrap border-b border-gray-100 bg-gray-50/50">
+    <li class="flex-1 sm:flex-none">
+      <button (click)="switchTab('schedule')" 
+              [ngClass]="{'border-indigo-500 text-indigo-700 bg-white shadow-sm font-bold': activeTab === 'schedule', 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100/50 font-medium': activeTab !== 'schedule'}" 
+              class="w-full sm:w-auto px-6 py-4 border-b-2 text-sm transition-all duration-300 flex items-center justify-center gap-2">
+        <i class="far fa-calendar-alt"></i> Weekly Schedule Rules
+      </button>
+    </li>
+    <li class="flex-1 sm:flex-none">
+      <button (click)="switchTab('leaves')" 
+              [ngClass]="{'border-indigo-500 text-indigo-700 bg-white shadow-sm font-bold': activeTab === 'leaves', 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100/50 font-medium': activeTab !== 'leaves'}" 
+              class="w-full sm:w-auto px-6 py-4 border-b-2 text-sm transition-all duration-300 flex items-center justify-center gap-2">
+        <i class="far fa-calendar-times"></i> Time Off / Leaves
+      </button>
+    </li>
+    <li class="flex-1 sm:flex-none">
+      <button (click)="switchTab('slots')" 
+              [ngClass]="{'border-indigo-500 text-indigo-700 bg-white shadow-sm font-bold': activeTab === 'slots', 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100/50 font-medium': activeTab !== 'slots'}" 
+              class="w-full sm:w-auto px-6 py-4 border-b-2 text-sm transition-all duration-300 flex items-center justify-center gap-2">
+        <i class="fas fa-list-ol"></i> Slots Generator
+      </button>
+    </li>
+  </ul>
+
+  <div class="p-6 md:p-8">
+    <!-- SCHEDULE TAB -->
+    <div *ngIf="activeTab === 'schedule'" class="animate-fade-in">
+      <div class="bg-indigo-50/50 p-5 rounded-xl mb-8 border border-indigo-100 flex items-start gap-4">
+        <div class="bg-indigo-100 text-indigo-600 p-2 rounded-full shrink-0">
+          <i class="fas fa-info-circle text-lg"></i>
         </div>
-        <div class="form-group">
-          <label class="form-label" for="endTime">End Time (HH:MM:SS)</label>
-          <input type="text" id="endTime" formControlName="endTime" class="form-control" placeholder="E.g. 09:30:00">
+        <div>
+          <h3 class="font-bold text-indigo-900 mb-1">About Schedule Rules</h3>
+          <p class="text-sm text-indigo-700/80">Add weekly recurring schedules. The system uses these rules to automatically generate your bookable slots for future dates.</p>
         </div>
-        
-        <!-- Session Type Select -->
-        <div class="form-group m-0">
-          <label class="form-label" for="sessType">Session Type</label>
-          <select id="sessType" formControlName="sessionType" class="form-control">
-            <option *ngFor="let st of sessionTypes" [value]="st">{{ st.replace('_', ' ') }}</option>
+      </div>
+
+      <form [formGroup]="scheduleForm" (ngSubmit)="submitSchedule()" class="grid grid-cols-1 md:grid-cols-6 gap-5 items-end mb-10 bg-white p-6 rounded-xl border border-gray-100 shadow-sm transition-all hover:shadow-md">
+        <div>
+          <label class="block text-xs font-bold tracking-wide text-gray-500 uppercase mb-2">Day of Week *</label>
+          <select formControlName="dayOfWeek" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-2.5 px-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+            <option *ngFor="let d of daysOfWeek" [value]="d.value">{{ d.label }}</option>
           </select>
         </div>
+        <div>
+          <label class="block text-xs font-bold tracking-wide text-gray-500 uppercase mb-2">Start Time *</label>
+          <input type="time" formControlName="startTime" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-2.5 px-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+        </div>
+        <div>
+          <label class="block text-xs font-bold tracking-wide text-gray-500 uppercase mb-2">End Time *</label>
+          <input type="time" formControlName="endTime" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-2.5 px-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+        </div>
+        <div>
+          <label class="block text-xs font-bold tracking-wide text-gray-500 uppercase mb-2">Slot (min) *</label>
+          <input type="number" formControlName="slotDurationMin" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-2.5 px-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+        </div>
+        <div>
+          <label class="block text-xs font-bold tracking-wide text-gray-500 uppercase mb-2">Type *</label>
+          <select formControlName="sessionType" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-2.5 px-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+            <option *ngFor="let st of sessionTypes" [value]="st">{{ st }}</option>
+          </select>
+        </div>
+        <div>
+          <button type="submit" [disabled]="scheduleForm.invalid" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-4 rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-95">Add Rule</button>
+        </div>
       </form>
+
+      <div class="overflow-hidden border border-gray-100 rounded-xl shadow-sm">
+        <table class="min-w-full divide-y divide-gray-100">
+          <thead class="bg-gray-50/80">
+            <tr>
+              <th class="px-6 py-4 text-left text-xs font-bold tracking-wider text-gray-500 uppercase">Day</th>
+              <th class="px-6 py-4 text-left text-xs font-bold tracking-wider text-gray-500 uppercase">Time Range</th>
+              <th class="px-6 py-4 text-left text-xs font-bold tracking-wider text-gray-500 uppercase">Duration</th>
+              <th class="px-6 py-4 text-left text-xs font-bold tracking-wider text-gray-500 uppercase">Type</th>
+              <th class="px-6 py-4 text-right text-xs font-bold tracking-wider text-gray-500 uppercase">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100 bg-white">
+            <tr *ngFor="let s of schedules" class="hover:bg-indigo-50/30 transition-colors">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">{{ getDayName(s.dayOfWeek) }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-600">{{ s.startTime }} - {{ s.endTime }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <span class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-md bg-gray-100 text-gray-700 font-medium text-xs">
+                  <i class="far fa-clock"></i> {{ s.slotDurationMin }} min
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <span class="inline-flex items-center py-1 px-2.5 rounded-md bg-indigo-50 text-indigo-700 font-medium text-xs border border-indigo-100">{{ s.sessionType }}</span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-right">
+                <button (click)="removeSchedule(s.scheduleId)" class="w-8 h-8 rounded-full bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-sm flex items-center justify-center ml-auto" title="Delete Rule">
+                  <i class="fas fa-trash-alt text-xs"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div *ngIf="schedules.length === 0" class="text-center py-12 bg-white">
+          <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 text-gray-400 mb-4">
+            <i class="far fa-calendar-times text-2xl"></i>
+          </div>
+          <p class="text-gray-500 text-sm font-medium">No schedule rules defined yet.</p>
+        </div>
+      </div>
     </div>
 
-    <div class="modal-footer">
-      <button type="button" class="btn btn-outline" (click)="closeAddModal()">Cancel</button>
-      <button type="button" class="btn btn-accent" (click)="submitSlot()" [disabled]="slotForm.invalid">Add Slot</button>
+    <!-- LEAVES TAB -->
+    <div *ngIf="activeTab === 'leaves'" class="animate-fade-in">
+      <form [formGroup]="leaveForm" (ngSubmit)="submitLeave()" class="grid grid-cols-1 md:grid-cols-5 gap-5 items-end mb-10 bg-white p-6 rounded-xl border border-gray-100 shadow-sm transition-all hover:shadow-md">
+        <div>
+          <label class="block text-xs font-bold tracking-wide text-gray-500 uppercase mb-2">Leave Type *</label>
+          <select formControlName="leaveType" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-2.5 px-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+            <option *ngFor="let lt of leaveTypes" [value]="lt">{{ lt }}</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold tracking-wide text-gray-500 uppercase mb-2">Start Date *</label>
+          <input type="date" formControlName="startDate" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-2.5 px-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+        </div>
+        <div>
+          <label class="block text-xs font-bold tracking-wide text-gray-500 uppercase mb-2">End Date *</label>
+          <input type="date" formControlName="endDate" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-2.5 px-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+        </div>
+        <div>
+          <label class="block text-xs font-bold tracking-wide text-gray-500 uppercase mb-2">Notes</label>
+          <input type="text" formControlName="notes" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-2.5 px-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all" placeholder="Optional">
+        </div>
+        <div>
+          <button type="submit" [disabled]="leaveForm.invalid" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-4 rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-95">Request Leave</button>
+        </div>
+      </form>
+
+      <div class="overflow-hidden border border-gray-100 rounded-xl shadow-sm">
+        <table class="min-w-full divide-y divide-gray-100">
+          <thead class="bg-gray-50/80">
+            <tr>
+              <th class="px-6 py-4 text-left text-xs font-bold tracking-wider text-gray-500 uppercase">Type</th>
+              <th class="px-6 py-4 text-left text-xs font-bold tracking-wider text-gray-500 uppercase">Duration</th>
+              <th class="px-6 py-4 text-left text-xs font-bold tracking-wider text-gray-500 uppercase">Status</th>
+              <th class="px-6 py-4 text-left text-xs font-bold tracking-wider text-gray-500 uppercase">Notes</th>
+              <th class="px-6 py-4 text-right text-xs font-bold tracking-wider text-gray-500 uppercase">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100 bg-white">
+            <tr *ngFor="let l of leaves" class="hover:bg-amber-50/30 transition-colors">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">{{ l.leaveType }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-600">{{ l.startDate }} to {{ l.endDate }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm">
+                <span *ngIf="l.isApproved" class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-md bg-green-50 text-green-700 font-medium text-xs border border-green-200"><i class="fas fa-check-circle"></i> Approved</span>
+                <span *ngIf="!l.isApproved" class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-md bg-amber-50 text-amber-700 font-medium text-xs border border-amber-200"><i class="fas fa-hourglass-half"></i> Pending</span>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-500 truncate max-w-xs">{{ l.notes || '-' }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-right">
+                <button (click)="removeLeave(l.leaveId)" class="w-8 h-8 rounded-full bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-sm flex items-center justify-center ml-auto" title="Delete Leave">
+                  <i class="fas fa-trash-alt text-xs"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div *ngIf="leaves.length === 0" class="text-center py-12 bg-white">
+          <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 text-gray-400 mb-4">
+            <i class="fas fa-umbrella-beach text-2xl"></i>
+          </div>
+          <p class="text-gray-500 text-sm font-medium">No leave requests found.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLOTS TAB -->
+    <div *ngIf="activeTab === 'slots'" class="animate-fade-in">
+      <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4 bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+        <form [formGroup]="slotFilterForm" class="flex-grow w-full md:w-auto md:max-w-xl">
+          <label class="block text-xs font-bold tracking-wide text-gray-500 uppercase mb-2">Manage Slots For Date</label>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <input type="date" formControlName="date" class="w-full sm:w-auto bg-gray-50 border border-gray-200 text-gray-700 py-2.5 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+            <button type="button" (click)="loadSlots()" class="whitespace-nowrap bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 font-bold py-2.5 px-6 rounded-lg shadow-sm hover:shadow transition-all duration-300 transform active:scale-95">Load Slots</button>
+            <button type="button" (click)="generateSlotsForDate()" class="whitespace-nowrap bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 transform active:scale-95"><i class="fas fa-magic mr-2"></i> Auto-Generate</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="bg-gray-50 p-6 rounded-xl mb-8 border border-gray-200 shadow-inner">
+        <h4 class="font-extrabold text-gray-800 text-sm mb-4 tracking-wide uppercase"><i class="fas fa-plus-circle text-indigo-500 mr-2"></i>Add Manual Override Slot</h4>
+        <form [formGroup]="slotForm" (ngSubmit)="submitSlot()" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
+          <div>
+            <label class="block text-xs font-bold tracking-wide text-gray-500 uppercase mb-2">Start Time *</label>
+            <input type="time" formControlName="startTime" class="w-full bg-white border border-gray-200 text-gray-700 py-2.5 px-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+          </div>
+          <div>
+            <label class="block text-xs font-bold tracking-wide text-gray-500 uppercase mb-2">End Time *</label>
+            <input type="time" formControlName="endTime" class="w-full bg-white border border-gray-200 text-gray-700 py-2.5 px-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+          </div>
+          <div>
+            <label class="block text-xs font-bold tracking-wide text-gray-500 uppercase mb-2">Type *</label>
+            <select formControlName="sessionType" class="w-full bg-white border border-gray-200 text-gray-700 py-2.5 px-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+              <option *ngFor="let st of sessionTypes" [value]="st">{{ st }}</option>
+            </select>
+          </div>
+          <div>
+            <button type="submit" [disabled]="slotForm.invalid" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-bold py-2.5 px-4 rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-95">Add Single Slot</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <div *ngFor="let slot of slots" 
+             class="border rounded-xl p-4 text-center flex flex-col gap-2 relative group overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-1"
+             [ngClass]="{
+               'bg-gradient-to-br from-green-50 to-white border-green-200': slot.status === 'AVAILABLE',
+               'bg-gradient-to-br from-gray-100 to-gray-50 border-gray-200 opacity-75': slot.status !== 'AVAILABLE'
+             }">
+          
+          <div class="absolute top-0 inset-x-0 h-1"
+               [ngClass]="{
+                 'bg-green-400': slot.status === 'AVAILABLE',
+                 'bg-blue-400': slot.status === 'BOOKED',
+                 'bg-red-400': slot.status === 'BLOCKED' || slot.status === 'NO_SHOW'
+               }"></div>
+
+          <div class="font-extrabold text-lg text-gray-800 mt-2">{{ slot.startTime.substring(0,5) }}</div>
+          <div class="text-xs font-medium text-gray-500 bg-white/60 py-1 rounded-md">{{ slot.sessionType }}</div>
+          <div class="text-xs font-bold tracking-wide uppercase mt-1"
+               [ngClass]="{
+                 'text-green-600': slot.status === 'AVAILABLE',
+                 'text-blue-600': slot.status === 'BOOKED',
+                 'text-red-600': slot.status === 'BLOCKED' || slot.status === 'NO_SHOW'
+               }">
+            {{ slot.status }}
+          </div>
+          
+          <button *ngIf="slot.status === 'AVAILABLE'" 
+                  (click)="deleteSlot(slot.slotId)"
+                  class="absolute -top-1 -right-1 w-8 h-8 bg-red-100 text-red-500 rounded-bl-xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-red-500 hover:text-white shadow-sm">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+      <div *ngIf="slots.length === 0" class="flex flex-col items-center justify-center py-16 bg-gray-50/50 border-2 border-dashed border-gray-200 rounded-2xl mt-4">
+        <div class="w-20 h-20 bg-white rounded-full shadow-sm flex items-center justify-center text-gray-300 mb-4">
+          <i class="far fa-calendar-times text-3xl"></i>
+        </div>
+        <h4 class="text-gray-600 font-bold mb-2">No Slots Available</h4>
+        <p class="text-gray-500 text-sm max-w-xs text-center mb-6">There are no booking slots for this date. Generate them using the Auto-Generate tool above.</p>
+        <button (click)="generateSlotsForDate()" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 font-bold py-2 px-6 rounded-full border border-indigo-200 transition-colors">
+          <i class="fas fa-magic mr-2"></i> Auto-Generate Now
+        </button>
+      </div>
     </div>
   </div>
 </div>

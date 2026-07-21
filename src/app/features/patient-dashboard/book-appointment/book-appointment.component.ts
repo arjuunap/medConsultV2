@@ -9,6 +9,8 @@ import { AppointmentService } from '../../../core/services/appointment.service';
 import { UiService } from '../../../core/services/ui.service';
 import { DoctorResponseDto, DoctorClinicResponseDto, AppointmentSlotResponseDto } from '../../../core/models/doctor.model';
 import { AppointmentType, SessionType } from '../../../core/models/appointment.model';
+import { ClinicService } from '../../../core/services/clinic.service';
+import { forkJoin, map, of } from 'rxjs';
 
 @Component({
   selector: 'app-book-appointment',
@@ -24,6 +26,7 @@ export class BookAppointmentComponent implements OnInit {
   private uiService = inject(UiService);
   private fb = inject(FormBuilder);
   private router = inject(Router);
+  private clinicService = inject(ClinicService);
 
   public patientId = '';
   public needProfileInit = false;
@@ -90,8 +93,38 @@ export class BookAppointmentComponent implements OnInit {
     this.uiService.showLoading();
     this.doctorService.getDoctorClinics(docId).subscribe({
       next: (data) => {
-        this.doctorClinics = data.filter((c: any) => c.isActive);
-        this.uiService.hideLoading();
+        const activeClinics = data.filter((c: any) => c.isActive);
+        
+        if (activeClinics.length === 0) {
+          this.doctorClinics = [];
+          this.uiService.hideLoading();
+          return;
+        }
+
+        const nameRequests = activeClinics.map(dc => {
+          return forkJoin({
+            clinic: this.clinicService.getClinicById(dc.clinicId),
+            branches: this.clinicService.getClinicBranches(dc.clinicId)
+          }).pipe(
+            map(res => {
+              dc.clinicNameEn = res.clinic.nameEn;
+              const branch = res.branches.find(b => b.branchId === dc.branchId);
+              dc.branchNameEn = branch ? branch.branchNameEn : 'Unknown Branch';
+              return dc;
+            })
+          );
+        });
+
+        forkJoin(nameRequests).subscribe({
+          next: (updatedClinics) => {
+            this.doctorClinics = updatedClinics;
+            this.uiService.hideLoading();
+          },
+          error: () => {
+            this.doctorClinics = activeClinics;
+            this.uiService.hideLoading();
+          }
+        });
       },
       error: () => {
         this.uiService.hideLoading();

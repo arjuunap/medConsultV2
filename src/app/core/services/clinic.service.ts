@@ -2,6 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import {
+  ClinicRequestDto, ClinicResponseDto,
+  ClinicBranchRequestDto, ClinicBranchResponseDto,
+  ClinicOperatingHourRequestDto, ClinicOperatingHourResponseDto,
+  ClinicSpecialtyResponseDto, ClinicLanguageResponseDto,
+  ClinicInsuranceRequestDto, ClinicInsuranceResponseDto,
+  ClinicDetailResponse
+} from '../models/clinic.model';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +26,7 @@ export class ClinicService {
     size?: number;
     sortBy?: string;
     sortDir?: string;
-  }): Observable<any> {
+  }): Observable<any> { // Keeping any for Page wrapper for now
     let params = new HttpParams();
     if (filters.name) params = params.set('name', filters.name);
     if (filters.specialtyId) params = params.set('specialtyId', filters.specialtyId);
@@ -31,98 +39,99 @@ export class ClinicService {
     return this.http.get<any>(`${environment.apiUrl}/api/medconsult/clinics/search`, { params });
   }
 
-  getAllClinics(): Observable<any> {
-    return this.http.get<any>(`${environment.apiUrl}/api/medconsult/clinics/all`);
+  getAllClinics(): Observable<ClinicResponseDto[]> {
+    return this.http.get<ClinicResponseDto[]>(`${environment.apiUrl}/api/medconsult/clinics/all`);
   }
 
-  getClinicById(id: string): Observable<any> {
-    return this.http.get<any>(`${environment.apiUrl}/api/medconsult/clinics/${id}`);
+  getClinicById(id: string): Observable<ClinicResponseDto> {
+    return this.http.get<ClinicResponseDto>(`${environment.apiUrl}/api/medconsult/clinics/${id}`);
   }
 
-  getClinicDetail(id: string): Observable<any> {
-    return this.http.get<any>(`${environment.apiUrl}/api/medconsult/clinics/${id}/detail`);
+  getClinicDetail(id: string): Observable<ClinicDetailResponse> {
+    return this.http.get<ClinicDetailResponse>(`${environment.apiUrl}/api/medconsult/clinics/${id}/detail`);
   }
 
-  getClinicBranches(id: string): Observable<any> {
-    return this.http.get<any>(`${environment.apiUrl}/api/medconsult/clinics/${id}/branches`);
+  getClinicBranches(id: string): Observable<ClinicBranchResponseDto[]> {
+    return this.http.get<ClinicBranchResponseDto[]>(`${environment.apiUrl}/api/medconsult/clinics/${id}/branches`);
   }
 
-  getBranchHours(branchId: string): Observable<any> {
-    return this.http.get<any>(`${environment.apiUrl}/api/medconsult/clinics/branches/${branchId}/hours`);
+  getBranchHours(branchId: string): Observable<ClinicOperatingHourResponseDto[]> {
+    return this.http.get<ClinicOperatingHourResponseDto[]>(`${environment.apiUrl}/api/medconsult/clinics/branches/${branchId}/hours`);
   }
 
-  getClinicSpecialties(id: string): Observable<any> {
-    return this.http.get<any>(`${environment.apiUrl}/api/medconsult/clinics/${id}/specialties`);
+  getClinicSpecialties(id: string): Observable<ClinicSpecialtyResponseDto[]> {
+    return this.http.get<ClinicSpecialtyResponseDto[]>(`${environment.apiUrl}/api/medconsult/clinics/${id}/specialties`);
   }
 
-  getClinicInsurances(id: string): Observable<any> {
-    return this.http.get<any>(`${environment.apiUrl}/api/medconsult/clinics/${id}/insurance`);
+  getClinicInsurances(id: string): Observable<ClinicInsuranceResponseDto[]> {
+    return this.http.get<ClinicInsuranceResponseDto[]>(`${environment.apiUrl}/api/medconsult/clinics/${id}/insurance`);
   }
 
-  getClinicLanguages(id: string): Observable<any> {
-    return this.http.get<any>(`${environment.apiUrl}/api/medconsult/clinics/${id}/languages`);
+  getClinicLanguages(id: string): Observable<ClinicLanguageResponseDto[]> {
+    return this.http.get<ClinicLanguageResponseDto[]>(`${environment.apiUrl}/api/medconsult/clinics/${id}/languages`);
   }
 
   // ── Admin-Only / Write ──────────────────────────────────────────────
-  createClinic(dto: any, logoFile?: File): Observable<any> {
+  createClinic(dto: ClinicRequestDto, logoFile?: File): Observable<ClinicResponseDto> {
     const formData = new FormData();
     formData.append('body', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
     if (logoFile) {
       formData.append('logo', logoFile);
     }
-    return this.http.post<any>(`${environment.apiUrl}/api/medconsult/clinics/add`, formData);
+    return this.http.post<ClinicResponseDto>(`${environment.apiUrl}/api/medconsult/clinics/add`, formData);
   }
 
-  updateClinic(id: string, dto: any, logoFile?: File): Observable<any> {
+  updateClinic(id: string, dto: ClinicRequestDto, logoFile?: File): Observable<ClinicResponseDto> {
     const formData = new FormData();
     formData.append('body', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
     if (logoFile) {
       formData.append('logo', logoFile);
     }
-    return this.http.patch<any>(`${environment.apiUrl}/api/medconsult/clinics/${id}`, formData);
+    return this.http.patch<ClinicResponseDto>(`${environment.apiUrl}/api/medconsult/clinics/${id}`, formData);
   }
 
   deleteClinic(id: string): Observable<void> {
     return this.http.delete<void>(`${environment.apiUrl}/api/medconsult/clinics/${id}`);
   }
 
-  createClinicBranch(clinicId: string, dto: any): Observable<any> {
-    return this.http.post<any>(`${environment.apiUrl}/api/medconsult/clinics/${clinicId}/branches`, dto);
+  createClinicBranch(clinicId: string, dto: ClinicBranchRequestDto): Observable<ClinicBranchResponseDto> {
+    return this.http.post<ClinicBranchResponseDto>(`${environment.apiUrl}/api/medconsult/clinics/${clinicId}/branches`, dto);
   }
 
-  updateClinicBranch(branchId: string, dto: any): Observable<any> {
-    return this.http.patch<any>(`${environment.apiUrl}/api/medconsult/clinics/branches/${branchId}`, dto);
+  updateClinicBranch(branchId: string, dto: ClinicBranchRequestDto): Observable<ClinicBranchResponseDto> {
+    return this.http.patch<ClinicBranchResponseDto>(`${environment.apiUrl}/api/medconsult/clinics/branches/${branchId}`, dto);
   }
 
   deleteClinicBranch(branchId: string): Observable<void> {
     return this.http.delete<void>(`${environment.apiUrl}/api/medconsult/clinics/branches/${branchId}`);
   }
 
-  updateBranchHours(branchId: string, dtos: any[]): Observable<any> {
-    return this.http.put<any>(`${environment.apiUrl}/api/medconsult/clinics/branches/${branchId}/hours`, dtos);
+  updateBranchHours(branchId: string, dtos: ClinicOperatingHourRequestDto[]): Observable<ClinicOperatingHourResponseDto[]> {
+    return this.http.put<ClinicOperatingHourResponseDto[]>(`${environment.apiUrl}/api/medconsult/clinics/branches/${branchId}/hours`, dtos);
   }
 
-  addClinicSpecialty(clinicId: string, specialtyId: string): Observable<any> {
-    return this.http.post<any>(`${environment.apiUrl}/api/medconsult/clinics/${clinicId}/specialties/${specialtyId}`, {});
+  addClinicSpecialty(clinicId: string, specialtyId: string): Observable<ClinicSpecialtyResponseDto> {
+    return this.http.post<ClinicSpecialtyResponseDto>(`${environment.apiUrl}/api/medconsult/clinics/${clinicId}/specialties/${specialtyId}`, {});
   }
 
   deleteClinicSpecialty(clinicId: string, specialtyId: string): Observable<void> {
     return this.http.delete<void>(`${environment.apiUrl}/api/medconsult/clinics/${clinicId}/specialties/${specialtyId}`);
   }
 
-  addClinicInsurance(clinicId: string, providerId: string, dto?: any): Observable<any> {
-    return this.http.post<any>(`${environment.apiUrl}/api/medconsult/clinics/${clinicId}/insurance/${providerId}`, dto || {});
+  addClinicInsurance(clinicId: string, providerId: string, dto?: ClinicInsuranceRequestDto): Observable<ClinicInsuranceResponseDto> {
+    return this.http.post<ClinicInsuranceResponseDto>(`${environment.apiUrl}/api/medconsult/clinics/${clinicId}/insurance/${providerId}`, dto || {});
   }
 
   deleteClinicInsurance(clinicId: string, providerId: string): Observable<void> {
     return this.http.delete<void>(`${environment.apiUrl}/api/medconsult/clinics/${clinicId}/insurance/${providerId}`);
   }
 
-  addClinicLanguage(clinicId: string, languageId: string): Observable<any> {
-    return this.http.post<any>(`${environment.apiUrl}/api/medconsult/clinics/${clinicId}/languages/${languageId}`, {});
+  addClinicLanguage(clinicId: string, languageId: string): Observable<ClinicLanguageResponseDto> {
+    return this.http.post<ClinicLanguageResponseDto>(`${environment.apiUrl}/api/medconsult/clinics/${clinicId}/languages/${languageId}`, {});
   }
 
   deleteClinicLanguage(clinicId: string, languageId: string): Observable<void> {
     return this.http.delete<void>(`${environment.apiUrl}/api/medconsult/clinics/${clinicId}/languages/${languageId}`);
   }
 }
+

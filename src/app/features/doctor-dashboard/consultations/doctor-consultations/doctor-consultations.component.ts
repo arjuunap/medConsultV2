@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ConsultationService } from '../../../../core/services/consultation.service';
@@ -19,7 +19,7 @@ import {
   templateUrl: './doctor-consultations.component.html',
   styleUrls: []
 })
-export class DoctorConsultationsComponent implements OnInit {
+export class DoctorConsultationsComponent implements OnInit, OnDestroy {
   private consultationService = inject(ConsultationService);
   private doctorService = inject(DoctorService);
   private uiService = inject(UiService);
@@ -41,8 +41,14 @@ export class DoctorConsultationsComponent implements OnInit {
 
   public statusOptions = Object.values(ConsultationStatus);
 
+  private pollInterval: any;
+
   ngOnInit(): void {
     this.resolveDoctorId();
+  }
+
+  ngOnDestroy(): void {
+    this.stopPolling();
   }
 
   resolveDoctorId(): void {
@@ -83,18 +89,39 @@ export class DoctorConsultationsComponent implements OnInit {
     this.selectedConsultation = c;
     this.statusForm.patchValue({ status: c.status });
     this.loadMessages(c.consultationId);
+    this.startPolling(c.consultationId);
   }
 
-  loadMessages(consultationId: string): void {
-    this.uiService.showLoading();
+  loadMessages(consultationId: string, isPolling = false): void {
+    if (!isPolling) this.uiService.showLoading();
     this.consultationService.getMessagesForConsultation(consultationId).subscribe({
       next: (msgs) => {
+        const isNewMessage = this.messages.length !== msgs.length;
         this.messages = msgs;
-        this.uiService.hideLoading();
-        this.scrollToBottom();
+        if (!isPolling) this.uiService.hideLoading();
+        
+        if (!isPolling || isNewMessage) {
+           this.scrollToBottom();
+        }
       },
-      error: () => this.uiService.hideLoading()
+      error: () => {
+        if (!isPolling) this.uiService.hideLoading();
+      }
     });
+  }
+
+  startPolling(consultationId: string): void {
+    this.stopPolling();
+    this.pollInterval = setInterval(() => {
+      this.loadMessages(consultationId, true);
+    }, 3000);
+  }
+
+  stopPolling(): void {
+    if (this.pollInterval) {
+      clearInterval(this.pollInterval);
+      this.pollInterval = null;
+    }
   }
 
   sendMessage(): void {

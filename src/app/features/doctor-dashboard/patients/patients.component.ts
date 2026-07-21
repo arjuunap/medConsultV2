@@ -306,13 +306,13 @@ export class PatientsComponent implements OnInit {
       ...this.labForm.value,
       patientId: this.selectedPatientId
     };
-
+  console.log('lab',payload)
     this.clinicalRecordService.createLabResult(payload, this.selectedFile || undefined).subscribe({
       next: () => {
         this.uiService.hideLoading();
         this.uiService.showSuccess('Lab result uploaded.');
         this.closeModal();
-        this.loadPatientEMR();
+        // this.loadPatientEMR();
       },
       error: () => {
         this.uiService.hideLoading();
