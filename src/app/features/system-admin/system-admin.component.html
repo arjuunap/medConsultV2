@@ -30,6 +30,7 @@
             <th>City Name (EN)</th>
             <th>City Name (AR)</th>
             <th>Country Code</th>
+            <th>Sort Order</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -38,6 +39,7 @@
             <td class="fw-bold text-primary">{{ c.nameEn }}</td>
             <td>{{ c.nameAr }}</td>
             <td>{{ c.countryCode }}</td>
+            <td><span class="badge badge-info">#{{ c.sortOrder ?? 1 }}</span></td>
             <td>
               <button class="btn btn-outline btn-sm mr-2" (click)="viewLocalities(c)">Localities</button>
               <button class="btn btn-outline btn-sm mr-2" (click)="openEditModal('city', c)">Edit</button>
@@ -230,9 +232,13 @@
           <label class="form-label">City Name (AR)</label>
           <input type="text" formControlName="nameAr" class="form-control">
         </div>
-        <div class="form-group m-0">
+        <div class="form-group">
           <label class="form-label">Country Code</label>
           <input type="text" formControlName="countryCode" class="form-control" placeholder="E.g. SA">
+        </div>
+        <div class="form-group m-0">
+          <label class="form-label">Sort Order *</label>
+          <input type="number" formControlName="sortOrder" class="form-control" placeholder="1">
         </div>
       </form>
     </div>

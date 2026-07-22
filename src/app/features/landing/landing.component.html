@@ -17,13 +17,16 @@
 
     <div class="nav-actions">
       <ng-container *ngIf="authService.isLoggedIn(); else guestActions">
-        <a [routerLink]="getPortalDashboardRoute()" class="btn btn-white btn-sm">
+        <a [routerLink]="getPortalDashboardRoute()" class="btn btn-white btn-sm fw-bold">
           Go to Portal Dashboard →
         </a>
+        <button (click)="handleLogout()" class="btn btn-outline btn-sm text-white" style="border-color:rgba(255,255,255,0.35);">
+          🚪 Logout
+        </button>
       </ng-container>
       <ng-template #guestActions>
         <a routerLink="/login" class="btn btn-outline btn-sm">Sign in</a>
-        <a routerLink="/register" class="btn btn-white btn-sm">List your clinic</a>
+        <a routerLink="/register" class="btn btn-white btn-sm fw-bold">Sign up / List Clinic</a>
       </ng-template>
     </div>
   </nav>
@@ -339,8 +342,18 @@
       <h2 class="cta-h2">List your clinic.<br><span>Reach more patients.</span></h2>
       <p class="cta-sub">Join Saudi Arabia's verified healthcare provider platform with your branches and doctors live in 48 hours.</p>
       <div class="cta-btns">
-        <a routerLink="/register" class="btn btn-primary" style="font-size:15px;padding:14px 32px">List your clinic free →</a>
-        <a routerLink="/login" class="btn btn-outline" style="font-size:15px;padding:14px 32px">Sign in to portal</a>
+        <ng-container *ngIf="authService.isLoggedIn(); else guestCta">
+          <a [routerLink]="getPortalDashboardRoute()" class="btn btn-primary" style="font-size:15px;padding:14px 32px">
+            Go to Portal Dashboard →
+          </a>
+          <button (click)="handleLogout()" class="btn btn-outline" style="font-size:15px;padding:14px 32px;color:white;border-color:white;">
+            🚪 Logout
+          </button>
+        </ng-container>
+        <ng-template #guestCta>
+          <a routerLink="/register" class="btn btn-primary" style="font-size:15px;padding:14px 32px">Sign up / List clinic free →</a>
+          <a routerLink="/login" class="btn btn-outline" style="font-size:15px;padding:14px 32px">Sign in to portal</a>
+        </ng-template>
       </div>
     </div>
 

@@ -2,7 +2,7 @@ import { Injectable, inject, PLATFORM_ID, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
-import { Observable, tap, catchError, throwError, of, switchMap } from 'rxjs';
+import { Observable, tap, catchError, throwError, switchMap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -22,8 +22,14 @@ export class AuthService {
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
-      const storedToken = localStorage.getItem(this.tokenKey);
+      let storedToken = localStorage.getItem(this.tokenKey);
       const storedUser = localStorage.getItem(this.currentUserKey);
+
+      // Cookie fallback
+      if (!storedToken) {
+        storedToken = this.getCookie(this.tokenKey);
+      }
+
       if (storedToken && storedUser) {
         this.token.set(storedToken);
         try {
@@ -31,6 +37,11 @@ export class AuthService {
         } catch (e) {
           this.logout();
         }
+      } else if (storedToken) {
+        this.token.set(storedToken);
+        this.fetchCurrentUser().subscribe({
+          error: () => this.logout()
+        });
       }
     }
   }
@@ -43,14 +54,11 @@ export class AuthService {
     const user = this.currentUser();
     if (!user) return false;
     return roles.includes(user.role);
-    
   }
 
   public login(credentials: any): Observable<any> {
-    console.log(credentials)
     return this.http.post<any>(`${environment.apiUrl}/api/medconsult/auth/login`, credentials).pipe(
       tap(res => {
-        console.log(res)
         this.saveSession(res.token);
       }),
       switchMap(() => this.fetchCurrentUser())
@@ -80,20 +88,30 @@ export class AuthService {
     );
   }
 
-  public logout(): void {
+  public logout(redirectUrl: string = '/'): void {
     this.token.set(null);
     this.currentUser.set(null);
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem(this.tokenKey);
       localStorage.removeItem(this.currentUserKey);
+      document.cookie = `${this.tokenKey}=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
     }
-    this.router.navigate(['/login']);
+    this.router.navigate([redirectUrl]);
   }
 
   private saveSession(jwt: string): void {
     this.token.set(jwt);
     if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem(this.tokenKey, jwt);
+      document.cookie = `${this.tokenKey}=${jwt}; path=/; max-age=604800; SameSite=Lax`;
     }
+  }
+
+  private getCookie(name: string): string | null {
+    if (!isPlatformBrowser(this.platformId)) return null;
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+    return null;
   }
 }

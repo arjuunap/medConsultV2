@@ -213,6 +213,7 @@ export interface AppointmentSlotResponseDto {
 }
 
 export interface DoctorDetailResponse extends DoctorResponseDto {
+  doctor: DoctorResponseDto;
   clinics: DoctorClinicResponseDto[];
   specialties: DoctorSpecialtyResponseDto[];
   languages: DoctorLanguageResponseDto[];

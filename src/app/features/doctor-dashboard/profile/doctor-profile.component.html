@@ -8,10 +8,10 @@
     </div>
 
     <div class="d-flex align-center gap-2">
-      <span class="badge" [class.badge-success]="doctorProfile.mohVerified" [class.badge-info]="!doctorProfile.mohVerified">
-        {{ doctorProfile.mohVerified ? '✓ MOH Verified License' : 'MOH Verification Pending' }}
+      <span class="badge" [class.badge-success]="doctorProfile.doctor.mohVerified" [class.badge-info]="!doctorProfile.doctor.mohVerified">
+        {{ doctorProfile.doctor.mohVerified ? '✓ MOH Verified License' : 'MOH Verification Pending' }}
       </span>
-      <span class="badge badge-primary">MOH #: {{ doctorProfile.mohRegistrationNumber }}</span>
+      <span class="badge badge-primary">MOH #: {{ doctorProfile.doctor.mohRegistrationNumber }}</span>
     </div>
   </div>
 
@@ -23,9 +23,9 @@
           👨‍⚕️
         </div>
         <div>
-          <h3 class="fs-xl text-primary m-0">{{ doctorProfile.title }}. {{ doctorProfile.fullName }}</h3>
+          <h3 class="fs-xl text-primary m-0">{{ doctorDisplayName }}</h3>
           <div class="d-flex align-center gap-3 fs-xs text-muted mt-1">
-            <span>Experience: <strong>{{ doctorProfile.experienceYears }} Years</strong></span>
+            <span>Experience: <strong>{{ doctorProfile.experienceYears !== undefined && doctorProfile.experienceYears !== null ? doctorProfile.experienceYears : 0 }} Years</strong></span>
             <span>Rating: <strong>⭐ {{ doctorProfile.overallRating || '5.0' }} ({{ doctorProfile.reviewCount || 0 }} reviews)</strong></span>
             <span>Standard Fee: <strong class="text-success">SAR {{ doctorProfile.consultationFeeSar || 150 }}</strong></span>
           </div>
@@ -181,7 +181,7 @@
                 </span>
               </td>
               <td class="text-end">
-                <button (click)="removeSpecialty(s.id)" class="btn btn-outline btn-danger btn-sm">
+                <button (click)="removeSpecialty(s.specialtyId || s.id)" class="btn btn-outline btn-danger btn-sm">
                   Remove
                 </button>
               </td>

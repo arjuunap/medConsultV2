@@ -46,7 +46,7 @@ export class SystemAdminComponent implements OnInit {
     nameAr: ['', [Validators.required]],
     countryCode: ['SA', [Validators.required]],
     isActive: [true],
-    sortOrder: ['']
+    sortOrder: [1, [Validators.required, Validators.min(0)]]
   });
 
   public localityForm: FormGroup = this.fb.group({
@@ -180,7 +180,7 @@ export class SystemAdminComponent implements OnInit {
     this.editingId = '';
     this.selectedLogoFile = null;
 
-    if (type === 'city') this.cityForm.reset({ countryCode: 'SA', isActive: true });
+    if (type === 'city') this.cityForm.reset({ countryCode: 'SA', isActive: true, sortOrder: this.cities.length + 1 });
     else if (type === 'locality') this.localityForm.reset({ cityId: this.selectedCityForLocalities?.cityId, isActive: true });
     else if (type === 'specialty') this.specialtyForm.reset({ category: 'GENERAL', isActive: true });
     else if (type === 'subSpecialty') this.subSpecialtyForm.reset({ specialtyId: this.selectedSpecialtyForSub?.specialtyId, isActive: true });
@@ -195,7 +195,10 @@ export class SystemAdminComponent implements OnInit {
 
     if (type === 'city') {
       this.editingId = item.cityId;
-      this.cityForm.patchValue(item);
+      this.cityForm.patchValue({
+        ...item,
+        sortOrder: item.sortOrder ?? 1
+      });
     } else if (type === 'locality') {
       this.editingId = item.localityId;
       this.localityForm.patchValue(item);
@@ -229,13 +232,17 @@ export class SystemAdminComponent implements OnInit {
   submitCity(): void {
     if (this.cityForm.invalid) return;
     this.uiService.showLoading();
+    const val = {
+      ...this.cityForm.value,
+      sortOrder: Number(this.cityForm.value.sortOrder) || 1
+    };
     if (this.isEdit) {
-      this.referenceService.updateCity(this.editingId, this.cityForm.value).subscribe({
+      this.referenceService.updateCity(this.editingId, val).subscribe({
         next: () => { this.uiService.hideLoading(); this.uiService.showSuccess('City updated.'); this.closeModal(); this.loadData(); },
         error: () => this.uiService.hideLoading()
       });
     } else {
-      this.referenceService.addCity(this.cityForm.value).subscribe({
+      this.referenceService.addCity(val).subscribe({
         next: () => { this.uiService.hideLoading(); this.uiService.showSuccess('City added.'); this.closeModal(); this.loadData(); },
         error: () => this.uiService.hideLoading()
       });

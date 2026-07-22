@@ -1,7 +1,7 @@
 <div class="layout-container">
   <!-- Sidebar Navigation -->
   <aside class="sidebar">
-    <div class="brand-section">
+    <div class="brand-section cursor-pointer" routerLink="/" style="cursor: pointer;">
       <h1 class="brand-title">
         <span class="brand-logo-dot"></span>
         MedConsult V2
@@ -17,11 +17,16 @@
       >
         <span>{{ item.label }}</span>
       </a>
+
+      <!-- Quick Public Portal Link -->
+      <a routerLink="/" class="menu-item mt-4" style="border-top: 1px solid rgba(255,255,255,0.12); padding-top: 14px; opacity: 0.9;">
+        <span>🌐 Public Portal Home</span>
+      </a>
     </nav>
 
     <div class="sidebar-footer">
       <button class="btn btn-outline w-100 text-white" style="border-color: rgba(255,255,255,0.2);" (click)="handleLogout()">
-        Logout
+        🚪 Logout
       </button>
     </div>
   </aside>
@@ -30,19 +35,27 @@
   <div class="main-area">
     <!-- Top Header Bar -->
     <header class="header">
-      <div class="page-title">
-        Dashboard
+      <div class="d-flex align-center gap-3">
+        <div class="page-title m-0">
+          Dashboard
+        </div>
+        <a routerLink="/" class="btn btn-sm btn-outline-primary py-1 px-3 fs-xs rounded-pill" style="text-decoration:none;">
+          🌐 View Public Portal
+        </a>
       </div>
 
       <div class="user-profile" *ngIf="authService.currentUser() as user">
         <div class="user-avatar" style="overflow: hidden; padding: 0;">
-          <img *ngIf="user.avatarUrl" [src]="apiUrl + user.avatarUrl " alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;" (error)="user.avatarUrl = ''">
+          <img *ngIf="user.avatarUrl" [src]="user.avatarUrl | apiUrl" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;" (error)="user.avatarUrl = ''">
           <span *ngIf="!user.avatarUrl">{{ userInitials() }}</span>
         </div>
         <div class="user-details">
           <span class="user-name">{{ user.fullName }}</span>
           <span class="user-role-badge">{{ user.role.replace('_', ' ') }}</span>
         </div>
+        <button class="btn btn-sm text-danger border-0 bg-transparent ms-2 cursor-pointer" (click)="handleLogout()" title="Logout">
+          🚪 Logout
+        </button>
       </div>
     </header>
 
@@ -52,3 +65,4 @@
     </main>
   </div>
 </div>
+

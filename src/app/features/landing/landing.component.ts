@@ -518,6 +518,10 @@ export class LandingComponent implements OnInit {
     }
   }
 
+  handleLogout(): void {
+    this.authService.logout('/');
+  }
+
   // Helpers
   getCityName(cityId: string): string {
     const c = this.cities.find(x => x.cityId === cityId);

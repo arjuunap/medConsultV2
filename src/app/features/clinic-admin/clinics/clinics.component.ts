@@ -217,7 +217,17 @@ export class ClinicsComponent implements OnInit {
     if (type === 'addClinic') {
       this.clinicForm.reset();
     } else if (type === 'editClinic' && this.selectedClinic) {
-      this.clinicForm.patchValue(this.selectedClinic);
+      this.clinicForm.patchValue({
+        nameEn: this.selectedClinic.nameEn || '',
+        nameAr: this.selectedClinic.nameAr || '',
+        descriptionEn: this.selectedClinic.descriptionEn || '',
+        descriptionAr: this.selectedClinic.descriptionAr || '',
+        email: this.selectedClinic.email || '',
+        phonePrimary: this.selectedClinic.phonePrimary || '',
+        phoneSecondary: this.selectedClinic.phoneSecondary || '',
+        mohLicenseNumber: this.selectedClinic.mohLicenseNumber || '',
+        vatNumber: this.selectedClinic.vatNumber || (this.selectedClinic as any).vat_number || ''
+      });
     } else if (type === 'addBranch') {
       this.branchForm.reset({ isPrimary: false });
       this.branchLocalities = [];
@@ -246,9 +256,17 @@ export class ClinicsComponent implements OnInit {
     if (this.clinicForm.invalid || !this.selectedClinic) return;
     this.uiService.showLoading();
 
-    this.clinicService.updateClinic(this.selectedClinic.clinicId, this.clinicForm.value, this.selectedLogoFile || undefined).subscribe({
+    const payload = {
+      ...this.clinicForm.value,
+      vatNumber: this.clinicForm.value.vatNumber || ''
+    };
+
+    this.clinicService.updateClinic(this.selectedClinic.clinicId, payload, this.selectedLogoFile || undefined).subscribe({
       next: () => {
         this.uiService.hideLoading();
+        if (this.selectedClinic) {
+          this.selectedClinic.vatNumber = payload.vatNumber;
+        }
         this.uiService.showSuccess('Clinic profile updated successfully.');
         this.closeModal();
         this.loadClinics();
