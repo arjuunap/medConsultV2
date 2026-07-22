@@ -5,13 +5,14 @@ import { PatientService } from '../../../core/services/patient.service';
 import { ClinicalRecordService } from '../../../core/services/clinical-record.service';
 import { AppointmentService } from '../../../core/services/appointment.service';
 import { DoctorService } from '../../../core/services/doctor.service';
+import { ConsultationService } from '../../../core/services/consultation.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { UiService } from '../../../core/services/ui.service';
 import { PatientHealthProfileResponseDto, PatientAllergyResponseDto, PatientChronicConditionResponseDto } from '../../../core/models/patient.model';
 import {
   VitalResponseDto, VitalSource,
   PrescriptionResponseDto, PrescriptionItemResponseDto, PrescriptionStatus,
-  LabResultResponseDto, LabResultStatus, ResultFlag, LabItemFlag
+  LabResultResponseDto, LabResultStatus, ResultFlag
 } from '../../../core/models/clinical-record.model';
 
 interface PatientOption {
@@ -31,6 +32,7 @@ export class PatientsComponent implements OnInit {
   private clinicalRecordService = inject(ClinicalRecordService);
   private appointmentService = inject(AppointmentService);
   private doctorService = inject(DoctorService);
+  private consultationService = inject(ConsultationService);
   private authService = inject(AuthService);
   private uiService = inject(UiService);
   private fb = inject(FormBuilder);
@@ -100,20 +102,69 @@ export class PatientsComponent implements OnInit {
 
   loadDoctorPatients(): void {
     this.uiService.showLoading();
+    const map = new Map<string, string>();
+
+    const updateList = () => {
+      this.patientList = Array.from(map.entries()).map(([patientId, patientName]) => ({
+        patientId,
+        patientName
+      }));
+      this.uiService.hideLoading();
+    };
+
+    // 1. Fetch patients from appointments
     this.appointmentService.getDoctorUpcomingAppointments().subscribe({
       next: (apps) => {
-        this.uiService.hideLoading();
-        // Extract unique patient IDs and names
-        const map = new Map<string, string>();
-        for (const app of apps) {
-          map.set(app.patientId, app.patientName);
+        if (apps && Array.isArray(apps)) {
+          for (const app of apps) {
+            if (app.patientId && app.patientName) {
+              map.set(app.patientId, app.patientName);
+            }
+          }
+          updateList();
         }
-        this.patientList = Array.from(map.entries()).map(([patientId, patientName]) => ({
-          patientId,
-          patientName
-        }));
       },
-      error: () => this.uiService.hideLoading()
+      error: () => updateList()
+    });
+
+    // 2. Fetch patients from tele-consultations
+    this.consultationService.getMyDoctorConsultations(0, 100).subscribe({
+      next: (page) => {
+        const consultations = page.content || [];
+        for (const c of consultations) {
+          if (c.patientId && c.patientName) {
+            map.set(c.patientId, c.patientName);
+          }
+        }
+        updateList();
+      },
+      error: () => {
+        const user = this.authService.currentUser();
+        this.doctorService.getAllDoctors().subscribe({
+          next: (docs) => {
+            const doc = docs.find((d: any) => 
+              (user?.userId && d.userId === user.userId) ||
+              (user?.fullName && d.fullName?.toLowerCase() === user.fullName?.toLowerCase())
+            );
+            if (doc && doc.doctorId) {
+              this.consultationService.getConsultationsByDoctor(doc.doctorId, 0, 100).subscribe({
+                next: (page) => {
+                  const consultations = page.content || [];
+                  for (const c of consultations) {
+                    if (c.patientId && c.patientName) {
+                      map.set(c.patientId, c.patientName);
+                    }
+                  }
+                  updateList();
+                }
+              });
+            } else {
+              updateList();
+            }
+          },
+          error: () => updateList()
+        });
+      }
     });
   }
 

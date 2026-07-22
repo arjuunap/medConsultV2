@@ -43,11 +43,14 @@ export class AuthService {
     const user = this.currentUser();
     if (!user) return false;
     return roles.includes(user.role);
+    
   }
 
   public login(credentials: any): Observable<any> {
+    console.log(credentials)
     return this.http.post<any>(`${environment.apiUrl}/api/medconsult/auth/login`, credentials).pipe(
       tap(res => {
+        console.log(res)
         this.saveSession(res.token);
       }),
       switchMap(() => this.fetchCurrentUser())

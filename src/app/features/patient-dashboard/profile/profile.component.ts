@@ -22,6 +22,40 @@ export class ProfileComponent implements OnInit {
 
   public bloodTypes = Object.values(BloodType);
   public maritalStatuses = Object.values(MaritalStatus);
+  public nationalities: { code: string; flag: string }[] = [
+    { code: 'SA', flag: '🇸🇦' },
+    { code: 'AE', flag: '🇦🇪' },
+    { code: 'KW', flag: '🇰🇼' },
+    { code: 'QA', flag: '🇶🇦' },
+    { code: 'BH', flag: '🇧🇭' },
+    { code: 'OM', flag: '🇴🇲' },
+    { code: 'EG', flag: '🇪🇬' },
+    { code: 'JO', flag: '🇯🇴' },
+    { code: 'LB', flag: '🇱🇧' },
+    { code: 'SY', flag: '🇸🇾' },
+    { code: 'YE', flag: '🇾🇪' },
+    { code: 'IQ', flag: '🇮🇶' },
+    { code: 'SD', flag: '🇸🇩' },
+    { code: 'PS', flag: '🇵🇸' },
+    { code: 'TN', flag: '🇹🇳' },
+    { code: 'MA', flag: '🇲🇦' },
+    { code: 'DZ', flag: '🇩🇿' },
+    { code: 'IN', flag: '🇮🇳' },
+    { code: 'PK', flag: '🇵🇰' },
+    { code: 'BD', flag: '🇧🇩' },
+    { code: 'PH', flag: '🇵🇭' },
+    { code: 'ID', flag: '🇮🇩' },
+    { code: 'US', flag: '🇺🇸' },
+    { code: 'GB', flag: '🇬🇧' },
+    { code: 'CA', flag: '🇨🇦' },
+    { code: 'AU', flag: '🇦🇺' },
+    { code: 'DE', flag: '🇩🇪' },
+    { code: 'FR', flag: '🇫🇷' },
+    { code: 'IT', flag: '🇮🇹' },
+    { code: 'ES', flag: '🇪🇸' },
+    { code: 'TR', flag: '🇹🇷' },
+    { code: 'OT', flag: '🌐' }
+  ];
 
   public profileForm: FormGroup = this.fb.group({
     dateOfBirth: ['', [Validators.required]],

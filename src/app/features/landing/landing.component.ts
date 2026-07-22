@@ -13,7 +13,7 @@ import { SpecialtyResponseDto } from '../../core/models/reference.model';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './landing.component.html',
-  styleUrls: []
+  styleUrls: ['./landing.component.css']
 })
 export class LandingComponent implements OnInit {
   private clinicService = inject(ClinicService);

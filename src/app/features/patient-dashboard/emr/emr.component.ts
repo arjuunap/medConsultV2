@@ -221,7 +221,25 @@ export class EmrComponent implements OnInit {
 
   downloadLabFile(fileId: string): void {
     if (!fileId) return;
-    // Download direct endpoint mapping or open resource URL
-    window.open(`/uploads/${fileId}`, '_blank');
+    this.uiService.showLoading();
+    this.clinicalRecordService.downloadFile(fileId).subscribe({
+      next: (blob: Blob) => {
+        this.uiService.hideLoading();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Lab_Report_${fileId.substring(0, 8)}`;
+        a.target = '_blank';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        this.uiService.hideLoading();
+        console.error('Failed to download lab report attachment:', err);
+        this.uiService.showError('Could not download lab attachment.');
+      }
+    });
   }
 }

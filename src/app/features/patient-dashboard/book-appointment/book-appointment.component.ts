@@ -178,7 +178,19 @@ export class BookAppointmentComponent implements OnInit {
       },
       error: (err) => {
         this.uiService.hideLoading();
-        this.uiService.showError(err.error?.message || 'Failed to book appointment.');
+        let errorMsg = 'Failed to book appointment.';
+        if (err.error) {
+          if (typeof err.error === 'string') {
+            errorMsg = err.error;
+          } else if (err.error.message) {
+            errorMsg = err.error.message;
+          } else if (err.error.errors && Array.isArray(err.error.errors)) {
+            errorMsg = err.error.errors.map((e: any) => e.defaultMessage || e.message).join(', ');
+          } else {
+            errorMsg = JSON.stringify(err.error);
+          }
+        }
+        this.uiService.showError(errorMsg);
       }
     });
   }

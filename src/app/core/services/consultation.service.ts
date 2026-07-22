@@ -41,6 +41,11 @@ export class ConsultationService {
     return this.http.get<any>(`${environment.apiUrl}/api/medconsult/consultations/doctor/${doctorId}`, { params });
   }
 
+  getMyDoctorConsultations(page = 0, size = 10): Observable<any> {
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    return this.http.get<any>(`${environment.apiUrl}/api/medconsult/consultations/my/doctor`, { params });
+  }
+
   // --- Consultation Messages ---
 
   sendMessage(dto: ConsultationMessageRequestDto): Observable<ConsultationMessageResponseDto> {

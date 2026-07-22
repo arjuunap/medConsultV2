@@ -50,7 +50,7 @@ export class LoginComponent {
             this.router.navigate(['/doctor/schedule']);
             break;
           case UserRole.CLINIC_ADMIN:
-            this.router.navigate(['/clinic-admin/clinics ']);
+            this.router.navigate(['/clinic-admin/clinics']);
             break;
           case UserRole.SYSTEM_ADMIN:
             this.router.navigate(['/system-admin']);
@@ -60,6 +60,7 @@ export class LoginComponent {
         }
       },
       error: (err) => {
+        console.error(err)
         this.uiService.hideLoading();
         this.errorMessage = err.error?.message || 'Login failed. Please check your credentials.';
         this.uiService.showError(this.errorMessage);

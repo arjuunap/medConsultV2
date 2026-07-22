@@ -51,8 +51,8 @@
     <div class="form-group" *ngIf="wizardForm.get('scheduledDate')?.value && wizardForm.get('dcId')?.value">
       <label class="form-label">4. Available Time Slots</label>
       
-      <div class="d-grid mt-2" style="grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px;">
-        <label *ngFor="let slot of slots" class="p-2 text-center rounded-md cursor-pointer border" style="border-style: dashed; transition: var(--transition);" [style.border-color]="wizardForm.get('slotId')?.value === slot.slotId ? 'var(--primary)' : 'var(--gray-200)'" [style.background-color]="wizardForm.get('slotId')?.value === slot.slotId ? 'var(--primary-light)' : 'transparent'">
+      <div class="d-flex flex-wrap gap-2 mt-2">
+        <label *ngFor="let slot of slots" class="p-2 text-center rounded cursor-pointer border" style="min-width: 80px; border-style: dashed; transition: var(--transition);" [style.border-color]="wizardForm.get('slotId')?.value === slot.slotId ? 'var(--primary)' : 'var(--gray-200)'" [style.background-color]="wizardForm.get('slotId')?.value === slot.slotId ? 'var(--primary-light)' : 'transparent'">
           <input 
             type="radio" 
             formControlName="slotId" 

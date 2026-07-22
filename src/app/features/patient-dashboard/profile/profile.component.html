@@ -53,13 +53,16 @@
       <!-- Nationality -->
       <div class="form-group">
         <label class="form-label" for="nationality">Nationality</label>
-        <input 
-          type="text" 
+        <select 
           id="nationality" 
           formControlName="nationality" 
           class="form-control"
-          placeholder="Saudi Arabia"
         >
+          <option value="">-- Select Nationality --</option>
+          <option *ngFor="let nat of nationalities" [value]="nat.code">
+            {{ nat.flag }} {{ nat.code }}
+          </option>
+        </select>
         <div *ngIf="profileForm.get('nationality')?.touched && profileForm.get('nationality')?.invalid" class="error-text">
           Nationality is required.
         </div>

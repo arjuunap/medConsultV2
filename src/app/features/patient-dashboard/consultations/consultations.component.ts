@@ -82,6 +82,9 @@ export class ConsultationsComponent implements OnInit, OnDestroy {
       next: (page) => {
         this.consultations = page.content || [];
         this.uiService.hideLoading();
+        if (this.consultations.length > 0 && !this.selectedConsultation) {
+          this.selectConsultation(this.consultations[0]);
+        }
       },
       error: () => this.uiService.hideLoading()
     });

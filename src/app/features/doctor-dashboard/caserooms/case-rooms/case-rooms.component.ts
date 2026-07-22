@@ -5,6 +5,8 @@ import { CaseRoomService } from '../../../../core/services/case-room.service';
 import { UiService } from '../../../../core/services/ui.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { AppointmentService } from '../../../../core/services/appointment.service';
+import { ConsultationService } from '../../../../core/services/consultation.service';
+import { DoctorService } from '../../../../core/services/doctor.service';
 import { 
   CaseRoomResponseDto, 
   CaseRoomPostResponseDto, 
@@ -25,6 +27,8 @@ export class CaseRoomsComponent implements OnInit, OnDestroy {
   private uiService = inject(UiService);
   public authService = inject(AuthService);
   private appointmentService = inject(AppointmentService);
+  private consultationService = inject(ConsultationService);
+  private doctorService = inject(DoctorService);
   private fb = inject(FormBuilder);
 
   public caseRooms: CaseRoomResponseDto[] = [];
@@ -67,15 +71,63 @@ export class CaseRoomsComponent implements OnInit, OnDestroy {
   }
 
   loadDoctorPatients(): void {
+    const map = new Map<string, string>();
+
+    const updateList = () => {
+      this.patientsList = Array.from(map.entries()).map(([patientId, patientName]) => ({
+        patientId,
+        patientName
+      }));
+    };
+
+    // 1. Fetch patients from appointments
     this.appointmentService.getDoctorUpcomingAppointments().subscribe({
       next: (apps) => {
-        const map = new Map<string, string>();
-        for (const app of apps) {
-          map.set(app.patientId, app.patientName);
+        if (apps && Array.isArray(apps)) {
+          for (const app of apps) {
+            if (app.patientId && app.patientName) {
+              map.set(app.patientId, app.patientName);
+            }
+          }
+          updateList();
         }
-        this.patientsList = Array.from(map.entries()).map(([patientId, patientName]) => ({
-          patientId, patientName
-        }));
+      }
+    });
+
+    // 2. Fetch patients from tele-consultations
+    this.consultationService.getMyDoctorConsultations(0, 100).subscribe({
+      next: (page) => {
+        const consultations = page.content || [];
+        for (const c of consultations) {
+          if (c.patientId && c.patientName) {
+            map.set(c.patientId, c.patientName);
+          }
+        }
+        updateList();
+      },
+      error: () => {
+        const user = this.authService.currentUser();
+        this.doctorService.getAllDoctors().subscribe({
+          next: (docs) => {
+            const doc = docs.find((d: any) => 
+              (user?.userId && d.userId === user.userId) ||
+              (user?.fullName && d.fullName?.toLowerCase() === user.fullName?.toLowerCase())
+            );
+            if (doc && doc.doctorId) {
+              this.consultationService.getConsultationsByDoctor(doc.doctorId, 0, 100).subscribe({
+                next: (page) => {
+                  const consultations = page.content || [];
+                  for (const c of consultations) {
+                    if (c.patientId && c.patientName) {
+                      map.set(c.patientId, c.patientName);
+                    }
+                  }
+                  updateList();
+                }
+              });
+            }
+          }
+        });
       }
     });
   }

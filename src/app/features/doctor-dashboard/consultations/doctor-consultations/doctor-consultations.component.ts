@@ -44,45 +44,56 @@ export class DoctorConsultationsComponent implements OnInit, OnDestroy {
   private pollInterval: any;
 
   ngOnInit(): void {
-    this.resolveDoctorId();
+    this.loadConsultations();
   }
 
   ngOnDestroy(): void {
     this.stopPolling();
   }
 
-  resolveDoctorId(): void {
-    const currentUser = this.authService.currentUser();
-    if (!currentUser || !currentUser.userId) return;
-
+  loadConsultations(): void {
     this.uiService.showLoading();
-    this.doctorService.getAllDoctors().subscribe({
-      next: (docs) => {
-        const doc = docs.find((d: any) => d.userId === currentUser.userId);
-        if (doc) {
-          this.doctorId = doc.doctorId;
-          this.loadConsultations();
-        } else {
-          this.uiService.hideLoading();
-          this.uiService.showError('Doctor profile not found for this user.');
-        }
+    // 1. Try dedicated endpoint first
+    this.consultationService.getMyDoctorConsultations(0, 50).subscribe({
+      next: (page) => {
+        this.handleConsultationsLoaded(page);
       },
       error: () => {
-        this.uiService.hideLoading();
-        this.uiService.showError('Failed to load doctor profile.');
+        // 2. Fallback to doctor lookup + getConsultationsByDoctor for older backend instances
+        this.fallbackResolveAndLoadConsultations();
       }
     });
   }
 
-  loadConsultations(): void {
-    if (!this.doctorId) return;
-    this.consultationService.getConsultationsByDoctor(this.doctorId, 0, 50).subscribe({
-      next: (page) => {
-        this.consultations = page.content || [];
-        this.uiService.hideLoading();
+  fallbackResolveAndLoadConsultations(): void {
+    const user = this.authService.currentUser();
+    this.doctorService.getAllDoctors().subscribe({
+      next: (docs) => {
+        const doc = docs.find((d: any) => 
+          (user?.userId && d.userId === user.userId) ||
+          (user?.fullName && d.fullName?.toLowerCase() === user.fullName?.toLowerCase())
+        );
+
+        if (doc && doc.doctorId) {
+          this.doctorId = doc.doctorId;
+          this.consultationService.getConsultationsByDoctor(this.doctorId, 0, 50).subscribe({
+            next: (page) => this.handleConsultationsLoaded(page),
+            error: () => this.uiService.hideLoading()
+          });
+        } else {
+          this.uiService.hideLoading();
+        }
       },
       error: () => this.uiService.hideLoading()
     });
+  }
+
+  handleConsultationsLoaded(page: any): void {
+    this.consultations = page.content || [];
+    this.uiService.hideLoading();
+    if (this.consultations.length > 0 && !this.selectedConsultation) {
+      this.selectConsultation(this.consultations[0]);
+    }
   }
 
   selectConsultation(c: ConsultationResponseDto): void {

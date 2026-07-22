@@ -202,4 +202,10 @@ export class ClinicalRecordService {
   deleteLabItem(itemId: string): Observable<void> {
     return this.http.delete<void>(`${environment.apiUrl}/api/medconsult/lab-results/items/${itemId}`);
   }
+
+  downloadFile(fileId: string): Observable<Blob> {
+    return this.http.get(`${environment.apiUrl}/api/medconsult/files/${fileId}/download`, {
+      responseType: 'blob'
+    });
+  }
 }

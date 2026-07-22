@@ -1,141 +1,171 @@
-<!-- Landing Public Page Layout -->
-<header class="header shadow-sm position-relative w-100">
-  <div class="brand-title">
-    <span class="brand-logo-dot"></span>
-    MedConsult V2
-  </div>
-
-  <div class="user-profile d-flex align-center gap-3">
-    <ng-container *ngIf="authService.isLoggedIn(); else guestNav">
-      <!-- Redirect user directly based on their role -->
-      <a 
-        [routerLink]="authService.currentUser()?.role === 'PATIENT' ? '/patient/home' : (authService.currentUser()?.role === 'DOCTOR' ? '/doctor/schedule' : '/clinic-admin/clinics')" 
-        class="btn btn-primary"
-      >
-        Go to Portal Dashboard
-      </a>
-    </ng-container>
-    <ng-template #guestNav>
-      <a routerLink="/login" class="btn btn-outline mr-2">Sign In</a>
-      <a routerLink="/register" class="btn btn-accent">Create Account</a>
-    </ng-template>
+<header class="navbar">
+  <div class="container d-flex justify-between align-center py-3">
+    <div class="brand d-flex align-center gap-2">
+      <div class="logo-icon"><i class="fas fa-heartbeat"></i></div>
+      <span class="fw-bold fs-xl text-primary" style="letter-spacing: -0.5px;">MedConsult<span class="text-accent">V2</span></span>
+    </div>
+    
+    <div class="d-flex align-center gap-3">
+      <ng-container *ngIf="authService.isLoggedIn(); else guestNav">
+        <a [routerLink]="authService.currentUser()?.role === 'PATIENT' ? '/patient/home' : (authService.currentUser()?.role === 'DOCTOR' ? '/doctor/schedule' : '/clinic-admin/clinics')" 
+           class="btn btn-primary premium-btn">
+          Go to Portal Dashboard <i class="fas fa-arrow-right ml-2"></i>
+        </a>
+      </ng-container>
+      <ng-template #guestNav>
+        <a routerLink="/login" class="btn btn-outline premium-btn-outline fw-bold">Sign In</a>
+        <a routerLink="/register" class="btn btn-primary premium-btn fw-bold">Create Account</a>
+      </ng-template>
+    </div>
   </div>
 </header>
 
-<!-- Hero Banner -->
-<section class="bg-primary text-white text-center py-6" style="background: linear-gradient(135deg, var(--primary), var(--accent)); padding: 80px 20px;">
-  <div class="container" style="max-width: 800px;">
-    <h1 class="text-white fw-bold mb-3" style="font-size: 3.5rem; line-height: 1.2;">Find and Book Trusted Clinics</h1>
-    <p class="fs-lg mb-5" style="opacity: 0.9;">Search by specialties, explore clinic profiles, and consult with the best healthcare professionals.</p>
+<section class="hero-section">
+  <div class="hero-bg-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+  </div>
+  
+  <div class="container hero-content text-center position-relative" style="z-index: 2;">
+    <span class="hero-badge mb-4 d-inline-flex align-center gap-2"><span class="pulse-dot"></span> The Future of Healthcare</span>
+    <h1 class="hero-title fw-bold mb-3">Find and Book <br><span class="text-gradient">Trusted Clinics</span></h1>
+    <p class="hero-subtitle mb-5 mx-auto">Search by specialties, explore clinic profiles, and consult with the best healthcare professionals in seconds.</p>
     
-    <!-- Inline Search Form -->
-    <form [formGroup]="searchForm" (submit)="executeSearch(); $event.preventDefault()" class="card flex-row flex-wrap align-center gap-3 mx-auto p-4 rounded-lg shadow-lg" style="max-width: 700px;">
-      <div class="flex-2" style="min-width: 200px;">
-        <input 
-          type="text" 
-          formControlName="name" 
-          class="form-control" 
-          placeholder="Search clinic name..." 
-        >
-      </div>
-      <div class="flex-1" style="min-width: 150px;">
-        <select formControlName="specialtyId" class="form-control">
-          <option value="">All Specialties</option>
-          <option *ngFor="let spec of specialties" [value]="spec.specialtyId">{{ spec.nameEn }}</option>
-        </select>
-      </div>
-      <button type="submit" class="btn btn-primary px-5 py-3">Search</button>
-    </form>
+    <!-- Search Bar -->
+    <div class="search-glass-container mx-auto">
+      <form [formGroup]="searchForm" (submit)="executeSearch(); $event.preventDefault()" class="d-flex flex-wrap align-center gap-3 w-100">
+        <div class="search-input-wrapper flex-2">
+          <i class="fas fa-search search-icon"></i>
+          <input type="text" formControlName="name" class="search-input" placeholder="Search clinic name...">
+        </div>
+        <div class="search-divider"></div>
+        <div class="search-input-wrapper flex-1">
+          <i class="fas fa-stethoscope search-icon"></i>
+          <select formControlName="specialtyId" class="search-input">
+            <option value="">All Specialties</option>
+            <option *ngFor="let spec of specialties" [value]="spec.specialtyId">{{ spec.nameEn }}</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-accent search-btn fw-bold">Find Clinic</button>
+      </form>
+    </div>
   </div>
 </section>
 
-<!-- Content Grid -->
 <main class="container py-6">
-  <h2 class="fs-2xl mb-5 text-center">Explore Available Clinics</h2>
+  <div class="d-flex justify-between align-end mb-5">
+    <div>
+      <h2 class="fs-2xl fw-bold text-dark m-0">Explore Clinics</h2>
+      <p class="text-muted m-0 mt-1">Discover top-rated healthcare providers near you.</p>
+    </div>
+  </div>
 
-  <div class="grid-responsive">
-    <!-- Clinic Cards -->
-    <div 
-      *ngFor="let clinic of clinics" 
-      class="card card-hover cursor-pointer position-relative overflow-hidden" 
-      (click)="selectClinic(clinic.clinicId)"
-    >
-      <div class="position-absolute" style="top: 0; left: 0; bottom: 0; width: 6px; background-color: var(--primary);"></div>
-      <div class="card-body pl-4">
-        <div class="d-flex justify-between align-start mb-2">
-          <h3 class="fs-xl text-primary">{{ clinic.nameEn }}</h3>
-          <span class="badge badge-success">
-            ★ {{ clinic.overallRating || 'New' }}
-          </span>
+  <div class="clinic-grid">
+    <div *ngFor="let clinic of clinics" class="clinic-card" (click)="selectClinic(clinic.clinicId)">
+      <div class="clinic-card-header">
+        <div class="clinic-avatar">
+          {{ clinic.nameEn.substring(0, 1) }}
         </div>
-        <p class="text-muted fs-sm mb-4" style="line-height: 1.6;">
-          {{ clinic.descriptionEn || 'No description available for this clinic.' | slice:0:120 }}...
-        </p>
+        <div class="clinic-rating">
+          <i class="fas fa-star text-warning"></i> 
+          <span class="fw-bold ml-1">{{ clinic.overallRating || '4.9' }}</span>
+        </div>
       </div>
-
-      <div class="card-footer d-flex justify-between align-center fs-sm text-muted">
-        <span class="fw-medium text-dark">📞 {{ clinic.phonePrimary }}</span>
-        <span class="text-accent fw-bold">View Details &rarr;</span>
+      <div class="clinic-card-body">
+        <h3 class="clinic-title">{{ clinic.nameEn }}</h3>
+        <p class="clinic-desc">{{ clinic.descriptionEn || 'Premium healthcare services and consultations for you and your family.' | slice:0:100 }}...</p>
+        
+        <div class="clinic-meta mt-4">
+          <div class="meta-item">
+            <i class="fas fa-phone-alt text-primary"></i>
+            <span>{{ clinic.phonePrimary || 'N/A' }}</span>
+          </div>
+          <div class="meta-item">
+            <i class="fas fa-map-marker-alt text-accent"></i>
+            <span>Verified Clinic</span>
+          </div>
+        </div>
+      </div>
+      <div class="clinic-card-footer">
+        <span class="view-details-text">View Details</span>
+        <i class="fas fa-chevron-right text-muted"></i>
       </div>
     </div>
 
     <!-- Empty State -->
-    <div *ngIf="clinics.length === 0" class="w-100 text-center p-6 text-muted border rounded-lg bg-light" style="grid-column: 1 / -1;">
-      No clinics found matching your criteria. Try another search.
+    <div *ngIf="clinics.length === 0" class="empty-state">
+      <div class="empty-icon"><i class="fas fa-search-minus"></i></div>
+      <h3>No Clinics Found</h3>
+      <p>We couldn't find any clinics matching your search criteria. Try different keywords or clear your filters.</p>
     </div>
   </div>
 </main>
 
 <!-- Clinic Detail Modal Backdrop -->
-<div *ngIf="selectedClinicDetail" class="modal-backdrop">
+<div *ngIf="selectedClinicDetail" class="modal-backdrop-blur">
   <!-- Modal Card -->
-  <div class="modal-content">
-    <div class="modal-header">
+  <div class="modern-modal">
+    <div class="modal-header-gradient">
       <div>
-        <h2 class="fs-xl text-primary mb-1">{{ selectedClinicDetail.nameEn }}</h2>
-        <p class="text-muted fs-sm m-0">{{ selectedClinicDetail.nameAr }}</p>
+        <h2 class="fs-xl text-white m-0 fw-bold">{{ selectedClinicDetail.nameEn }}</h2>
+        <p class="text-white m-0" style="opacity: 0.8">{{ selectedClinicDetail.nameAr }}</p>
       </div>
-      <button class="btn-close" (click)="closeDetail()">&times;</button>
+      <button class="btn-close-white" (click)="closeDetail()">&times;</button>
     </div>
     
-    <div class="modal-body">
-      <!-- Description -->
+    <div class="modal-body p-4">
       <div class="mb-4">
-        <h4 class="fs-xs text-muted mb-2" style="text-transform: uppercase; letter-spacing: 0.05em;">About Clinic</h4>
-        <p class="fs-sm text-dark">{{ selectedClinicDetail.descriptionEn }}</p>
+        <h4 class="section-heading">About Clinic</h4>
+        <p class="fs-sm text-dark" style="line-height: 1.7">{{ selectedClinicDetail.descriptionEn }}</p>
       </div>
 
-      <!-- Contact Info -->
-      <div class="grid-responsive mb-4">
-        <div class="card p-3 shadow-sm bg-light">
-          <h4 class="fs-xs text-muted mb-2" style="text-transform: uppercase; letter-spacing: 0.05em;">Primary Contact</h4>
-          <p class="fs-sm fw-medium mb-1">📞 {{ selectedClinicDetail.phonePrimary }}</p>
-          <p class="fs-sm fw-medium m-0">✉️ {{ selectedClinicDetail.email }}</p>
-        </div>
-        <div class="card p-3 shadow-sm bg-light">
-          <h4 class="fs-xs text-muted mb-2" style="text-transform: uppercase; letter-spacing: 0.05em;">MOH License</h4>
-          <p class="fs-sm fw-medium mb-2">📜 {{ selectedClinicDetail.mohLicenseNumber }}</p>
-          <span *ngIf="selectedClinicDetail.mohVerified" class="badge badge-success">Verified</span>
-        </div>
-      </div>
-
-      <!-- Branches section -->
-      <div>
-        <h4 class="fs-xs text-muted mb-3" style="text-transform: uppercase; letter-spacing: 0.05em;">Branches ({{ selectedClinicDetail.branches.length }})</h4>
-        <div *ngFor="let branch of selectedClinicDetail.branches" class="card p-3 shadow-sm mb-2 border">
-          <div class="d-flex justify-between align-center mb-1">
-            <span class="fw-bold text-primary fs-sm">{{ branch.branchNameEn }}</span>
-            <span *ngIf="branch.isPrimary" class="badge badge-info fs-xs">Primary</span>
+      <div class="d-flex flex-wrap gap-3 mb-4">
+        <div class="info-box flex-1">
+          <div class="info-icon"><i class="fas fa-phone-alt"></i></div>
+          <div>
+            <div class="info-label">Contact</div>
+            <div class="info-value">{{ selectedClinicDetail.phonePrimary }}</div>
           </div>
-          <div class="text-muted fs-sm mb-1">📍 {{ branch.addressLine1 }}, {{ branch.addressLine2 }}</div>
-          <div class="text-muted fs-xs">Phone: {{ branch.phone || 'N/A' }}</div>
+        </div>
+        <div class="info-box flex-1">
+          <div class="info-icon"><i class="fas fa-envelope"></i></div>
+          <div>
+            <div class="info-label">Email</div>
+            <div class="info-value text-ellipsis" style="max-width: 150px;">{{ selectedClinicDetail.email || 'N/A' }}</div>
+          </div>
+        </div>
+        <div class="info-box flex-1">
+          <div class="info-icon"><i class="fas fa-certificate"></i></div>
+          <div>
+            <div class="info-label">MOH License</div>
+            <div class="info-value d-flex align-center gap-2">
+              {{ selectedClinicDetail.mohLicenseNumber }}
+              <i *ngIf="selectedClinicDetail.mohVerified" class="fas fa-check-circle text-success" title="Verified"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h4 class="section-heading">Available Branches ({{ selectedClinicDetail.branches.length }})</h4>
+        <div class="branches-list">
+          <div *ngFor="let branch of selectedClinicDetail.branches" class="branch-item">
+            <div class="d-flex justify-between align-center mb-1">
+              <span class="fw-bold text-dark fs-md"><i class="fas fa-building text-primary mr-2"></i>{{ branch.branchNameEn }}</span>
+              <span *ngIf="branch.isPrimary" class="badge-primary-soft fs-xs">Primary</span>
+            </div>
+            <div class="text-muted fs-sm ml-4 pl-2" style="border-left: 2px solid var(--gray-200);">
+              <div class="mb-1">📍 {{ branch.addressLine1 }}, {{ branch.addressLine2 }}</div>
+              <div>📞 {{ branch.phone || 'N/A' }}</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="modal-footer">
-      <button class="btn btn-outline" (click)="closeDetail()">Close</button>
-      <a routerLink="/login" class="btn btn-accent">Login to Book Appointment</a>
+    <div class="modal-footer bg-light p-4 d-flex justify-end gap-3" style="border-top: 1px solid var(--gray-200);">
+      <button class="btn btn-outline px-4" (click)="closeDetail()">Close</button>
+      <a routerLink="/login" class="btn btn-primary premium-btn px-4">Login to Book Appointment</a>
     </div>
   </div>
 </div>
