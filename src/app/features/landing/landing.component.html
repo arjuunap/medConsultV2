@@ -1,171 +1,515 @@
-<header class="navbar">
-  <div class="container d-flex justify-between align-center py-3">
-    <div class="brand d-flex align-center gap-2">
-      <div class="logo-icon"><i class="fas fa-heartbeat"></i></div>
-      <span class="fw-bold fs-xl text-primary" style="letter-spacing: -0.5px;">MedConsult<span class="text-accent">V2</span></span>
+<!-- ═══════════════════════════
+     HERO + NAV
+═══════════════════════════ -->
+<header class="hero">
+  <!-- Nav -->
+  <nav class="nav">
+    <div class="nav-logo">
+      <div class="logo-icon">💚</div>
+      <span>MedConsult</span>
     </div>
     
-    <div class="d-flex align-center gap-3">
-      <ng-container *ngIf="authService.isLoggedIn(); else guestNav">
-        <a [routerLink]="authService.currentUser()?.role === 'PATIENT' ? '/patient/home' : (authService.currentUser()?.role === 'DOCTOR' ? '/doctor/schedule' : '/clinic-admin/clinics')" 
-           class="btn btn-primary premium-btn">
-          Go to Portal Dashboard <i class="fas fa-arrow-right ml-2"></i>
+    <div class="nav-links">
+      <a href="#search-results">Find a clinic</a>
+      <a href="#features">Platform features</a>
+      <a href="#testimonials">Verified Network</a>
+    </div>
+
+    <div class="nav-actions">
+      <ng-container *ngIf="authService.isLoggedIn(); else guestActions">
+        <a [routerLink]="getPortalDashboardRoute()" class="btn btn-white btn-sm">
+          Go to Portal Dashboard →
         </a>
       </ng-container>
-      <ng-template #guestNav>
-        <a routerLink="/login" class="btn btn-outline premium-btn-outline fw-bold">Sign In</a>
-        <a routerLink="/register" class="btn btn-primary premium-btn fw-bold">Create Account</a>
+      <ng-template #guestActions>
+        <a routerLink="/login" class="btn btn-outline btn-sm">Sign in</a>
+        <a routerLink="/register" class="btn btn-white btn-sm">List your clinic</a>
       </ng-template>
+    </div>
+  </nav>
+
+  <!-- Hero Content -->
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-eyebrow">
+        <span class="badge badge-dark">🇸🇦 Saudi Arabia &amp; GCC Healthcare Portal</span>
+      </div>
+      <h1 class="hero-h1">Find a clinic.<br>Connect with the <span>right doctor.</span></h1>
+      <p class="hero-sub">Search verified private clinics across Saudi Arabia. Browse doctors, filter by specialty, city, language, and availability — and book real appointments online.</p>
+
+      <!-- Real Search Box -->
+      <div class="hero-search">
+        <form [formGroup]="searchForm" (submit)="applyFilters(); $event.preventDefault()">
+          <div class="hs-row1">
+            <div class="hs-input-wrap">
+              <span class="hs-icon">🔍</span>
+              <input class="hs-input" formControlName="query" (input)="applyFilters()" type="text" placeholder="Clinic name, doctor name or specialty…">
+            </div>
+            <select class="hs-select" formControlName="location" (change)="applyFilters()">
+              <option value="">📍 All Cities / Areas</option>
+              <option *ngFor="let city of cities" [value]="city.cityId">{{ city.nameEn }}</option>
+            </select>
+            <button class="hs-search-btn" type="submit">Search clinics</button>
+          </div>
+
+          <div class="hs-row2">
+            <span class="hs-label">Specialty:</span>
+            <div class="hs-chip" [class.on]="activeSpecialtyId === ''" (click)="clearFilters()">All</div>
+            <div *ngFor="let spec of (specialties | slice:0:6)" 
+                 class="hs-chip" 
+                 [class.on]="activeSpecialtyId === spec.specialtyId" 
+                 (click)="setSpecialtyFilter(spec.specialtyId, spec.nameEn)">
+              {{ spec.nameEn }}
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="hero-trust">
+        <div class="hero-trust-item"><span>✓</span><span>All clinics verified by MOH</span></div>
+        <div class="hero-trust-item"><span>✓</span><span>Real-time doctor schedules</span></div>
+        <div class="hero-trust-item"><span>✓</span><span>HIPAA-compliant system</span></div>
+        <div class="hero-trust-item"><span>✓</span><span>Arabic &amp; English</span></div>
+      </div>
     </div>
   </div>
 </header>
 
-<section class="hero-section">
-  <div class="hero-bg-shapes">
-    <div class="shape shape-1"></div>
-    <div class="shape shape-2"></div>
+
+<!-- ═══════════════════════════
+     REAL SEARCH RESULTS & FILTERS
+═══════════════════════════ -->
+<section class="results-section" id="search-results">
+  <div class="results-header">
+    <div>
+      <div class="results-title">Verified Medical Clinics</div>
+      <div class="results-count">Showing {{ filteredClinics.length }} clinic(s) from database</div>
+    </div>
+
+    <!-- Sorting Controls -->
+    <div class="d-flex align-center gap-2">
+      <span class="fs-xs text-muted fw-bold">Sort by:</span>
+      <select class="form-control form-control-sm m-0" style="width:170px;" (change)="setSortBy($any($event.target).value)">
+        <option value="best">Best match</option>
+        <option value="rating">Highest rated ⭐</option>
+        <option value="reviews">Most reviews</option>
+        <option value="alpha">Alphabetical (A-Z)</option>
+      </select>
+    </div>
   </div>
-  
-  <div class="container hero-content text-center position-relative" style="z-index: 2;">
-    <span class="hero-badge mb-4 d-inline-flex align-center gap-2"><span class="pulse-dot"></span> The Future of Healthcare</span>
-    <h1 class="hero-title fw-bold mb-3">Find and Book <br><span class="text-gradient">Trusted Clinics</span></h1>
-    <p class="hero-subtitle mb-5 mx-auto">Search by specialties, explore clinic profiles, and consult with the best healthcare professionals in seconds.</p>
-    
-    <!-- Search Bar -->
-    <div class="search-glass-container mx-auto">
-      <form [formGroup]="searchForm" (submit)="executeSearch(); $event.preventDefault()" class="d-flex flex-wrap align-center gap-3 w-100">
-        <div class="search-input-wrapper flex-2">
-          <i class="fas fa-search search-icon"></i>
-          <input type="text" formControlName="name" class="search-input" placeholder="Search clinic name...">
+
+  <div class="results-layout">
+
+    <!-- ── Sidebar Filters ── -->
+    <div class="filters-sidebar">
+      <div class="fs-title">
+        <span>Filters &amp; Refinements</span>
+        <span class="fs-clear" (click)="clearFilters()">Clear all</span>
+      </div>
+
+      <div class="fs-group">
+        <div class="fs-group-title">Doctor Availability</div>
+        <div class="fs-option" (click)="toggleTodayOnly()">
+          <div class="fs-cb" [class.on]="filterTodayOnly">{{ filterTodayOnly ? '✓' : '' }}</div>Available Today Only
         </div>
-        <div class="search-divider"></div>
-        <div class="search-input-wrapper flex-1">
-          <i class="fas fa-stethoscope search-icon"></i>
-          <select formControlName="specialtyId" class="search-input">
-            <option value="">All Specialties</option>
-            <option *ngFor="let spec of specialties" [value]="spec.specialtyId">{{ spec.nameEn }}</option>
-          </select>
+      </div>
+
+      <div class="fs-group" *ngIf="specialties.length > 0">
+        <div class="fs-group-title">Medical Specialty</div>
+        <div *ngFor="let s of specialties" 
+             class="fs-option" 
+             (click)="setSpecialtyFilter(s.specialtyId, s.nameEn)">
+          <div class="fs-cb" [class.on]="activeSpecialtyId === s.specialtyId">{{ activeSpecialtyId === s.specialtyId ? '✓' : '' }}</div>
+          {{ s.nameEn }}
         </div>
-        <button type="submit" class="btn btn-accent search-btn fw-bold">Find Clinic</button>
-      </form>
+      </div>
+
+      <div class="fs-group" *ngIf="cities.length > 0">
+        <div class="fs-group-title">City Location</div>
+        <div *ngFor="let city of cities" 
+             class="fs-option" 
+             (click)="setCityFilter(city.cityId)">
+          <div class="fs-cb" [class.on]="selectedCityId === city.cityId">{{ selectedCityId === city.cityId ? '✓' : '' }}</div>
+          {{ city.nameEn }}
+        </div>
+      </div>
+
+      <div class="fs-group">
+        <div class="fs-group-title">Minimum Rating</div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-sm" [class.btn-primary]="selectedRating === 4" [class.btn-outline]="selectedRating !== 4" (click)="setRatingFilter(4)">4.0+ ⭐</button>
+          <button class="btn btn-sm" [class.btn-primary]="selectedRating === 4.8" [class.btn-outline]="selectedRating !== 4.8" (click)="setRatingFilter(4.8)">4.8+ ⭐</button>
+        </div>
+      </div>
+
+      <div class="fs-group" *ngIf="insuranceProviders.length > 0">
+        <div class="fs-group-title">Accepted Insurance</div>
+        <div *ngFor="let ins of (insuranceProviders | slice:0:5)" 
+             class="fs-option" 
+             (click)="setInsuranceFilter(ins.providerId)">
+          <div class="fs-cb" [class.on]="selectedInsId === ins.providerId">{{ selectedInsId === ins.providerId ? '✓' : '' }}</div>
+          {{ ins.nameEn }}
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Clinic Results Grid ── -->
+    <div>
+      <div *ngFor="let clinic of filteredClinics" class="clinic-card">
+        <!-- Clinic Card Header -->
+        <div class="clinic-card-head">
+          <div class="clinic-logo" style="background:#E1F5EE">
+            <img *ngIf="getLogoUrl(clinic.logoUrl)" [src]="getLogoUrl(clinic.logoUrl)" alt="Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+            <span *ngIf="!getLogoUrl(clinic.logoUrl)">🏥</span>
+          </div>
+          <div class="clinic-info">
+            <div class="clinic-name">{{ clinic.nameEn }} <span class="fs-xs text-muted">({{ clinic.nameAr }})</span></div>
+            <div class="clinic-addr">📍 {{ clinic.addressLine1 || clinic.cityName }}</div>
+            <div class="clinic-meta">
+              <div class="clinic-rating">
+                <span class="stars">★★★★★</span>
+                <span>{{ clinic.overallRating || 4.9 }}</span>
+                <span class="clinic-reviews">({{ clinic.reviewCount || 10 }} reviews)</span>
+              </div>
+              <span class="clinic-badge cb-verified" *ngIf="clinic.mohVerified">✅ MOH Verified</span>
+              <span class="clinic-badge cb-open" *ngIf="clinic.isActive">🟢 Active Facility</span>
+            </div>
+            <div class="clinic-tags">
+              <span *ngFor="let s of clinic.specs" class="tag tg-teal">{{ s }}</span>
+              <span *ngFor="let l of clinic.languages" class="tag tg-gray">🌐 {{ l }}</span>
+              <span *ngFor="let i of clinic.insurances" class="tag tg-gray">🏥 {{ i }}</span>
+            </div>
+          </div>
+          <div class="clinic-actions">
+            <div class="clinic-dist">{{ clinic.cityName || 'Saudi Arabia' }}</div>
+            <button class="btn btn-primary btn-sm" (click)="selectClinic(clinic)">View Facility →</button>
+          </div>
+        </div>
+
+        <!-- Embedded Real Doctors Grid -->
+        <div class="clinic-docs" *ngIf="clinic.doctors && clinic.doctors.length > 0">
+          <div class="docs-header">
+            <div class="docs-header-title">🩺 {{ clinic.doctors.length }} specialist doctor(s) at this facility</div>
+          </div>
+          <div class="docs-grid">
+            <div *ngFor="let doc of (clinic.expanded ? clinic.doctors : clinic.doctors.slice(0, 3))" class="doc-mini">
+              <div class="doc-mini-top">
+                <div class="doc-av" [style.background]="doc.avatarBg" [style.color]="doc.avatarColor">
+                  {{ doc.initials }}
+                </div>
+                <div>
+                  <div class="doc-mini-name">{{ doc.name }}</div>
+                  <div class="doc-mini-spec">{{ doc.spec }}</div>
+                  <div class="doc-mini-rating">
+                    <span style="color:var(--amber)">★</span>{{ doc.rating }}
+                    <span class="doc-mini-exp">({{ doc.reviews }})</span>
+                  </div>
+                </div>
+              </div>
+              <div class="doc-mini-exp mb-2">{{ doc.exp }} Years Exp · SAR {{ doc.consultationFeeSar }}</div>
+              <div class="avail-badge" [class.av-today]="doc.avail === 'today'" [class.av-soon]="doc.avail === 'tomorrow'">
+                {{ doc.avail === 'today' ? '🟢 Available today' : '🟡 Tomorrow' }}
+              </div>
+              <div class="doc-mini-langs">
+                <span *ngFor="let l of doc.langs" class="tag tg-gray" style="font-size:10px">{{ l }}</span>
+              </div>
+              <div class="fs-xs text-muted mb-2">Next Slot: <strong class="text-primary">{{ doc.nextSlot }}</strong></div>
+              <button class="doc-mini-book" (click)="openBooking(doc, clinic.nameEn)">Book appointment</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Expand Toggle -->
+        <div class="clinic-expand-row" *ngIf="clinic.doctors && clinic.doctors.length > 3" (click)="toggleExpand(clinic)">
+          <span>{{ clinic.expanded ? 'Show fewer doctors' : 'Show more doctors at this facility' }}</span>
+          <span>{{ clinic.expanded ? '▲' : '▼' }}</span>
+        </div>
+      </div>
+
+      <div *ngIf="filteredClinics.length === 0" class="card p-6 text-center text-muted border-0 bg-light rounded-md">
+        No medical clinics found matching your current filter criteria. Click "Clear all" to reset filters.
+      </div>
     </div>
   </div>
 </section>
 
-<main class="container py-6">
-  <div class="d-flex justify-between align-end mb-5">
-    <div>
-      <h2 class="fs-2xl fw-bold text-dark m-0">Explore Clinics</h2>
-      <p class="text-muted m-0 mt-1">Discover top-rated healthcare providers near you.</p>
+
+<!-- ═══════════════════════════
+     HOW IT WORKS (THREE STEPS TO YOUR APPOINTMENT)
+═══════════════════════════ -->
+<section class="how-section">
+  <div class="sh" style="margin-bottom:clamp(28px,4vw,44px)">
+    <div style="margin-bottom:12px"><span class="badge badge-teal">How it works</span></div>
+    <h2 style="font-size:clamp(24px,3.5vw,36px);font-weight:800;letter-spacing:-.02em;margin-bottom:10px">Three steps to your appointment</h2>
+  </div>
+  <div class="how-grid">
+    <div class="how-step">
+      <div class="how-num">1</div>
+      <div class="how-icon">🏥</div>
+      <div class="how-title">Search for a clinic</div>
+      <div class="how-sub">Search by clinic name, city location, specialty or doctor. Filter by ratings, language, and insurance.</div>
+    </div>
+    <div class="how-step">
+      <div class="how-num">2</div>
+      <div class="how-icon">🩺</div>
+      <div class="how-title">Choose your doctor</div>
+      <div class="how-sub">Review doctor credentials, experience, spoken languages, and live open slots.</div>
+    </div>
+    <div class="how-step">
+      <div class="how-num">3</div>
+      <div class="how-icon">📅</div>
+      <div class="how-title">Book your appointment</div>
+      <div class="how-sub">Select your preferred date &amp; time slot. Confirm directly into the clinic system.</div>
     </div>
   </div>
+</section>
 
-  <div class="clinic-grid">
-    <div *ngFor="let clinic of clinics" class="clinic-card" (click)="selectClinic(clinic.clinicId)">
-      <div class="clinic-card-header">
-        <div class="clinic-avatar">
-          {{ clinic.nameEn.substring(0, 1) }}
-        </div>
-        <div class="clinic-rating">
-          <i class="fas fa-star text-warning"></i> 
-          <span class="fw-bold ml-1">{{ clinic.overallRating || '4.9' }}</span>
-        </div>
-      </div>
-      <div class="clinic-card-body">
-        <h3 class="clinic-title">{{ clinic.nameEn }}</h3>
-        <p class="clinic-desc">{{ clinic.descriptionEn || 'Premium healthcare services and consultations for you and your family.' | slice:0:100 }}...</p>
-        
-        <div class="clinic-meta mt-4">
-          <div class="meta-item">
-            <i class="fas fa-phone-alt text-primary"></i>
-            <span>{{ clinic.phonePrimary || 'N/A' }}</span>
-          </div>
-          <div class="meta-item">
-            <i class="fas fa-map-marker-alt text-accent"></i>
-            <span>Verified Clinic</span>
-          </div>
-        </div>
-      </div>
-      <div class="clinic-card-footer">
-        <span class="view-details-text">View Details</span>
-        <i class="fas fa-chevron-right text-muted"></i>
-      </div>
+
+<!-- ═══════════════════════════
+     FEATURES & COMPLIANCE
+═══════════════════════════ -->
+<section class="features-section" id="features">
+  <div class="sh">
+    <div style="margin-bottom:12px"><span class="badge badge-teal">✦ Platform Features</span></div>
+    <h2 style="font-size:clamp(26px,4vw,40px);font-weight:800;color:var(--text);margin-bottom:14px">More than booking.<br><span>A complete care platform.</span></h2>
+    <p>Connected care across clinics, doctors, and patient records.</p>
+  </div>
+  <div class="feat-grid">
+    <div class="feat-card">
+      <div class="feat-icon">💬</div>
+      <div class="feat-title">Secure Consultation Chat</div>
+      <div class="feat-body">Direct doctor-patient messaging with attachment support for medical records and prescriptions.</div>
     </div>
-
-    <!-- Empty State -->
-    <div *ngIf="clinics.length === 0" class="empty-state">
-      <div class="empty-icon"><i class="fas fa-search-minus"></i></div>
-      <h3>No Clinics Found</h3>
-      <p>We couldn't find any clinics matching your search criteria. Try different keywords or clear your filters.</p>
+    <div class="feat-card" style="border-color:var(--teal-l)">
+      <div class="feat-icon">🗂</div>
+      <div class="feat-title">Case Discussion Rooms</div>
+      <div class="feat-body">Multidisciplinary case rooms enabling doctors across clinics to collaborate on patient care.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🧪</div>
+      <div class="feat-title">Lab Results &amp; Test Reports</div>
+      <div class="feat-body">Direct upload, preview, and download of clinical lab reports with reference range tracking.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">💊</div>
+      <div class="feat-title">Digital Prescriptions</div>
+      <div class="feat-body">Instant e-prescriptions issued directly by verified medical professionals.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📋</div>
+      <div class="feat-title">Unified Health Record</div>
+      <div class="feat-body">Centralized medical history, vital signs, allergies, and chronic condition tracking.</div>
+    </div>
+    <div class="feat-card" style="border-color:var(--teal-l)">
+      <div class="feat-icon">🔒</div>
+      <div class="feat-title">Privacy &amp; Security</div>
+      <div class="feat-body">Strict data governance aligned with Saudi MOH and HIPAA healthcare standards.</div>
     </div>
   </div>
-</main>
+</section>
 
-<!-- Clinic Detail Modal Backdrop -->
-<div *ngIf="selectedClinicDetail" class="modal-backdrop-blur">
-  <!-- Modal Card -->
-  <div class="modern-modal">
-    <div class="modal-header-gradient">
-      <div>
-        <h2 class="fs-xl text-white m-0 fw-bold">{{ selectedClinicDetail.nameEn }}</h2>
-        <p class="text-white m-0" style="opacity: 0.8">{{ selectedClinicDetail.nameAr }}</p>
-      </div>
-      <button class="btn-close-white" (click)="closeDetail()">&times;</button>
+
+<!-- ═══════════════════════════
+     TESTIMONIALS & TRUST BAR
+═══════════════════════════ -->
+<section class="testi-section" id="testimonials">
+  <div class="sh">
+    <div style="margin-bottom:12px"><span class="badge badge-teal">💬 Verified Experience</span></div>
+    <h2 style="font-size:clamp(26px,4vw,40px);font-weight:800;color:var(--text);margin-bottom:14px">Trusted across <span>Saudi Arabia</span></h2>
+  </div>
+  <div class="trust-bar mt-0 pt-0 border-0">
+    <div class="trust-icons">
+      <div class="ti"><div class="ti-icon">🏥</div><div class="ti-name">Saudi MOH</div><div class="ti-sub">Verified License</div></div>
+      <div class="ti"><div class="ti-icon">🔗</div><div class="ti-name">Naphies</div><div class="ti-sub">Interoperable</div></div>
+      <div class="ti"><div class="ti-icon">🔒</div><div class="ti-name">HIPAA</div><div class="ti-sub">Compliant</div></div>
+      <div class="ti"><div class="ti-icon">🌐</div><div class="ti-name">Arabic &amp; English</div><div class="ti-sub">Bilingual</div></div>
     </div>
-    
-    <div class="modal-body p-4">
-      <div class="mb-4">
-        <h4 class="section-heading">About Clinic</h4>
-        <p class="fs-sm text-dark" style="line-height: 1.7">{{ selectedClinicDetail.descriptionEn }}</p>
-      </div>
+  </div>
+</section>
 
-      <div class="d-flex flex-wrap gap-3 mb-4">
-        <div class="info-box flex-1">
-          <div class="info-icon"><i class="fas fa-phone-alt"></i></div>
-          <div>
-            <div class="info-label">Contact</div>
-            <div class="info-value">{{ selectedClinicDetail.phonePrimary }}</div>
-          </div>
-        </div>
-        <div class="info-box flex-1">
-          <div class="info-icon"><i class="fas fa-envelope"></i></div>
-          <div>
-            <div class="info-label">Email</div>
-            <div class="info-value text-ellipsis" style="max-width: 150px;">{{ selectedClinicDetail.email || 'N/A' }}</div>
-          </div>
-        </div>
-        <div class="info-box flex-1">
-          <div class="info-icon"><i class="fas fa-certificate"></i></div>
-          <div>
-            <div class="info-label">MOH License</div>
-            <div class="info-value d-flex align-center gap-2">
-              {{ selectedClinicDetail.mohLicenseNumber }}
-              <i *ngIf="selectedClinicDetail.mohVerified" class="fas fa-check-circle text-success" title="Verified"></i>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <div>
-        <h4 class="section-heading">Available Branches ({{ selectedClinicDetail.branches.length }})</h4>
-        <div class="branches-list">
-          <div *ngFor="let branch of selectedClinicDetail.branches" class="branch-item">
-            <div class="d-flex justify-between align-center mb-1">
-              <span class="fw-bold text-dark fs-md"><i class="fas fa-building text-primary mr-2"></i>{{ branch.branchNameEn }}</span>
-              <span *ngIf="branch.isPrimary" class="badge-primary-soft fs-xs">Primary</span>
-            </div>
-            <div class="text-muted fs-sm ml-4 pl-2" style="border-left: 2px solid var(--gray-200);">
-              <div class="mb-1">📍 {{ branch.addressLine1 }}, {{ branch.addressLine2 }}</div>
-              <div>📞 {{ branch.phone || 'N/A' }}</div>
-            </div>
-          </div>
-        </div>
+<!-- ═══════════════════════════
+     CTA + FOOTER
+═══════════════════════════ -->
+<section class="cta-section">
+  <div class="cta-orb"></div>
+  <div class="cta-inner">
+    <div class="cta-center">
+      <span class="badge badge-dark" style="margin-bottom:18px">🚀 For Clinics &amp; Doctors</span>
+      <h2 class="cta-h2">List your clinic.<br><span>Reach more patients.</span></h2>
+      <p class="cta-sub">Join Saudi Arabia's verified healthcare provider platform with your branches and doctors live in 48 hours.</p>
+      <div class="cta-btns">
+        <a routerLink="/register" class="btn btn-primary" style="font-size:15px;padding:14px 32px">List your clinic free →</a>
+        <a routerLink="/login" class="btn btn-outline" style="font-size:15px;padding:14px 32px">Sign in to portal</a>
       </div>
     </div>
 
-    <div class="modal-footer bg-light p-4 d-flex justify-end gap-3" style="border-top: 1px solid var(--gray-200);">
-      <button class="btn btn-outline px-4" (click)="closeDetail()">Close</button>
-      <a routerLink="/login" class="btn btn-primary premium-btn px-4">Login to Book Appointment</a>
+    <footer>
+      <div class="footer-grid">
+        <div>
+          <div class="footer-logo"><div class="footer-logo-icon">💚</div>MedConsult</div>
+          <div class="footer-desc">Connecting patients to verified clinics and specialist doctors across Saudi Arabia.</div>
+        </div>
+        <div>
+          <div class="fc-title">For Patients</div>
+          <a href="#search-results" class="fc-link">Find a clinic</a>
+          <a routerLink="/login" class="fc-link">Book appointment</a>
+          <a routerLink="/patient/emr" class="fc-link">My health record</a>
+        </div>
+        <div>
+          <div class="fc-title">For Clinics</div>
+          <a routerLink="/register" class="fc-link">List your clinic</a>
+          <a routerLink="/clinic-admin/clinics" class="fc-link">Clinic dashboard</a>
+        </div>
+        <div>
+          <div class="fc-title">System</div>
+          <span class="fc-link">Saudi MOH Aligned</span>
+          <span class="fc-link">HIPAA Compliant</span>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-copy">© 2026 MedConsult. All rights reserved. Riyadh, Saudi Arabia.</div>
+        <div class="footer-copy">HIPAA compliant · Naphies ready · Arabic &amp; English</div>
+      </div>
+    </footer>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════
+     REAL BOOKING MODAL POPUP
+═══════════════════════════ -->
+<div *ngIf="bookingModalOpen" class="modal-backdrop-blur" (click)="closeBooking()">
+  <div class="modern-modal" (click)="$event.stopPropagation()" style="max-width:500px;">
+    <div style="background:var(--teal);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;color:white;">
+      <div>
+        <div style="font-size:17px;font-weight:700;">{{ bookingDoctor?.name }}</div>
+        <div style="font-size:13px;opacity:0.9;">{{ bookingClinicName }} · {{ bookingDoctor?.spec }}</div>
+      </div>
+      <button (click)="closeBooking()" class="btn-close-white">✕</button>
+    </div>
+
+    <div style="padding:24px;">
+      <!-- Date Picker -->
+      <div class="form-group mb-4">
+        <label class="form-label">Select Appointment Date *</label>
+        <input type="date" class="form-control" [value]="selectedDate" (change)="onDateChange($any($event.target).value)">
+      </div>
+
+      <!-- Real Slots Grid -->
+      <div class="form-group mb-4">
+        <label class="form-label">Available Slots for {{ selectedDate }} *</label>
+        <div class="d-flex flex-wrap gap-2 mt-2" *ngIf="availableSlots.length > 0">
+          <button 
+            *ngFor="let slot of availableSlots" 
+            class="btn btn-sm"
+            [class.btn-primary]="selectedSlot?.slotId === slot.slotId"
+            [class.btn-outline]="selectedSlot?.slotId !== slot.slotId"
+            (click)="selectedSlot = slot"
+          >
+            {{ slot.startTime.substring(0, 5) }} {{ selectedSlot?.slotId === slot.slotId ? '✓' : '' }}
+          </button>
+        </div>
+
+        <div *ngIf="availableSlots.length === 0" class="text-center text-muted p-4 border rounded-md bg-light fs-xs">
+          No open time slots found for this date. Please select another date.
+        </div>
+      </div>
+
+      <!-- Appointment Mode & Reason -->
+      <div class="form-row mb-3">
+        <div class="form-group">
+          <label class="form-label">Appointment Type</label>
+          <select [(ngModel)]="selectedApptType" class="form-control">
+            <option value="NEW_PATIENT">New Patient</option>
+            <option value="FOLLOW_UP">Follow-up</option>
+            <option value="REFERRAL">Referral</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Session Mode</label>
+          <select [(ngModel)]="selectedSessionType" class="form-control">
+            <option value="IN_CLINIC">In-Clinic Visit</option>
+            <option value="VIDEO_CALL">Video Call</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group mb-4">
+        <label class="form-label">Reason for Visit (Optional)</label>
+        <input type="text" [(ngModel)]="bookingReason" class="form-control" placeholder="Symptoms or general consultation reason...">
+      </div>
+
+      <div *ngIf="selectedSlot" class="bg-light p-3 rounded-md fs-xs text-primary mb-4 fw-semibold border">
+        ✅ Selected: {{ selectedDate }} at {{ selectedSlot.startTime.substring(0, 5) }} (SAR {{ bookingDoctor?.consultationFeeSar || 150 }})
+      </div>
+
+      <button 
+        (click)="confirmBooking()" 
+        [disabled]="isSubmittingBooking" 
+        class="btn btn-primary w-100 py-3 fs-md fw-bold"
+      >
+        {{ isSubmittingBooking ? 'Processing Booking...' : 'Confirm Appointment Booking →' }}
+      </button>
     </div>
   </div>
 </div>
+
+<!-- ═══════════════════════════
+     FACILITY DETAIL MODAL POPUP
+═══════════════════════════ -->
+<div *ngIf="selectedClinicDetail" class="modal-backdrop-blur" (click)="closeDetail()">
+  <div class="modern-modal" (click)="$event.stopPropagation()" style="max-width:650px;">
+    <div style="background:var(--teal);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;color:white;">
+      <div class="d-flex align-center gap-3">
+        <div style="width:48px;height:48px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+          <img *ngIf="getLogoUrl(selectedClinicDetail.logoUrl)" [src]="getLogoUrl(selectedClinicDetail.logoUrl)" style="width:100%;height:100%;object-fit:cover;">
+          <span *ngIf="!getLogoUrl(selectedClinicDetail.logoUrl)" style="font-size:24px;">🏥</span>
+        </div>
+        <div>
+          <div style="font-size:18px;font-weight:700;">{{ selectedClinicDetail.nameEn }}</div>
+          <div style="font-size:13px;opacity:0.9;">{{ selectedClinicDetail.nameAr }} · MOH License: {{ selectedClinicDetail.mohLicenseNumber }}</div>
+        </div>
+      </div>
+      <button (click)="closeDetail()" class="btn-close-white">✕</button>
+    </div>
+
+    <div style="padding:24px;max-height:75vh;overflow-y:auto;">
+      <div class="mb-4">
+        <h4 class="fs-sm text-primary fw-bold mb-1">About Facility</h4>
+        <p class="fs-xs text-muted m-0">{{ selectedClinicDetail.descriptionEn || 'Premier medical facility providing comprehensive specialist care.' }}</p>
+      </div>
+
+      <div class="form-row mb-4">
+        <div>
+          <h4 class="fs-xs text-muted fw-bold mb-1">Contact Information</h4>
+          <div class="fs-xs text-dark">📞 {{ selectedClinicDetail.phonePrimary }}</div>
+          <div class="fs-xs text-dark" *ngIf="selectedClinicDetail.email">✉️ {{ selectedClinicDetail.email }}</div>
+          <div class="fs-xs text-dark" *ngIf="selectedClinicDetail.website">🌐 {{ selectedClinicDetail.website }}</div>
+        </div>
+        <div>
+          <h4 class="fs-xs text-muted fw-bold mb-1">Facility Status</h4>
+          <span class="badge badge-teal" *ngIf="selectedClinicDetail.mohVerified">✅ MOH Verified</span>
+          <span class="badge badge-dark ms-1" *ngIf="selectedClinicDetail.isActive">🟢 Active</span>
+        </div>
+      </div>
+
+      <div class="mb-4" *ngIf="selectedClinicDetail.branches && selectedClinicDetail.branches.length > 0">
+        <h4 class="fs-sm text-primary fw-bold mb-2">Branches &amp; Locations</h4>
+        <div *ngFor="let b of selectedClinicDetail.branches" class="p-3 bg-light rounded-md mb-2 border fs-xs">
+          <div class="fw-bold text-dark">📍 {{ b.branchNameEn }} <span *ngIf="b.isPrimary" class="badge badge-teal ms-1" style="font-size:9px">Main Branch</span></div>
+          <div class="text-muted">{{ b.addressLine1 }}</div>
+          <div class="text-muted" *ngIf="b.phone">📞 {{ b.phone }}</div>
+        </div>
+      </div>
+
+      <button (click)="closeDetail()" class="btn btn-outline w-100 py-2 fs-sm fw-bold">Close Facility Details</button>
+    </div>
+  </div>
+</div>
+
+<!-- Real Toast Alert -->
+<div *ngIf="showToast" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;padding:14px 28px;border-radius:40px;font-size:14px;font-weight:600;z-index:500;box-shadow:var(--shadow-lg);">
+  {{ toastMessage }}
+</div>
+

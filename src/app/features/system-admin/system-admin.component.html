@@ -188,7 +188,10 @@
           <td class="fw-bold text-primary">{{ ins.nameEn }}</td>
           <td>{{ ins.nameAr }}</td>
           <td>
-            <span *ngIf="ins.logoUrl">📁 {{ ins.logoUrl }}</span>
+            <div *ngIf="ins.logoUrl" class="d-flex align-center gap-2">
+              <img [src]="apiUrl+ins.logoUrl" alt="Logo" style="max-height: 24px; max-width: 40px; object-fit: contain;" error="this.style.display='none'">
+              <span class="fs-xs text-muted">{{ ins.logoUrl }}</span>
+            </div>
             <span *ngIf="!ins.logoUrl" class="text-muted">No Logo</span>
           </td>
           <td>

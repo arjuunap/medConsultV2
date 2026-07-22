@@ -9,6 +9,7 @@ export interface ClinicRequestDto {
   phonePrimary: string;
   phoneSecondary?: string;
   mohLicenseNumber?: string;
+  vatNumber?: string;
   isActive?: boolean;
 }
 
@@ -24,6 +25,7 @@ export interface ClinicResponseDto {
   phonePrimary: string;
   phoneSecondary: string;
   mohLicenseNumber: string;
+  vatNumber?: string;
   mohVerified: boolean;
   mohVerifiedAt: string;
   naphiesFacilityId: string;

@@ -37,6 +37,10 @@ export class DoctorsComponent implements OnInit {
     clinicId: ['', [Validators.required]],
     branchId: ['', [Validators.required]],
     doctorId: ['', [Validators.required]],
+    department: ['General Practice', [Validators.required]],
+    consultationFeeSar: [150, [Validators.required, Validators.min(0)]],
+    isPrimary: [true],
+    startDate: [new Date().toISOString().split('T')[0], [Validators.required]],
     isActive: [true]
   });
   public isAddModalOpen = false;
@@ -170,8 +174,16 @@ export class DoctorsComponent implements OnInit {
   }
 
   openAddModal(): void {
+    const currentClinic = this.linkForm.value.clinicId;
+    const currentBranch = this.linkForm.value.branchId;
     this.linkForm.patchValue({
+      clinicId: currentClinic,
+      branchId: currentBranch || (this.branches.length > 0 ? this.branches[0].branchId : ''),
       doctorId: '',
+      department: 'General Practice',
+      consultationFeeSar: 150,
+      isPrimary: true,
+      startDate: new Date().toISOString().split('T')[0],
       isActive: true
     });
     this.isAddModalOpen = true;

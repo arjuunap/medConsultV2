@@ -102,15 +102,21 @@
 
       <!-- Lab results -->
       <div class="card p-4 border-0">
-        <h3 class="fs-lg text-primary mb-3 border-bottom pb-2">Lab Reports</h3>
-        <div *ngFor="let lab of labResults" class="fs-sm border-bottom pb-2 mb-2">
-          <div class="d-flex justify-between fw-bold">
+        <h3 class="fs-lg text-primary mb-3 border-bottom pb-2">Lab Reports & Attachments</h3>
+        <div *ngFor="let lab of labResults" class="fs-sm border-bottom pb-3 mb-3">
+          <div class="d-flex justify-between align-center fw-bold">
             <span>{{ lab.labName }} - {{ lab.reportType }}</span>
-            <span class="badge" [class.badge-danger]="lab.overallFlag === 'CRITICAL'" [class.badge-success]="lab.overallFlag === 'NORMAL'">{{ lab.overallFlag }}</span>
+            <span class="badge" [class.badge-danger]="lab.overallFlag === 'CRITICAL'" [class.badge-warning]="lab.overallFlag === 'ABNORMAL'" [class.badge-success]="lab.overallFlag === 'NORMAL'">{{ lab.overallFlag }}</span>
           </div>
-          <div class="text-muted fs-xs mt-1">Date: {{ lab.reportDate }}</div>
-          <div class="mt-1 bg-light p-2 rounded-md font-style-italic text-dark">
+          <div class="text-muted fs-xs mt-1">Date: {{ lab.reportDate }} | Status: {{ lab.status }}</div>
+          <div class="mt-2 bg-light p-2 rounded-md fs-xs text-dark">
             {{ lab.doctorAnnotation || 'No annotation' }}
+          </div>
+          <div *ngIf="lab.fileId" class="mt-2 d-flex justify-between align-center bg-app p-2 rounded-md">
+            <span class="fs-xs text-primary fw-semibold">📎 Attached Report File</span>
+            <button class="btn btn-primary btn-sm" style="font-size: 0.75rem; padding: 2px 8px;" (click)="downloadLabFile(lab.fileId)">
+              ⬇️ Download File
+            </button>
           </div>
         </div>
         <div *ngIf="labResults.length === 0" class="text-center text-muted py-3">No reports found.</div>

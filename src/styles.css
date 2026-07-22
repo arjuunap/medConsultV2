@@ -1,26 +1,54 @@
-/* Custom CSS Design System - Modern Green & White Premium Theme */
-
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  /* Color Palette */
-  --primary: hsl(162, 76%, 22%); /* Deep Forest Emerald */
-  --primary-hover: hsl(162, 76%, 17%);
-  --primary-light: hsl(162, 45%, 96%); /* Light Sage */
-  --primary-glow: hsla(162, 76%, 22%, 0.15);
+  /* MedConsult Brand Colors */
+  --teal: #1D9E75;
+  --teal-d: #085041;
+  --teal-m: #0F6E56;
+  --teal-l: #E1F5EE;
+  --teal-p: #F0FBF7;
+  --dark: #0A1F15;
+  --dark2: #112B1E;
+  --dark3: #1A3D2E;
+  --off: #F8FAF9;
+  --off2: #F3F4F6;
+  --text: #111827;
+  --t2: #374151;
+  --t3: #6B7280;
+  --t4: #9CA3AF;
+  --border: #E5E7EB;
+  --border2: #D1D5DB;
+  --amber: #F59E0B;
+  --amber-l: #FEF3C7;
+  --amber-d: #92400E;
+  --red: #EF4444;
+  --red-l: #FEE2E2;
+  --red-d: #991B1B;
+  --blue: #3B82F6;
+  --blue-l: #DBEAFE;
+  --blue-d: #1E40AF;
+  --green: #22C55E;
+  --green-l: #DCFCE7;
+  --green-d: #166534;
+
+  /* Legacy & Core Tokens */
+  --primary: #1D9E75; /* Deep Forest Emerald / Teal */
+  --primary-hover: #0F6E56;
+  --primary-light: #E1F5EE; /* Light Sage */
+  --primary-glow: rgba(29, 158, 117, 0.18);
   
-  --accent: hsl(150, 80%, 38%); /* Fresh Mint */
-  --accent-hover: hsl(150, 80%, 30%);
-  --accent-light: hsl(150, 60%, 94%);
+  --accent: #22C55E; /* Fresh Mint */
+  --accent-hover: #166534;
+  --accent-light: #DCFCE7;
   
-  --success: hsl(142, 70%, 45%);
-  --success-light: hsl(142, 60%, 94%);
-  --danger: hsl(0, 84%, 60%);
-  --danger-light: hsl(0, 80%, 95%);
-  --warning: hsl(38, 92%, 50%);
-  --warning-light: hsl(38, 90%, 95%);
-  --info: hsl(199, 89%, 48%);
-  --info-light: hsl(199, 80%, 95%);
+  --success: #22C55E;
+  --success-light: #DCFCE7;
+  --danger: #EF4444;
+  --danger-light: #FEE2E2;
+  --warning: #F59E0B;
+  --warning-light: #FEF3C7;
+  --info: #3B82F6;
+  --info-light: #DBEAFE;
   
   --white: #ffffff;
   --gray-50: #f8fafc;
@@ -47,12 +75,16 @@
   --radius-sm: 6px;
   --radius-md: 12px;
   --radius-lg: 20px;
+  --r: 14px;
+  --r-sm: 10px;
+  --r-xs: 8px;
   
   /* Shadow & Transitions */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
-  --shadow-premium: 0 20px 25px -5px rgba(15, 81, 50, 0.04), 0 10px 10px -5px rgba(15, 81, 50, 0.02);
+  --shadow: 0 2px 12px rgba(0,0,0,.07);
+  --shadow-md: 0 4px 24px rgba(0,0,0,.10);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,.14);
+  --shadow-premium: 0 20px 25px -5px rgba(29, 158, 117, 0.08), 0 10px 10px -5px rgba(29, 158, 117, 0.04);
   
   --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -528,13 +560,72 @@ a:hover {
 .badge {
   display: inline-flex;
   align-items: center;
-  padding: 4px 10px;
+  gap: 6px;
+  padding: 5px 13px;
   font-size: 0.75rem;
-  font-weight: 700;
-  border-radius: 9999px;
-  text-transform: uppercase;
+  font-weight: 600;
+  border-radius: 40px;
   letter-spacing: 0.02em;
 }
+.badge-teal { background: var(--teal-l); color: var(--teal-d); }
+.badge-dark { background: rgba(255,255,255,.13); color: rgba(255,255,255,.92); }
+.badge-white { background: var(--white); color: var(--teal-d); }
+
+.tag { display: inline-block; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.tg-green { background: var(--green-l); color: var(--green-d); }
+.tg-amber { background: var(--amber-l); color: var(--amber-d); }
+.tg-red { background: var(--red-l); color: var(--red-d); }
+.tg-blue { background: var(--blue-l); color: var(--blue-d); }
+.tg-teal { background: var(--teal-l); color: var(--teal-d); }
+.tg-gray { background: var(--off2); color: var(--t2); }
+
+.stars { color: var(--amber); font-size: 13px; letter-spacing: 1px; }
+
+/* Clinic & Doctor Cards */
+.clinic-card { background: var(--white); border: 1.5px solid var(--border); border-radius: var(--r); margin-bottom: 20px; overflow: hidden; transition: box-shadow .2s, border-color .2s; }
+.clinic-card:hover { box-shadow: var(--shadow-md); border-color: var(--teal-l); }
+.clinic-card-head { padding: 18px 20px; display: flex; gap: 14px; align-items: flex-start; border-bottom: 1px solid var(--border); }
+.clinic-logo { width: 54px; height: 54px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; border: 1px solid var(--border); }
+.clinic-info { flex: 1; min-width: 0; }
+.clinic-name { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.clinic-addr { font-size: 12px; color: var(--t3); margin-bottom: 7px; display: flex; align-items: center; gap: 4px; }
+.clinic-meta { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.clinic-rating { display: flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; color: var(--text); }
+.clinic-reviews { font-size: 12px; color: var(--t3); }
+.clinic-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+.cb-verified { background: var(--teal-l); color: var(--teal-d); }
+.cb-open { background: var(--green-l); color: var(--green-d); }
+.cb-closed { background: var(--red-l); color: var(--red-d); }
+.clinic-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.clinic-actions { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; flex-shrink: 0; }
+.clinic-dist { font-size: 12px; color: var(--t3); text-align: right; }
+
+.clinic-docs { padding: 0 20px 20px; }
+.docs-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 0 12px; border-bottom: 1px solid var(--border); margin-bottom: 0; }
+.docs-header-title { font-size: 13px; font-weight: 600; color: var(--t2); }
+.docs-see-all { font-size: 12px; font-weight: 600; color: var(--teal); cursor: pointer; }
+.docs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; padding-top: 14px; }
+
+.doc-mini { background: var(--off); border-radius: var(--r-sm); padding: 14px; border: 1px solid var(--border); cursor: pointer; transition: border-color .15s, box-shadow .15s; position: relative; }
+.doc-mini:hover { border-color: var(--teal); box-shadow: 0 2px 12px rgba(29,158,117,.1); }
+.doc-mini-top { display: flex; gap: 10px; margin-bottom: 10px; }
+.doc-av { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+.doc-mini-name { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 1px; line-height: 1.3; }
+.doc-mini-spec { font-size: 11px; color: var(--t3); }
+.doc-mini-rating { display: flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 600; margin-bottom: 2px; }
+.doc-mini-exp { font-size: 11px; color: var(--t3); }
+.avail-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 40px; font-size: 11px; font-weight: 600; margin-bottom: 8px; }
+.av-today { background: var(--green-l); color: var(--green-d); }
+.av-soon { background: var(--amber-l); color: var(--amber-d); }
+.av-busy { background: var(--off2); color: var(--t2); }
+.doc-mini-langs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 10px; }
+.doc-mini-book { width: 100%; padding: 7px; background: var(--teal); color: var(--white); border: none; border-radius: var(--r-xs); font-size: 12px; font-weight: 600; cursor: pointer; transition: opacity .15s; }
+.doc-mini-book:hover { opacity: .88; }
+.doc-mini-book.outline { background: transparent; color: var(--teal); border: 1.5px solid var(--teal); }
+
+.clinic-expand-row { border-top: 1px solid var(--border); padding: 10px 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--t3); gap: 6px; transition: color .15s; }
+.clinic-expand-row:hover { color: var(--teal); }
+
 .badge-primary {
   background-color: var(--primary-light);
   color: var(--primary);

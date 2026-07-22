@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } 
 import { ClinicService } from '../../../core/services/clinic.service';
 import { ReferenceService } from '../../../core/services/reference.service';
 import { UiService } from '../../../core/services/ui.service';
+import { environment } from '../../../../environments/environment';
 import { ClinicResponseDto, ClinicBranchResponseDto, ClinicSpecialtyResponseDto, ClinicInsuranceResponseDto, ClinicLanguageResponseDto, ClinicOperatingHourResponseDto, ClinicOperatingHourRequestDto } from '../../../core/models/clinic.model';
 import { SpecialtyResponseDto, InsuranceProviderResponseDto, CityResponseDto, LocalityResponseDto, LanguageResponseDto } from '../../../core/models/reference.model';
 
@@ -20,6 +21,7 @@ export class ClinicsComponent implements OnInit {
   private uiService = inject(UiService);
   private fb = inject(FormBuilder);
 
+  public apiUrl = environment.apiUrl;
   public clinics: ClinicResponseDto[] = [];
   public selectedClinic: ClinicResponseDto | null = null;
   public branches: ClinicBranchResponseDto[] = [];
@@ -166,6 +168,20 @@ export class ClinicsComponent implements OnInit {
   getInsuranceName(providerId: string): string {
     const ins = this.globalInsurances.find(i => i.providerId === providerId);
     return ins ? ins.nameEn : 'Unknown Provider';
+  }
+
+  getLogoUrl(path: string | undefined | null): string {
+    if (!path) return '';
+    if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:') || path.startsWith('blob:')) {
+      return path;
+    }
+    const cleanPath = path.startsWith('/') ? path : `/${path}`;
+    return `${this.apiUrl}${cleanPath}`;
+  }
+
+  getInsuranceLogoUrl(providerId: string): string {
+    const ins = this.globalInsurances.find(i => i.providerId === providerId);
+    return ins?.logoUrl ? this.getLogoUrl(ins.logoUrl) : '';
   }
 
   getLanguageName(languageId: string): string {

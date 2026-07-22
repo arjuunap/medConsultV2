@@ -357,17 +357,40 @@ export class PatientsComponent implements OnInit {
       ...this.labForm.value,
       patientId: this.selectedPatientId
     };
-  console.log('lab',payload)
     this.clinicalRecordService.createLabResult(payload, this.selectedFile || undefined).subscribe({
       next: () => {
         this.uiService.hideLoading();
         this.uiService.showSuccess('Lab result uploaded.');
         this.closeModal();
-        // this.loadPatientEMR();
+        this.loadPatientEMR();
       },
       error: () => {
         this.uiService.hideLoading();
         this.uiService.showError('Failed to upload lab report.');
+      }
+    });
+  }
+
+  downloadLabFile(fileId: string): void {
+    if (!fileId) return;
+    this.uiService.showLoading();
+    this.clinicalRecordService.downloadFile(fileId).subscribe({
+      next: (blob: Blob) => {
+        this.uiService.hideLoading();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Lab_Report_${fileId.substring(0, 8)}`;
+        a.target = '_blank';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        this.uiService.hideLoading();
+        console.error('Failed to download lab attachment:', err);
+        this.uiService.showError('Could not download lab report file.');
       }
     });
   }

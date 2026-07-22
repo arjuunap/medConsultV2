@@ -4,11 +4,13 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ReferenceService } from '../../core/services/reference.service';
 import { UiService } from '../../core/services/ui.service';
 import { CityResponseDto, SpecialtyResponseDto, LanguageResponseDto, InsuranceProviderResponseDto, LocalityResponseDto, SubSpecialtyResponseDto } from '../../core/models/reference.model';
+import { ApiUrlPipe } from '../../shared/pipes/api-url.pipe';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-system-admin',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ApiUrlPipe],
   templateUrl: './system-admin.component.html',
   styleUrls: []
 })
@@ -83,6 +85,7 @@ export class SystemAdminComponent implements OnInit {
     isActive: [true]
   });
   public selectedLogoFile: File | null = null;
+  apiUrl = environment.apiUrl;
 
   ngOnInit(): void {
     this.loadData();

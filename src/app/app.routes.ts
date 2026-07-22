@@ -69,6 +69,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/doctor-dashboard/schedule/schedule.component').then(m => m.ScheduleComponent)
       },
       {
+        path: 'profile',
+        loadComponent: () => import('./features/doctor-dashboard/profile/doctor-profile.component').then(m => m.DoctorProfileComponent)
+      },
+      {
         path: 'patients',
         loadComponent: () => import('./features/doctor-dashboard/patients/patients.component').then(m => m.PatientsComponent)
       },

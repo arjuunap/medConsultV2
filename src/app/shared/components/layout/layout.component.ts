@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { UserRole } from '../../../core/models/auth.model';
+import { ApiUrlPipe } from '../../pipes/api-url.pipe';
+import { environment } from '../../../../environments/environment';
 
 interface MenuItem {
   label: string;
@@ -13,7 +15,7 @@ interface MenuItem {
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, ApiUrlPipe],
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.css']
 })
@@ -38,6 +40,7 @@ export class LayoutComponent {
         ];
       case UserRole.DOCTOR:
         return [
+          { label: 'My Professional Profile', route: '/doctor/profile' },
           { label: 'Consultation Schedule', route: '/doctor/schedule' },
           { label: 'My Consultations', route: '/doctor/consultations' },
           { label: 'Case Rooms', route: '/doctor/caserooms' },
@@ -68,6 +71,7 @@ export class LayoutComponent {
     }
     return user.fullName.substring(0, 2).toUpperCase();
   });
+  apiUrl = environment.apiUrl;
 
   public handleLogout(): void {
     this.authService.logout();
