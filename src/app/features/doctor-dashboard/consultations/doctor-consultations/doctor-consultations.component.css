@@ -1,0 +1,76 @@
+.consultations-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.consultations-layout {
+  display: flex;
+  gap: 24px;
+  height: 75vh;
+  min-height: 550px;
+}
+
+.inbox-sidebar-card {
+  flex: 1;
+  min-width: 280px;
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.inbox-item-card {
+  padding: 16px;
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.inbox-item-card:hover {
+  background-color: var(--off);
+}
+
+.inbox-item-card.active {
+  background-color: var(--teal-l);
+  border-left: 4px solid var(--teal);
+}
+
+.chat-main-card {
+  flex: 2;
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.chat-viewport {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background-color: var(--off);
+}
+
+@media (max-width: 768px) {
+  .consultations-layout {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .inbox-sidebar-card {
+    max-height: 250px;
+  }
+
+  .chat-main-card {
+    height: 450px;
+  }
+}

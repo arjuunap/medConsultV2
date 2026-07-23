@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { DoctorService } from '../../../core/services/doctor.service';
 import { ClinicService } from '../../../core/services/clinic.service';
 import { ReferenceService } from '../../../core/services/reference.service';
@@ -15,9 +15,9 @@ import { SpecialtyResponseDto, LanguageResponseDto, SubSpecialtyResponseDto } fr
 @Component({
   selector: 'app-doctors',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './doctors.component.html',
-  styleUrls: []
+  styleUrls: ['./doctors.component.css']
 })
 export class DoctorsComponent implements OnInit {
   private doctorService = inject(DoctorService);
@@ -32,6 +32,18 @@ export class DoctorsComponent implements OnInit {
   public clinics: ClinicResponseDto[] = [];
   public branches: ClinicBranchResponseDto[] = [];
   public doctorClinics: DoctorClinicResponseDto[] = [];
+  public searchTerm: string = '';
+
+  get filteredDoctorClinics(): DoctorClinicResponseDto[] {
+    if (!this.searchTerm.trim()) return this.doctorClinics;
+    const term = this.searchTerm.toLowerCase();
+    return this.doctorClinics.filter(dc => {
+      const docName = this.getDoctorName(dc.doctorId).toLowerCase();
+      const branchName = this.getBranchName(dc.branchId).toLowerCase();
+      const dept = (dc.department || '').toLowerCase();
+      return docName.includes(term) || branchName.includes(term) || dept.includes(term);
+    });
+  }
   
   public linkForm: FormGroup = this.fb.group({
     clinicId: ['', [Validators.required]],

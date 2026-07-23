@@ -13,7 +13,7 @@ import { AuthService } from '../../../core/services/auth.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './consultations.component.html',
-  styleUrls: [] // will use standard global styles for UI (glassmorphism/premium design if possible)
+  styleUrls: ['./consultations.component.css']
 })
 export class ConsultationsComponent implements OnInit, OnDestroy {
   private consultationService = inject(ConsultationService);

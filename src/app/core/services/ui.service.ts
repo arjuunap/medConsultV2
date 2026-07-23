@@ -4,6 +4,7 @@ export interface ToastMessage {
   id: number;
   message: string;
   type: 'success' | 'error' | 'info' | 'warning';
+  duration: number;
 }
 
 @Injectable({
@@ -47,7 +48,7 @@ export class UiService {
 
   private addToast(message: string, type: 'success' | 'error' | 'info' | 'warning', duration: number): void {
     const id = ++this.toastIdCounter;
-    this.toasts.update(list => [...list, { id, message, type }]);
+    this.toasts.update(list => [...list, { id, message, type, duration }]);
 
     setTimeout(() => {
       this.removeToast(id);

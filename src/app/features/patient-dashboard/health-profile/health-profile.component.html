@@ -1,45 +1,45 @@
-<div *ngIf="needProfileInit" class="card p-6 text-center mb-5 border-0" style="border-left: 5px solid var(--warning); background-color: #fffbeb;">
+<div *ngIf="needProfileInit" class="card p-6 text-center mb-5 border-0 shadow-sm" style="border-left: 5px solid var(--warning); background-color: #fffbeb;">
   <h3 class="mb-2" style="color: #b45309;">Registration Required</h3>
   <p class="mb-4" style="color: #78350f;">Please initialize your General Patient Profile before entering your medical metrics.</p>
   <a routerLink="/patient/profile" class="btn btn-primary mx-auto">Setup Profile</a>
 </div>
 
-<div *ngIf="!needProfileInit" class="d-flex flex-col gap-5">
+<div *ngIf="!needProfileInit" class="health-profile-container">
   
-  <div class="d-flex flex-wrap gap-5">
-    <!-- Left Panel: General Health Profile Form -->
-    <div class="card flex-1-5 p-5 border-0" style="min-width: 320px;">
-      <div class="d-flex justify-between align-center border-bottom pb-3 mb-4">
-        <h3 class="fs-lg text-primary m-0">Health Metrics & History</h3>
+  <div class="health-grid-row">
+    <!-- Left Panel: General Health Profile Metrics Card -->
+    <div class="health-metrics-card">
+      <div class="group-card-header">
+        <h3 class="group-card-title">🩺 Health Metrics &amp; Medical History</h3>
         <button *ngIf="!isProfileEdit" class="btn btn-primary btn-sm" (click)="enableProfileEdit()">Edit Metrics</button>
       </div>
 
       <form [formGroup]="healthForm" (ngSubmit)="submitHealthProfile()">
         <div class="form-row">
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label" for="heightCm">Height (cm)</label>
             <input type="number" id="heightCm" formControlName="heightCm" class="form-control">
           </div>
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label" for="weightKg">Weight (kg)</label>
             <input type="number" id="weightKg" formControlName="weightKg" class="form-control">
           </div>
-          <div class="form-group" *ngIf="healthProfile">
+          <div class="form-group mb-3" *ngIf="healthProfile">
             <label class="form-label">Calculated BMI</label>
-            <div class="form-control fw-bold" style="background-color: var(--gray-50);">
+            <div class="form-control fw-bold bg-light">
               {{ healthProfile.bmi | number:'1.1-2' }}
             </div>
           </div>
         </div>
 
         <div class="form-row">
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label" for="smokingStatus">Smoking Status</label>
             <select id="smokingStatus" formControlName="smokingStatus" class="form-control">
               <option *ngFor="let s of smokingStatuses" [value]="s">{{ s }}</option>
             </select>
           </div>
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label" for="alcoholStatus">Alcohol Intake</label>
             <select id="alcoholStatus" formControlName="alcoholStatus" class="form-control">
               <option *ngFor="let a of alcoholStatuses" [value]="a">{{ a }}</option>
@@ -47,13 +47,13 @@
           </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group mb-3">
           <label class="form-label" for="surgicalHistory">Surgical History</label>
           <textarea id="surgicalHistory" formControlName="surgicalHistory" class="form-control" rows="2" placeholder="List any past surgeries..."></textarea>
         </div>
 
-        <div class="form-group">
-          <label class="form-label" for="familyHistory">Family History</label>
+        <div class="form-group mb-3">
+          <label class="form-label" for="familyHistory">Family Medical History</label>
           <textarea id="familyHistory" formControlName="familyHistory" class="form-control" rows="2" placeholder="List hereditary conditions in your family..."></textarea>
         </div>
 
@@ -69,18 +69,18 @@
       </form>
     </div>
 
-    <!-- Right Panel: Allergies & Chronic Conditions lists -->
-    <div class="flex-1-2 d-flex flex-col gap-5" style="min-width: 320px;">
+    <!-- Right Panel: Allergies & Chronic Conditions Card Groups -->
+    <div class="health-side-column">
       
-      <!-- Allergies card -->
-      <div class="card p-4 border-0">
-        <div class="d-flex justify-between align-center border-bottom pb-2 mb-3">
-          <h3 class="fs-md text-primary m-0">Known Allergies</h3>
+      <!-- Known Allergies Card Group -->
+      <div class="group-card">
+        <div class="group-card-header">
+          <h3 class="group-card-title">⚠️ Known Allergies</h3>
           <button class="btn btn-accent btn-sm" (click)="openAllergyModal()">+ Add Allergy</button>
         </div>
 
-        <div class="d-flex flex-col gap-2">
-          <div *ngFor="let al of allergies" class="d-flex justify-between align-center p-3 border rounded-md">
+        <div class="d-flex flex-col">
+          <div *ngFor="let al of allergies" class="item-list-card">
             <div>
               <div class="fw-bold text-dark mb-1">{{ al.allergen }}</div>
               <span class="badge" [class.badge-danger]="al.severity==='SEVERE'" [class.badge-warning]="al.severity==='MODERATE'" [class.badge-success]="al.severity==='MILD'">
@@ -92,20 +92,20 @@
           </div>
 
           <div *ngIf="allergies.length === 0" class="text-center text-muted py-3 fs-sm">
-            No allergies listed.
+            No allergies listed on record.
           </div>
         </div>
       </div>
 
-      <!-- Chronic Conditions card -->
-      <div class="card p-4 border-0">
-        <div class="d-flex justify-between align-center border-bottom pb-2 mb-3">
-          <h3 class="fs-md text-primary m-0">Chronic Conditions</h3>
+      <!-- Chronic Conditions Card Group -->
+      <div class="group-card">
+        <div class="group-card-header">
+          <h3 class="group-card-title">📋 Chronic Conditions</h3>
           <button class="btn btn-accent btn-sm" (click)="openConditionModal()">+ Add Condition</button>
         </div>
 
-        <div class="d-flex flex-col gap-2">
-          <div *ngFor="let cc of chronicConditions" class="d-flex justify-between align-center p-3 border rounded-md">
+        <div class="d-flex flex-col">
+          <div *ngFor="let cc of chronicConditions" class="item-list-card">
             <div>
               <div class="fw-bold text-dark mb-1">{{ cc.conditionName }}</div>
               <div class="fs-sm text-muted mb-1">ICD-10 Code: {{ cc.icd10Code }} | Diagnosed: {{ cc.diagnosisDate | date }}</div>
@@ -129,23 +129,24 @@
   <div class="modal-content">
     <div class="modal-header">
       <h3 class="fs-xl text-primary m-0">Add Known Allergy</h3>
+      <button class="btn-close" (click)="closeAllergyModal()">&times;</button>
     </div>
     
     <div class="modal-body">
       <form [formGroup]="allergyForm" (ngSubmit)="submitAllergy()">
-        <div class="form-group">
+        <div class="form-group mb-3">
           <label class="form-label" for="allergen">Allergen Name</label>
           <input type="text" id="allergen" formControlName="allergen" class="form-control" placeholder="E.g. Penicillin, Peanuts">
         </div>
 
         <div class="form-row">
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label" for="allergyType">Allergy Type</label>
             <select id="allergyType" formControlName="allergyType" class="form-control">
               <option *ngFor="let t of allergyTypes" [value]="t">{{ t }}</option>
             </select>
           </div>
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label" for="severity">Severity</label>
             <select id="severity" formControlName="severity" class="form-control">
               <option *ngFor="let s of severities" [value]="s">{{ s }}</option>
@@ -172,30 +173,31 @@
   <div class="modal-content">
     <div class="modal-header">
       <h3 class="fs-xl text-primary m-0">Register Chronic Condition</h3>
+      <button class="btn-close" (click)="closeConditionModal()">&times;</button>
     </div>
     
     <div class="modal-body">
       <form [formGroup]="conditionForm" (ngSubmit)="submitCondition()">
-        <div class="form-group">
+        <div class="form-group mb-3">
           <label class="form-label" for="conditionName">Condition Name</label>
           <input type="text" id="conditionName" formControlName="conditionName" class="form-control" placeholder="E.g. Diabetes Mellitus Type II">
         </div>
 
         <div class="form-row">
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label" for="icd10Code">ICD-10 Code</label>
             <input type="text" id="icd10Code" formControlName="icd10Code" class="form-control" placeholder="E.g. E11.9">
             <div *ngIf="conditionForm.get('icd10Code')?.touched && conditionForm.get('icd10Code')?.invalid" class="error-text">
               Must be a valid ICD-10 format.
             </div>
           </div>
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label" for="diagnosisDate">Diagnosis Date</label>
             <input type="date" id="diagnosisDate" formControlName="diagnosisDate" class="form-control">
           </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group mb-3">
           <label class="form-label" for="status">Condition Status</label>
           <select id="status" formControlName="status" class="form-control">
             <option *ngFor="let s of conditionStatuses" [value]="s">{{ s }}</option>

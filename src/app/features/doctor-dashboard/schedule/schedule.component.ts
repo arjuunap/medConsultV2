@@ -9,7 +9,7 @@ import { AppointmentResponseDto, AppointmentStatus } from '../../../core/models/
   standalone: true,
   imports: [CommonModule],
   templateUrl: './schedule.component.html',
-  styleUrls: []
+  styleUrls: ['./schedule.component.css']
 })
 export class ScheduleComponent implements OnInit {
   private appointmentService = inject(AppointmentService);

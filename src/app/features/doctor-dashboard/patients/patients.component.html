@@ -1,15 +1,15 @@
 <!-- Doctor Patient EMR Viewer template -->
-<div class="card p-5 border-0 mb-4">
+<div class="patients-directory-card">
   <div class="d-flex justify-between align-center flex-wrap gap-3">
     <div>
-      <h2 class="fs-xl text-primary m-0">Patient Medical Directory</h2>
-      <p class="text-muted fs-sm mt-1">Select a registered patient to review or document clinical records</p>
+      <h2 class="fs-xl text-primary m-0 fw-bold">📋 Patient Medical Directory</h2>
+      <p class="text-muted fs-sm mt-1 m-0">Search and select a registered patient to review clinical records</p>
     </div>
     
-    <!-- Select patient dropdown -->
-    <div style="min-width: 250px;">
-      <select class="form-control m-0" (change)="onPatientSelect($event)">
-        <option value="">-- Choose Patient --</option>
+    <!-- Searchable Select patient dropdown with "View Chart" action -->
+    <div class="d-flex align-center gap-2 flex-wrap" style="min-width: 300px;">
+      <select class="form-control m-0 flex-1" (change)="onPatientSelect($event)">
+        <option value="">-- Choose Patient Chart --</option>
         <option *ngFor="let p of patientList" [value]="p.patientId">{{ p.patientName }}</option>
       </select>
     </div>
@@ -19,12 +19,12 @@
 <!-- EMR chart dashboard if patient is selected -->
 <div *ngIf="selectedPatientId" class="d-flex flex-col gap-4">
   <!-- Profile summary card -->
-  <div class="card p-5 border-0" style="background: linear-gradient(135deg, var(--white), var(--gray-50)); border-left: 5px solid var(--accent);">
+  <div class="chart-header-card">
     <div class="d-flex justify-between align-start flex-wrap gap-4">
       <div>
-        <h3 class="fs-lg text-primary mb-2">Chart: {{ selectedPatientName }}</h3>
+        <h3 class="fs-lg text-primary mb-2 fw-bold">Chart: {{ selectedPatientName }}</h3>
         <p class="text-muted fs-sm m-0" *ngIf="healthProfile">
-          Height: {{ healthProfile.heightCm }} cm | Weight: {{ healthProfile.weightKg }} kg | BMI: {{ healthProfile.bmi | number:'1.1-2' }}
+          Height: <strong>{{ healthProfile.heightCm }} cm</strong> | Weight: <strong>{{ healthProfile.weightKg }} kg</strong> | BMI: <strong>{{ healthProfile.bmi | number:'1.1-2' }}</strong>
         </p>
         <div class="d-flex gap-2 mt-3 flex-wrap">
           <span class="badge badge-success" *ngIf="healthProfile">Smoking: {{ healthProfile.smokingStatus }}</span>
@@ -34,36 +34,36 @@
 
       <!-- Quick Action Buttons -->
       <div class="d-flex gap-2 flex-wrap">
-        <button class="btn btn-primary btn-sm" (click)="openModal('vital')">Record Vitals</button>
-        <button class="btn btn-accent btn-sm" (click)="openModal('prescription')">Write Prescription</button>
-        <button class="btn btn-outline btn-sm" (click)="openModal('lab')">Upload Lab Report</button>
+        <button class="btn btn-primary btn-sm" (click)="openModal('vital')">+ Record Vitals</button>
+        <button class="btn btn-accent btn-sm" (click)="openModal('prescription')">💊 Write Prescription</button>
+        <button class="btn btn-outline btn-sm" (click)="openModal('lab')">🔬 Upload Lab Report</button>
       </div>
     </div>
 
-    <!-- Allergies & Conditions -->
-    <div class="d-grid mt-4 pt-4 border-top" style="grid-template-columns: 1fr 1fr; gap: 20px;">
+    <!-- Allergies & Conditions Summary Grid -->
+    <div class="chart-summary-grid">
       <div>
-        <h4 class="fs-sm text-uppercase text-muted mb-2">Allergies ({{ allergies.length }})</h4>
+        <h4 class="fs-xs text-uppercase text-muted mb-2 fw-bold">Known Allergies ({{ allergies.length }})</h4>
         <div *ngFor="let al of allergies" class="fs-sm mb-1">
           🔴 <strong>{{ al.allergen }}</strong> ({{ al.severity }}) - {{ al.reaction }}
         </div>
-        <div *ngIf="allergies.length === 0" class="fs-sm text-muted">No allergies recorded.</div>
+        <div *ngIf="allergies.length === 0" class="fs-sm text-muted">No allergies recorded on file.</div>
       </div>
       <div>
-        <h4 class="fs-sm text-uppercase text-muted mb-2">Chronic Conditions ({{ chronicConditions.length }})</h4>
+        <h4 class="fs-xs text-uppercase text-muted mb-2 fw-bold">Chronic Conditions ({{ chronicConditions.length }})</h4>
         <div *ngFor="let cc of chronicConditions" class="fs-sm mb-1">
           ⚫ <strong>{{ cc.conditionName }}</strong> [{{ cc.icd10Code }}] - Status: {{ cc.status }}
         </div>
-        <div *ngIf="chronicConditions.length === 0" class="fs-sm text-muted">No conditions recorded.</div>
+        <div *ngIf="chronicConditions.length === 0" class="fs-sm text-muted">No chronic conditions recorded.</div>
       </div>
     </div>
   </div>
 
   <div class="d-flex gap-4 flex-wrap">
     <!-- Left column: Prescriptions list -->
-    <div class="card p-4 border-0 flex-1-5" style="min-width: 320px;">
-      <h3 class="fs-lg text-primary mb-3 border-bottom pb-2">Prescription History</h3>
-      <div *ngFor="let rx of prescriptions" class="border rounded-md p-3 mb-3">
+    <div class="card p-4 border-0 flex-1-5 shadow-sm" style="min-width: 320px;">
+      <h3 class="fs-md text-primary mb-3 border-bottom pb-2 fw-bold">Prescription History</h3>
+      <div *ngFor="let rx of prescriptions" class="border rounded-md p-3 mb-3 bg-white">
         <div class="d-flex justify-between fs-sm text-muted mb-2">
           <span>Issued: {{ rx.issuedDate }}</span>
           <span class="badge badge-success">{{ rx.status }}</span>
@@ -77,14 +77,14 @@
           </div>
         </div>
       </div>
-      <div *ngIf="prescriptions.length === 0" class="text-center text-muted p-4">No prescription records found.</div>
+      <div *ngIf="prescriptions.length === 0" class="text-center text-muted p-4 fs-sm">No prescription records found.</div>
     </div>
 
     <!-- Right column: Vitals and Labs -->
     <div class="flex-1-2 d-flex flex-col gap-4" style="min-width: 320px;">
       <!-- Vitals log -->
-      <div class="card p-4 border-0">
-        <h3 class="fs-lg text-primary mb-3 border-bottom pb-2">Recorded Vitals History</h3>
+      <div class="card p-4 border-0 shadow-sm">
+        <h3 class="fs-md text-primary mb-3 border-bottom pb-2 fw-bold">Recorded Vitals History</h3>
         <div class="d-flex flex-col gap-2 overflow-y-auto" style="max-height: 300px;">
           <div *ngFor="let v of vitals" class="border-bottom pb-2 fs-sm">
             <div class="d-flex justify-between fw-bold text-dark">
@@ -96,30 +96,30 @@
               <span>{{ v.recordedAt | date }}</span>
             </div>
           </div>
-          <div *ngIf="vitals.length === 0" class="text-center text-muted py-3">No vitals documented.</div>
+          <div *ngIf="vitals.length === 0" class="text-center text-muted py-3 fs-sm">No vitals documented.</div>
         </div>
       </div>
 
       <!-- Lab results -->
-      <div class="card p-4 border-0">
-        <h3 class="fs-lg text-primary mb-3 border-bottom pb-2">Lab Reports & Attachments</h3>
+      <div class="card p-4 border-0 shadow-sm">
+        <h3 class="fs-md text-primary mb-3 border-bottom pb-2 fw-bold">Lab Reports &amp; Attachments</h3>
         <div *ngFor="let lab of labResults" class="fs-sm border-bottom pb-3 mb-3">
           <div class="d-flex justify-between align-center fw-bold">
             <span>{{ lab.labName }} - {{ lab.reportType }}</span>
             <span class="badge" [class.badge-danger]="lab.overallFlag === 'CRITICAL'" [class.badge-warning]="lab.overallFlag === 'ABNORMAL'" [class.badge-success]="lab.overallFlag === 'NORMAL'">{{ lab.overallFlag }}</span>
           </div>
           <div class="text-muted fs-xs mt-1">Date: {{ lab.reportDate }} | Status: {{ lab.status }}</div>
-          <div class="mt-2 bg-light p-2 rounded-md fs-xs text-dark">
+          <div class="mt-2 bg-light p-2 rounded-md fs-xs text-dark border">
             {{ lab.doctorAnnotation || 'No annotation' }}
           </div>
-          <div *ngIf="lab.fileId" class="mt-2 d-flex justify-between align-center bg-app p-2 rounded-md">
-            <span class="fs-xs text-primary fw-semibold">📎 Attached Report File</span>
+          <div *ngIf="lab.fileId" class="mt-2 d-flex justify-between align-center bg-light p-2 rounded-md border">
+            <span class="fs-xs text-primary fw-semibold">📎 Report File</span>
             <button class="btn btn-primary btn-sm" style="font-size: 0.75rem; padding: 2px 8px;" (click)="downloadLabFile(lab.fileId)">
               ⬇️ Download File
             </button>
           </div>
         </div>
-        <div *ngIf="labResults.length === 0" class="text-center text-muted py-3">No reports found.</div>
+        <div *ngIf="labResults.length === 0" class="text-center text-muted py-3 fs-sm">No reports found.</div>
       </div>
     </div>
   </div>
@@ -130,45 +130,46 @@
   <div class="modal-content">
     <div class="modal-header">
       <h3 class="fs-xl text-primary m-0">Document Vitals Metric</h3>
+      <button class="btn-close" (click)="closeModal()">&times;</button>
     </div>
     <div class="modal-body">
       <form [formGroup]="vitalForm" (ngSubmit)="submitVital()">
         <div class="form-row">
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label">Systolic BP (mmHg)</label>
             <input type="number" formControlName="bloodPressureSystolic" class="form-control">
           </div>
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label">Diastolic BP (mmHg)</label>
             <input type="number" formControlName="bloodPressureDiastolic" class="form-control">
           </div>
         </div>
         <div class="form-row">
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label">Heart Rate (BPM)</label>
             <input type="number" formControlName="heartRateBpm" class="form-control">
           </div>
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label">Glucose (mmol/L)</label>
             <input type="number" step="0.1" formControlName="bloodGlucoseMmol" class="form-control">
           </div>
         </div>
         <div class="form-row">
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label">HbA1c (%)</label>
             <input type="number" step="0.1" formControlName="hba1cPercent" class="form-control">
           </div>
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label">Weight (kg)</label>
             <input type="number" formControlName="weightKg" class="form-control">
           </div>
         </div>
         <div class="form-row">
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label">Temperature (°C)</label>
             <input type="number" step="0.1" formControlName="temperatureC" class="form-control">
           </div>
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label">Oxygen Saturation (%)</label>
             <input type="number" formControlName="oxygenSaturation" class="form-control">
           </div>
@@ -191,16 +192,17 @@
   <div class="modal-content" style="max-width: 600px;">
     <div class="modal-header">
       <h3 class="fs-xl text-primary m-0">Write E-Prescription</h3>
+      <button class="btn-close" (click)="closeModal()">&times;</button>
     </div>
     <div class="modal-body">
       <!-- Stage 1: Shell creation -->
       <div *ngIf="!createdRxId">
         <form [formGroup]="rxForm" (ngSubmit)="submitPrescription()">
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label">Valid Until Date</label>
             <input type="date" formControlName="validUntil" class="form-control">
           </div>
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label">Clinical Diagnosis Notes</label>
             <textarea formControlName="diagnosisNotes" class="form-control" rows="3" placeholder="Symptoms, diagnostic findings..."></textarea>
           </div>
@@ -217,24 +219,24 @@
 
       <!-- Stage 2: Adding Items -->
       <div *ngIf="createdRxId">
-        <div class="mb-4 bg-light p-3 rounded-md">
-          <h4 class="fs-sm text-primary mb-2">Added Items ({{ rxItemsList.length }})</h4>
+        <div class="mb-4 bg-light p-3 rounded-md border">
+          <h4 class="fs-sm text-primary mb-2 fw-bold">Added Items ({{ rxItemsList.length }})</h4>
           <div *ngFor="let item of rxItemsList" class="fs-sm border-bottom pb-1 mb-1">
             💊 {{ item.drugName }} ({{ item.dosage }}) - {{ item.frequency }} for {{ item.durationDays }} Days
           </div>
         </div>
 
         <form [formGroup]="rxItemForm" (ngSubmit)="addRxItem(); $event.preventDefault()">
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label">Drug / Medicine Name</label>
             <input type="text" formControlName="drugName" class="form-control" placeholder="E.g. Amoxicillin 500mg">
           </div>
           <div class="form-row">
-            <div class="form-group">
+            <div class="form-group mb-3">
               <label class="form-label">Dosage</label>
               <input type="text" formControlName="dosage" class="form-control" placeholder="E.g. 1 tablet">
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
               <label class="form-label">Route</label>
               <select formControlName="route" class="form-control">
                 <option value="ORAL">Oral</option>
@@ -244,21 +246,21 @@
             </div>
           </div>
           <div class="form-row">
-            <div class="form-group">
+            <div class="form-group mb-3">
               <label class="form-label">Frequency</label>
               <input type="text" formControlName="frequency" class="form-control" placeholder="E.g. Twice daily">
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
               <label class="form-label">Duration (Days)</label>
               <input type="number" formControlName="durationDays" class="form-control">
             </div>
           </div>
           <div class="form-row">
-            <div class="form-group">
+            <div class="form-group mb-3">
               <label class="form-label">Total Quantity</label>
               <input type="number" formControlName="quantity" class="form-control">
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
               <label class="form-label">Refills Allowed</label>
               <input type="number" formControlName="refillsAllowed" class="form-control">
             </div>
@@ -283,26 +285,27 @@
   <div class="modal-content">
     <div class="modal-header">
       <h3 class="fs-xl text-primary m-0">Upload Lab Report</h3>
+      <button class="btn-close" (click)="closeModal()">&times;</button>
     </div>
     <div class="modal-body">
       <form [formGroup]="labForm" (ngSubmit)="submitLab()">
-        <div class="form-group">
+        <div class="form-group mb-3">
           <label class="form-label">Lab Facility Name</label>
           <input type="text" formControlName="labName" class="form-control" placeholder="E.g. Al Borg Diagnostics">
         </div>
         <div class="form-row">
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label">Report Type / Test Category</label>
             <input type="text" formControlName="reportType" class="form-control" placeholder="E.g. Lipid Profile">
           </div>
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label">Report Date</label>
             <input type="date" formControlName="reportDate" class="form-control">
           </div>
         </div>
         
         <!-- File Selector -->
-        <div class="form-group">
+        <div class="form-group mb-3">
           <label class="form-label">Select Report Attachment (PDF/Image)</label>
           <input type="file" (change)="onFileSelected($event)" class="form-control">
         </div>

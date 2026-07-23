@@ -1,125 +1,106 @@
-<!-- Patient Home Dashboard template -->
+<div class="patient-home-container">
 
-<!-- Welcome & Profile summary -->
-<div class="d-flex flex-wrap gap-5 mb-6">
-  <!-- Welcome Card -->
-  <div class="card flex-2 d-flex flex-row align-center justify-between p-5 border-0"
-    style="min-width: 320px; background: linear-gradient(135deg, var(--primary-light), var(--white));">
+  <!-- 1. Warm Greeting Hero Banner -->
+  <div class="welcome-banner">
     <div>
-      <h2 class="fs-2xl text-primary mb-1">
-        Hello, {{ currentUser()?.fullName || 'Welcome!' }}
-      </h2>
+      <h1 class="welcome-title">
+        Hello, {{ currentUser()?.fullName || 'Welcome!' }} 👋
+      </h1>
       
       <!-- If profile is initialized -->
       <div *ngIf="!needProfileInit">
-        <p class="text-muted fs-sm m-0">National ID: {{ patientProfile?.nationalId || 'N/A' }} | Nationality: {{
-          patientProfile?.nationality || 'N/A' }}</p>
-        <p class="fs-sm text-primary fw-bold mt-2 m-0">Blood Group: {{
-          patientProfile?.bloodType || 'Unknown' }} | Status: {{ patientProfile?.maritalStatus || 'N/A' }}</p>
+        <p class="welcome-subtitle">Here is your general health summary and upcoming care schedule.</p>
+        <div class="profile-pills">
+          <span class="profile-pill">🆔 National ID: {{ patientProfile?.nationalId || 'N/A' }}</span>
+          <span class="profile-pill">🩸 Blood Type: {{ patientProfile?.bloodType || 'Unknown' }}</span>
+          <span class="profile-pill" *ngIf="patientProfile?.nationality">🌍 {{ patientProfile?.nationality }}</span>
+        </div>
       </div>
 
       <!-- If profile is NOT initialized -->
       <div *ngIf="needProfileInit">
-        <p class="text-muted fs-sm m-0">Welcome to MedConsult! You are logged in, but your patient medical profile has not been initialized yet.</p>
-        <p class="fs-sm text-warning fw-bold mt-2 m-0">Please complete your profile to book consultations and view records.</p>
+        <p class="welcome-subtitle text-warning fw-semibold">
+          Welcome to MedConsult! Please complete your patient profile to unlock bookings and health records.
+        </p>
+        <a routerLink="/patient/profile" class="btn btn-primary btn-action-touch mt-2">Initialize Profile Now</a>
       </div>
     </div>
-    <div style="font-size: 3.5rem; opacity: 0.2; pointer-events: none;">🏥</div>
+
+    <div class="banner-illustration">🩺</div>
   </div>
 
-  <!-- Vitals summary card (Only visible if profile exists) -->
-  <div *ngIf="!needProfileInit" class="card flex-1 p-4 border-0" style="min-width: 260px;">
-    <h3 class="fs-md text-primary mb-3 pb-2 border-bottom">Latest Recorded Vitals</h3>
-    
-    <div *ngIf="latestVitals; else noVitals" class="d-flex flex-col gap-2 fs-sm">
-      <div class="d-flex justify-between">
-        <span class="text-muted">BP (Syst/Diast):</span>
-        <span class="fw-bold">{{ latestVitals.bloodPressureSystolic }}/{{
-          latestVitals.bloodPressureDiastolic }} mmHg</span>
+  <!-- 2. Quick Action Cards (Book Appointment, View EMR, Message Doctor) -->
+  <div class="quick-actions-grid" *ngIf="!needProfileInit">
+    <a routerLink="/patient/book-appointment" class="action-card">
+      <div class="action-icon">📅</div>
+      <div class="action-info">
+        <h3>Book Appointment</h3>
+        <p>Find doctors, clinics & slots</p>
       </div>
-      <div class="d-flex justify-between">
-        <span class="text-muted">Heart Rate:</span>
-        <span class="fw-bold text-danger">{{ latestVitals.heartRateBpm }} BPM</span>
+    </a>
+
+    <a routerLink="/patient/emr" class="action-card">
+      <div class="action-icon">📋</div>
+      <div class="action-info">
+        <h3>View EMR Records</h3>
+        <p>Prescriptions, vitals & labs</p>
       </div>
-      <div class="d-flex justify-between">
-        <span class="text-muted">Weight:</span>
-        <span class="fw-bold">{{ latestVitals.weightKg }} kg</span>
+    </a>
+
+    <a routerLink="/patient/consultations" class="action-card">
+      <div class="action-icon">💬</div>
+      <div class="action-info">
+        <h3>Message Doctor</h3>
+        <p>Tele-consultations & advice</p>
       </div>
-      <div class="d-flex justify-between fs-xs text-muted border-top pt-2 mt-1">
-        <span>Recorded:</span>
-        <span>{{ latestVitals.recordedAt | date:'medium' }}</span>
-      </div>
-    </div>
-    <ng-template #noVitals>
-      <div class="text-center text-muted py-3 fs-sm">
-        No vitals recorded yet.
-      </div>
-    </ng-template>
+    </a>
   </div>
 
-  <!-- Profile Setup Side-Card (Only visible if profile is NOT initialized) -->
-  <div *ngIf="needProfileInit" class="card flex-1 d-flex flex-col justify-center align-center border-0 p-4" style="min-width: 260px; border-left: 5px solid var(--warning); background-color: #fffbeb;">
-    <h3 class="fs-md mb-2 fw-bold" style="color: #b45309;">Action Required</h3>
-    <p class="text-center fs-sm mb-3" style="color: #78350f;">Initialize your profile to unlock bookings.</p>
-    <a routerLink="/patient/profile" class="btn btn-primary btn-sm">Setup Profile</a>
-  </div>
-</div>
-
-<!-- Profile Setup Required Banner (only shown if needed) -->
-<div *ngIf="needProfileInit" class="card p-6 text-center mb-5 border-0" style="border-left: 5px solid var(--warning); background-color: #fffbeb;">
-  <h3 class="mb-2" style="color: #b45309;">Profile Setup Required</h3>
-  <p class="mb-4" style="color: #78350f;">You haven't initialized your medical consultation profile
-    yet. Please set up your birth date, blood type, and emergency contacts to unlock appointment booking.</p>
-  <a routerLink="/patient/profile" class="btn btn-primary mx-auto">Initialize Profile Now</a>
-</div>
-
-<div *ngIf="!needProfileInit">
-  <!-- Upcoming Appointments -->
-  <div class="card p-5 mb-6 border-0">
-    <div class="d-flex justify-between align-center mb-4">
-      <h3 class="fs-xl text-primary m-0">Upcoming Consultations ({{ upcomingAppointments.length }})</h3>
-      <a routerLink="/patient/book-appointment" class="btn btn-accent btn-sm">Book New Appointment</a>
+  <!-- 3. Prominent Upcoming Appointment Cards (Favoring cards over dense tables) -->
+  <div class="section-card" *ngIf="!needProfileInit">
+    <div class="section-header">
+      <h2 class="section-title">
+        <span>📅</span> Upcoming Consultations ({{ upcomingAppointments.length }})
+      </h2>
+      <a routerLink="/patient/book-appointment" class="btn btn-accent btn-action-touch">
+        + Book New Appointment
+      </a>
     </div>
 
-    <div class="table-responsive border-0">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Doctor Name</th>
-            <th>Consultation Date</th>
-            <th>Start Time</th>
-            <th>Type</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let app of upcomingAppointments">
-            <td class="fw-semibold text-primary">{{ app.doctorName }}</td>
-            <td>{{ app.scheduledDate | date:'fullDate' }}</td>
-            <td>{{ app.startTime.substring(0, 5) }}</td>
-            <td>
-              <span class="badge badge-info">{{ app.appointmentType.replace('_', ' ') }}</span>
-            </td>
-            <td>
-              <span class="badge badge-success">{{ app.status }}</span>
-            </td>
-            <td>
-              <button class="btn btn-outline btn-danger btn-sm"
-                (click)="openCancelModal(app)">
-                Cancel
-              </button>
-            </td>
-          </tr>
-          <tr *ngIf="upcomingAppointments.length === 0">
-            <td colspan="6" class="text-center text-muted p-5">
-              No upcoming appointments booked. Need to see a doctor? Book a slot above.
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Cards List -->
+    <div class="appointment-cards-list" *ngIf="upcomingAppointments.length > 0">
+      <div *ngFor="let app of upcomingAppointments" class="appointment-item-card">
+        <div class="doc-info-group">
+          <div class="doc-avatar-badge">👨‍⚕️</div>
+          <div>
+            <div class="doc-name">{{ app.doctorName }}</div>
+            <div class="app-time-badge">
+              <span>🗓️ {{ app.scheduledDate | date:'fullDate' }}</span>
+              <span>⏰ {{ app.startTime.substring(0, 5) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex align-center gap-3 flex-wrap">
+          <span class="app-status-badge">{{ app.appointmentType.replace('_', ' ') }}</span>
+          <span class="badge badge-success">{{ app.status }}</span>
+          <button class="btn btn-outline btn-danger btn-action-touch" (click)="openCancelModal(app)">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="upcomingAppointments.length === 0" class="empty-state-box">
+      <p class="fs-md fw-semibold mb-2">No upcoming appointments booked.</p>
+      <p class="fs-sm mb-3">Need to see a doctor? Book a new consultation slot in seconds.</p>
+      <a routerLink="/patient/book-appointment" class="btn btn-primary btn-action-touch">
+        Book Appointment
+      </a>
     </div>
   </div>
+
 </div>
 
 <!-- Appointment Cancel Modal -->

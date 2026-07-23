@@ -16,7 +16,7 @@ import { forkJoin, map } from 'rxjs';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './availability.component.html',
-  styleUrls: []
+  styleUrls: ['./availability.component.css']
 })
 export class AvailabilityComponent implements OnInit {
   private doctorService = inject(DoctorService);

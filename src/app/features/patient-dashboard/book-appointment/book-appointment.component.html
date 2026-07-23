@@ -4,20 +4,52 @@
   <a routerLink="/patient/profile" class="btn btn-primary mx-auto">Setup Profile</a>
 </div>
 
-<div *ngIf="!needProfileInit" class="card p-6 border-0 shadow-sm" style="max-width: 760px; margin: 0 auto; border-top: 5px solid var(--teal);">
-  <div class="d-flex justify-between align-center border-bottom pb-4 mb-4">
+<div *ngIf="!needProfileInit" class="booking-container">
+  <div class="booking-header d-flex justify-between align-center flex-wrap gap-2">
     <div>
-      <h2 class="fs-xl text-primary m-0 fw-bold">📅 Schedule Your Consultation</h2>
-      <p class="text-muted fs-sm mt-1 m-0">Select doctor, clinic location, date, and available time slot</p>
+      <h2 class="booking-title">📅 Schedule Your Consultation</h2>
+      <p class="booking-subtitle">Follow the steps below to choose your doctor, date, and time slot</p>
     </div>
     <span class="badge badge-teal">🇸🇦 MOH Verified Network</span>
+  </div>
+
+  <!-- Step Flow Progress Bar -->
+  <div class="step-flow-bar">
+    <div class="step-item" [class.active]="!wizardForm.get('doctorId')?.value" [class.completed]="!!wizardForm.get('doctorId')?.value">
+      <span class="step-num">1</span>
+      <span>Doctor</span>
+    </div>
+    <span class="step-divider">›</span>
+    
+    <div class="step-item" [class.active]="wizardForm.get('doctorId')?.value && !wizardForm.get('dcId')?.value" [class.completed]="!!wizardForm.get('dcId')?.value">
+      <span class="step-num">2</span>
+      <span>Clinic</span>
+    </div>
+    <span class="step-divider">›</span>
+
+    <div class="step-item" [class.active]="wizardForm.get('dcId')?.value && !wizardForm.get('scheduledDate')?.value" [class.completed]="!!wizardForm.get('scheduledDate')?.value">
+      <span class="step-num">3</span>
+      <span>Date</span>
+    </div>
+    <span class="step-divider">›</span>
+
+    <div class="step-item" [class.active]="wizardForm.get('scheduledDate')?.value && !wizardForm.get('slotId')?.value" [class.completed]="!!wizardForm.get('slotId')?.value">
+      <span class="step-num">4</span>
+      <span>Slot</span>
+    </div>
+    <span class="step-divider">›</span>
+
+    <div class="step-item" [class.active]="!!wizardForm.get('slotId')?.value">
+      <span class="step-num">5</span>
+      <span>Confirm</span>
+    </div>
   </div>
 
   <form [formGroup]="wizardForm" (ngSubmit)="onSubmit()">
     
     <!-- Step 1: Select Doctor -->
-    <div class="form-group">
-      <label class="form-label" for="doctorId">1. Choose Specialist Doctor *</label>
+    <div class="form-step-section">
+      <label class="step-label" for="doctorId">Step 1: Choose Specialist Doctor *</label>
       <select id="doctorId" formControlName="doctorId" class="form-control" (change)="onDoctorChange()">
         <option value="">-- Select Specialist Doctor --</option>
         <option *ngFor="let doc of doctors" [value]="doc.doctorId">
@@ -27,8 +59,8 @@
     </div>
 
     <!-- Step 2: Select Clinic Location -->
-    <div class="form-group" *ngIf="wizardForm.get('doctorId')?.value">
-      <label class="form-label" for="dcId">2. Select Clinic Facility Branch *</label>
+    <div class="form-step-section" *ngIf="wizardForm.get('doctorId')?.value">
+      <label class="step-label" for="dcId">Step 2: Select Clinic Location *</label>
       <select id="dcId" formControlName="dcId" class="form-control" (change)="onClinicOrDateChange()">
         <option value="">-- Choose Clinic Location --</option>
         <option *ngFor="let dc of doctorClinics" [value]="dc.dcId">
@@ -41,8 +73,8 @@
     </div>
 
     <!-- Step 3: Select Date -->
-    <div class="form-group" *ngIf="wizardForm.get('dcId')?.value">
-      <label class="form-label" for="scheduledDate">3. Choose Appointment Date *</label>
+    <div class="form-step-section" *ngIf="wizardForm.get('dcId')?.value">
+      <label class="step-label" for="scheduledDate">Step 3: Choose Appointment Date *</label>
       <input 
         type="date" 
         id="scheduledDate" 
@@ -53,40 +85,43 @@
     </div>
 
     <!-- Step 4: Select Time Slot -->
-    <div class="form-group" *ngIf="wizardForm.get('scheduledDate')?.value && wizardForm.get('dcId')?.value">
-      <label class="form-label">4. Select Available Time Slot *</label>
+    <div class="form-step-section" *ngIf="wizardForm.get('scheduledDate')?.value && wizardForm.get('dcId')?.value">
+      <label class="step-label">Step 4: Select Available Time Slot *</label>
       
-      <div class="d-flex flex-wrap gap-2 mt-2">
-        <label *ngFor="let slot of slots" class="p-3 text-center rounded-md cursor-pointer border shadow-xs" style="min-width: 90px; transition: var(--transition);" [style.border-color]="wizardForm.get('slotId')?.value === slot.slotId ? 'var(--teal)' : 'var(--border)'" [style.background-color]="wizardForm.get('slotId')?.value === slot.slotId ? 'var(--teal-l)' : 'var(--white)'">
+      <div class="slots-grid">
+        <label 
+          *ngFor="let slot of slots" 
+          class="slot-pill-label"
+          [class.selected]="wizardForm.get('slotId')?.value === slot.slotId"
+        >
           <input 
             type="radio" 
             formControlName="slotId" 
             [value]="slot.slotId" 
             class="d-none"
           >
-          <span class="fw-bold fs-sm" [class.text-primary]="wizardForm.get('slotId')?.value === slot.slotId" [class.text-dark]="wizardForm.get('slotId')?.value !== slot.slotId">
-            {{ slot.startTime.substring(0, 5) }} {{ wizardForm.get('slotId')?.value === slot.slotId ? '✓' : '' }}
-          </span>
+          <span>{{ slot.startTime.substring(0, 5) }}</span>
+          <span *ngIf="wizardForm.get('slotId')?.value === slot.slotId">✓</span>
         </label>
       </div>
 
-      <div *ngIf="slots.length === 0" class="text-center text-muted p-5 border rounded-md border-dashed mt-2 bg-light">
+      <div *ngIf="slots.length === 0" class="text-center text-muted p-4 border rounded-md border-dashed mt-2 bg-light">
         No available time slots found for the selected date. Please pick another date.
       </div>
     </div>
 
-    <!-- Step 5: Appointment Details -->
-    <div *ngIf="wizardForm.get('slotId')?.value" class="mt-5 border-top pt-4">
-      <h3 class="fs-lg text-primary mb-4 fw-bold">5. Consultation Details</h3>
+    <!-- Step 5: Appointment Details & Confirmation -->
+    <div *ngIf="wizardForm.get('slotId')?.value" class="details-box">
+      <h3 class="fs-lg text-primary mb-3 fw-bold">Step 5: Confirm &amp; Finalize Details</h3>
 
       <div class="form-row">
-        <div class="form-group">
+        <div class="form-group mb-3">
           <label class="form-label" for="appointmentType">Appointment Type *</label>
           <select id="appointmentType" formControlName="appointmentType" class="form-control">
             <option *ngFor="let type of appointmentTypes" [value]="type">{{ type.replace('_', ' ') }}</option>
           </select>
         </div>
-        <div class="form-group">
+        <div class="form-group mb-3">
           <label class="form-label" for="sessionType">Session Mode *</label>
           <select id="sessionType" formControlName="sessionType" class="form-control">
             <option *ngFor="let sType of sessionTypes" [value]="sType">{{ sType.replace('_', ' ') }}</option>
@@ -94,8 +129,8 @@
         </div>
       </div>
 
-      <div class="form-group mb-4">
-        <label class="form-label" for="reason">Reason for Visit / Chief Complaint (Optional)</label>
+      <div class="form-group mb-3">
+        <label class="form-label" for="reason">Reason for Visit / Symptoms (Optional)</label>
         <textarea 
           id="reason" 
           formControlName="reason" 
@@ -105,11 +140,10 @@
         ></textarea>
       </div>
 
-      <button type="submit" class="btn btn-primary w-100 py-3 fs-md fw-bold" [disabled]="wizardForm.invalid">
+      <button type="submit" class="btn btn-primary w-100 btn-book-submit" [disabled]="wizardForm.invalid">
         Confirm &amp; Book Appointment →
       </button>
     </div>
 
   </form>
 </div>
-

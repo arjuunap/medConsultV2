@@ -1,0 +1,162 @@
+.consultations-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.page-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.page-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--teal);
+  margin: 0;
+}
+
+.consultations-layout {
+  display: flex;
+  gap: 24px;
+  height: 75vh;
+  min-height: 550px;
+}
+
+/* Consultations Sidebar List Card */
+.consultations-sidebar-card {
+  flex: 1;
+  min-width: 280px;
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.card-header-bar {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--off);
+}
+
+.card-header-bar h3 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--text);
+  margin: 0;
+}
+
+.consultations-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.consultation-item-card {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.consultation-item-card:hover {
+  background-color: var(--off);
+}
+
+.consultation-item-card.active {
+  background-color: var(--teal-l);
+  border-left: 4px solid var(--teal);
+}
+
+.doc-name-title {
+  font-weight: 700;
+  font-size: 0.98rem;
+  color: var(--text);
+}
+
+.consultation-subject {
+  font-size: 0.88rem;
+  color: var(--t3);
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Status Badges */
+.status-badge-open {
+  background-color: var(--success-light);
+  color: var(--success);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.status-badge-progress {
+  background-color: var(--warning-light);
+  color: var(--warning);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.status-badge-closed {
+  background-color: var(--gray-100);
+  color: var(--t3);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* Chat Main View Card */
+.chat-main-card {
+  flex: 2;
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.chat-messages-viewport {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background-color: var(--off);
+}
+
+.chat-input-bar {
+  padding: 16px;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--white);
+}
+
+@media (max-width: 768px) {
+  .consultations-layout {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .consultations-sidebar-card {
+    max-height: 250px;
+  }
+
+  .chat-main-card {
+    height: 450px;
+  }
+}

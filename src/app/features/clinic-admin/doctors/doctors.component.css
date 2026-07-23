@@ -1,0 +1,113 @@
+.doctors-roster-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.page-header-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+}
+
+.filter-bar-card {
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+}
+
+.doctors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.doctor-card-item {
+  background-color: var(--white);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  border-left: 5px solid var(--teal);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: var(--transition);
+}
+
+.doctor-card-item:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.doctor-avatar-circle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background-color: var(--teal-l);
+  color: var(--teal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Availability Status Dots */
+.status-dot-lg {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.dot-success {
+  background-color: var(--success);
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.4);
+}
+
+.dot-warning {
+  background-color: var(--warning);
+  box-shadow: 0 0 6px rgba(234, 179, 8, 0.4);
+}
+
+.dot-disabled {
+  background-color: var(--t4);
+}
+
+/* Empty State Container */
+.empty-state-card {
+  text-align: center;
+  padding: 44px 20px;
+  background-color: var(--off);
+  border-radius: var(--radius-md);
+  border: 1.5px dashed var(--border-color);
+  color: var(--t4);
+}
+
+.empty-state-icon {
+  font-size: 2.8rem;
+  margin-bottom: 8px;
+  opacity: 0.6;
+}
+
+.empty-state-text {
+  color: var(--t4);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .doctors-grid {
+    grid-template-columns: 1fr;
+  }
+}

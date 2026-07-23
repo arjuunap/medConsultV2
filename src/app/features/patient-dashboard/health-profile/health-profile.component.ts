@@ -14,7 +14,7 @@ import {
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './health-profile.component.html',
-  styleUrls: []
+  styleUrls: ['./health-profile.component.css']
 })
 export class HealthProfileComponent implements OnInit {
   private patientService = inject(PatientService);

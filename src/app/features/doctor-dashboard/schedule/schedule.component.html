@@ -1,69 +1,71 @@
-<div class="card p-5 border-0 mb-4">
-  <div class="border-bottom pb-3 mb-4">
-    <h2 class="fs-xl text-primary m-0">Doctor Consultation Schedule</h2>
-    <p class="text-muted fs-sm mt-1">View and manage today's incoming patient bookings</p>
+<div class="schedule-container">
+  <div class="schedule-header-card d-flex justify-between align-center flex-wrap gap-3">
+    <div>
+      <h2 class="fs-xl text-primary m-0 fw-bold">🗓️ Doctor Consultation Schedule</h2>
+      <p class="text-muted fs-sm mt-1 m-0">Clinical timeline of patient appointments for today</p>
+    </div>
+    <span class="badge badge-teal fs-xs">Total Scheduled: {{ upcomingAppointments.length }}</span>
   </div>
 
-  <div class="table-responsive border-0">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Patient Name</th>
-          <th>Date</th>
-          <th>Time Slot</th>
-          <th>Session Type</th>
-          <th>Current Status</th>
-          <th>Update Status Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let app of upcomingAppointments">
-          <td class="fw-bold text-primary">{{ app.patientName }}</td>
-          <td>{{ app.scheduledDate | date:'longDate' }}</td>
-          <td>{{ app.startTime.substring(0, 5) }}</td>
-          <td>
-            <span class="badge badge-info">{{ app.sessionType }}</span>
-          </td>
-          <td>
-            <span class="badge" [class.badge-success]="app.status==='CONFIRMED' || app.status==='COMPLETED'" [class.badge-warning]="app.status==='SCHEDULED'" [class.badge-danger]="app.status==='CANCELLED' || app.status==='NO_SHOW'">
-              {{ app.status }}
-            </span>
-          </td>
-          <td>
-            <div class="d-flex gap-2">
-              <button 
-                *ngIf="app.status === 'SCHEDULED'" 
-                class="btn btn-primary btn-sm"
-                (click)="changeStatus(app.appointmentId, 'CONFIRMED')"
-              >
-                Confirm
-              </button>
-              <button 
-                *ngIf="app.status === 'CONFIRMED'" 
-                class="btn btn-accent btn-sm"
-                (click)="changeStatus(app.appointmentId, 'COMPLETED')"
-              >
-                Complete
-              </button>
-              <button 
-                *ngIf="app.status === 'CONFIRMED' || app.status === 'SCHEDULED'" 
-                class="btn btn-outline btn-danger btn-sm"
-                (click)="changeStatus(app.appointmentId, 'NO_SHOW')"
-              >
-                No Show
-              </button>
-              <span *ngIf="app.status === 'COMPLETED' || app.status === 'CANCELLED' || app.status === 'NO_SHOW'" class="text-muted fs-xs">
-                No actions available
-              </span>
-            </div>
-          </td>
-        </tr>
-        <tr *ngIf="upcomingAppointments.length === 0">
-          <td colspan="6" class="text-center p-5 text-muted bg-light rounded">
-            No consultations registered in your schedule today.
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- Timeline List -->
+  <div class="timeline-list">
+    <div 
+      *ngFor="let app of upcomingAppointments; let i = index" 
+      class="timeline-item-card"
+      [class.current-active]="app.status === 'CONFIRMED' || i === 0"
+    >
+      <!-- Time slot badge -->
+      <div class="slot-time-badge">
+        ⏰ {{ app.startTime.substring(0, 5) }}
+      </div>
+
+      <!-- Patient Info -->
+      <div class="patient-meta-info">
+        <div class="patient-avatar-circle">👤</div>
+        <div>
+          <div class="patient-name-title">{{ app.patientName }}</div>
+          <div class="fs-xs text-muted">
+            Date: {{ app.scheduledDate | date:'mediumDate' }} | Mode: <strong>{{ app.sessionType.replace('_', ' ') }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status & Action Buttons -->
+      <div class="d-flex align-center gap-3 flex-wrap">
+        <span class="badge" [class.badge-success]="app.status==='CONFIRMED' || app.status==='COMPLETED'" [class.badge-warning]="app.status==='SCHEDULED'" [class.badge-danger]="app.status==='CANCELLED' || app.status==='NO_SHOW'">
+          {{ app.status }}
+        </span>
+
+        <!-- Primary Start Consultation Button for active slot -->
+        <button 
+          *ngIf="app.status === 'SCHEDULED'" 
+          class="btn btn-primary btn-sm btn-start-consult"
+          (click)="changeStatus(app.appointmentId, 'CONFIRMED')"
+        >
+          ▶ Start Consultation
+        </button>
+
+        <button 
+          *ngIf="app.status === 'CONFIRMED'" 
+          class="btn btn-accent btn-sm"
+          (click)="changeStatus(app.appointmentId, 'COMPLETED')"
+        >
+          ✓ Mark Complete
+        </button>
+
+        <button 
+          *ngIf="app.status === 'CONFIRMED' || app.status === 'SCHEDULED'" 
+          class="btn btn-outline btn-danger btn-sm"
+          (click)="changeStatus(app.appointmentId, 'NO_SHOW')"
+        >
+          No Show
+        </button>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="upcomingAppointments.length === 0" class="text-center p-5 text-muted bg-white rounded-lg border shadow-sm">
+      No patient consultations scheduled for today.
+    </div>
   </div>
 </div>

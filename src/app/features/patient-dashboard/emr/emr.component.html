@@ -5,90 +5,86 @@
   <a routerLink="/patient/profile" class="btn btn-primary mx-auto">Setup Profile</a>
 </div>
 
-<div *ngIf="!needProfileInit">
-  <!-- Tab navigation -->
-  <div class="d-flex gap-3 border-bottom pb-0 mb-5">
+<div *ngIf="!needProfileInit" class="emr-container">
+  
+  <!-- Tab Navigation -->
+  <div class="emr-tabs-nav">
     <button 
-      class="btn" 
-      [class.btn-primary]="activeTab === 'prescriptions'" 
-      [class.btn-outline]="activeTab !== 'prescriptions'"
-      style="border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-bottom: -1px;"
+      class="tab-btn" 
+      [class.active]="activeTab === 'prescriptions'"
       (click)="switchTab('prescriptions')"
     >
-      💊 Prescriptions & Adherence
+      💊 Prescriptions &amp; Adherence
     </button>
     <button 
-      class="btn" 
-      [class.btn-primary]="activeTab === 'vitals'" 
-      [class.btn-outline]="activeTab !== 'vitals'"
-      style="border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-bottom: -1px;"
+      class="tab-btn" 
+      [class.active]="activeTab === 'vitals'"
       (click)="switchTab('vitals')"
     >
       📊 Vitals History Log
     </button>
     <button 
-      class="btn" 
-      [class.btn-primary]="activeTab === 'labs'" 
-      [class.btn-outline]="activeTab !== 'labs'"
-      style="border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-bottom: -1px;"
+      class="tab-btn" 
+      [class.active]="activeTab === 'labs'"
       (click)="switchTab('labs')"
     >
       🔬 Lab Test Reports
     </button>
   </div>
 
-  <!-- TAB 1: PRESCRIPTIONS -->
+  <!-- TAB 1: PRESCRIPTIONS (Grouped Cards) -->
   <div *ngIf="activeTab === 'prescriptions'" class="d-flex flex-col gap-4">
-    <div *ngFor="let rx of prescriptions" class="card p-4 border-0" style="border-left: 5px solid var(--primary);">
-      <div class="d-flex justify-between align-start border-bottom pb-3 mb-3 flex-wrap gap-3">
+    <div *ngFor="let rx of prescriptions" class="emr-card-item">
+      <div class="emr-card-header">
         <div>
-          <h3 class="text-primary fs-lg m-0">Prescription Reference: {{ rx.naphiesReference || 'Local Record' }}</h3>
-          <span class="text-muted fs-sm mt-1">Issued: {{ rx.issuedDate | date:'longDate' }} | Valid Until: {{ rx.validUntil | date:'longDate' }}</span>
+          <h3 class="text-primary fs-lg m-0 fw-bold">Prescription Reference: {{ rx.naphiesReference || 'Local Record' }}</h3>
+          <span class="text-muted fs-sm mt-1 d-block">Issued: {{ rx.issuedDate | date:'longDate' }} | Valid Until: {{ rx.validUntil | date:'longDate' }}</span>
         </div>
         <span class="badge" [class.badge-success]="rx.status === 'ACTIVE'" [class.badge-danger]="rx.status === 'EXPIRED'">{{ rx.status }}</span>
       </div>
 
       <div class="mb-4">
-        <h4 class="fs-sm text-uppercase text-muted mb-2">Diagnosis & Clinical Notes</h4>
-        <p class="fs-sm bg-light p-3 rounded-md m-0">{{ rx.diagnosisNotes || 'No notes available.' }}</p>
+        <h4 class="fs-xs text-uppercase text-muted mb-2 fw-bold">Diagnosis &amp; Clinical Notes</h4>
+        <p class="fs-sm bg-light p-3 rounded-md m-0 border">{{ rx.diagnosisNotes || 'No diagnosis notes available.' }}</p>
       </div>
 
-      <!-- Prescription Items -->
+      <!-- Medication Cards Grid -->
       <div>
-        <h4 class="fs-sm text-uppercase text-muted mb-2">Prescribed Medications</h4>
-        <div class="d-flex flex-col gap-3">
-          <div *ngFor="let item of selectedRxItems[rx.prescriptionId]" class="border rounded-md p-3">
-            <div class="d-flex justify-between align-start flex-wrap gap-3">
+        <h4 class="fs-xs text-uppercase text-muted mb-2 fw-bold">Prescribed Medications</h4>
+        <div class="medication-card-grid">
+          <div *ngFor="let item of selectedRxItems[rx.prescriptionId]" class="med-card">
+            <div class="d-flex justify-between align-start flex-wrap gap-2 mb-2">
               <div>
-                <strong class="text-primary fs-md">{{ item.drugName }}</strong>
+                <strong class="text-primary fs-md d-block">{{ item.drugName }}</strong>
                 <div class="fs-sm text-dark mt-1">
                   Dosage: {{ item.dosage }} | Route: {{ item.route }} | Frequency: {{ item.frequency }}
                 </div>
-                <div class="fs-sm text-muted mt-1">
+                <div class="fs-xs text-muted mt-1">
                   Duration: {{ item.durationDays }} Days | Refills: {{ item.refillsUsed }}/{{ item.refillsAllowed }} Used
                 </div>
-                <div *ngIf="item.specialInstructions" class="fs-xs bg-app text-primary px-2 py-1 rounded mt-2 d-inline-block">
-                  ⚠️ {{ item.specialInstructions }}
-                </div>
               </div>
+            </div>
 
-              <!-- Adherence Logging Area -->
-              <div class="d-flex flex-col align-end gap-2">
-                <div class="d-flex gap-2">
-                  <button class="btn btn-accent btn-sm" (click)="logAdherence(item.itemId, true)">
-                    Took Today
-                  </button>
-                  <button class="btn btn-outline btn-danger btn-sm" (click)="logAdherence(item.itemId, false, 'Patient skipped')">
-                    Skipped
-                  </button>
-                </div>
-                <div class="fs-xs text-muted">
-                  Latest log: 
-                  <span *ngIf="adherenceLogs[item.itemId] && adherenceLogs[item.itemId].length > 0; else noLogs">
-                    {{ adherenceLogs[item.itemId][0].taken ? 'Taken' : 'Skipped' }} on {{ adherenceLogs[item.itemId][0].logDate | date }}
-                  </span>
-                  <ng-template #noLogs>None recorded</ng-template>
-                </div>
+            <div *ngIf="item.specialInstructions" class="fs-xs bg-light text-primary p-2 rounded mb-3 border">
+              ⚠️ {{ item.specialInstructions }}
+            </div>
+
+            <!-- Adherence Buttons -->
+            <div class="d-flex justify-between align-center pt-2 border-top flex-wrap gap-2">
+              <div class="d-flex gap-2">
+                <button class="btn btn-accent btn-sm" (click)="logAdherence(item.itemId, true)">
+                  ✓ Took Today
+                </button>
+                <button class="btn btn-outline btn-danger btn-sm" (click)="logAdherence(item.itemId, false, 'Patient skipped')">
+                  Skipped
+                </button>
+              </div>
+              <div class="fs-xs text-muted">
+                Latest: 
+                <span *ngIf="adherenceLogs[item.itemId] && adherenceLogs[item.itemId].length > 0; else noLogs">
+                  {{ adherenceLogs[item.itemId][0].taken ? 'Taken' : 'Skipped' }} on {{ adherenceLogs[item.itemId][0].logDate | date }}
+                </span>
+                <ng-template #noLogs>None recorded</ng-template>
               </div>
             </div>
           </div>
@@ -96,66 +92,64 @@
       </div>
     </div>
     
-    <div *ngIf="prescriptions.length === 0" class="text-center text-muted p-6 bg-light rounded border">
+    <div *ngIf="prescriptions.length === 0" class="text-center text-muted p-6 bg-white rounded-lg border shadow-sm">
       No prescriptions found on your EMR file.
     </div>
   </div>
 
-  <!-- TAB 2: VITALS LOG -->
+  <!-- TAB 2: VITALS LOG (Card-Grouped Cards instead of raw table) -->
   <div *ngIf="activeTab === 'vitals'">
-    <div class="card p-4 border-0">
-      <div class="d-flex justify-between align-center border-bottom pb-3 mb-4">
-        <h3 class="fs-lg text-primary m-0">Vital Metrics History</h3>
-        <button class="btn btn-primary btn-sm" (click)="openVitalModal()">+ Add New Entry</button>
-      </div>
+    <div class="d-flex justify-between align-center mb-4">
+      <h3 class="fs-lg text-primary m-0 fw-bold">Vital Metrics History</h3>
+      <button class="btn btn-primary" (click)="openVitalModal()">+ Log New Vitals</button>
+    </div>
 
-      <div class="table-responsive border-0">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>BP (mmHg)</th>
-              <th>HR (BPM)</th>
-              <th>Glucose (mmol/L)</th>
-              <th>Weight (kg)</th>
-              <th>Temp (°C)</th>
-              <th>O2 Sat (%)</th>
-              <th>Source</th>
-              <th>Recorded Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let v of vitals">
-              <td class="fw-bold">{{ v.bloodPressureSystolic }}/{{ v.bloodPressureDiastolic }}</td>
-              <td class="text-danger fw-semibold">{{ v.heartRateBpm }}</td>
-              <td>{{ v.bloodGlucoseMmol || 'N/A' }}</td>
-              <td>{{ v.weightKg || 'N/A' }}</td>
-              <td>{{ v.temperatureC || 'N/A' }}</td>
-              <td>{{ v.oxygenSaturation || 'N/A' }}%</td>
-              <td>
-                <span class="badge" [class.badge-success]="v.source==='PATIENT_APP'" [class.badge-info]="v.source==='DOCTOR_ENTRY'">
-                  {{ v.source.replace('_', ' ') }}
-                </span>
-              </td>
-              <td>{{ v.recordedAt | date:'medium' }}</td>
-            </tr>
-            <tr *ngIf="vitals.length === 0">
-              <td colspan="8" class="text-center text-muted p-5">
-                No vitals records listed. Click above to log your first metric.
-              </td>
-            </tr>
-          </tbody>
-        </table>
+    <div class="vital-cards-grid" *ngIf="vitals.length > 0">
+      <div *ngFor="let v of vitals" class="vital-card">
+        <div class="d-flex justify-between align-center border-bottom pb-2 mb-3">
+          <span class="fs-xs text-muted">🗓️ {{ v.recordedAt | date:'medium' }}</span>
+          <span class="badge" [class.badge-success]="v.source==='PATIENT_APP'" [class.badge-info]="v.source==='DOCTOR_ENTRY'">
+            {{ v.source.replace('_', ' ') }}
+          </span>
+        </div>
+
+        <div class="d-flex flex-col gap-2 fs-sm">
+          <div class="d-flex justify-between">
+            <span class="text-muted">Blood Pressure:</span>
+            <span class="fw-bold">{{ v.bloodPressureSystolic }}/{{ v.bloodPressureDiastolic }} mmHg</span>
+          </div>
+          <div class="d-flex justify-between">
+            <span class="text-muted">Heart Rate:</span>
+            <span class="fw-bold text-danger">{{ v.heartRateBpm }} BPM</span>
+          </div>
+          <div class="d-flex justify-between" *ngIf="v.bloodGlucoseMmol">
+            <span class="text-muted">Blood Glucose:</span>
+            <span class="fw-bold">{{ v.bloodGlucoseMmol }} mmol/L</span>
+          </div>
+          <div class="d-flex justify-between" *ngIf="v.weightKg">
+            <span class="text-muted">Weight:</span>
+            <span class="fw-bold">{{ v.weightKg }} kg</span>
+          </div>
+          <div class="d-flex justify-between" *ngIf="v.oxygenSaturation">
+            <span class="text-muted">O2 Saturation:</span>
+            <span class="fw-bold">{{ v.oxygenSaturation }}%</span>
+          </div>
+        </div>
       </div>
+    </div>
+
+    <div *ngIf="vitals.length === 0" class="text-center text-muted p-6 bg-white rounded-lg border shadow-sm">
+      No vitals records listed. Click above to log your first metric.
     </div>
   </div>
 
-  <!-- TAB 3: LAB REPORTS -->
+  <!-- TAB 3: LAB REPORTS (Card Items) -->
   <div *ngIf="activeTab === 'labs'" class="d-flex flex-col gap-4">
-    <div *ngFor="let lab of labResults" class="card p-4 border-0">
+    <div *ngFor="let lab of labResults" class="card p-5 border-0 shadow-sm">
       <div class="d-flex justify-between align-start border-bottom pb-3 mb-3 flex-wrap gap-3">
         <div>
-          <h3 class="text-primary fs-lg m-0">{{ lab.labName }}</h3>
-          <span class="text-muted fs-sm mt-1">Report: {{ lab.reportType }} | Date: {{ lab.reportDate | date }}</span>
+          <h3 class="text-primary fs-lg m-0 fw-bold">{{ lab.labName }}</h3>
+          <span class="text-muted fs-sm mt-1 d-block">Report: {{ lab.reportType }} | Date: {{ lab.reportDate | date }}</span>
         </div>
         <div class="d-flex gap-2 align-center">
           <span class="badge" [class.badge-danger]="lab.overallFlag === 'CRITICAL'" [class.badge-warning]="lab.overallFlag === 'ABNORMAL'" [class.badge-success]="lab.overallFlag === 'NORMAL'">
@@ -166,8 +160,8 @@
       </div>
 
       <div class="mb-3">
-        <h4 class="fs-sm text-uppercase text-muted mb-2">Doctor's Annotations</h4>
-        <p class="fs-sm bg-light p-3 rounded-md m-0">
+        <h4 class="fs-xs text-uppercase text-muted mb-2 fw-bold">Doctor's Annotations</h4>
+        <p class="fs-sm bg-light p-3 rounded-md m-0 border">
           {{ lab.doctorAnnotation || 'No clinical annotation added.' }}
         </p>
       </div>
@@ -182,7 +176,7 @@
       </div>
     </div>
 
-    <div *ngIf="labResults.length === 0" class="text-center text-muted p-6 bg-light rounded border">
+    <div *ngIf="labResults.length === 0" class="text-center text-muted p-6 bg-white rounded-lg border shadow-sm">
       No lab report files uploaded on your file.
     </div>
   </div>
@@ -194,57 +188,47 @@
   <div class="modal-content">
     <div class="modal-header">
       <h3 class="fs-xl text-primary m-0">Log New Vital Entry</h3>
+      <button class="btn-close" (click)="closeVitalModal()">&times;</button>
     </div>
     
     <div class="modal-body">
       <form [formGroup]="vitalForm" (ngSubmit)="submitVital()">
         <div class="form-row">
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label" for="bpSystolic">Systolic BP (mmHg)</label>
             <input type="number" id="bpSystolic" formControlName="bloodPressureSystolic" class="form-control">
           </div>
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label" for="bpDiastolic">Diastolic BP (mmHg)</label>
             <input type="number" id="bpDiastolic" formControlName="bloodPressureDiastolic" class="form-control">
           </div>
         </div>
 
         <div class="form-row">
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label" for="hrBpm">Heart Rate (BPM)</label>
             <input type="number" id="hrBpm" formControlName="heartRateBpm" class="form-control">
           </div>
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label" for="glucose">Blood Glucose (mmol/L)</label>
             <input type="number" step="0.1" id="glucose" formControlName="bloodGlucoseMmol" class="form-control">
           </div>
         </div>
 
         <div class="form-row">
-          <div class="form-group">
-            <label class="form-label" for="hba1c">HbA1c (%)</label>
-            <input type="number" step="0.1" id="hba1c" formControlName="hba1cPercent" class="form-control">
-          </div>
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label" for="weight">Weight (kg)</label>
             <input type="number" id="weight" formControlName="weightKg" class="form-control">
           </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label" for="temp">Body Temp (°C)</label>
             <input type="number" step="0.1" id="temp" formControlName="temperatureC" class="form-control">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="o2Sat">Oxygen Saturation (%)</label>
-            <input type="number" id="o2Sat" formControlName="oxygenSaturation" class="form-control">
           </div>
         </div>
 
         <div class="form-group m-0">
           <label class="form-label" for="vitalNotes">Log Notes</label>
-          <textarea id="vitalNotes" formControlName="notes" class="form-control" rows="2" placeholder="Feelings, context..."></textarea>
+          <textarea id="vitalNotes" formControlName="notes" class="form-control" rows="2" placeholder="Context, symptom notes..."></textarea>
         </div>
       </form>
     </div>

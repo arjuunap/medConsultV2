@@ -1,5 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PatientService } from '../../../core/services/patient.service';
 import { UiService } from '../../../core/services/ui.service';
@@ -8,9 +9,9 @@ import { BloodType, MaritalStatus } from '../../../core/models/patient.model';
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterLink, ReactiveFormsModule],
   templateUrl: './profile.component.html',
-  styleUrls: []
+  styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit {
   private patientService = inject(PatientService);

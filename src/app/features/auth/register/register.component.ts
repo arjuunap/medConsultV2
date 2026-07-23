@@ -12,7 +12,7 @@ import { UserRole, Gender } from '../../../core/models/auth.model';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './register.component.html',
-  styleUrls: []
+  styleUrls: ['./register.component.css']
 })
 export class RegisterComponent {
   private fb = inject(FormBuilder);

@@ -14,7 +14,7 @@ import { environment } from '../../../environments/environment';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, ApiUrlPipe],
   templateUrl: './system-admin.component.html',
-  styleUrls: []
+  styleUrls: ['./system-admin.component.css']
 })
 export class SystemAdminComponent implements OnInit {
   private referenceService = inject(ReferenceService);
@@ -300,12 +300,12 @@ export class SystemAdminComponent implements OnInit {
     if (this.isEdit) {
       this.referenceService.updateSpecialty(this.editingId, this.specialtyForm.value).subscribe({
         next: () => { this.uiService.hideLoading(); this.uiService.showSuccess('Specialty updated.'); this.closeModal(); this.loadData(); },
-        error: () => this.uiService.hideLoading()
+        error: (err) => { this.uiService.hideLoading(); this.uiService.showError(err?.error?.message || 'Failed to update specialty.'); }
       });
     } else {
       this.referenceService.addSpecialty(this.specialtyForm.value).subscribe({
         next: () => { this.uiService.hideLoading(); this.uiService.showSuccess('Specialty added.'); this.closeModal(); this.loadData(); },
-        error: () => this.uiService.hideLoading()
+        error: (err) => { this.uiService.hideLoading(); this.uiService.showError(err?.error?.message || 'Failed to add specialty.'); }
       });
     }
   }
@@ -316,12 +316,12 @@ export class SystemAdminComponent implements OnInit {
     if (this.isEdit) {
       this.referenceService.updateSubSpecialty(this.editingId, this.subSpecialtyForm.value).subscribe({
         next: () => { this.uiService.hideLoading(); this.uiService.showSuccess('SubSpecialty updated.'); this.closeModal(); this.loadSubSpecialties(); },
-        error: () => this.uiService.hideLoading()
+        error: (err) => { this.uiService.hideLoading(); this.uiService.showError(err?.error?.message || 'Failed to update subspecialty.'); }
       });
     } else {
       this.referenceService.addSubSpecialty(this.subSpecialtyForm.value).subscribe({
         next: () => { this.uiService.hideLoading(); this.uiService.showSuccess('SubSpecialty added.'); this.closeModal(); this.loadSubSpecialties(); },
-        error: () => this.uiService.hideLoading()
+        error: (err) => { this.uiService.hideLoading(); this.uiService.showError(err?.error?.message || 'Failed to add subspecialty.'); }
       });
     }
   }

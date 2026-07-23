@@ -82,7 +82,7 @@ export class ReferenceService {
   }
 
   addSpecialty(dto: SpecialtyRequestDto): Observable<SpecialtyResponseDto> {
-    return this.http.post<SpecialtyResponseDto>(`${environment.apiUrl}/api/medconsult/specialties/add`, dto);
+    return this.http.post<SpecialtyResponseDto>(`${environment.apiUrl}/api/medconsult/specialties/add-specialty`, dto);
   }
 
   updateSpecialty(specialityId: string, dto: SpecialtyRequestDto): Observable<SpecialtyResponseDto> {

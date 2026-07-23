@@ -13,7 +13,7 @@ import { SpecialtyResponseDto, InsuranceProviderResponseDto, CityResponseDto, Lo
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './clinics.component.html',
-  styleUrls: []
+  styleUrls: ['./clinics.component.css']
 })
 export class ClinicsComponent implements OnInit {
   private clinicService = inject(ClinicService);
@@ -23,6 +23,18 @@ export class ClinicsComponent implements OnInit {
 
   public apiUrl = environment.apiUrl;
   public clinics: ClinicResponseDto[] = [];
+  public searchTerm: string = '';
+
+  get filteredClinics(): ClinicResponseDto[] {
+    if (!this.searchTerm.trim()) return this.clinics;
+    const term = this.searchTerm.toLowerCase();
+    return this.clinics.filter(c =>
+      c.nameEn?.toLowerCase().includes(term) ||
+      c.nameAr?.toLowerCase().includes(term) ||
+      c.mohLicenseNumber?.toLowerCase().includes(term)
+    );
+  }
+
   public selectedClinic: ClinicResponseDto | null = null;
   public branches: ClinicBranchResponseDto[] = [];
   public clinicSpecialties: ClinicSpecialtyResponseDto[] = [];

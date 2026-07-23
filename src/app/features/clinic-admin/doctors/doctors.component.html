@@ -1,10 +1,10 @@
 <!-- Clinic Admin Portal: Manage Doctors & Branch Placements -->
-<div>
+<div class="doctors-roster-container">
   <!-- Header Banner -->
-  <div class="d-flex justify-between align-center border-bottom pb-4 mb-4 flex-wrap gap-3">
+  <div class="page-header-banner">
     <div>
-      <h2 class="fs-xl text-primary m-0">Doctor Branch Assignments</h2>
-      <p class="text-muted fs-sm mt-1 m-0">Assign doctors to clinic facility branches, departments, and consultation fees</p>
+      <h2 class="fs-xl text-primary m-0 fw-bold">👨‍⚕️ Doctor Roster &amp; Branch Assignments</h2>
+      <p class="text-muted fs-sm mt-1 m-0">Manage doctor roster placements across facility branches, departments, and fee structures</p>
     </div>
 
     <button (click)="openAddModal()" class="btn btn-primary">
@@ -14,61 +14,97 @@
 
   <!-- PLACEMENTS & BRANCH ASSIGNMENTS -->
   <div>
-    <!-- Clinic Filter Bar Card -->
-    <div class="card p-4 border-0 mb-4 bg-light shadow-sm">
+    <!-- Filter & Search Bar Card -->
+    <div class="filter-bar-card">
       <div class="d-flex justify-between align-center flex-wrap gap-3">
-        <form [formGroup]="linkForm" class="d-flex align-center gap-3 m-0 flex-1" style="max-width: 450px;">
-          <label class="form-label text-nowrap m-0 fw-semibold">Select Clinic Facility:</label>
-          <select formControlName="clinicId" (change)="onClinicChange()" class="form-control m-0">
-            <option value="">-- Select Clinic --</option>
-            <option *ngFor="let c of clinics" [value]="c.clinicId">{{ c.nameEn }}</option>
-          </select>
-        </form>
+        <div class="d-flex align-center gap-3 flex-1" style="max-width: 700px;">
+          <!-- Clinic Select -->
+          <form [formGroup]="linkForm" class="d-flex align-center gap-2 m-0" style="min-width: 250px;">
+            <label class="form-label text-nowrap m-0 fw-semibold fs-sm">Clinic Facility:</label>
+            <select formControlName="clinicId" (change)="onClinicChange()" class="form-control m-0">
+              <option value="">-- Select Clinic --</option>
+              <option *ngFor="let c of clinics" [value]="c.clinicId">{{ c.nameEn }}</option>
+            </select>
+          </form>
+
+          <!-- Roster Search Filter Bar -->
+          <div class="flex-1">
+            <input 
+              type="text" 
+              [(ngModel)]="searchTerm" 
+              class="form-control m-0" 
+              placeholder="🔍 Search doctor by name, specialty, or branch..."
+            >
+          </div>
+        </div>
 
         <span class="badge badge-info fs-xs p-2">
-          {{ doctorClinics.length }} Active Placement(s)
+          {{ filteredDoctorClinics.length }} Active Doctor(s)
         </span>
       </div>
     </div>
 
-    <!-- Placements Cards Grid -->
-    <div class="d-grid gap-4" style="grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));">
-      <div *ngFor="let dc of doctorClinics" class="card p-4 border-0 shadow-sm" style="border-left: 5px solid var(--primary);">
-        <div class="d-flex justify-between align-start mb-3">
-          <div>
-            <span class="badge badge-info mb-1">{{ dc.department || 'General Practice' }}</span>
-            <h3 class="fs-lg text-primary m-0">{{ getDoctorName(dc.doctorId) }}</h3>
+    <!-- Roster Cards Grid (With Avatar, Name, Specialty, Availability Status Dot) -->
+    <div class="doctors-grid" *ngIf="filteredDoctorClinics.length > 0">
+      <div *ngFor="let dc of filteredDoctorClinics" class="doctor-card-item">
+        <div>
+          <div class="d-flex justify-between align-start mb-3">
+            <div class="d-flex align-center gap-3">
+              <!-- Avatar circle -->
+              <div class="doctor-avatar-circle">👨‍⚕️</div>
+              <div>
+                <span class="badge badge-teal mb-1">{{ dc.department || 'General Practice' }}</span>
+                <h3 class="fs-md text-primary m-0 fw-bold">{{ getDoctorName(dc.doctorId) }}</h3>
+              </div>
+            </div>
+            
+            <!-- Availability Status Dot (--success / --warning / --t4 dot) -->
+            <div class="d-flex align-center" title="Availability Status">
+              <span class="status-dot-lg" [class.dot-success]="dc.isActive" [class.dot-disabled]="!dc.isActive"></span>
+              <span class="fs-xs fw-semibold" [class.text-success]="dc.isActive" [class.text-muted]="!dc.isActive">
+                {{ dc.isActive ? 'Available' : 'Inactive' }}
+              </span>
+            </div>
           </div>
-          <span class="badge" [class.badge-success]="dc.isActive" [class.badge-secondary]="!dc.isActive">
-            {{ dc.isActive ? 'Active' : 'Inactive' }}
-          </span>
+
+          <div class="fs-sm text-dark d-flex flex-col gap-2 mb-3 bg-light p-3 rounded-md border">
+            <div class="d-flex justify-between">
+              <span class="text-muted">Branch Location:</span>
+              <strong class="text-primary">{{ getBranchName(dc.branchId) }}</strong>
+            </div>
+            <div class="d-flex justify-between">
+              <span class="text-muted">Consultation Fee:</span>
+              <strong class="text-success">SAR {{ dc.consultationFeeSar || 150 }}</strong>
+            </div>
+            <div class="d-flex justify-between fs-xs text-muted border-top pt-2 mt-1">
+              <span>Role Designation:</span>
+              <span>{{ dc.isPrimary ? '⭐ Primary Specialist' : 'Consultant' }}</span>
+            </div>
+          </div>
         </div>
 
-        <div class="fs-sm text-dark d-flex flex-col gap-2 mb-4 bg-app p-3 rounded-md">
-          <div class="d-flex justify-between">
-            <span class="text-muted">Branch Location:</span>
-            <strong class="text-primary">{{ getBranchName(dc.branchId) }}</strong>
+        <div class="d-flex justify-between align-center pt-2 border-top gap-2 flex-wrap">
+          <span class="fs-xs text-muted">Since {{ dc.startDate | date:'mediumDate' }}</span>
+          
+          <div class="d-flex gap-2">
+            <!-- View Schedule Action -->
+            <button class="btn btn-outline btn-sm" (click)="selectDoctor(dc.doctorId)">
+              📅 View Schedule
+            </button>
+            
+            <button (click)="unlinkDoctor(dc.dcId)" class="btn btn-outline btn-danger btn-sm">
+              Unassign
+            </button>
           </div>
-          <div class="d-flex justify-between">
-            <span class="text-muted">Consultation Fee:</span>
-            <strong class="text-success">SAR {{ dc.consultationFeeSar || 150 }}</strong>
-          </div>
-          <div class="d-flex justify-between fs-xs text-muted border-top pt-2 mt-1">
-            <span>Role Type:</span>
-            <span>{{ dc.isPrimary ? '⭐ Primary Doctor' : 'Consultant' }}</span>
-          </div>
-        </div>
-
-        <div class="d-flex justify-end pt-2 border-top">
-          <button (click)="unlinkDoctor(dc.dcId)" class="btn btn-outline btn-danger btn-sm">
-            Unassign Doctor
-          </button>
         </div>
       </div>
     </div>
 
-    <div *ngIf="doctorClinics.length === 0" class="text-center text-muted p-6 bg-light rounded-md border mt-2">
-      No doctors assigned to this clinic branch yet. Click "+ Assign Doctor to Branch" to add a doctor.
+    <!-- Consistent Empty State: Icon + short message via --t4 text -->
+    <div *ngIf="filteredDoctorClinics.length === 0" class="empty-state-card mt-2">
+      <div class="empty-state-icon">👨‍⚕️</div>
+      <p class="empty-state-text">No doctors currently assigned to this roster.</p>
+      <small class="text-muted d-block mt-1">Try selecting another clinic branch or click "+ Assign Doctor to Branch".</small>
     </div>
 
     <!-- Add Placement Modal -->
@@ -76,12 +112,12 @@
       <div class="modal-content" style="max-width: 500px;">
         <div class="modal-header">
           <h3 class="fs-xl text-primary m-0">Assign Doctor to Branch</h3>
-          <button class="btn-close" (click)="closeAddModal()">×</button>
+          <button class="btn-close" (click)="closeAddModal()">&times;</button>
         </div>
 
         <form [formGroup]="linkForm" (ngSubmit)="submitLink()">
           <div class="modal-body">
-            <div class="form-group">
+            <div class="form-group mb-3">
               <label class="form-label">Select Branch *</label>
               <select formControlName="branchId" class="form-control">
                 <option value="">-- Choose Branch --</option>
@@ -89,7 +125,7 @@
               </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group mb-3">
               <label class="form-label">Select Doctor *</label>
               <select formControlName="doctorId" class="form-control">
                 <option value="">-- Choose Doctor --</option>
@@ -98,22 +134,22 @@
             </div>
 
             <div class="form-row">
-              <div class="form-group">
+              <div class="form-group mb-3">
                 <label class="form-label">Department *</label>
                 <input type="text" formControlName="department" class="form-control" placeholder="E.g. Cardiology">
               </div>
-              <div class="form-group">
+              <div class="form-group mb-3">
                 <label class="form-label">Consultation Fee (SAR) *</label>
                 <input type="number" formControlName="consultationFeeSar" class="form-control" placeholder="150">
               </div>
             </div>
 
             <div class="form-row">
-              <div class="form-group">
+              <div class="form-group mb-3">
                 <label class="form-label">Start Date *</label>
                 <input type="date" formControlName="startDate" class="form-control">
               </div>
-              <div class="form-group d-flex align-center gap-2 mt-4">
+              <div class="form-group d-flex align-center gap-2 mt-4 mb-3">
                 <input type="checkbox" id="isPrimary" formControlName="isPrimary">
                 <label for="isPrimary" class="form-label m-0 cursor-pointer">Set as Primary Doctor</label>
               </div>
@@ -129,4 +165,3 @@
     </div>
   </div>
 </div>
-

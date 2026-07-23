@@ -17,7 +17,7 @@ import { SpecialtyResponseDto, LanguageResponseDto, SubSpecialtyResponseDto } fr
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './doctor-profile.component.html',
-  styleUrls: []
+  styleUrls: ['./doctor-profile.component.css']
 })
 export class DoctorProfileComponent implements OnInit {
   private doctorService = inject(DoctorService);

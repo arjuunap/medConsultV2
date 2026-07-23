@@ -25,7 +25,7 @@ interface PatientOption {
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './patients.component.html',
-  styleUrls: []
+  styleUrls: ['./patients.component.css']
 })
 export class PatientsComponent implements OnInit {
   private patientService = inject(PatientService);

@@ -1,0 +1,91 @@
+.schedule-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.schedule-header-card {
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.timeline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.timeline-item-card {
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  transition: var(--transition);
+}
+
+.timeline-item-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* Active / Current Slot highlighted with --teal-l background */
+.timeline-item-card.current-active {
+  background-color: var(--teal-l);
+  border-left: 5px solid var(--teal);
+  box-shadow: var(--shadow-md);
+}
+
+.slot-time-badge {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--teal);
+  min-width: 90px;
+}
+
+.patient-meta-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.patient-avatar-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: var(--teal-l);
+  color: var(--teal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.patient-name-title {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--text);
+}
+
+.btn-start-consult {
+  background-color: var(--teal);
+  color: var(--white);
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+}
+
+.btn-start-consult:hover {
+  background-color: var(--teal-m);
+}

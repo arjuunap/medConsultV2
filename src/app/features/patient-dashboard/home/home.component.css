@@ -1,0 +1,250 @@
+.patient-home-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Greeting Hero Banner */
+.welcome-banner {
+  background: linear-gradient(135deg, var(--teal-l) 0%, var(--white) 100%);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  padding: clamp(20px, 4vw, 32px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  color: var(--teal);
+  margin-bottom: 6px;
+}
+
+.welcome-subtitle {
+  color: var(--t3);
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+}
+
+.profile-pills {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.profile-pill {
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--t2);
+}
+
+.banner-illustration {
+  font-size: 4rem;
+  opacity: 0.15;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+/* Quick Action Cards Grid */
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.action-card {
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 24px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-decoration: none;
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.action-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--teal);
+}
+
+.action-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  background-color: var(--teal-l);
+  color: var(--teal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+
+.action-info h3 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.action-info p {
+  color: var(--t3);
+  font-size: 0.83rem;
+  margin: 0;
+}
+
+/* Prominent Upcoming Appointment Section */
+.section-card {
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.section-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--text);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.appointment-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.appointment-item-card {
+  background-color: var(--off);
+  border: 1px solid var(--border-color);
+  border-left: 5px solid var(--teal);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  transition: var(--transition);
+}
+
+.appointment-item-card:hover {
+  box-shadow: var(--shadow-sm);
+  background-color: var(--white);
+}
+
+.doc-info-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.doc-avatar-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--teal-l);
+  color: var(--teal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.doc-name {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+
+.app-time-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.88rem;
+  color: var(--t2);
+  font-weight: 600;
+}
+
+.app-status-badge {
+  background-color: var(--teal-l);
+  color: var(--teal);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.empty-state-box {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: var(--off);
+  border-radius: var(--radius-md);
+  border: 1.5px dashed var(--border-color);
+  color: var(--t3);
+}
+
+.btn-action-touch {
+  min-height: 44px;
+  padding: 10px 20px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+}
+
+@media (max-width: 576px) {
+  .welcome-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .banner-illustration {
+    display: none;
+  }
+
+  .appointment-item-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .doc-info-group {
+    width: 100%;
+  }
+
+  .btn-action-touch {
+    width: 100%;
+  }
+}

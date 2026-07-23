@@ -1,0 +1,71 @@
+.health-profile-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.health-grid-row {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.health-metrics-card {
+  flex: 1.4;
+  min-width: 300px;
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  padding: clamp(20px, 4vw, 32px);
+  box-shadow: var(--shadow-sm);
+}
+
+.health-side-column {
+  flex: 1.2;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.group-card {
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.group-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 14px;
+  margin-bottom: 18px;
+}
+
+.group-card-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--teal);
+  margin: 0;
+}
+
+.item-list-card {
+  background-color: var(--off);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 768px) {
+  .health-grid-row {
+    flex-direction: column;
+  }
+}

@@ -1,88 +1,97 @@
-<div class="card p-5 border-0" style="max-width: 800px; margin: 0 auto;">
-  <div class="d-flex justify-between align-center border-bottom pb-4 mb-5">
-    <div>
-      <h2 class="fs-xl text-primary m-0">Patient Consultation Profile</h2>
-      <p class="text-muted fs-sm mt-1 m-0">Your general patient registration records</p>
+<div class="patient-profile-card">
+  <!-- Avatar Header -->
+  <div class="profile-avatar-header">
+    <div class="avatar-large">👤</div>
+    <div class="profile-header-info">
+      <h2 class="profile-header-name">Patient Medical Profile</h2>
+      <div class="profile-header-meta">
+        Registered Patient Consultation Records &amp; Emergency Information
+      </div>
     </div>
     <button *ngIf="!isEditMode" class="btn btn-primary" (click)="enableEdit()">
-      Edit Profile
+      ✏️ Edit Profile
     </button>
   </div>
 
   <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
-    <div class="form-row">
-      <!-- Birth date -->
-      <div class="form-group">
-        <label class="form-label" for="dateOfBirth">Date of Birth</label>
-        <input 
-          type="date" 
-          id="dateOfBirth" 
-          formControlName="dateOfBirth" 
-          class="form-control"
-        >
-        <div *ngIf="profileForm.get('dateOfBirth')?.touched && profileForm.get('dateOfBirth')?.invalid" class="error-text">
-          Date of birth is required.
-        </div>
-      </div>
-
-      <!-- Blood type -->
-      <div class="form-group">
-        <label class="form-label" for="bloodType">Blood Group</label>
-        <select id="bloodType" formControlName="bloodType" class="form-control">
-          <option *ngFor="let bt of bloodTypes" [value]="bt">{{ bt.replace('_', ' ') }}</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="form-row">
-      <!-- National ID -->
-      <div class="form-group">
-        <label class="form-label" for="nationalId">National ID / Iqama</label>
-        <input 
-          type="text" 
-          id="nationalId" 
-          formControlName="nationalId" 
-          class="form-control"
-          placeholder="E.g. 1092837493"
-        >
-        <div *ngIf="profileForm.get('nationalId')?.touched && profileForm.get('nationalId')?.invalid" class="error-text">
-          Valid National ID is required (numbers/letters, 5-20 chars).
-        </div>
-      </div>
-
-      <!-- Nationality -->
-      <div class="form-group">
-        <label class="form-label" for="nationality">Nationality</label>
-        <select 
-          id="nationality" 
-          formControlName="nationality" 
-          class="form-control"
-        >
-          <option value="">-- Select Nationality --</option>
-          <option *ngFor="let nat of nationalities" [value]="nat.code">
-            {{ nat.flag }} {{ nat.code }}
-          </option>
-        </select>
-        <div *ngIf="profileForm.get('nationality')?.touched && profileForm.get('nationality')?.invalid" class="error-text">
-          Nationality is required.
-        </div>
-      </div>
-    </div>
-
-    <!-- Marital status -->
-    <div class="form-group mb-5">
-      <label class="form-label" for="maritalStatus">Marital Status</label>
-      <select id="maritalStatus" formControlName="maritalStatus" class="form-control">
-        <option *ngFor="let ms of maritalStatuses" [value]="ms">{{ ms }}</option>
-      </select>
-    </div>
-
-    <div class="border-top pt-4 mb-5">
-      <h3 class="fs-lg text-primary mb-4">Emergency Contact</h3>
+    
+    <!-- Section 1: General Medical Information -->
+    <div class="mb-5">
+      <h3 class="section-divider-title">1. General Information</h3>
       
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label" for="emergencyContactName">Contact Full Name</label>
+      <div class="form-two-col">
+        <!-- Birth date -->
+        <div class="form-group mb-3">
+          <label class="form-label" for="dateOfBirth">Date of Birth *</label>
+          <input 
+            type="date" 
+            id="dateOfBirth" 
+            formControlName="dateOfBirth" 
+            class="form-control"
+          >
+          <div *ngIf="profileForm.get('dateOfBirth')?.touched && profileForm.get('dateOfBirth')?.invalid" class="error-text">
+            Date of birth is required.
+          </div>
+        </div>
+
+        <!-- Blood type -->
+        <div class="form-group mb-3">
+          <label class="form-label" for="bloodType">Blood Group *</label>
+          <select id="bloodType" formControlName="bloodType" class="form-control">
+            <option *ngFor="let bt of bloodTypes" [value]="bt">{{ bt.replace('_', ' ') }}</option>
+          </select>
+        </div>
+
+        <!-- National ID -->
+        <div class="form-group mb-3">
+          <label class="form-label" for="nationalId">National ID / Iqama *</label>
+          <input 
+            type="text" 
+            id="nationalId" 
+            formControlName="nationalId" 
+            class="form-control"
+            placeholder="E.g. 1092837493"
+          >
+          <div *ngIf="profileForm.get('nationalId')?.touched && profileForm.get('nationalId')?.invalid" class="error-text">
+            Valid National ID is required (5-20 characters).
+          </div>
+        </div>
+
+        <!-- Nationality -->
+        <div class="form-group mb-3">
+          <label class="form-label" for="nationality">Nationality *</label>
+          <select 
+            id="nationality" 
+            formControlName="nationality" 
+            class="form-control"
+          >
+            <option value="">-- Select Nationality --</option>
+            <option *ngFor="let nat of nationalities" [value]="nat.code">
+              {{ nat.flag }} {{ nat.code }}
+            </option>
+          </select>
+          <div *ngIf="profileForm.get('nationality')?.touched && profileForm.get('nationality')?.invalid" class="error-text">
+            Nationality is required.
+          </div>
+        </div>
+      </div>
+
+      <!-- Marital status -->
+      <div class="form-group mb-3">
+        <label class="form-label" for="maritalStatus">Marital Status</label>
+        <select id="maritalStatus" formControlName="maritalStatus" class="form-control">
+          <option *ngFor="let ms of maritalStatuses" [value]="ms">{{ ms }}</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Section 2: Emergency Contact -->
+    <div class="mb-5 pt-3 border-top">
+      <h3 class="section-divider-title">2. Emergency Contact Information</h3>
+      
+      <div class="form-two-col">
+        <div class="form-group mb-3">
+          <label class="form-label" for="emergencyContactName">Contact Full Name *</label>
           <input 
             type="text" 
             id="emergencyContactName" 
@@ -95,8 +104,8 @@
           </div>
         </div>
 
-        <div class="form-group">
-          <label class="form-label" for="emergencyContactPhone">Contact Phone</label>
+        <div class="form-group mb-3">
+          <label class="form-label" for="emergencyContactPhone">Contact Phone Number *</label>
           <input 
             type="tel" 
             id="emergencyContactPhone" 
@@ -111,20 +120,20 @@
       </div>
     </div>
 
-    <!-- Notes -->
-    <div class="form-group m-0">
-      <label class="form-label" for="notes">Additional Health Notes (Optional)</label>
+    <!-- Section 3: General Health Notes -->
+    <div class="form-group m-0 pt-2 border-top">
+      <label class="form-label" for="notes">3. Additional Health Notes (Optional)</label>
       <textarea 
         id="notes" 
         formControlName="notes" 
         class="form-control"
-        placeholder="List any general health comments, preferences or general constraints..."
+        placeholder="List any general health preferences or notes for your consulting doctor..."
         rows="3"
       ></textarea>
     </div>
 
     <!-- Submit/Cancel controls -->
-    <div *ngIf="isEditMode" class="d-flex justify-end gap-3 mt-5 pt-4 border-top">
+    <div *ngIf="isEditMode" class="d-flex justify-end gap-3 mt-4 pt-4 border-top">
       <button *ngIf="profileExists" type="button" class="btn btn-outline" (click)="cancelEdit()">
         Cancel
       </button>

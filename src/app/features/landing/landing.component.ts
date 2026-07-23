@@ -46,10 +46,12 @@ export interface ClinicCardDisplay extends ClinicResponseDto {
   expanded?: boolean;
 }
 
+import { CustomSelectComponent } from '../../shared/components/custom-select/custom-select.component';
+
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterLink, CustomSelectComponent],
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.css']
 })
@@ -92,6 +94,21 @@ export class LandingComponent implements OnInit {
     query: [''],
     location: ['']
   });
+
+  public sortSelectOptions = [
+    { label: 'Best match', value: 'best' },
+    { label: 'Highest rated ⭐', value: 'rating' },
+    { label: 'Most reviews', value: 'reviews' },
+    { label: 'Alphabetical (A-Z)', value: 'alpha' }
+  ];
+
+  get citySelectOptions(): { label: string; value: string }[] {
+    const opts = [{ label: '📍 All Cities / Areas', value: '' }];
+    if (this.cities && this.cities.length) {
+      this.cities.forEach(c => opts.push({ label: c.nameEn, value: c.cityId }));
+    }
+    return opts;
+  }
 
   // Booking Modal State
   public bookingModalOpen = false;

@@ -15,7 +15,7 @@ import {
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './emr.component.html',
-  styleUrls: []
+  styleUrls: ['./emr.component.css']
 })
 export class EmrComponent implements OnInit {
   private clinicalRecordService = inject(ClinicalRecordService);

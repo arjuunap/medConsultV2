@@ -11,7 +11,7 @@ import { UserRole } from '../../../core/models/auth.model';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './login.component.html',
-  styleUrls: []
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
   private fb = inject(FormBuilder);

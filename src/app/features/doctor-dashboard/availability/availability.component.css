@@ -1,0 +1,53 @@
+.availability-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.slots-grid-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.slot-card-item {
+  border-radius: var(--radius-md);
+  padding: 14px;
+  text-align: center;
+  border: 1.5px solid var(--border-color);
+  position: relative;
+  transition: var(--transition);
+}
+
+/* Available slots --accent-light (#DCFCE7) */
+.slot-card-item.status-available {
+  background-color: var(--accent-light);
+  border-color: var(--accent);
+  color: var(--teal);
+}
+
+/* Blocked / unavailable slots --gray-200 (#e2e8f0) */
+.slot-card-item.status-blocked {
+  background-color: var(--gray-200);
+  border-color: var(--t4);
+  color: var(--t3);
+}
+
+.slot-card-item.status-booked {
+  background-color: #DBEAFE;
+  border-color: #3B82F6;
+  color: #1E40AF;
+}
+
+.slot-time-text {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 576px) {
+  .slots-grid-view {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+}

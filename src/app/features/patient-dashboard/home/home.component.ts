@@ -16,7 +16,7 @@ import { VitalResponseDto } from '../../../core/models/clinical-record.model';
   standalone: true,
   imports: [CommonModule, RouterLink, ReactiveFormsModule],
   templateUrl: './home.component.html',
-  styleUrls: []
+  styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
   private patientService = inject(PatientService);

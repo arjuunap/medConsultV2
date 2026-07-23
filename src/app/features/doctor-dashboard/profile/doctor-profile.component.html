@@ -1,10 +1,10 @@
 <!-- Doctor Dashboard: My Professional Profile -->
-<div *ngIf="doctorProfile; else loadingTemplate">
+<div *ngIf="doctorProfile; else loadingTemplate" class="doctor-profile-container">
   <!-- Header Banner -->
   <div class="d-flex justify-between align-center border-bottom pb-4 mb-4 flex-wrap gap-3">
     <div>
-      <h2 class="fs-xl text-primary m-0">My Professional Profile</h2>
-      <p class="text-muted fs-sm mt-1 m-0">Manage your bio, medical specialties, spoken languages, and academic qualifications</p>
+      <h2 class="fs-xl text-primary m-0 fw-bold">👨‍⚕️ Doctor Professional Profile</h2>
+      <p class="text-muted fs-sm mt-1 m-0">Manage personal bio, clinical credentials, spoken languages, and academic qualifications</p>
     </div>
 
     <div class="d-flex align-center gap-2">
@@ -15,16 +15,20 @@
     </div>
   </div>
 
-  <!-- Doctor Overview Card -->
-  <div class="card p-5 border-0 mb-4 shadow-sm" style="border-left: 5px solid var(--accent);">
+  <!-- Card 1: Doctor Personal Overview & License Card (Distinct Personal Info Section) -->
+  <div class="profile-card-group" style="border-left: 5px solid var(--teal);">
+    <div class="group-card-header">
+      <h3 class="group-card-title">1. Personal Overview &amp; Practice Details</h3>
+    </div>
+    
     <div class="d-flex justify-between align-center flex-wrap gap-3">
       <div class="d-flex align-center gap-4">
-        <div style="width: 68px; height: 68px; border-radius: 50%; background: var(--primary); color: #fff;" class="d-flex align-center justify-center fs-xl fw-bold flex-shrink-0 shadow-sm">
+        <div style="width: 68px; height: 68px; border-radius: 50%; background: var(--teal-l); color: var(--teal);" class="d-flex align-center justify-center fs-xl fw-bold flex-shrink-0 shadow-sm">
           👨‍⚕️
         </div>
         <div>
-          <h3 class="fs-xl text-primary m-0">{{ doctorDisplayName }}</h3>
-          <div class="d-flex align-center gap-3 fs-xs text-muted mt-1">
+          <h3 class="fs-xl text-primary m-0 fw-bold">{{ doctorDisplayName }}</h3>
+          <div class="d-flex align-center gap-3 fs-xs text-muted mt-2 flex-wrap">
             <span>Experience: <strong>{{ doctorProfile.experienceYears !== undefined && doctorProfile.experienceYears !== null ? doctorProfile.experienceYears : 0 }} Years</strong></span>
             <span>Rating: <strong>⭐ {{ doctorProfile.overallRating || '5.0' }} ({{ doctorProfile.reviewCount || 0 }} reviews)</strong></span>
             <span>Standard Fee: <strong class="text-success">SAR {{ doctorProfile.consultationFeeSar || 150 }}</strong></span>
@@ -34,61 +38,56 @@
     </div>
   </div>
 
-  <!-- Sub-Navigation Tabs Card -->
-  <div class="card p-4 border-0 shadow-sm">
-    <div class="d-flex gap-2 border-bottom pb-0 mb-4 overflow-x-auto">
+  <!-- Card 2: Professional Credentials & Qualifications Card (Distinct Credentials Section) -->
+  <div class="profile-card-group" style="border-left: 5px solid var(--accent);">
+    <div class="group-card-header">
+      <h3 class="group-card-title">2. Professional Credentials, Bio &amp; Qualifications</h3>
+    </div>
+
+    <!-- Sub-Navigation Tabs Bar -->
+    <div class="sub-nav-tabs">
       <button 
-        class="btn" 
-        [class.btn-primary]="activeTab === 'general'" 
-        [class.btn-outline]="activeTab !== 'general'"
-        style="border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-bottom: -1px;"
+        class="sub-tab-btn" 
+        [class.active]="activeTab === 'general'" 
         (click)="switchTab('general')"
       >
-        📝 General Info & Bio
+        📝 Bio &amp; General Details
       </button>
       <button 
-        class="btn" 
-        [class.btn-primary]="activeTab === 'specialties'" 
-        [class.btn-outline]="activeTab !== 'specialties'"
-        style="border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-bottom: -1px;"
+        class="sub-tab-btn" 
+        [class.active]="activeTab === 'specialties'" 
         (click)="switchTab('specialties')"
       >
         🎓 Specialties ({{ doctorProfile.specialties.length }})
       </button>
       <button 
-        class="btn" 
-        [class.btn-primary]="activeTab === 'languages'" 
-        [class.btn-outline]="activeTab !== 'languages'"
-        style="border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-bottom: -1px;"
+        class="sub-tab-btn" 
+        [class.active]="activeTab === 'languages'" 
         (click)="switchTab('languages')"
       >
         🗣️ Spoken Languages ({{ doctorProfile.languages.length }})
       </button>
       <button 
-        class="btn" 
-        [class.btn-primary]="activeTab === 'qualifications'" 
-        [class.btn-outline]="activeTab !== 'qualifications'"
-        style="border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-bottom: -1px;"
+        class="sub-tab-btn" 
+        [class.active]="activeTab === 'qualifications'" 
         (click)="switchTab('qualifications')"
       >
         📜 Qualifications ({{ doctorProfile.qualifications.length }})
       </button>
       <button 
-        class="btn" 
-        [class.btn-primary]="activeTab === 'clinics'" 
-        [class.btn-outline]="activeTab !== 'clinics'"
-        style="border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-bottom: -1px;"
+        class="sub-tab-btn" 
+        [class.active]="activeTab === 'clinics'" 
         (click)="switchTab('clinics')"
       >
-        🏢 My Clinic Placements ({{ doctorProfile.clinics.length }})
+        🏢 Clinic Placements ({{ doctorProfile.clinics.length }})
       </button>
     </div>
 
-    <!-- TAB 1: General Bio & Details Form -->
+    <!-- TAB 1: General Bio Form -->
     <div *ngIf="activeTab === 'general'">
       <form [formGroup]="profileForm" (ngSubmit)="saveGeneralProfile()">
         <div class="form-row">
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label">Professional Title *</label>
             <select formControlName="title" class="form-control">
               <option value="DR">Dr. (Doctor)</option>
@@ -97,65 +96,65 @@
               <option value="SPECIALIST">Specialist</option>
             </select>
           </div>
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label">MOH Registration Number *</label>
             <input type="text" formControlName="mohRegistrationNumber" class="form-control" placeholder="MOH-123456">
           </div>
         </div>
 
         <div class="form-row">
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label">Years of Experience *</label>
             <input type="number" formControlName="experienceYears" class="form-control" placeholder="10">
           </div>
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label">Base Consultation Fee (SAR) *</label>
             <input type="number" formControlName="consultationFeeSar" class="form-control" placeholder="150">
           </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group mb-3">
           <label class="form-label">English Biography / Summary</label>
           <textarea formControlName="bioEn" class="form-control" rows="3" placeholder="Describe your medical background, expertise, and patient care philosophy in English..."></textarea>
         </div>
 
-        <div class="form-group">
+        <div class="form-group mb-3">
           <label class="form-label">Arabic Biography / Summary</label>
           <textarea formControlName="bioAr" class="form-control" rows="3" placeholder="نبذة عن خبراتك الطبية وتخصصك باللغة العربية..."></textarea>
         </div>
 
         <div class="d-flex justify-end pt-3 border-top">
           <button type="submit" [disabled]="profileForm.invalid" class="btn btn-primary">
-            💾 Save Profile Details
+            💾 Save General Details
           </button>
         </div>
       </form>
     </div>
 
-    <!-- TAB 2: Specialties & Sub-specialties -->
+    <!-- TAB 2: Specialties -->
     <div *ngIf="activeTab === 'specialties'">
-      <form [formGroup]="specialtyForm" (ngSubmit)="submitSpecialty()" class="card p-4 border-0 bg-light mb-4 shadow-sm">
+      <form [formGroup]="specialtyForm" (ngSubmit)="submitSpecialty()" class="card p-4 border bg-light mb-4 shadow-sm">
         <h4 class="fs-sm text-primary uppercase fw-bold mb-3">+ Add Medical Specialty</h4>
         <div class="form-row">
-          <div class="form-group flex-1">
+          <div class="form-group flex-1 mb-3">
             <label class="form-label">Specialty *</label>
             <select formControlName="specialtyId" (change)="onSpecialtyChange()" class="form-control">
               <option value="">-- Choose Specialty --</option>
               <option *ngFor="let s of globalSpecialties" [value]="s.specialtyId">{{ s.nameEn }}</option>
             </select>
           </div>
-          <div class="form-group flex-1">
+          <div class="form-group flex-1 mb-3">
             <label class="form-label">Sub-Specialty (Optional)</label>
             <select formControlName="subSpecialtyId" class="form-control">
               <option value="">-- None --</option>
               <option *ngFor="let ss of globalSubSpecialties" [value]="ss.subSpecialtyId">{{ ss.nameEn }}</option>
             </select>
           </div>
-          <div class="form-group d-flex align-center gap-2 mt-4">
+          <div class="form-group d-flex align-center gap-2 mt-4 mb-3">
             <input type="checkbox" id="mySpecPrimary" formControlName="isPrimary">
             <label for="mySpecPrimary" class="form-label m-0 cursor-pointer">Primary Specialty</label>
           </div>
-          <div class="form-group d-flex align-end">
+          <div class="form-group d-flex align-end mb-3">
             <button type="submit" [disabled]="specialtyForm.invalid" class="btn btn-primary w-100">
               + Add Specialty
             </button>
@@ -196,17 +195,17 @@
 
     <!-- TAB 3: Spoken Languages -->
     <div *ngIf="activeTab === 'languages'">
-      <form [formGroup]="languageForm" (ngSubmit)="submitLanguage()" class="card p-4 border-0 bg-light mb-4 shadow-sm">
+      <form [formGroup]="languageForm" (ngSubmit)="submitLanguage()" class="card p-4 border bg-light mb-4 shadow-sm">
         <h4 class="fs-sm text-primary uppercase fw-bold mb-3">+ Add Spoken Language</h4>
         <div class="form-row">
-          <div class="form-group flex-1">
+          <div class="form-group flex-1 mb-3">
             <label class="form-label">Language *</label>
             <select formControlName="languageId" class="form-control">
               <option value="">-- Choose Language --</option>
               <option *ngFor="let l of globalLanguages" [value]="l.languageId">{{ l.nameEn }}</option>
             </select>
           </div>
-          <div class="form-group flex-1">
+          <div class="form-group flex-1 mb-3">
             <label class="form-label">Proficiency *</label>
             <select formControlName="proficiency" class="form-control">
               <option value="NATIVE">Native</option>
@@ -215,7 +214,7 @@
               <option value="BASIC">Basic</option>
             </select>
           </div>
-          <div class="form-group d-flex align-end">
+          <div class="form-group d-flex align-end mb-3">
             <button type="submit" [disabled]="languageForm.invalid" class="btn btn-primary w-100">
               + Add Language
             </button>
@@ -250,31 +249,31 @@
       </div>
     </div>
 
-    <!-- TAB 4: Academic Qualifications -->
+    <!-- TAB 4: Qualifications -->
     <div *ngIf="activeTab === 'qualifications'">
-      <form [formGroup]="qualificationForm" (ngSubmit)="submitQualification()" class="card p-4 border-0 bg-light mb-4 shadow-sm">
+      <form [formGroup]="qualificationForm" (ngSubmit)="submitQualification()" class="card p-4 border bg-light mb-4 shadow-sm">
         <h4 class="fs-sm text-primary uppercase fw-bold mb-3">+ Add Academic Degree / Qualification</h4>
         <div class="form-row">
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label">Degree *</label>
             <input type="text" formControlName="degree" class="form-control" placeholder="E.g. MBBS, MD, Board Certification">
           </div>
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label">Institution / University *</label>
             <input type="text" formControlName="institution" class="form-control" placeholder="University Name">
           </div>
         </div>
 
         <div class="form-row">
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label">Country *</label>
             <input type="text" formControlName="country" class="form-control" placeholder="Saudi Arabia">
           </div>
-          <div class="form-group">
+          <div class="form-group mb-3">
             <label class="form-label">Year Obtained *</label>
             <input type="number" formControlName="yearObtained" class="form-control" placeholder="2018">
           </div>
-          <div class="form-group d-flex align-end">
+          <div class="form-group d-flex align-end mb-3">
             <button type="submit" [disabled]="qualificationForm.invalid" class="btn btn-primary w-100">
               + Add Degree
             </button>
@@ -288,7 +287,7 @@
             <tr>
               <th>Degree Title</th>
               <th>University / Institution</th>
-              <th>Country & Year</th>
+              <th>Country &amp; Year</th>
               <th class="text-end">Actions</th>
             </tr>
           </thead>
@@ -317,7 +316,7 @@
         <table class="table">
           <thead>
             <tr>
-              <th>Clinic & Facility</th>
+              <th>Clinic &amp; Facility</th>
               <th>Branch Location</th>
               <th>Department</th>
               <th>Consultation Fee</th>

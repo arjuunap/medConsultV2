@@ -48,10 +48,15 @@
               <span class="hs-icon">🔍</span>
               <input class="hs-input" formControlName="query" (input)="applyFilters()" type="text" placeholder="Clinic name, doctor name or specialty…">
             </div>
-            <select class="hs-select" formControlName="location" (change)="onLocationChange()">
-              <option value="">📍 All Cities / Areas</option>
-              <option *ngFor="let city of cities" [value]="city.cityId">{{ city.nameEn }}</option>
-            </select>
+            <div style="min-width: 190px;">
+              <app-custom-select 
+                formControlName="location" 
+                [options]="citySelectOptions" 
+                [searchable]="true"
+                placeholder="📍 All Cities / Areas"
+                (selectionChange)="onLocationChange()">
+              </app-custom-select>
+            </div>
             <button class="hs-search-btn" type="submit">Search clinics</button>
           </div>
 
@@ -92,12 +97,14 @@
     <!-- Sorting Controls -->
     <div class="d-flex align-center gap-2">
       <span class="fs-xs text-muted fw-bold">Sort by:</span>
-      <select class="form-control form-control-sm m-0" style="width:170px;" (change)="setSortBy($any($event.target).value)">
-        <option value="best">Best match</option>
-        <option value="rating">Highest rated ⭐</option>
-        <option value="reviews">Most reviews</option>
-        <option value="alpha">Alphabetical (A-Z)</option>
-      </select>
+      <div style="width: 175px;">
+        <app-custom-select 
+          [options]="sortSelectOptions" 
+          [ngModel]="sortBy"
+          (selectionChange)="setSortBy($event)"
+          size="sm">
+        </app-custom-select>
+      </div>
     </div>
   </div>
 

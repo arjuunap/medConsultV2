@@ -17,7 +17,7 @@ import { forkJoin, map, of } from 'rxjs';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './book-appointment.component.html',
-  styleUrls: []
+  styleUrls: ['./book-appointment.component.css']
 })
 export class BookAppointmentComponent implements OnInit {
   private doctorService = inject(DoctorService);
