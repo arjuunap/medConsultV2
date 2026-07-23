@@ -18,6 +18,7 @@
     <button class="btn" [class.btn-primary]="activeTab==='specialties'" [class.btn-outline]="activeTab!=='specialties'" (click)="switchTab('specialties')">🩺 Specialties</button>
     <button class="btn" [class.btn-primary]="activeTab==='languages'" [class.btn-outline]="activeTab!=='languages'" (click)="switchTab('languages')">🗣️ Languages</button>
     <button class="btn" [class.btn-primary]="activeTab==='insurances'" [class.btn-outline]="activeTab!=='insurances'" (click)="switchTab('insurances')">🛡️ Insurance Panels</button>
+    <button class="btn" [class.btn-primary]="activeTab==='doctors'" [class.btn-outline]="activeTab!=='doctors'" (click)="switchTab('doctors')">👨‍⚕️ Doctors</button>
   </div>
 
   <!-- ==================== CITIES & LOCALITIES ==================== -->
@@ -190,11 +191,20 @@
           <td class="fw-bold text-primary">{{ ins.nameEn }}</td>
           <td>{{ ins.nameAr }}</td>
           <td>
-            <div *ngIf="ins.logoUrl" class="d-flex align-center gap-2">
-              <img [src]="apiUrl+ins.logoUrl" alt="Logo" style="max-height: 24px; max-width: 40px; object-fit: contain;" error="this.style.display='none'">
-              <span class="fs-xs text-muted">{{ ins.logoUrl }}</span>
+            <div *ngIf="ins.logoUrl; else noLogo" class="d-flex align-center gap-2">
+              <div class="d-flex align-center justify-center bg-light border rounded p-1" style="width: 44px; height: 32px; overflow: hidden; background: #f8fafc;">
+                <img 
+                  [src]="ins.logoUrl | apiUrl" 
+                  alt="{{ ins.nameEn }} logo" 
+                  style="max-height: 100%; max-width: 100%; object-fit: contain;"
+                  (error)="$any($event.target).style.display='none'; $any($event.target).nextElementSibling.style.display='inline-block'">
+                <span style="display: none; font-size: 14px;">🛡️</span>
+              </div>
+              <!-- <span class="fs-xs text-muted" style="max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ ins.logoUrl }}</span> -->
             </div>
-            <span *ngIf="!ins.logoUrl" class="text-muted">No Logo</span>
+            <ng-template #noLogo>
+              <span class="text-muted fs-xs">No Logo</span>
+            </ng-template>
           </td>
           <td>
             <span class="badge" [class.badge-success]="ins.isActive" [class.badge-danger]="!ins.isActive">
@@ -208,6 +218,54 @@
         </tr>
       </tbody>
     </table>
+  </div>
+
+  <!-- ==================== DOCTORS ==================== -->
+  <div *ngIf="activeTab === 'doctors'">
+    <div class="table-responsive border-0">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Doctor Name</th>
+            <th>Title</th>
+            <th>MOH Registration #</th>
+            <th>Experience</th>
+            <th>Consultation Fee</th>
+            <th>Rating</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let doc of doctors">
+            <td class="fw-bold text-primary">{{ doc.title || 'Dr' }}. {{ doc.fullName }}</td>
+            <td><span class="badge badge-info">{{ doc.title || 'DR' }}</span></td>
+            <td><code>{{ doc.mohRegistrationNumber || 'N/A' }}</code></td>
+            <td>{{ doc.experienceYears || 0 }} yrs</td>
+            <td>SAR {{ doc.consultationFeeSar || 0 }}</td>
+            <td>⭐ {{ doc.overallRating || 0 }} ({{ doc.reviewCount || 0 }})</td>
+            <td>
+              <span class="badge" [class.badge-success]="doc.isActive" [class.badge-danger]="!doc.isActive">
+                {{ doc.isActive ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+            <td>
+              <button 
+                class="btn btn-sm mr-2" 
+                [class.btn-outline]="doc.isActive" 
+                [class.btn-success]="!doc.isActive" 
+                (click)="toggleDoctorStatus(doc)">
+                {{ doc.isActive ? '🚫 Deactivate' : '✅ Activate' }}
+              </button>
+              <button class="btn btn-outline btn-danger btn-sm" (click)="deleteItem(doc.doctorId)">Delete</button>
+            </td>
+          </tr>
+          <tr *ngIf="doctors.length === 0">
+            <td colspan="8" class="text-center p-4 text-muted">No doctors found in system database.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
 </div>

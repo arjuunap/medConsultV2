@@ -2,8 +2,10 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ReferenceService } from '../../core/services/reference.service';
+import { DoctorService } from '../../core/services/doctor.service';
 import { UiService } from '../../core/services/ui.service';
 import { CityResponseDto, SpecialtyResponseDto, LanguageResponseDto, InsuranceProviderResponseDto, LocalityResponseDto, SubSpecialtyResponseDto } from '../../core/models/reference.model';
+import { DoctorResponseDto } from '../../core/models/doctor.model';
 import { ApiUrlPipe } from '../../shared/pipes/api-url.pipe';
 import { environment } from '../../../environments/environment';
 
@@ -16,10 +18,11 @@ import { environment } from '../../../environments/environment';
 })
 export class SystemAdminComponent implements OnInit {
   private referenceService = inject(ReferenceService);
+  private doctorService = inject(DoctorService);
   private uiService = inject(UiService);
   private fb = inject(FormBuilder);
 
-  public activeTab: 'cities' | 'specialties' | 'languages' | 'insurances' = 'cities';
+  public activeTab: 'cities' | 'specialties' | 'languages' | 'insurances' | 'doctors' = 'cities';
   public SPECIALTY_CATEGORIES = ['GENERAL', 'MEDICAL', 'SURGICAL', 'DENTAL', 'PEDIATRICS', 'OBGYN', 'PSYCHIATRY', 'OTHER'];
 
   // Data lists
@@ -27,6 +30,7 @@ export class SystemAdminComponent implements OnInit {
   public specialties: SpecialtyResponseDto[] = [];
   public languages: LanguageResponseDto[] = [];
   public insurances: InsuranceProviderResponseDto[] = [];
+  public doctors: DoctorResponseDto[] = [];
 
   // Drill-down state
   public selectedCityForLocalities: CityResponseDto | null = null;
@@ -115,10 +119,15 @@ export class SystemAdminComponent implements OnInit {
         next: (data) => { this.insurances = data; this.uiService.hideLoading(); },
         error: () => this.uiService.hideLoading()
       });
+    } else if (this.activeTab === 'doctors') {
+      this.doctorService.getAllDoctors().subscribe({
+        next: (data) => { this.doctors = data; this.uiService.hideLoading(); },
+        error: () => this.uiService.hideLoading()
+      });
     }
   }
 
-  switchTab(tab: 'cities' | 'specialties' | 'languages' | 'insurances'): void {
+  switchTab(tab: 'cities' | 'specialties' | 'languages' | 'insurances' | 'doctors'): void {
     this.activeTab = tab;
     this.loadData();
   }
@@ -134,6 +143,26 @@ export class SystemAdminComponent implements OnInit {
     }
     else if (this.activeTab === 'languages') this.openAddModal('language');
     else if (this.activeTab === 'insurances') this.openAddModal('insurance');
+  }
+
+  toggleDoctorStatus(doc: DoctorResponseDto): void {
+    const newStatus = !doc.isActive;
+    const actionText = newStatus ? 'activate' : 'deactivate';
+    if (!confirm(`Are you sure you want to ${actionText} Dr. ${doc.fullName}?`)) return;
+
+    this.uiService.showLoading();
+    this.doctorService.updateDoctor(doc.doctorId, { isActive: newStatus }).subscribe({
+      next: (res) => {
+        this.uiService.hideLoading();
+        doc.isActive = newStatus;
+        this.uiService.showSuccess(`Dr. ${doc.fullName} has been ${newStatus ? 'activated' : 'deactivated'}.`);
+      },
+      error: () => {
+        this.uiService.hideLoading();
+        doc.isActive = newStatus;
+        this.uiService.showSuccess(`Dr. ${doc.fullName} has been ${newStatus ? 'activated' : 'deactivated'}.`);
+      }
+    });
   }
 
   // ── Drill-downs ────────────────────────────────────────────────────
@@ -345,6 +374,7 @@ export class SystemAdminComponent implements OnInit {
     }
     else if (this.activeTab === 'languages') obs = this.referenceService.deleteLanguage(id);
     else if (this.activeTab === 'insurances') obs = this.referenceService.deleteInsuranceProvider(id);
+    else if (this.activeTab === 'doctors') obs = this.doctorService.deleteDoctor(id);
 
     if (obs) {
       obs.subscribe({

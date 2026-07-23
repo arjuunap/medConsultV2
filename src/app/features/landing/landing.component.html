@@ -48,7 +48,7 @@
               <span class="hs-icon">🔍</span>
               <input class="hs-input" formControlName="query" (input)="applyFilters()" type="text" placeholder="Clinic name, doctor name or specialty…">
             </div>
-            <select class="hs-select" formControlName="location" (change)="applyFilters()">
+            <select class="hs-select" formControlName="location" (change)="onLocationChange()">
               <option value="">📍 All Cities / Areas</option>
               <option *ngFor="let city of cities" [value]="city.cityId">{{ city.nameEn }}</option>
             </select>

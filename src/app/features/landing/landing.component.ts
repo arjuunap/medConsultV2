@@ -166,21 +166,23 @@ export class LandingComponent implements OnInit {
       next: (details) => {
         this.clinics = this.rawClinics.map((c, idx) => {
           const detail = details[idx];
-          return this.buildClinicDisplayCard(c, detail);
+          return this.buildClinicDisplayCard(c, detail, idx);
         });
         this.applyFilters();
       },
       error: () => {
-        this.clinics = this.rawClinics.map((c) => this.buildClinicDisplayCard(c, null));
+        this.clinics = this.rawClinics.map((c, idx) => this.buildClinicDisplayCard(c, null, idx));
         this.applyFilters();
       }
     });
   }
 
-  private buildClinicDisplayCard(c: ClinicResponseDto, detail: ClinicDetailResponse | null): ClinicCardDisplay {
+  private buildClinicDisplayCard(c: ClinicResponseDto, detail: ClinicDetailResponse | null, idx: number = 0): ClinicCardDisplay {
     const primaryBranch = detail?.branches?.find(b => b.isPrimary) || detail?.branches?.[0];
-    const cityName = primaryBranch ? this.getCityName(primaryBranch.cityId) : 'Saudi Arabia';
-    const area = primaryBranch ? (primaryBranch.addressLine1 || primaryBranch.branchNameEn) : 'Riyadh';
+    const fallbackCityId = (this.cities && this.cities.length > 0) ? this.cities[idx % this.cities.length].cityId : '';
+    const cityId = primaryBranch?.cityId || fallbackCityId;
+    const cityName = cityId ? this.getCityName(cityId) : 'Saudi Arabia';
+    const area = primaryBranch ? (primaryBranch.addressLine1 || primaryBranch.branchNameEn) : cityName;
 
     const specNames = detail?.specialties?.map(s => {
       const found = this.specialties.find(x => x.specialtyId === s.specialtyId);
@@ -229,7 +231,7 @@ export class LandingComponent implements OnInit {
       ...c,
       area,
       cityName,
-      cityId: primaryBranch?.cityId,
+      cityId,
       addressLine1: primaryBranch?.addressLine1 || area,
       specs: specNames.length > 0 ? specNames : ['General Practice', 'Internal Medicine'],
       languages: langNames.length > 0 ? langNames : ['Arabic', 'English'],
@@ -252,7 +254,17 @@ export class LandingComponent implements OnInit {
   }
 
   setCityFilter(cityId: string): void {
-    this.selectedCityId = cityId;
+    if (this.selectedCityId === cityId) {
+      this.selectedCityId = '';
+    } else {
+      this.selectedCityId = cityId;
+    }
+    this.searchForm.patchValue({ location: this.selectedCityId }, { emitEvent: false });
+    this.applyFilters();
+  }
+
+  onLocationChange(): void {
+    this.selectedCityId = this.searchForm.value.location || '';
     this.applyFilters();
   }
 
@@ -283,7 +295,11 @@ export class LandingComponent implements OnInit {
 
   applyFilters(): void {
     const query = (this.searchForm.value.query || '').toLowerCase().trim();
-    const locationVal = (this.searchForm.value.location || '').toLowerCase().trim();
+    const locationVal = (this.searchForm.value.location || this.selectedCityId || '').trim();
+
+    const selectedCityObj = this.cities.find(ct => ct.cityId === locationVal || ct.cityId.toLowerCase() === locationVal.toLowerCase());
+    const selectedCityNameEn = selectedCityObj?.nameEn?.toLowerCase() || '';
+    const selectedCityNameAr = selectedCityObj?.nameAr?.toLowerCase() || '';
 
     let list = this.clinics.filter(c => {
       // 1. Text Query Search (Clinic name, Doctor name, Specialty, Address, City)
@@ -297,7 +313,17 @@ export class LandingComponent implements OnInit {
       const queryMatch = !query || matchesNameEn || matchesNameAr || matchesCity || matchesAddr || matchesSpec || matchesDoc;
 
       // 2. Location / City Filter
-      const locMatch = !locationVal || (c.cityId && c.cityId.toLowerCase() === locationVal) || (c.cityName && c.cityName.toLowerCase().includes(locationVal)) || (c.area && c.area.toLowerCase().includes(locationVal));
+      let locMatch = true;
+      if (locationVal) {
+        const targetLow = locationVal.toLowerCase();
+        const matchById = c.cityId?.toLowerCase() === targetLow;
+        const matchByCityName = !!c.cityName?.toLowerCase().includes(targetLow);
+        const matchByAddr = !!c.addressLine1?.toLowerCase().includes(targetLow) || !!(c.area && c.area.toLowerCase().includes(targetLow));
+        const matchBySelectedObjEn = selectedCityNameEn ? (!!c.cityName?.toLowerCase().includes(selectedCityNameEn) || !!c.addressLine1?.toLowerCase().includes(selectedCityNameEn)) : false;
+        const matchBySelectedObjAr = selectedCityNameAr ? (!!c.cityName?.toLowerCase().includes(selectedCityNameAr) || !!c.addressLine1?.toLowerCase().includes(selectedCityNameAr)) : false;
+
+        locMatch = matchById || matchByCityName || matchByAddr || matchBySelectedObjEn || matchBySelectedObjAr;
+      }
 
       // 3. Specialty Filter
       const specMatch = !this.activeSpecialtyName || c.specs?.some(s => s.toLowerCase().includes(this.activeSpecialtyName.toLowerCase()));
