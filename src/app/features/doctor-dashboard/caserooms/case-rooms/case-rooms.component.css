@@ -1,111 +1,566 @@
 .caserooms-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(16px, 3vw, 24px);
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
+/* Header Banner Row */
 .page-title-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 16px;
+  padding-bottom: 8px;
 }
 
+.banner-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: var(--text);
+  margin: 0;
+}
+
+.banner-subtitle {
+  color: var(--t3);
+  font-size: 0.9rem;
+  margin: 4px 0 0 0;
+}
+
+.btn-open-case {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+}
+
+/* Layout Box */
 .caserooms-layout {
   display: flex;
-  gap: 24px;
-  height: 75vh;
-  min-height: 550px;
-}
-
-.caserooms-sidebar-card {
-  flex: 1;
-  min-width: 280px;
   background-color: var(--white);
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-color);
+  height: 75vh;
+  min-height: 580px;
+  overflow: hidden;
+}
+
+/* Sidebar List styling */
+.caserooms-sidebar {
+  width: 340px;
+  border-right: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
+}
+
+.inbox-header {
+  padding: 18px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.inbox-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--text);
+  margin: 0;
+}
+
+.inbox-count-badge {
+  background-color: var(--teal-l);
+  color: var(--teal);
+  font-weight: 700;
+  font-size: 0.78rem;
+  padding: 4px 8px;
+  border-radius: 20px;
+}
+
+.inbox-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.no-conversations {
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--t3);
+  font-size: 0.88rem;
+}
+
+.inbox-item-card {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: var(--transition);
+  align-items: flex-start;
+}
+
+.inbox-item-card:hover {
+  background-color: var(--off);
+}
+
+.inbox-item-card.active {
+  background-color: var(--teal-l);
+  box-shadow: inset 4px 0 0 var(--teal);
+}
+
+.avatar-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--border-color);
+  color: var(--t2);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 0.95rem;
+}
+
+.inbox-item-card.active .avatar-circle {
+  background-color: var(--teal);
+  color: var(--white);
+}
+
+.inbox-item-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.inbox-item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.patient-name {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--text);
+}
+
+.status-indicator-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot-success { background-color: var(--success); }
+.dot-secondary { background-color: var(--t4); }
+
+.subject-snippet {
+  font-size: 0.85rem;
+  color: var(--t3);
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.opened-time {
+  font-size: 0.75rem;
+  color: var(--t4);
+}
+
+/* Chat Main Viewport */
+.chat-viewport-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.active-chat-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.active-user-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.chat-subject-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--text);
+  margin: 0;
+}
+
+.chat-patient-subtitle {
+  font-size: 0.82rem;
+  color: var(--t3);
+  margin-top: 2px;
+}
+
+.case-description {
+  background-color: var(--off);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  color: var(--t2);
+  margin: 8px 0 0 0;
+  border: 1px solid var(--border-color);
+  line-height: 1.4;
+}
+
+.badge-urgent {
+  background-color: var(--danger-light);
+  color: var(--danger);
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.status-update-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.custom-select-wrapper {
+  width: 140px;
+}
+
+.btn-update-status {
+  padding: 8px 12px !important;
+  font-size: 0.82rem !important;
+}
+
+/* Mobile Back button */
+.btn-back-to-inbox {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--teal);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0;
+  margin-right: 12px;
+}
+
+/* Discussion Feed */
+.message-stream {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  background-color: var(--off);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.no-messages-prompt {
+  margin: auto;
+  text-align: center;
+  color: var(--t4);
+  font-size: 0.9rem;
+  max-width: 280px;
+  line-height: 1.45;
+}
+
+.message-bubble-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 80%;
+}
+
+.message-bubble-wrapper.sent-by-me {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.message-meta {
+  font-size: 0.75rem;
+  color: var(--t3);
+  margin-bottom: 4px;
+  padding: 0 4px;
+}
+
+.sender-name {
+  font-weight: 600;
+}
+
+.post-type-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+/* Styled Message Cards by type */
+.post-bubble-card {
+  background-color: var(--white);
+  color: var(--text);
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  word-break: break-word;
+}
+
+/* Post color accents */
+.post-note {
+  border-left: 4px solid var(--teal) !important;
+}
+
+.post-action-item {
+  border-left: 4px solid var(--accent) !important;
+  background-color: var(--accent-light);
+}
+
+.post-file {
+  border-left: 4px solid var(--primary) !important;
+  background-color: var(--primary-light);
+}
+
+/* Self alignment overrides */
+.sent-by-me .post-bubble-card {
+  background-color: var(--white);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
   box-shadow: var(--shadow-sm);
 }
 
-.room-item-card {
+/* Action item details card */
+.action-item-details-box {
+  background-color: var(--white);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1.5px dashed var(--border-color);
+  font-size: 0.82rem;
+  color: var(--t2);
+}
+
+/* Custom badges */
+.badge-danger-soft { background-color: var(--danger-light); color: var(--danger); }
+.badge-warning-soft { background-color: var(--accent-light); color: var(--accent-d); }
+.badge-primary-soft { background-color: var(--primary-light); color: var(--primary); }
+.badge-secondary-soft { background-color: var(--teal-l); color: var(--teal); }
+
+/* Input block footer */
+.chat-footer-input {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--white);
+}
+
+.chat-form {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.chat-text-input {
+  flex: 1;
+  padding: 12px 18px;
+  font-size: 0.92rem;
+  border-radius: 24px;
+  border: 1.5px solid var(--border-color);
+  outline: none;
+  background-color: var(--off);
+  transition: var(--transition);
+}
+
+.chat-text-input:focus {
+  border-color: var(--teal);
+  background-color: var(--white);
+  box-shadow: 0 0 0 3px var(--teal-glow);
+}
+
+.btn-send-message {
+  background-color: var(--teal);
+  color: var(--white);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 12px 24px;
+  border-radius: 24px;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.btn-send-message:hover:not(:disabled) {
+  background-color: var(--teal-m);
+}
+
+.btn-send-message:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Closed state */
+.chat-footer-closed {
+  padding: 18px 24px;
+  background-color: var(--danger-light);
+  color: var(--danger-d);
+  text-align: center;
+  font-size: 0.88rem;
+  font-weight: 500;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Empty Viewport placeholder */
+.no-selection-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--off);
+}
+
+.no-selection-placeholder {
+  text-align: center;
+  max-width: 320px;
+  padding: 20px;
+}
+
+.icon-bubble {
+  font-size: 3.5rem;
+  margin-bottom: 12px;
+}
+
+.no-selection-placeholder h3 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.no-selection-placeholder p {
+  color: var(--t3);
+  font-size: 0.85rem;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Open Case Room Dialog styling */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
   padding: 16px;
+}
+
+.modal-card {
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 20px 24px;
   border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--text);
+  margin: 0;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--t3);
   cursor: pointer;
   transition: var(--transition);
 }
 
-.room-item-card:hover {
-  background-color: var(--off);
+.btn-close:hover {
+  color: var(--text);
 }
 
-.room-item-card.active {
-  background-color: var(--teal-l);
-  border-left: 4px solid var(--teal);
-}
-
-/* Status dots */
-.status-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  display: inline-block;
-  margin-right: 6px;
-}
-
-.status-dot-active {
-  background-color: var(--success);
-  box-shadow: 0 0 6px rgba(34, 197, 94, 0.4);
-}
-
-.status-dot-inactive {
-  background-color: var(--danger);
-  box-shadow: 0 0 6px rgba(239, 68, 68, 0.4);
-}
-
-.chat-main-card {
-  flex: 2;
-  background-color: var(--white);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-}
-
-.chat-posts-viewport {
-  flex: 1;
+.modal-body {
+  padding: 24px;
   overflow-y: auto;
-  padding: 20px;
+}
+
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-color);
   display: flex;
-  flex-direction: column;
-  gap: 14px;
+  justify-content: flex-end;
+  gap: 12px;
   background-color: var(--off);
 }
 
+/* Responsive Overrides */
 @media (max-width: 768px) {
-  .caserooms-layout {
-    flex-direction: column;
-    height: auto;
-    min-height: 0;
+  .btn-back-to-inbox {
+    display: inline-flex;
   }
 
-  .caserooms-sidebar-card {
-    max-height: 220px;
-    min-width: 100%;
+  .caserooms-sidebar {
+    width: 100%;
+    max-height: none;
   }
 
-  .chat-main-card {
-    height: 480px;
-    max-height: 70vh;
-    min-width: 100%;
+  .chat-viewport-container {
+    display: none;
+    width: 100%;
   }
 
-  .chat-posts-viewport {
-    padding: 14px;
+  .no-selection-container {
+    display: none;
+  }
+
+  /* Chat Active Class Switch */
+  .caserooms-layout.chat-active .caserooms-sidebar {
+    display: none;
+  }
+
+  .caserooms-layout.chat-active .chat-viewport-container {
+    display: flex;
+    height: 100%;
   }
 }

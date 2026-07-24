@@ -7,7 +7,7 @@
     </div>
   </div>
 
-  <div class="consultations-layout shadow-sm">
+  <div class="consultations-layout shadow-sm" [class.chat-active]="isChatActive" [class.sidebar-open]="showPatientInfo">
     <!-- Inbox List Sidebar -->
     <div class="inbox-sidebar">
       <div class="inbox-header">
@@ -56,6 +56,11 @@
       <!-- Active Chat Header -->
       <div class="active-chat-header">
         <div class="active-user-info">
+          <!-- Back button for mobile view -->
+          <button class="btn-back-to-inbox" (click)="backToInbox()" title="Back to Inbox">
+            ⬅ Inbox
+          </button>
+
           <div class="avatar-circle header-avatar">
             {{ selectedConsultation.patientName.charAt(0).toUpperCase() }}
           </div>
@@ -70,6 +75,10 @@
 
         <!-- Status Actions -->
         <div class="header-actions">
+          <button type="button" class="btn btn-outline btn-sm btn-toggle-info" (click)="togglePatientInfo()" [class.active]="showPatientInfo">
+            ℹ️ Patient Info
+          </button>
+          
           <form [formGroup]="statusForm" class="status-update-form">
             <div class="custom-select-wrapper">
               <app-custom-select 
@@ -131,6 +140,89 @@
       <!-- Closed State Footer -->
       <div class="chat-footer-closed" *ngIf="selectedConsultation.status === 'CLOSED'">
         🔒 This consultation has been marked as <strong>Closed</strong>. Reopen to send replies.
+      </div>
+    </div>
+
+    <!-- Patient Info Sidebar Panel -->
+    <div class="patient-info-sidebar" [class.open]="showPatientInfo" *ngIf="selectedConsultation">
+      <div class="sidebar-sec-header">
+        <h4>Patient Case Info</h4>
+      </div>
+      
+      <div class="sidebar-sec-scrollable">
+        <!-- Patient Summary Card -->
+        <div class="sidebar-patient-card text-center">
+          <div class="avatar-circle big-avatar mx-auto mb-3">
+            {{ selectedConsultation.patientName.charAt(0).toUpperCase() }}
+          </div>
+          <h4 class="sidebar-patient-name">{{ selectedConsultation.patientName }}</h4>
+          <span class="badge badge-outline mt-1">ID: {{ selectedConsultation.patientId.slice(0,8) }}</span>
+        </div>
+
+        <!-- Physical stats / Vitals -->
+        <div class="sidebar-section-card" *ngIf="patientHealthProfile">
+          <h5 class="sidebar-section-title">Physical Stats</h5>
+          <div class="stats-grid">
+            <div class="stat-box">
+              <span class="stat-label">Weight</span>
+              <strong class="stat-val">{{ patientHealthProfile.weightKg || '--' }} kg</strong>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">Height</span>
+              <strong class="stat-val">{{ patientHealthProfile.heightCm || '--' }} cm</strong>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">BMI</span>
+              <strong class="stat-val">{{ patientHealthProfile.bmi || '--' }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Allergies Section -->
+        <div class="sidebar-section-card">
+          <h5 class="sidebar-section-title">Allergies ({{ patientAllergies.length }})</h5>
+          <div class="allergy-list mt-2" *ngIf="patientAllergies.length > 0">
+            <span *ngFor="let alg of patientAllergies" class="badge badge-danger-soft mr-2 mb-2">
+              ⚠️ {{ alg.allergen }} <small *ngIf="alg.severity">({{ alg.severity }})</small>
+            </span>
+          </div>
+          <p class="text-muted fs-xs m-0 mt-1" *ngIf="patientAllergies.length === 0">No known allergies registered.</p>
+        </div>
+
+        <!-- Chronic Conditions Section -->
+        <div class="sidebar-section-card">
+          <h5 class="sidebar-section-title">Chronic Conditions ({{ patientChronicConditions.length }})</h5>
+          <div class="conditions-list mt-2" *ngIf="patientChronicConditions.length > 0">
+            <div *ngFor="let cond of patientChronicConditions" class="condition-item mb-2 p-2 border rounded bg-light">
+              <strong class="text-dark fs-sm">{{ cond.conditionName }}</strong>
+              <div class="d-flex justify-between mt-1 fs-xs text-muted">
+                <span>ICD10: {{ cond.icd10Code || 'N/A' }}</span>
+                <span class="badge badge-info">{{ cond.status }}</span>
+              </div>
+            </div>
+          </div>
+          <p class="text-muted fs-xs m-0 mt-1" *ngIf="patientChronicConditions.length === 0">No chronic conditions registered.</p>
+        </div>
+
+        <!-- Medical/Social History Section -->
+        <div class="sidebar-section-card" *ngIf="patientHealthProfile && (patientHealthProfile.surgicalHistory || patientHealthProfile.familyHistory || patientHealthProfile.additionalNotes)">
+          <h5 class="sidebar-section-title">Medical History</h5>
+          
+          <div class="history-item mb-3" *ngIf="patientHealthProfile.surgicalHistory">
+            <div class="history-label">Surgical History</div>
+            <p class="history-content">{{ patientHealthProfile.surgicalHistory }}</p>
+          </div>
+          
+          <div class="history-item mb-3" *ngIf="patientHealthProfile.familyHistory">
+            <div class="history-label">Family History</div>
+            <p class="history-content">{{ patientHealthProfile.familyHistory }}</p>
+          </div>
+
+          <div class="history-item" *ngIf="patientHealthProfile.additionalNotes">
+            <div class="history-label">Notes / Observations</div>
+            <p class="history-content">{{ patientHealthProfile.additionalNotes }}</p>
+          </div>
+        </div>
       </div>
     </div>
     

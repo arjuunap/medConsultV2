@@ -12,6 +12,7 @@ import {
   MessageType 
 } from '../../../../core/models/consultation.model';
 import { CustomSelectComponent } from '../../../../shared/components/custom-select/custom-select.component';
+import { PatientService } from '../../../../core/services/patient.service';
 
 @Component({
   selector: 'app-doctor-consultations',
@@ -25,12 +26,18 @@ export class DoctorConsultationsComponent implements OnInit, OnDestroy {
   private doctorService = inject(DoctorService);
   private uiService = inject(UiService);
   public authService = inject(AuthService);
+  private patientService = inject(PatientService);
   private fb = inject(FormBuilder);
 
   public doctorId: string = '';
   public consultations: ConsultationResponseDto[] = [];
   public selectedConsultation: ConsultationResponseDto | null = null;
   public messages: ConsultationMessageResponseDto[] = [];
+  public patientHealthProfile: any = null;
+  public patientAllergies: any[] = [];
+  public patientChronicConditions: any[] = [];
+  public showPatientInfo: boolean = false;
+  public isChatActive: boolean = false;
 
   public messageForm: FormGroup = this.fb.group({
     body: ['', Validators.required]
@@ -109,6 +116,38 @@ export class DoctorConsultationsComponent implements OnInit, OnDestroy {
     this.statusForm.patchValue({ status: c.status });
     this.loadMessages(c.consultationId);
     this.startPolling(c.consultationId);
+    this.loadPatientDetails(c.patientId);
+    this.isChatActive = true;
+    this.showPatientInfo = false;
+  }
+
+  togglePatientInfo(): void {
+    this.showPatientInfo = !this.showPatientInfo;
+  }
+
+  backToInbox(): void {
+    this.isChatActive = false;
+  }
+
+  loadPatientDetails(patientId: string): void {
+    this.patientHealthProfile = null;
+    this.patientAllergies = [];
+    this.patientChronicConditions = [];
+
+    this.patientService.getPatientHealthProfile(patientId).subscribe({
+      next: (profile) => this.patientHealthProfile = profile,
+      error: () => this.patientHealthProfile = null
+    });
+
+    this.patientService.getPatientAllergies(patientId).subscribe({
+      next: (allergies) => this.patientAllergies = allergies,
+      error: () => this.patientAllergies = []
+    });
+
+    this.patientService.getPatientChronicConditions(patientId).subscribe({
+      next: (conditions) => this.patientChronicConditions = conditions,
+      error: () => this.patientChronicConditions = []
+    });
   }
 
   loadMessages(consultationId: string, isPolling = false): void {

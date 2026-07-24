@@ -21,7 +21,7 @@ import { CustomSelectComponent } from '../../../../shared/components/custom-sele
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, CustomSelectComponent],
   templateUrl: './case-rooms.component.html',
-  styleUrls: []
+  styleUrls: ['./case-rooms.component.css']
 })
 export class CaseRoomsComponent implements OnInit, OnDestroy {
   private caseRoomService = inject(CaseRoomService);
@@ -32,6 +32,7 @@ export class CaseRoomsComponent implements OnInit, OnDestroy {
   private doctorService = inject(DoctorService);
   private fb = inject(FormBuilder);
 
+  public isChatActive = false;
   public caseRooms: CaseRoomResponseDto[] = [];
   public selectedRoom: CaseRoomResponseDto | null = null;
   public posts: CaseRoomPostResponseDto[] = [];
@@ -181,6 +182,11 @@ export class CaseRoomsComponent implements OnInit, OnDestroy {
     this.statusForm.patchValue({ status: room.status });
     this.loadPosts(room.caseRoomId);
     this.startPolling(room.caseRoomId);
+    this.isChatActive = true;
+  }
+
+  backToInbox(): void {
+    this.isChatActive = false;
   }
 
   loadPosts(roomId: string, isPolling = false): void {
