@@ -46,4 +46,9 @@ export class AppointmentService {
     const params = new HttpParams().set('page', page.toString()).set('size', size.toString());
     return this.http.get<any>(`${environment.apiUrl}/api/medconsult/appointments/doctor/${doctorId}`, { params });
   }
+
+  getClinicAppointments(clinicId: string, page = 0, size = 10): Observable<any> {
+    const params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    return this.http.get<any>(`${environment.apiUrl}/api/medconsult/appointments/clinic/${clinicId}`, { params });
+  }
 }

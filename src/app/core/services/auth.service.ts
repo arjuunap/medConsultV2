@@ -53,6 +53,7 @@ export class AuthService {
   public hasRole(roles: any[]): boolean {
     const user = this.currentUser();
     if (!user) return false;
+    if (user.role === 'SYSTEM_ADMIN') return true;
     return roles.includes(user.role);
   }
 

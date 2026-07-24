@@ -11,7 +11,22 @@ export enum Gender {
   PREFER_NOT_TO_SAY = 'PREFER_NOT_TO_SAY'
 }
 
+export interface UserResponseDto {
+  userId: string;
+  fullName: string;
+  email: string;
+  phone?: string;
+  avatarUrl?: string;
+  preferredLang?: string;
+  gender?: Gender;
+  role: UserRole;
+  managedClinics?: any[];
+  managedClinicIds?: string[];
+}
+
 export type UserLoginDto = any;
 export type RegisterRequestDto = any;
-export type AuthResponseDto = any;
-export type UserResponseDto = any;
+export type AuthResponseDto = {
+  token: string;
+  user?: UserResponseDto;
+};

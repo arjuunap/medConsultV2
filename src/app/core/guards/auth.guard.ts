@@ -42,9 +42,12 @@ export const roleGuard = (allowedRoles: UserRole[]): CanActivateFn => {
   return (route, state) => {
     const authService = inject(AuthService);
     const router = inject(Router);
+    const user = authService.currentUser();
 
-    if (authService.isLoggedIn() && authService.hasRole(allowedRoles)) {
-      return true;
+    if (authService.isLoggedIn() && user) {
+      if (user.role === UserRole.SYSTEM_ADMIN || allowedRoles.includes(user.role)) {
+        return true;
+      }
     }
 
     router.navigate(['/']);

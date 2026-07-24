@@ -11,7 +11,9 @@
       <span class="badge" [class.badge-success]="doctorProfile.doctor.mohVerified" [class.badge-info]="!doctorProfile.doctor.mohVerified">
         {{ doctorProfile.doctor.mohVerified ? '✓ MOH Verified License' : 'MOH Verification Pending' }}
       </span>
-      <span class="badge badge-primary">MOH #: {{ doctorProfile.doctor.mohRegistrationNumber }}</span>
+      <span class="badge badge-primary" *ngIf="doctorProfile.doctor.mohRegistrationNumber">
+        MOH #: {{ doctorProfile.doctor.mohRegistrationNumber }}
+      </span>
     </div>
   </div>
 

@@ -68,8 +68,9 @@ export class LayoutComponent {
         ];
       case UserRole.CLINIC_ADMIN:
         return [
-          { label: 'Manage Clinics', route: '/clinic-admin/clinics', icon: '🏥' },
-          { label: 'Manage Doctors', route: '/clinic-admin/doctors', icon: '👨‍⚕️' }
+          { label: 'Dashboard', route: '/clinic-admin/dashboard', icon: '📊' },
+          { label: 'My Clinics', route: '/clinic-admin/clinics', icon: '🏥' },
+          { label: 'Doctors Roster', route: '/clinic-admin/doctors', icon: '👨‍⚕️' }
         ];
       case UserRole.SYSTEM_ADMIN:
         return [

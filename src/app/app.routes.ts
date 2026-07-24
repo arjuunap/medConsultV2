@@ -101,12 +101,32 @@ export const routes: Routes = [
         pathMatch: 'full'
       },
       {
+        path: 'dashboard',
+        loadComponent: () => import('./features/clinic-admin/clinics/clinics.component').then(m => m.ClinicsComponent)
+      },
+      {
         path: 'clinics',
+        loadComponent: () => import('./features/clinic-admin/clinics/clinics.component').then(m => m.ClinicsComponent)
+      },
+      {
+        path: 'branches',
         loadComponent: () => import('./features/clinic-admin/clinics/clinics.component').then(m => m.ClinicsComponent)
       },
       {
         path: 'doctors',
         loadComponent: () => import('./features/clinic-admin/doctors/doctors.component').then(m => m.DoctorsComponent)
+      },
+      {
+        path: 'appointments',
+        loadComponent: () => import('./features/clinic-admin/clinics/clinics.component').then(m => m.ClinicsComponent)
+      },
+      {
+        path: 'reviews',
+        loadComponent: () => import('./features/clinic-admin/clinics/clinics.component').then(m => m.ClinicsComponent)
+      },
+      {
+        path: 'settings',
+        loadComponent: () => import('./features/clinic-admin/clinics/clinics.component').then(m => m.ClinicsComponent)
       }
     ]
   },

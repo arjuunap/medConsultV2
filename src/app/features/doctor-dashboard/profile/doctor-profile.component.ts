@@ -129,9 +129,9 @@ export class DoctorProfileComponent implements OnInit {
           const initPayload: any = {
             userId: currentUser.userId,
             title: 'DR',
-            mohRegistrationNumber: 'MOH-' + Math.floor(10000 + Math.random() * 90000),
+            mohRegistrationNumber: '',
             mohVerified: false,
-            bioEn: 'Specialist medical professional',
+            bioEn: '',
             bioAr: '',
             experienceYears: 0,
             overallRating: 5.0,
@@ -167,6 +167,9 @@ export class DoctorProfileComponent implements OnInit {
       
       next: (profile) => {
         console.log(profile)
+        if (profile && profile.doctor) {
+          Object.assign(profile, profile.doctor);
+        }
         this.doctorProfile = profile;
         this.profileForm.patchValue({
           title: profile.doctor.title || 'DR',
@@ -193,21 +196,28 @@ export class DoctorProfileComponent implements OnInit {
     if (this.profileForm.invalid || !this.doctorProfile) return;
     this.uiService.showLoading();
 
+    const docId = this.doctorProfile.doctor?.doctorId || this.doctorProfile.doctorId;
+    const userId = this.doctorProfile.doctor?.userId || this.doctorProfile.userId;
+    const mohVerified = this.doctorProfile.doctor?.mohVerified ?? this.doctorProfile.mohVerified;
+    const overallRating = this.doctorProfile.doctor?.overallRating || this.doctorProfile.overallRating;
+    const reviewCount = this.doctorProfile.doctor?.reviewCount || this.doctorProfile.reviewCount;
+    const isActive = this.doctorProfile.doctor?.isActive ?? this.doctorProfile.isActive;
+
     const payload = {
       ...this.profileForm.value,
-      docterId: this.doctorProfile.doctorId,
-      userId: this.doctorProfile.userId,
-      mohVerified: this.doctorProfile.mohVerified,
-      overallRating: this.doctorProfile.overallRating,
-      reviewCount: this.doctorProfile.reviewCount,
-      isActive: this.doctorProfile.isActive
+      docterId: docId,
+      userId: userId,
+      mohVerified: mohVerified,
+      overallRating: overallRating,
+      reviewCount: reviewCount,
+      isActive: isActive
     };
 
-    this.doctorService.updateDoctor(this.doctorProfile.doctorId, payload).subscribe({
+    this.doctorService.updateDoctor(docId, payload).subscribe({
       next: () => {
         this.uiService.hideLoading();
         this.uiService.showSuccess('Professional bio & credentials updated successfully.');
-        this.fetchFullProfile(this.doctorProfile!.doctorId);
+        this.fetchFullProfile(docId);
       },
       error: () => {
         this.uiService.hideLoading();
@@ -219,6 +229,14 @@ export class DoctorProfileComponent implements OnInit {
           this.doctorProfile.consultationFeeSar = payload.consultationFeeSar;
           this.doctorProfile.bioEn = payload.bioEn;
           this.doctorProfile.bioAr = payload.bioAr;
+          if (this.doctorProfile.doctor) {
+            this.doctorProfile.doctor.title = payload.title;
+            this.doctorProfile.doctor.mohRegistrationNumber = payload.mohRegistrationNumber;
+            this.doctorProfile.doctor.experienceYears = payload.experienceYears;
+            this.doctorProfile.doctor.consultationFeeSar = payload.consultationFeeSar;
+            this.doctorProfile.doctor.bioEn = payload.bioEn;
+            this.doctorProfile.doctor.bioAr = payload.bioAr;
+          }
         }
         this.uiService.showSuccess('Professional bio & credentials saved successfully.');
       }
