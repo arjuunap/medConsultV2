@@ -57,6 +57,11 @@ export class AuthService {
     return roles.includes(user.role);
   }
 
+  public loginWithToken(jwt: string): Observable<any> {
+    this.saveSession(jwt);
+    return this.fetchCurrentUser();
+  }
+
   public login(credentials: any): Observable<any> {
     return this.http.post<any>(`${environment.apiUrl}/api/medconsult/auth/login`, credentials).pipe(
       tap(res => {

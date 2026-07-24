@@ -81,6 +81,15 @@ export class ClinicService {
     return this.http.post<ClinicResponseDto>(`${environment.apiUrl}/api/medconsult/clinics/add`, formData);
   }
 
+  registerClinic(dto: ClinicRequestDto, logoFile?: File): Observable<ClinicResponseDto> {
+    const formData = new FormData();
+    formData.append('body', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
+    if (logoFile) {
+      formData.append('logo', logoFile);
+    }
+    return this.http.post<ClinicResponseDto>(`${environment.apiUrl}/api/medconsult/clinics/register`, formData);
+  }
+
   updateClinic(id: string, dto: ClinicRequestDto, logoFile?: File): Observable<ClinicResponseDto> {
     const formData = new FormData();
     formData.append('body', new Blob([JSON.stringify(dto)], { type: 'application/json' }));

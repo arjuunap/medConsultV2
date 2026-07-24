@@ -5,6 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { UiService } from '../../../core/services/ui.service';
 import { UserRole } from '../../../core/models/auth.model';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -18,6 +19,10 @@ export class LoginComponent {
   private authService = inject(AuthService);
   private uiService = inject(UiService);
   private router = inject(Router);
+
+  loginWithGoogle(): void {
+    window.location.href = `${environment.apiUrl}/oauth2/authorization/google`;
+  }
 
   public loginForm: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],

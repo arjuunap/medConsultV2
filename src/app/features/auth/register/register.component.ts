@@ -7,6 +7,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { UiService } from '../../../core/services/ui.service';
 import { UserRole, Gender } from '../../../core/models/auth.model';
 import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-register',
@@ -20,6 +21,10 @@ export class RegisterComponent {
   private authService = inject(AuthService);
   private uiService = inject(UiService);
   private router = inject(Router);
+
+  loginWithGoogle(): void {
+    window.location.href = `${environment.apiUrl}/oauth2/authorization/google`;
+  }
 
   public roles = [
     { label: 'Patient', value: UserRole.PATIENT },

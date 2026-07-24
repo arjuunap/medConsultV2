@@ -1,0 +1,141 @@
+.become-clinic-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: clamp(16px, 3vw, 32px);
+}
+
+/* Wizard Steps Navigation */
+.wizard-steps-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--white);
+  padding: 20px 24px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.wizard-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+  user-select: none;
+}
+
+.wizard-step:hover:not(.disabled) {
+  background-color: var(--teal-p);
+}
+
+.wizard-step.active {
+  background-color: var(--teal-l);
+}
+
+.wizard-step.active .step-number {
+  background-color: var(--teal);
+  color: var(--white);
+  border-color: var(--teal);
+  box-shadow: 0 0 12px var(--teal-glow);
+}
+
+.wizard-step.active .step-label {
+  color: var(--teal-d);
+  font-weight: 700;
+}
+
+.wizard-step.disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.step-number {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--t4);
+  color: var(--t3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  transition: var(--transition);
+}
+
+.step-label {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--t2);
+  transition: var(--transition);
+}
+
+.step-connector {
+  flex: 1;
+  height: 2px;
+  background-color: var(--border);
+  min-width: 20px;
+  transition: var(--transition);
+}
+
+.step-connector.active {
+  background-color: var(--teal);
+}
+
+/* Card layout */
+.registration-card {
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  padding: clamp(20px, 4vw, 36px);
+}
+
+.step-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--gray-900);
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.form-row .form-group {
+  flex: 1;
+  min-width: 240px;
+}
+
+.logo-upload-wrapper {
+  background-color: var(--off);
+  transition: var(--transition);
+}
+
+.logo-upload-wrapper:hover {
+  border-color: var(--teal) !important;
+}
+
+/* Responsive Overrides */
+@media (max-width: 768px) {
+  .wizard-steps-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .step-connector {
+    display: none;
+  }
+  
+  .wizard-step {
+    width: 100%;
+  }
+}

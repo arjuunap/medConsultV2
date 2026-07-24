@@ -8,9 +8,17 @@
         Registered Patient Consultation Records &amp; Emergency Information
       </div>
     </div>
-    <button *ngIf="!isEditMode" class="btn btn-primary" (click)="enableEdit()">
-      ✏️ Edit Profile
-    </button>
+    <div class="d-flex align-center gap-2">
+      <button *ngIf="!isEditMode" class="btn btn-secondary" routerLink="/patient/become-doctor">
+        🩺 Register as Doctor
+      </button>
+      <button *ngIf="!isEditMode" class="btn btn-secondary" routerLink="/patient/become-clinic">
+        🏥 Register Clinic
+      </button>
+      <button *ngIf="!isEditMode" class="btn btn-primary" (click)="enableEdit()">
+        ✏️ Edit Profile
+      </button>
+    </div>
   </div>
 
   <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">

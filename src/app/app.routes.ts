@@ -19,6 +19,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/register/register.component').then(m => m.RegisterComponent)
   },
   {
+    path: 'oauth-success',
+    loadComponent: () => import('./features/auth/oauth-success/oauth-success.component').then(m => m.OauthSuccessComponent)
+  },
+  {
     path: 'patient',
     component: LayoutComponent,
     canActivate: [authGuard, roleGuard([UserRole.PATIENT])],
@@ -35,6 +39,14 @@ export const routes: Routes = [
       {
         path: 'profile',
         loadComponent: () => import('./features/patient-dashboard/profile/profile.component').then(m => m.ProfileComponent)
+      },
+      {
+        path: 'become-doctor',
+        loadComponent: () => import('./features/patient-dashboard/become-doctor/become-doctor.component').then(m => m.BecomeDoctorComponent)
+      },
+      {
+        path: 'become-clinic',
+        loadComponent: () => import('./features/patient-dashboard/become-clinic/become-clinic.component').then(m => m.BecomeClinicComponent)
       },
       {
         path: 'health-profile',

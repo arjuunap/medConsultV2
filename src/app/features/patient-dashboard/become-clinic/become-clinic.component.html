@@ -1,0 +1,414 @@
+<div class="become-clinic-container">
+  <!-- Header Banner -->
+  <div class="d-flex justify-between align-center border-bottom pb-4 mb-5 flex-wrap gap-3">
+    <div>
+      <h2 class="fs-xl text-primary m-0 fw-bold">🏥 Clinic Professional Registration</h2>
+      <p class="text-muted fs-sm mt-1 m-0">Establish your healthcare facility profile and primary administrator details</p>
+    </div>
+    <div>
+      <a routerLink="/patient/profile" class="btn btn-outline btn-sm">
+        ⬅ Back to Profile
+      </a>
+    </div>
+  </div>
+
+  <!-- Wizard Steps Navigation -->
+  <div class="wizard-steps-container mb-5">
+    <div 
+      class="wizard-step" 
+      [class.active]="activeTab === 'general'"
+      (click)="switchTab('general')"
+    >
+      <div class="step-number">1</div>
+      <div class="step-label">Clinic Profile</div>
+    </div>
+    <div class="step-connector" [class.active]="clinicId !== null"></div>
+    <div 
+      class="wizard-step" 
+      [class.active]="activeTab === 'specialties'"
+      [class.disabled]="!clinicId"
+      (click)="switchTab('specialties')"
+    >
+      <div class="step-number">2</div>
+      <div class="step-label">Specialties</div>
+    </div>
+    <div class="step-connector" [class.active]="clinicId !== null"></div>
+    <div 
+      class="wizard-step" 
+      [class.active]="activeTab === 'languages'"
+      [class.disabled]="!clinicId"
+      (click)="switchTab('languages')"
+    >
+      <div class="step-number">3</div>
+      <div class="step-label">Languages</div>
+    </div>
+    <div class="step-connector" [class.active]="clinicId !== null"></div>
+    <div 
+      class="wizard-step" 
+      [class.active]="activeTab === 'insurance'"
+      [class.disabled]="!clinicId"
+      (click)="switchTab('insurance')"
+    >
+      <div class="step-number">4</div>
+      <div class="step-label">Insurance Providers</div>
+    </div>
+  </div>
+
+  <!-- Setup Cards -->
+  <div class="registration-card shadow-sm">
+    <!-- STEP 1: General Details -->
+    <div *ngIf="activeTab === 'general'">
+      <h3 class="step-title mb-4">📝 Step 1: Health Facility Profile</h3>
+
+      <form [formGroup]="clinicForm" (ngSubmit)="registerClinicProfile()">
+        <div class="form-row mb-3">
+          <div class="form-group flex-1">
+            <label class="form-label" for="nameEn">Clinic Name (English) *</label>
+            <input 
+              type="text" 
+              id="nameEn" 
+              formControlName="nameEn" 
+              class="form-control" 
+              placeholder="e.g. Al-Amal Medical Clinic"
+            >
+            <div *ngIf="clinicForm.get('nameEn')?.touched && clinicForm.get('nameEn')?.invalid" class="error-text">
+              English Name is required.
+            </div>
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label" for="nameAr">Clinic Name (Arabic) *</label>
+            <input 
+              type="text" 
+              id="nameAr" 
+              formControlName="nameAr" 
+              class="form-control text-right" 
+              placeholder="مثال: مجمع عيادات الأمل الطبي"
+            >
+            <div *ngIf="clinicForm.get('nameAr')?.touched && clinicForm.get('nameAr')?.invalid" class="error-text">
+              Arabic Name is required.
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row mb-3">
+          <div class="form-group flex-1">
+            <label class="form-label" for="email">Contact Email Address *</label>
+            <input 
+              type="email" 
+              id="email" 
+              formControlName="email" 
+              class="form-control" 
+              placeholder="contact@clinicname.com"
+            >
+            <div *ngIf="clinicForm.get('email')?.touched && clinicForm.get('email')?.invalid" class="error-text">
+              Valid email is required.
+            </div>
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label" for="website">Website Address</label>
+            <input 
+              type="url" 
+              id="website" 
+              formControlName="website" 
+              class="form-control" 
+              placeholder="https://www.clinicname.com"
+            >
+          </div>
+        </div>
+
+        <div class="form-row mb-3">
+          <div class="form-group flex-1">
+            <label class="form-label" for="phonePrimary">Primary Phone Number *</label>
+            <input 
+              type="tel" 
+              id="phonePrimary" 
+              formControlName="phonePrimary" 
+              class="form-control" 
+              placeholder="+966 50 000 0000"
+            >
+            <div *ngIf="clinicForm.get('phonePrimary')?.touched && clinicForm.get('phonePrimary')?.invalid" class="error-text">
+              Primary phone is required.
+            </div>
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label" for="phoneSecondary">Secondary Phone Number</label>
+            <input 
+              type="tel" 
+              id="phoneSecondary" 
+              formControlName="phoneSecondary" 
+              class="form-control" 
+              placeholder="+966 11 000 0000"
+            >
+          </div>
+        </div>
+
+        <div class="form-row mb-3">
+          <div class="form-group flex-1">
+            <label class="form-label" for="mohLicenseNumber">MOH Facility License Number *</label>
+            <input 
+              type="text" 
+              id="mohLicenseNumber" 
+              formControlName="mohLicenseNumber" 
+              class="form-control" 
+              placeholder="LIC-998877"
+            >
+            <div *ngIf="clinicForm.get('mohLicenseNumber')?.touched && clinicForm.get('mohLicenseNumber')?.invalid" class="error-text">
+              MOH license is required.
+            </div>
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label" for="vatNumber">VAT Number / Tax ID</label>
+            <input 
+              type="text" 
+              id="vatNumber" 
+              formControlName="vatNumber" 
+              class="form-control" 
+              placeholder="300123456700003"
+            >
+          </div>
+        </div>
+
+        <div class="form-group mb-3">
+          <label class="form-label" for="descriptionEn">English Facility Description</label>
+          <textarea 
+            id="descriptionEn" 
+            formControlName="descriptionEn" 
+            class="form-control" 
+            rows="3" 
+            placeholder="Introduce your medical facility, specialized departments, and care standards in English..."
+          ></textarea>
+        </div>
+
+        <div class="form-group mb-3">
+          <label class="form-label" for="descriptionAr">Arabic Facility Description</label>
+          <textarea 
+            id="descriptionAr" 
+            formControlName="descriptionAr" 
+            class="form-control text-right" 
+            rows="3" 
+            placeholder="نبذة عن المرافق والأقسام الطبية باللغة العربية..."
+          ></textarea>
+        </div>
+
+        <div class="form-group mb-4">
+          <label class="form-label">Facility Brand Logo</label>
+          <div class="logo-upload-wrapper border rounded p-3 d-flex align-center gap-3">
+            <div class="logo-placeholder flex-shrink-0 d-flex align-center justify-center bg-light rounded" style="width: 50px; height: 50px; font-size: 1.5rem;">
+              🏥
+            </div>
+            <div>
+              <input type="file" (change)="onLogoChange($event)" accept="image/*" class="form-control-file">
+              <p class="text-muted fs-xs m-0 mt-1">Recommended size: Square PNG or JPG, max 2MB</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex justify-end pt-3 border-top">
+          <button 
+            type="submit" 
+            [disabled]="clinicForm.invalid" 
+            class="btn btn-primary"
+          >
+            💾 Register Clinic &amp; Continue
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- STEP 2: Specialties -->
+    <div *ngIf="activeTab === 'specialties'">
+      <div class="d-flex justify-between align-center mb-4">
+        <h3 class="step-title m-0">🎓 Step 2: Clinic Specialties</h3>
+        <button class="btn btn-outline btn-sm" (click)="finishRegistration()">
+          Skip &amp; Finish Setup
+        </button>
+      </div>
+
+      <form [formGroup]="specialtyForm" (ngSubmit)="submitSpecialty()" class="card p-4 border bg-light mb-4 shadow-sm">
+        <h4 class="fs-sm text-primary uppercase fw-bold mb-3">+ Link Specialty to Clinic</h4>
+        <div class="form-row align-end">
+          <div class="form-group flex-1 mb-0">
+            <label class="form-label">Select Specialty *</label>
+            <app-custom-select 
+              formControlName="specialtyId" 
+              [options]="specialtySelectOptions" 
+              bindLabel="label" 
+              bindValue="value" 
+              [searchable]="true" 
+              placeholder="-- Choose Specialty --">
+            </app-custom-select>
+          </div>
+          <div class="form-group m-0" style="flex: 0 0 auto;">
+            <button type="submit" [disabled]="specialtyForm.invalid" class="btn btn-primary">
+              + Link Specialty
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Table of Added Specialties -->
+      <div class="table-responsive mb-4">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Linked Specialty</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let s of addedSpecialties">
+              <td class="fw-bold text-dark">🎓 {{ getSpecialtyName(s.specialtyId) }}</td>
+              <td class="text-end">
+                <button (click)="removeSpecialty(s.specialtyId || s.id)" class="btn btn-outline btn-danger btn-sm">
+                  Remove
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="addedSpecialties.length === 0">
+              <td colspan="2" class="text-center text-muted p-4">No specialties linked yet.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-end pt-3 border-top">
+        <button class="btn btn-accent" (click)="switchTab('languages')">
+          Next: Languages ➡
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Spoken Languages -->
+    <div *ngIf="activeTab === 'languages'">
+      <div class="d-flex justify-between align-center mb-4">
+        <h3 class="step-title m-0">🗣️ Step 3: Facility Operating Languages</h3>
+        <button class="btn btn-outline btn-sm" (click)="finishRegistration()">
+          Skip &amp; Finish Setup
+        </button>
+      </div>
+
+      <form [formGroup]="languageForm" (ngSubmit)="submitLanguage()" class="card p-4 border bg-light mb-4 shadow-sm">
+        <h4 class="fs-sm text-primary uppercase fw-bold mb-3">+ Link Language to Clinic</h4>
+        <div class="form-row align-end">
+          <div class="form-group flex-1 mb-0">
+            <label class="form-label">Select Language *</label>
+            <app-custom-select 
+              formControlName="languageId" 
+              [options]="languageSelectOptions" 
+              bindLabel="label" 
+              bindValue="value" 
+              [searchable]="true" 
+              placeholder="-- Choose Language --">
+            </app-custom-select>
+          </div>
+          <div class="form-group m-0" style="flex: 0 0 auto;">
+            <button type="submit" [disabled]="languageForm.invalid" class="btn btn-primary">
+              + Link Language
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Table of Added Languages -->
+      <div class="table-responsive mb-4">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Linked Language</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let l of addedLanguages">
+              <td class="fw-bold text-dark">🗣️ {{ getLanguageName(l.languageId) }}</td>
+              <td class="text-end">
+                <button (click)="removeLanguage(l.languageId || l.id)" class="btn btn-outline btn-danger btn-sm">
+                  Remove
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="addedLanguages.length === 0">
+              <td colspan="2" class="text-center text-muted p-4">No languages linked yet.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-end pt-3 border-top">
+        <button class="btn btn-accent" (click)="switchTab('insurance')">
+          Next: Insurance ➡
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 4: Insurance -->
+    <div *ngIf="activeTab === 'insurance'">
+      <div class="d-flex justify-between align-center mb-4">
+        <h3 class="step-title m-0">🛡️ Step 4: Accepted Insurance Networks</h3>
+        <button class="btn btn-outline btn-sm" (click)="finishRegistration()">
+          Skip &amp; Finish Setup
+        </button>
+      </div>
+
+      <form [formGroup]="insuranceForm" (ngSubmit)="submitInsurance()" class="card p-4 border bg-light mb-4 shadow-sm">
+        <h4 class="fs-sm text-primary uppercase fw-bold mb-3">+ Link Insurance Provider</h4>
+        <div class="form-row align-end">
+          <div class="form-group flex-1 mb-0">
+            <label class="form-label">Insurance Provider *</label>
+            <app-custom-select 
+              formControlName="providerId" 
+              [options]="insuranceSelectOptions" 
+              bindLabel="label" 
+              bindValue="value" 
+              [searchable]="true" 
+              placeholder="-- Choose Provider --">
+            </app-custom-select>
+          </div>
+          <div class="form-group flex-1 mb-0">
+            <label class="form-label">Network Class *</label>
+            <input type="text" formControlName="networkClass" class="form-control" placeholder="E.g. VIP, Class A, B, Silver">
+          </div>
+          <div class="form-group m-0" style="flex: 0 0 auto;">
+            <button type="submit" [disabled]="insuranceForm.invalid" class="btn btn-primary">
+              + Link Insurance
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Table of Added Insurance -->
+      <div class="table-responsive mb-4">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Insurance Provider</th>
+              <th>Network Class</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let i of addedInsurance">
+              <td class="fw-bold text-dark">🛡️ {{ getInsuranceName(i.providerId) }}</td>
+              <td><span class="badge badge-info">{{ i.networkClass }}</span></td>
+              <td class="text-end">
+                <button (click)="removeInsurance(i.providerId || i.id)" class="btn btn-outline btn-danger btn-sm">
+                  Remove
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="addedInsurance.length === 0">
+              <td colspan="3" class="text-center text-muted p-4">No insurance networks linked yet.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-end pt-3 border-top">
+        <button class="btn btn-accent btn-lg" (click)="finishRegistration()">
+          🎉 Complete Setup &amp; Finish
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
