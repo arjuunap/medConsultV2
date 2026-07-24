@@ -18,7 +18,7 @@ import { CustomSelectComponent } from '../../../../shared/components/custom-sele
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, CustomSelectComponent],
   templateUrl: './doctor-consultations.component.html',
-  styleUrls: []
+  styleUrls: ['./doctor-consultations.component.css']
 })
 export class DoctorConsultationsComponent implements OnInit, OnDestroy {
   private consultationService = inject(ConsultationService);

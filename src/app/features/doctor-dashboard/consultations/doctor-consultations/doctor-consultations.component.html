@@ -1,19 +1,28 @@
 <div class="consultations-container">
-  <div class="d-flex justify-between align-center mb-4 flex-wrap gap-2">
+  <!-- Top Banner -->
+  <div class="chat-header-banner">
     <div>
-      <h2 class="fs-xl text-primary m-0 fw-bold">💬 My Tele-Consultations Inbox</h2>
-      <p class="text-muted fs-sm m-0">Manage patient tele-consultations, replies, and status updates.</p>
+      <h2 class="banner-title">💬 Tele-Consultations</h2>
+      <p class="banner-subtitle">Manage, review, and reply to patients in real-time</p>
     </div>
   </div>
 
-  <div class="consultations-layout">
-    <!-- Inbox List Sidebar Card -->
-    <div class="inbox-sidebar-card">
-      <div class="card-header border-bottom p-3 bg-light">
-        <h3 class="fs-md m-0 fw-bold">Inbox ({{ consultations.length }})</h3>
+  <div class="consultations-layout shadow-sm">
+    <!-- Inbox List Sidebar -->
+    <div class="inbox-sidebar">
+      <div class="inbox-header">
+        <h3 class="inbox-title">Inbox</h3>
+        <span class="inbox-count-badge">{{ consultations.length }} active</span>
       </div>
-      <div class="card-body p-0 overflow-y-auto">
-        <div *ngIf="consultations.length === 0" class="p-4 text-center text-muted fs-sm">
+
+      <!-- Quick Mock Search Bar for Visual Polish -->
+      <div class="inbox-search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Search consultations..." class="search-input" disabled>
+      </div>
+
+      <div class="inbox-list">
+        <div *ngIf="consultations.length === 0" class="no-conversations">
           No consultations assigned to you.
         </div>
         
@@ -21,86 +30,117 @@
              class="inbox-item-card" 
              [class.active]="selectedConsultation?.consultationId === c.consultationId"
              (click)="selectConsultation(c)">
-          <div class="d-flex justify-between align-center mb-1">
-            <strong class="text-dark">{{ c.patientName }}</strong>
-            <span class="badge" [ngClass]="{
-              'badge-success': c.status === 'OPEN',
-              'badge-warning': c.status === 'IN_PROGRESS',
-              'badge-secondary': c.status === 'CLOSED'
-            }">{{ c.status }}</span>
+          
+          <div class="avatar-circle">
+            {{ c.patientName.charAt(0).toUpperCase() }}
           </div>
-          <div class="text-muted fs-sm mb-1 truncate">{{ c.subject }}</div>
-          <div class="fs-xs text-muted">Opened: {{ c.openedAt | date:'short' }}</div>
+          
+          <div class="inbox-item-details">
+            <div class="inbox-item-top">
+              <strong class="patient-name">{{ c.patientName }}</strong>
+              <span class="status-indicator-dot" [ngClass]="{
+                'dot-success': c.status === 'OPEN',
+                'dot-warning': c.status === 'IN_PROGRESS',
+                'dot-secondary': c.status === 'CLOSED'
+              }"></span>
+            </div>
+            <div class="subject-snippet">{{ c.subject }}</div>
+            <div class="opened-time">{{ c.openedAt | date:'MMM d, h:mm a' }}</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Active Consultation Chat Main View Card -->
-    <div class="chat-main-card" *ngIf="selectedConsultation">
-      <div class="card-header d-flex justify-between align-center border-bottom p-4 flex-wrap gap-2">
-        <div>
-          <h3 class="fs-lg text-primary m-0 fw-bold">{{ selectedConsultation.subject }}</h3>
-          <div class="fs-sm text-muted mt-1">Patient: <strong>{{ selectedConsultation.patientName }}</strong></div>
+    <!-- Active Chat Viewport -->
+    <div class="chat-viewport-container" *ngIf="selectedConsultation">
+      <!-- Active Chat Header -->
+      <div class="active-chat-header">
+        <div class="active-user-info">
+          <div class="avatar-circle header-avatar">
+            {{ selectedConsultation.patientName.charAt(0).toUpperCase() }}
+          </div>
+          <div>
+            <h3 class="chat-subject-title">{{ selectedConsultation.subject }}</h3>
+            <div class="chat-patient-subtitle">
+              Patient: <strong>{{ selectedConsultation.patientName }}</strong>
+              <span class="badge badge-urgent ms-2" *ngIf="selectedConsultation.isUrgent">⚠️ Urgent</span>
+            </div>
+          </div>
         </div>
-        <div class="d-flex align-center gap-3">
-          <span class="badge badge-danger" *ngIf="selectedConsultation.isUrgent">Urgent</span>
-          
-          <form [formGroup]="statusForm" class="d-flex align-center gap-2 m-0">
-            <div style="min-width: 140px;">
+
+        <!-- Status Actions -->
+        <div class="header-actions">
+          <form [formGroup]="statusForm" class="status-update-form">
+            <div class="custom-select-wrapper">
               <app-custom-select 
                 formControlName="status" 
                 [options]="statusSelectOptions" 
                 bindLabel="label" 
                 bindValue="value" 
                 size="sm"
-                placeholder="Select status">
+                placeholder="Status">
               </app-custom-select>
             </div>
-            <button class="btn btn-primary btn-sm" type="button" (click)="updateStatus()">Update</button>
+            <button class="btn btn-primary btn-sm btn-update-status" type="button" (click)="updateStatus()">
+              Update
+            </button>
           </form>
         </div>
       </div>
       
-      <div id="doctor-messages-container" class="chat-viewport">
-        <div *ngIf="messages.length === 0" class="text-center text-muted py-5">
+      <!-- Message Stream -->
+      <div id="doctor-messages-container" class="message-stream">
+        <div *ngIf="messages.length === 0" class="no-messages-prompt">
           No messages yet. Send a message to start the consultation.
         </div>
         
         <div *ngFor="let msg of messages" 
-             class="d-flex flex-col"
-             style="max-width: 78%;"
-             [style.align-self]="msg.senderId === authService.currentUser()?.userId ? 'flex-end' : 'flex-start'">
+             class="message-bubble-wrapper"
+             [class.sent-by-me]="msg.senderId === authService.currentUser()?.userId">
           
-          <div class="fs-xs text-muted mb-1 px-1">
-            {{ msg.senderName }} • {{ msg.sentAt | date:'shortTime' }}
+          <div class="message-meta">
+            <span class="sender-name">{{ msg.senderName }}</span>
+            <span class="sent-time">• {{ msg.sentAt | date:'shortTime' }}</span>
           </div>
-          <div class="p-3 shadow-sm"
-               [ngStyle]="{
-                 'background-color': msg.senderId === authService.currentUser()?.userId ? 'var(--teal)' : 'var(--white)',
-                 'color': msg.senderId === authService.currentUser()?.userId ? 'var(--white)' : 'var(--text)',
-                 'border-bottom-right-radius': msg.senderId === authService.currentUser()?.userId ? '4px' : '12px',
-                 'border-bottom-left-radius': msg.senderId !== authService.currentUser()?.userId ? '4px' : '12px',
-                 'border-top-left-radius': '12px',
-                 'border-top-right-radius': '12px'
-               }">
+
+          <div class="message-bubble">
             {{ msg.body }}
           </div>
         </div>
       </div>
 
-      <div class="card-footer p-3 border-top bg-white" *ngIf="selectedConsultation.status !== 'CLOSED'">
-        <form [formGroup]="messageForm" (ngSubmit)="sendMessage()" class="d-flex gap-2 m-0">
-          <input type="text" formControlName="body" class="form-control m-0 flex-1" placeholder="Type a reply to patient...">
-          <button type="submit" class="btn btn-primary" [disabled]="messageForm.invalid">Send Reply</button>
+      <!-- Footer Input Area -->
+      <div class="chat-footer-input" *ngIf="selectedConsultation.status !== 'CLOSED'">
+        <form [formGroup]="messageForm" (ngSubmit)="sendMessage()" class="chat-form">
+          <!-- Mock Attachment Button for aesthetics -->
+          <button type="button" class="btn-attachment-mock" title="Attachments (Mock)">📎</button>
+          
+          <input 
+            type="text" 
+            formControlName="body" 
+            class="chat-text-input" 
+            placeholder="Type a professional response to the patient..."
+          >
+          
+          <button type="submit" class="btn-send-message" [disabled]="messageForm.invalid">
+            Send ➔
+          </button>
         </form>
       </div>
-      <div class="card-footer p-3 border-top text-center text-muted bg-light fs-sm" *ngIf="selectedConsultation.status === 'CLOSED'">
-        This consultation has been closed. Messages cannot be sent.
+
+      <!-- Closed State Footer -->
+      <div class="chat-footer-closed" *ngIf="selectedConsultation.status === 'CLOSED'">
+        🔒 This consultation has been marked as <strong>Closed</strong>. Reopen to send replies.
       </div>
     </div>
     
-    <div class="chat-main-card d-flex align-center justify-center text-muted" *ngIf="!selectedConsultation">
-      Select a consultation from the inbox to view details.
+    <!-- No Active Selection State -->
+    <div class="no-selection-container" *ngIf="!selectedConsultation">
+      <div class="no-selection-placeholder">
+        <div class="icon-bubble">💬</div>
+        <h3>No Consultation Selected</h3>
+        <p>Choose a patient consultation from the inbox list to read messages and reply.</p>
+      </div>
     </div>
   </div>
 </div>
