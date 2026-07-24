@@ -7,15 +7,17 @@ import { ReferenceService } from '../../../core/services/reference.service';
 import { UiService } from '../../../core/services/ui.service';
 import { 
   DoctorResponseDto, DoctorClinicResponseDto, DoctorDetailResponse,
-  DoctorSpecialtyResponseDto, DoctorLanguageResponseDto, DoctorQualificationResponseDto 
+  DoctorSpecialtyResponseDto, DoctorLanguageResponseDto, DoctorQualificationResponseDto,
+  DoctorScheduleRequestDto, DoctorScheduleResponseDto, SessionType
 } from '../../../core/models/doctor.model';
 import { ClinicResponseDto, ClinicBranchResponseDto } from '../../../core/models/clinic.model';
 import { SpecialtyResponseDto, LanguageResponseDto, SubSpecialtyResponseDto } from '../../../core/models/reference.model';
+import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
 
 @Component({
   selector: 'app-doctors',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, CustomSelectComponent],
   templateUrl: './doctors.component.html',
   styleUrls: ['./doctors.component.css']
 })
@@ -33,6 +35,43 @@ export class DoctorsComponent implements OnInit {
   public branches: ClinicBranchResponseDto[] = [];
   public doctorClinics: DoctorClinicResponseDto[] = [];
   public searchTerm: string = '';
+
+  get clinicSelectOptions() {
+    return this.clinics.map(c => ({
+      label: c.nameEn,
+      value: c.clinicId
+    }));
+  }
+
+  get branchSelectOptions() {
+    return this.branches.map(b => ({
+      label: b.branchNameEn,
+      value: b.branchId
+    }));
+  }
+
+  get doctorSelectOptions() {
+    return this.doctors.map(d => ({
+      label: `${d.title || 'Dr'}. ${d.fullName}`,
+      value: d.doctorId
+    }));
+  }
+
+  public scheduleDayOptions = [
+    { label: 'Monday', value: 1 },
+    { label: 'Tuesday', value: 2 },
+    { label: 'Wednesday', value: 3 },
+    { label: 'Thursday', value: 4 },
+    { label: 'Friday', value: 5 },
+    { label: 'Saturday', value: 6 },
+    { label: 'Sunday', value: 7 }
+  ];
+
+  public scheduleSessionTypeOptions = [
+    { label: 'In-Clinic', value: 'IN_CLINIC' },
+    { label: 'Virtual / Online', value: 'VIRTUAL' },
+    { label: 'Both (Hybrid)', value: 'BOTH' }
+  ];
 
   get filteredDoctorClinics(): DoctorClinicResponseDto[] {
     if (!this.searchTerm.trim()) return this.doctorClinics;
@@ -86,6 +125,112 @@ export class DoctorsComponent implements OnInit {
     yearObtained: ['', [Validators.required, Validators.min(1950), Validators.max(2030)]],
     sortOrder: [1, Validators.required]
   });
+
+  // Doctor Schedule state
+  public selectedDcForSchedule: DoctorClinicResponseDto | null = null;
+  public doctorSchedules: DoctorScheduleResponseDto[] = [];
+  public isScheduleModalOpen = false;
+
+  public doctorScheduleForm: FormGroup = this.fb.group({
+    dayOfWeek: [1, Validators.required],
+    startTime: ['09:00', Validators.required],
+    endTime: ['17:00', Validators.required],
+    slotDurationMin: [30, [Validators.required, Validators.min(5)]],
+    maxPatients: [16, [Validators.required, Validators.min(1)]],
+    sessionType: ['IN_CLINIC', Validators.required],
+    isActive: [true],
+    validFrom: [new Date().toISOString().split('T')[0], Validators.required]
+  });
+
+  openScheduleModal(dc: DoctorClinicResponseDto): void {
+    this.selectedDcForSchedule = dc;
+    this.isScheduleModalOpen = true;
+    this.doctorScheduleForm.reset({
+      dayOfWeek: 1,
+      startTime: '09:00',
+      endTime: '17:00',
+      slotDurationMin: 30,
+      maxPatients: 16,
+      sessionType: 'IN_CLINIC',
+      isActive: true,
+      validFrom: new Date().toISOString().split('T')[0]
+    });
+    this.loadDcSchedules(dc.dcId);
+  }
+
+  closeScheduleModal(): void {
+    this.isScheduleModalOpen = false;
+    this.selectedDcForSchedule = null;
+    this.doctorSchedules = [];
+  }
+
+  loadDcSchedules(dcId: string): void {
+    this.uiService.showLoading();
+    this.doctorService.getDcSchedules(dcId).subscribe({
+      next: (data) => {
+        this.doctorSchedules = data;
+        this.uiService.hideLoading();
+      },
+      error: () => {
+        this.doctorSchedules = [];
+        this.uiService.hideLoading();
+      }
+    });
+  }
+
+  submitDoctorSchedule(): void {
+    if (this.doctorScheduleForm.invalid || !this.selectedDcForSchedule) return;
+    this.uiService.showLoading();
+
+    const val = this.doctorScheduleForm.value;
+    const startTimeStr = val.startTime.length === 5 ? `${val.startTime}:00` : val.startTime;
+    const endTimeStr = val.endTime.length === 5 ? `${val.endTime}:00` : val.endTime;
+
+    const payload: DoctorScheduleRequestDto = {
+      dcId: this.selectedDcForSchedule.dcId,
+      dayOfWeek: Number(val.dayOfWeek),
+      startTime: startTimeStr,
+      endTime: endTimeStr,
+      slotDurationMin: Number(val.slotDurationMin),
+      maxPatients: Number(val.maxPatients),
+      sessionType: val.sessionType as SessionType,
+      isActive: val.isActive,
+      validFrom: val.validFrom
+    };
+
+    this.doctorService.addSchedule(payload).subscribe({
+      next: () => {
+        this.uiService.showSuccess('Schedule rule added successfully.');
+        this.loadDcSchedules(this.selectedDcForSchedule!.dcId);
+      },
+      error: (err) => {
+        this.uiService.hideLoading();
+        this.uiService.showError(err.error?.message || 'Failed to add schedule rule.');
+      }
+    });
+  }
+
+  removeDoctorSchedule(scheduleId: string): void {
+    if (!confirm('Are you sure you want to remove this schedule rule?')) return;
+    this.uiService.showLoading();
+    this.doctorService.removeSchedule(scheduleId).subscribe({
+      next: () => {
+        this.uiService.showSuccess('Schedule rule removed.');
+        if (this.selectedDcForSchedule) {
+          this.loadDcSchedules(this.selectedDcForSchedule.dcId);
+        }
+      },
+      error: () => {
+        this.uiService.hideLoading();
+        this.uiService.showError('Failed to remove schedule.');
+      }
+    });
+  }
+
+  getDayName(dayOfWeek: number): string {
+    const days = ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    return days[dayOfWeek] || `Day ${dayOfWeek}`;
+  }
 
   ngOnInit(): void {
     this.loadInitialData();

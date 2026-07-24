@@ -10,11 +10,12 @@ import {
 } from '../../../core/models/doctor.model';
 import { ClinicService } from '../../../core/services/clinic.service';
 import { forkJoin, map } from 'rxjs';
+import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
 
 @Component({
   selector: 'app-availability',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, CustomSelectComponent],
   templateUrl: './availability.component.html',
   styleUrls: ['./availability.component.css']
 })
@@ -48,6 +49,34 @@ export class AvailabilityComponent implements OnInit {
     { value: 6, label: 'Saturday' },
     { value: 7, label: 'Sunday' }
   ];
+
+  get clinicSelectOptions() {
+    return this.doctorClinics.map(c => ({
+      label: `🏥 ${c.clinicNameEn || 'Clinic'} - ${c.branchNameEn || 'Branch'} (${c.department || 'General'})`,
+      value: c.dcId
+    }));
+  }
+
+  get dayOfWeekSelectOptions() {
+    return this.daysOfWeek.map(d => ({
+      label: d.label,
+      value: d.value
+    }));
+  }
+
+  get sessionTypeSelectOptions() {
+    return this.sessionTypes.map(st => ({
+      label: st.replace(/_/g, ' '),
+      value: st
+    }));
+  }
+
+  get leaveTypeSelectOptions() {
+    return this.leaveTypes.map(lt => ({
+      label: lt.replace(/_/g, ' '),
+      value: lt
+    }));
+  }
 
   // Forms
   public clinicSelectForm: FormGroup = this.fb.group({

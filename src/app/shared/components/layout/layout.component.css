@@ -294,3 +294,31 @@
     padding: 20px 16px;
   }
 }
+
+@media (max-width: 576px) {
+  .header {
+    padding: 0 12px;
+    gap: 8px;
+  }
+
+  .page-title {
+    font-size: 1.05rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+  }
+
+  .user-details {
+    display: none;
+  }
+
+  .content-viewport {
+    padding: 16px 10px;
+  }
+
+  .sidebar {
+    width: 280px;
+    max-width: 85vw;
+  }
+}

@@ -57,9 +57,16 @@
           </div>
           
           <form [formGroup]="statusForm" class="d-flex align-center gap-2 m-0">
-            <select formControlName="status" class="form-control form-control-sm m-0 w-auto">
-              <option *ngFor="let s of statusOptions" [value]="s">{{ s }}</option>
-            </select>
+            <div style="min-width: 150px;">
+              <app-custom-select 
+                formControlName="status" 
+                [options]="statusSelectOptions" 
+                bindLabel="label" 
+                bindValue="value" 
+                size="sm"
+                placeholder="Select status">
+              </app-custom-select>
+            </div>
             <button class="btn btn-primary btn-sm" type="button" (click)="updateRoomStatus()">Update Status</button>
           </form>
         </div>
@@ -99,9 +106,15 @@
 
       <div class="card-footer p-3 border-top bg-white" *ngIf="selectedRoom.status !== 'RESOLVED' && selectedRoom.status !== 'ARCHIVED'">
         <form [formGroup]="postForm" (ngSubmit)="submitPost()" class="d-flex align-start gap-2 m-0">
-          <select formControlName="postType" class="form-control m-0" style="width: 140px;">
-            <option *ngFor="let pt of postTypeOptions" [value]="pt">{{ pt }}</option>
-          </select>
+          <div style="width: 140px; flex-shrink: 0;">
+            <app-custom-select 
+              formControlName="postType" 
+              [options]="postTypeSelectOptions" 
+              bindLabel="label" 
+              bindValue="value" 
+              placeholder="Post Type">
+            </app-custom-select>
+          </div>
           <textarea formControlName="body" class="form-control m-0 flex-1" placeholder="Write clinical notes or discussion..." rows="2" style="resize: none;"></textarea>
           <button type="submit" class="btn btn-primary h-100" [disabled]="postForm.invalid">Post</button>
         </form>
@@ -130,12 +143,14 @@
         
         <div class="form-group mb-3">
           <label class="form-label">Select Patient</label>
-          <select class="form-control" formControlName="patientId">
-            <option value="">-- Choose Patient --</option>
-            <option *ngFor="let p of patientsList" [value]="p.patientId">
-              {{ p.patientName }}
-            </option>
-          </select>
+          <app-custom-select 
+            formControlName="patientId" 
+            [options]="patientSelectOptions" 
+            bindLabel="label" 
+            bindValue="value" 
+            [searchable]="true" 
+            placeholder="-- Choose Patient --">
+          </app-custom-select>
           <div class="error-text" *ngIf="createForm.get('patientId')?.touched && createForm.get('patientId')?.invalid">
             Patient selection is required.
           </div>
@@ -156,9 +171,13 @@
 
         <div class="form-group m-0">
           <label class="form-label">Priority</label>
-          <select class="form-control" formControlName="priority">
-            <option *ngFor="let p of priorityOptions" [value]="p">{{ p }}</option>
-          </select>
+          <app-custom-select 
+            formControlName="priority" 
+            [options]="prioritySelectOptions" 
+            bindLabel="label" 
+            bindValue="value" 
+            placeholder="Select priority">
+          </app-custom-select>
         </div>
       </form>
     </div>

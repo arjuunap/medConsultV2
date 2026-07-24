@@ -91,13 +91,21 @@
   .caserooms-layout {
     flex-direction: column;
     height: auto;
+    min-height: 0;
   }
 
   .caserooms-sidebar-card {
-    max-height: 250px;
+    max-height: 220px;
+    min-width: 100%;
   }
 
   .chat-main-card {
-    height: 450px;
+    height: 480px;
+    max-height: 70vh;
+    min-width: 100%;
+  }
+
+  .chat-posts-viewport {
+    padding: 14px;
   }
 }

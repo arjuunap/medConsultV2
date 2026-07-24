@@ -37,9 +37,13 @@
         <!-- Blood type -->
         <div class="form-group mb-3">
           <label class="form-label" for="bloodType">Blood Group *</label>
-          <select id="bloodType" formControlName="bloodType" class="form-control">
-            <option *ngFor="let bt of bloodTypes" [value]="bt">{{ bt.replace('_', ' ') }}</option>
-          </select>
+          <app-custom-select 
+            formControlName="bloodType" 
+            [options]="bloodTypeOptions" 
+            bindLabel="label" 
+            bindValue="value" 
+            placeholder="Select blood group">
+          </app-custom-select>
         </div>
 
         <!-- National ID -->
@@ -60,16 +64,14 @@
         <!-- Nationality -->
         <div class="form-group mb-3">
           <label class="form-label" for="nationality">Nationality *</label>
-          <select 
-            id="nationality" 
+          <app-custom-select 
             formControlName="nationality" 
-            class="form-control"
-          >
-            <option value="">-- Select Nationality --</option>
-            <option *ngFor="let nat of nationalities" [value]="nat.code">
-              {{ nat.flag }} {{ nat.code }}
-            </option>
-          </select>
+            [options]="nationalityOptions" 
+            bindLabel="label" 
+            bindValue="value" 
+            [searchable]="true" 
+            placeholder="-- Select Nationality --">
+          </app-custom-select>
           <div *ngIf="profileForm.get('nationality')?.touched && profileForm.get('nationality')?.invalid" class="error-text">
             Nationality is required.
           </div>
@@ -79,9 +81,13 @@
       <!-- Marital status -->
       <div class="form-group mb-3">
         <label class="form-label" for="maritalStatus">Marital Status</label>
-        <select id="maritalStatus" formControlName="maritalStatus" class="form-control">
-          <option *ngFor="let ms of maritalStatuses" [value]="ms">{{ ms }}</option>
-        </select>
+        <app-custom-select 
+          formControlName="maritalStatus" 
+          [options]="maritalStatusOptions" 
+          bindLabel="label" 
+          bindValue="value" 
+          placeholder="Select marital status">
+        </app-custom-select>
       </div>
     </div>
 

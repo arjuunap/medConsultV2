@@ -46,9 +46,16 @@
           <span class="badge badge-danger" *ngIf="selectedConsultation.isUrgent">Urgent</span>
           
           <form [formGroup]="statusForm" class="d-flex align-center gap-2 m-0">
-            <select formControlName="status" class="form-control form-control-sm m-0 w-auto">
-              <option *ngFor="let s of statusOptions" [value]="s">{{ s }}</option>
-            </select>
+            <div style="min-width: 140px;">
+              <app-custom-select 
+                formControlName="status" 
+                [options]="statusSelectOptions" 
+                bindLabel="label" 
+                bindValue="value" 
+                size="sm"
+                placeholder="Select status">
+              </app-custom-select>
+            </div>
             <button class="btn btn-primary btn-sm" type="button" (click)="updateStatus()">Update</button>
           </form>
         </div>

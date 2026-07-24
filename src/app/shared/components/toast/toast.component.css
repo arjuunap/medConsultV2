@@ -11,6 +11,16 @@
   pointer-events: none;
 }
 
+@media (max-width: 480px) {
+  .toast-container {
+    top: 12px;
+    right: 12px;
+    left: 12px;
+    width: auto;
+    max-width: 100%;
+  }
+}
+
 .toast-item {
   position: relative;
   pointer-events: auto;

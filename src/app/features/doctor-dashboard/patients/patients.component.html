@@ -8,72 +8,106 @@
     
     <!-- Searchable Select patient dropdown with "View Chart" action -->
     <div class="d-flex align-center gap-2 flex-wrap" style="min-width: 300px;">
-      <select class="form-control m-0 flex-1" (change)="onPatientSelect($event)">
-        <option value="">-- Choose Patient Chart --</option>
-        <option *ngFor="let p of patientList" [value]="p.patientId">{{ p.patientName }}</option>
-      </select>
+      <app-custom-select 
+        [options]="patientChartSelectOptions" 
+        bindLabel="label" 
+        bindValue="value" 
+        [searchable]="true" 
+        [ngModel]="selectedPatientId" 
+        (selectionChange)="onPatientChartChange($event)"
+        placeholder="-- Choose Patient Chart --">
+      </app-custom-select>
     </div>
   </div>
 </div>
 
 <!-- EMR chart dashboard if patient is selected -->
-<div *ngIf="selectedPatientId" class="d-flex flex-col gap-4">
+<!-- EMR chart dashboard if patient is selected -->
+<div *ngIf="selectedPatientId" class="d-flex flex-col gap-4 mt-2">
   <!-- Profile summary card -->
   <div class="chart-header-card">
-    <div class="d-flex justify-between align-start flex-wrap gap-4">
+    <div class="d-flex justify-between align-center flex-wrap gap-4">
       <div>
-        <h3 class="fs-lg text-primary mb-2 fw-bold">Chart: {{ selectedPatientName }}</h3>
-        <p class="text-muted fs-sm m-0" *ngIf="healthProfile">
-          Height: <strong>{{ healthProfile.heightCm }} cm</strong> | Weight: <strong>{{ healthProfile.weightKg }} kg</strong> | BMI: <strong>{{ healthProfile.bmi | number:'1.1-2' }}</strong>
-        </p>
-        <div class="d-flex gap-2 mt-3 flex-wrap">
-          <span class="badge badge-success" *ngIf="healthProfile">Smoking: {{ healthProfile.smokingStatus }}</span>
-          <span class="badge badge-info" *ngIf="healthProfile">Alcohol: {{ healthProfile.alcoholStatus }}</span>
+        <h3 class="fs-xl text-primary mb-2 fw-bold d-flex align-center gap-2">
+          <span>👤 Patient Chart:</span>
+          <span>{{ selectedPatientName }}</span>
+        </h3>
+        <div class="d-flex gap-3 align-center flex-wrap mt-2" *ngIf="healthProfile">
+          <span class="patient-vital-pill">📏 Height: {{ healthProfile.heightCm }} cm</span>
+          <span class="patient-vital-pill">⚖️ Weight: {{ healthProfile.weightKg }} kg</span>
+          <span class="patient-vital-pill">📊 BMI: {{ healthProfile.bmi | number:'1.1-2' }}</span>
+          <span class="badge badge-success">🚬 Smoking: {{ healthProfile.smokingStatus }}</span>
+          <span class="badge badge-info">🍷 Alcohol: {{ healthProfile.alcoholStatus }}</span>
         </div>
       </div>
 
       <!-- Quick Action Buttons -->
-      <div class="d-flex gap-2 flex-wrap">
-        <button class="btn btn-primary btn-sm" (click)="openModal('vital')">+ Record Vitals</button>
-        <button class="btn btn-accent btn-sm" (click)="openModal('prescription')">💊 Write Prescription</button>
-        <button class="btn btn-outline btn-sm" (click)="openModal('lab')">🔬 Upload Lab Report</button>
+      <div class="d-flex gap-2 flex-wrap align-center">
+        <button class="btn btn-primary btn-sm d-flex align-center gap-1" (click)="openModal('vital')">
+          <span>+ Record Vitals</span>
+        </button>
+        <button class="btn btn-accent btn-sm d-flex align-center gap-1" (click)="openModal('prescription')">
+          <span>💊 Write Prescription</span>
+        </button>
+        <button class="btn btn-outline btn-sm d-flex align-center gap-1" (click)="openModal('lab')">
+          <span>🔬 Upload Lab Report</span>
+        </button>
       </div>
     </div>
 
     <!-- Allergies & Conditions Summary Grid -->
     <div class="chart-summary-grid">
       <div>
-        <h4 class="fs-xs text-uppercase text-muted mb-2 fw-bold">Known Allergies ({{ allergies.length }})</h4>
-        <div *ngFor="let al of allergies" class="fs-sm mb-1">
-          🔴 <strong>{{ al.allergen }}</strong> ({{ al.severity }}) - {{ al.reaction }}
+        <h4 class="fs-xs text-uppercase text-muted mb-3 fw-bold tracking-wider">Known Allergies ({{ allergies.length }})</h4>
+        <div class="d-flex flex-col gap-2">
+          <div *ngFor="let al of allergies" class="allergy-item-card d-flex align-center gap-2">
+            <span>🚨</span>
+            <div>
+              <strong>{{ al.allergen }}</strong>
+              <span class="ms-1">({{ al.severity }}) — {{ al.reaction }}</span>
+            </div>
+          </div>
+          <div *ngIf="allergies.length === 0" class="fs-sm text-muted">No allergies recorded on file.</div>
         </div>
-        <div *ngIf="allergies.length === 0" class="fs-sm text-muted">No allergies recorded on file.</div>
       </div>
       <div>
-        <h4 class="fs-xs text-uppercase text-muted mb-2 fw-bold">Chronic Conditions ({{ chronicConditions.length }})</h4>
-        <div *ngFor="let cc of chronicConditions" class="fs-sm mb-1">
-          ⚫ <strong>{{ cc.conditionName }}</strong> [{{ cc.icd10Code }}] - Status: {{ cc.status }}
+        <h4 class="fs-xs text-uppercase text-muted mb-3 fw-bold tracking-wider">Chronic Conditions ({{ chronicConditions.length }})</h4>
+        <div class="d-flex flex-col gap-2">
+          <div *ngFor="let cc of chronicConditions" class="condition-item-card d-flex align-center gap-2">
+            <span>🩺</span>
+            <div>
+              <strong>{{ cc.conditionName }}</strong>
+              <span class="ms-1">[{{ cc.icd10Code }}] — Status: {{ cc.status }}</span>
+            </div>
+          </div>
+          <div *ngIf="chronicConditions.length === 0" class="fs-sm text-muted">No chronic conditions recorded.</div>
         </div>
-        <div *ngIf="chronicConditions.length === 0" class="fs-sm text-muted">No chronic conditions recorded.</div>
       </div>
     </div>
   </div>
 
-  <div class="d-flex gap-4 flex-wrap">
+  <div class="emr-dashboard-grid">
     <!-- Left column: Prescriptions list -->
-    <div class="card p-4 border-0 flex-1-5 shadow-sm" style="min-width: 320px;">
-      <h3 class="fs-md text-primary mb-3 border-bottom pb-2 fw-bold">Prescription History</h3>
-      <div *ngFor="let rx of prescriptions" class="border rounded-md p-3 mb-3 bg-white">
-        <div class="d-flex justify-between fs-sm text-muted mb-2">
-          <span>Issued: {{ rx.issuedDate }}</span>
+    <div class="emr-section-card">
+      <div class="d-flex justify-between align-center mb-4 border-bottom pb-3">
+        <h3 class="fs-md text-primary m-0 fw-bold d-flex align-center gap-2">
+          <span>📜 Prescription History</span>
+        </h3>
+        <span class="badge badge-info">{{ prescriptions.length }} Records</span>
+      </div>
+
+      <div *ngFor="let rx of prescriptions" class="emr-item-card">
+        <div class="d-flex justify-between align-center fs-sm text-muted mb-2">
+          <span class="fw-semibold">📅 Issued: {{ rx.issuedDate }}</span>
           <span class="badge badge-success">{{ rx.status }}</span>
         </div>
-        <div class="fs-sm fw-bold mb-2">Diagnosis: {{ rx.diagnosisNotes }}</div>
+        <div class="fs-sm fw-bold text-dark mb-2">🩺 Diagnosis: {{ rx.diagnosisNotes }}</div>
         
         <!-- Nested Items -->
-        <div class="mt-2 pt-2 border-top" style="border-top-style: dashed !important;">
-          <div *ngFor="let item of selectedRxItems[rx.prescriptionId]" class="fs-sm text-dark mb-1">
-            💊 {{ item.drugName }} ({{ item.dosage }}) - {{ item.frequency }} for {{ item.durationDays }} Days
+        <div class="mt-3 pt-3 border-top" style="border-top-style: dashed !important;">
+          <div *ngFor="let item of selectedRxItems[rx.prescriptionId]" class="fs-sm text-dark mb-2 d-flex align-center gap-2">
+            <span>💊</span>
+            <span><strong>{{ item.drugName }}</strong> ({{ item.dosage }}) — {{ item.frequency }} for {{ item.durationDays }} Days</span>
           </div>
         </div>
       </div>
@@ -81,45 +115,62 @@
     </div>
 
     <!-- Right column: Vitals and Labs -->
-    <div class="flex-1-2 d-flex flex-col gap-4" style="min-width: 320px;">
+    <div class="d-flex flex-col gap-4">
       <!-- Vitals log -->
-      <div class="card p-4 border-0 shadow-sm">
-        <h3 class="fs-md text-primary mb-3 border-bottom pb-2 fw-bold">Recorded Vitals History</h3>
-        <div class="d-flex flex-col gap-2 overflow-y-auto" style="max-height: 300px;">
-          <div *ngFor="let v of vitals" class="border-bottom pb-2 fs-sm">
-            <div class="d-flex justify-between fw-bold text-dark">
-              <span>BP: {{ v.bloodPressureSystolic }}/{{ v.bloodPressureDiastolic }} mmHg</span>
-              <span>HR: {{ v.heartRateBpm }} BPM</span>
+      <div class="emr-section-card">
+        <div class="d-flex justify-between align-center mb-4 border-bottom pb-3">
+          <h3 class="fs-md text-primary m-0 fw-bold d-flex align-center gap-2">
+            <span>🫀 Recorded Vitals History</span>
+          </h3>
+          <span class="badge badge-info">{{ vitals.length }} Entries</span>
+        </div>
+
+        <div class="d-flex flex-col gap-2 overflow-y-auto" style="max-height: 320px;">
+          <div *ngFor="let v of vitals" class="vitals-row-item">
+            <div class="d-flex justify-between align-center fw-bold text-dark">
+              <span>🩺 BP: {{ v.bloodPressureSystolic }}/{{ v.bloodPressureDiastolic }} mmHg</span>
+              <span class="badge badge-success">❤️ {{ v.heartRateBpm }} BPM</span>
             </div>
-            <div class="d-flex justify-between text-muted fs-xs mt-1">
-              <span>Glucose: {{ v.bloodGlucoseMmol || 'N/A' }} | Temp: {{ v.temperatureC || 'N/A' }}°C</span>
-              <span>{{ v.recordedAt | date }}</span>
+            <div class="d-flex justify-between align-center text-muted fs-xs mt-2">
+              <span>🩸 Glucose: {{ v.bloodGlucoseMmol || 'N/A' }} | 🌡️ Temp: {{ v.temperatureC || 'N/A' }}°C</span>
+              <span class="fw-semibold">{{ v.recordedAt | date:'mediumDate' }}</span>
             </div>
           </div>
-          <div *ngIf="vitals.length === 0" class="text-center text-muted py-3 fs-sm">No vitals documented.</div>
+          <div *ngIf="vitals.length === 0" class="text-center text-muted py-4 fs-sm">No vitals documented.</div>
         </div>
       </div>
 
       <!-- Lab results -->
-      <div class="card p-4 border-0 shadow-sm">
-        <h3 class="fs-md text-primary mb-3 border-bottom pb-2 fw-bold">Lab Reports &amp; Attachments</h3>
-        <div *ngFor="let lab of labResults" class="fs-sm border-bottom pb-3 mb-3">
-          <div class="d-flex justify-between align-center fw-bold">
-            <span>{{ lab.labName }} - {{ lab.reportType }}</span>
+      <div class="emr-section-card">
+        <div class="d-flex justify-between align-center mb-4 border-bottom pb-3">
+          <h3 class="fs-md text-primary m-0 fw-bold d-flex align-center gap-2">
+            <span>🔬 Lab Reports &amp; Attachments</span>
+          </h3>
+          <span class="badge badge-info">{{ labResults.length }} Reports</span>
+        </div>
+
+        <div *ngFor="let lab of labResults" class="emr-item-card">
+          <div class="d-flex justify-between align-center fw-bold fs-sm">
+            <span>🧪 {{ lab.labName }} — {{ lab.reportType }}</span>
             <span class="badge" [class.badge-danger]="lab.overallFlag === 'CRITICAL'" [class.badge-warning]="lab.overallFlag === 'ABNORMAL'" [class.badge-success]="lab.overallFlag === 'NORMAL'">{{ lab.overallFlag }}</span>
           </div>
-          <div class="text-muted fs-xs mt-1">Date: {{ lab.reportDate }} | Status: {{ lab.status }}</div>
-          <div class="mt-2 bg-light p-2 rounded-md fs-xs text-dark border">
-            {{ lab.doctorAnnotation || 'No annotation' }}
+          <div class="text-muted fs-xs mt-1">📅 Date: {{ lab.reportDate }} | Status: {{ lab.status }}</div>
+          
+          <div class="annotation-quote-box" *ngIf="lab.doctorAnnotation">
+            💬 <strong>Clinical Note:</strong> {{ lab.doctorAnnotation }}
           </div>
-          <div *ngIf="lab.fileId" class="mt-2 d-flex justify-between align-center bg-light p-2 rounded-md border">
-            <span class="fs-xs text-primary fw-semibold">📎 Report File</span>
-            <button class="btn btn-primary btn-sm" style="font-size: 0.75rem; padding: 2px 8px;" (click)="downloadLabFile(lab.fileId)">
-              ⬇️ Download File
+
+          <div *ngIf="lab.fileId" class="lab-file-attachment-bar">
+            <span class="fs-xs text-primary fw-bold d-flex align-center gap-1">
+              <span>📄</span>
+              <span>Lab Attachment Document</span>
+            </span>
+            <button class="btn btn-primary btn-sm d-flex align-center gap-1" (click)="downloadLabFile(lab.fileId)">
+              <span>⬇️ Download File</span>
             </button>
           </div>
         </div>
-        <div *ngIf="labResults.length === 0" class="text-center text-muted py-3 fs-sm">No reports found.</div>
+        <div *ngIf="labResults.length === 0" class="text-center text-muted py-4 fs-sm">No reports found.</div>
       </div>
     </div>
   </div>
@@ -238,11 +289,13 @@
             </div>
             <div class="form-group mb-3">
               <label class="form-label">Route</label>
-              <select formControlName="route" class="form-control">
-                <option value="ORAL">Oral</option>
-                <option value="INTRAVENOUS">Intravenous</option>
-                <option value="TOPICAL">Topical</option>
-              </select>
+              <app-custom-select 
+                formControlName="route" 
+                [options]="rxRouteOptions" 
+                bindLabel="label" 
+                bindValue="value" 
+                placeholder="Select Route">
+              </app-custom-select>
             </div>
           </div>
           <div class="form-row">
@@ -307,7 +360,10 @@
         <!-- File Selector -->
         <div class="form-group mb-3">
           <label class="form-label">Select Report Attachment (PDF/Image)</label>
-          <input type="file" (change)="onFileSelected($event)" class="form-control">
+          <div class="file-upload-wrapper">
+            <span class="file-upload-icon">📎</span>
+            <input type="file" (change)="onFileSelected($event)" class="form-control file-input-styled">
+          </div>
         </div>
 
         <div class="form-group m-0">

@@ -7,11 +7,12 @@ import { UiService } from '../../../core/services/ui.service';
 import { environment } from '../../../../environments/environment';
 import { ClinicResponseDto, ClinicBranchResponseDto, ClinicSpecialtyResponseDto, ClinicInsuranceResponseDto, ClinicLanguageResponseDto, ClinicOperatingHourResponseDto, ClinicOperatingHourRequestDto } from '../../../core/models/clinic.model';
 import { SpecialtyResponseDto, InsuranceProviderResponseDto, CityResponseDto, LocalityResponseDto, LanguageResponseDto } from '../../../core/models/reference.model';
+import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
 
 @Component({
   selector: 'app-clinics',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, CustomSelectComponent],
   templateUrl: './clinics.component.html',
   styleUrls: ['./clinics.component.css']
 })
@@ -24,6 +25,41 @@ export class ClinicsComponent implements OnInit {
   public apiUrl = environment.apiUrl;
   public clinics: ClinicResponseDto[] = [];
   public searchTerm: string = '';
+
+  get citySelectOptions() {
+    return this.globalCities.map(c => ({
+      label: `${c.nameEn} (${c.nameAr})`,
+      value: c.cityId
+    }));
+  }
+
+  get localitySelectOptions() {
+    return this.branchLocalities.map(loc => ({
+      label: `${loc.nameEn} (${loc.nameAr})`,
+      value: loc.localityId
+    }));
+  }
+
+  get specialtyLinkSelectOptions() {
+    return this.globalSpecialties.map(s => ({
+      label: s.nameEn,
+      value: s.specialtyId
+    }));
+  }
+
+  get insuranceLinkSelectOptions() {
+    return this.globalInsurances.map(ins => ({
+      label: ins.nameEn,
+      value: ins.providerId
+    }));
+  }
+
+  get languageLinkSelectOptions() {
+    return this.globalLanguages.map(l => ({
+      label: l.nameEn,
+      value: l.languageId
+    }));
+  }
 
   get filteredClinics(): ClinicResponseDto[] {
     if (!this.searchTerm.trim()) return this.clinics;
@@ -201,6 +237,26 @@ export class ClinicsComponent implements OnInit {
     return lang ? lang.nameEn : 'Unknown Language';
   }
 
+  onCitySelectChange(cityId: any): void {
+    const id = typeof cityId === 'string' ? cityId : (cityId?.value || '');
+    this.branchForm.patchValue({ localityId: '' });
+    if (id) {
+      this.uiService.showLoading();
+      this.referenceService.getLocalities(id).subscribe({
+        next: (data) => {
+          this.branchLocalities = data;
+          this.uiService.hideLoading();
+        },
+        error: () => {
+          this.branchLocalities = [];
+          this.uiService.hideLoading();
+        }
+      });
+    } else {
+      this.branchLocalities = [];
+    }
+  }
+
   onCityChange(event: any): void {
     const cityId = event.target.value;
     if (cityId) {
@@ -285,7 +341,7 @@ export class ClinicsComponent implements OnInit {
       },
       error: () => {
         this.uiService.hideLoading();
-        this.uiService.showError('Failed to update clinic.');
+        this.uiService.showError('already exists.');
       }
     });
   }

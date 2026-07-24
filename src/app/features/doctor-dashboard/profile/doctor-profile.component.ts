@@ -11,11 +11,12 @@ import {
   DoctorSpecialtyResponseDto, DoctorLanguageResponseDto, DoctorQualificationResponseDto 
 } from '../../../core/models/doctor.model';
 import { SpecialtyResponseDto, LanguageResponseDto, SubSpecialtyResponseDto } from '../../../core/models/reference.model';
+import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
 
 @Component({
   selector: 'app-doctor-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, CustomSelectComponent],
   templateUrl: './doctor-profile.component.html',
   styleUrls: ['./doctor-profile.component.css']
 })
@@ -34,6 +35,41 @@ export class DoctorProfileComponent implements OnInit {
   public globalSpecialties: SpecialtyResponseDto[] = [];
   public globalSubSpecialties: SubSpecialtyResponseDto[] = [];
   public globalLanguages: LanguageResponseDto[] = [];
+
+  public titles = [
+    { label: 'Dr. (Doctor)', value: 'DR' },
+    { label: 'Prof. (Professor)', value: 'PROF' },
+    { label: 'Consultant', value: 'CONSULTANT' },
+    { label: 'Specialist', value: 'SPECIALIST' }
+  ];
+
+  public proficiencies = [
+    { label: 'Native', value: 'NATIVE' },
+    { label: 'Fluent', value: 'FLUENT' },
+    { label: 'Intermediate', value: 'INTERMEDIATE' },
+    { label: 'Basic', value: 'BASIC' }
+  ];
+
+  get specialtySelectOptions() {
+    return this.globalSpecialties.map(s => ({
+      label: s.nameEn,
+      value: s.specialtyId
+    }));
+  }
+
+  get subSpecialtySelectOptions() {
+    return this.globalSubSpecialties.map(ss => ({
+      label: ss.nameEn,
+      value: ss.subSpecialtyId
+    }));
+  }
+
+  get languageSelectOptions() {
+    return this.globalLanguages.map(l => ({
+      label: l.nameEn,
+      value: l.languageId
+    }));
+  }
 
   // General Profile Form
   public profileForm: FormGroup = this.fb.group({

@@ -11,11 +11,12 @@ import {
   ConsultationStatus, 
   MessageType 
 } from '../../../../core/models/consultation.model';
+import { CustomSelectComponent } from '../../../../shared/components/custom-select/custom-select.component';
 
 @Component({
   selector: 'app-doctor-consultations',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, CustomSelectComponent],
   templateUrl: './doctor-consultations.component.html',
   styleUrls: []
 })
@@ -40,6 +41,13 @@ export class DoctorConsultationsComponent implements OnInit, OnDestroy {
   });
 
   public statusOptions = Object.values(ConsultationStatus);
+
+  get statusSelectOptions() {
+    return this.statusOptions.map(s => ({
+      label: s.replace(/_/g, ' '),
+      value: s
+    }));
+  }
 
   private pollInterval: any;
 

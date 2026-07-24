@@ -26,8 +26,22 @@
 
 .doctors-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
   gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .doctors-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-bar-card {
+    padding: 16px;
+  }
+
+  .doctor-card-item {
+    padding: 16px;
+  }
 }
 
 .doctor-card-item {

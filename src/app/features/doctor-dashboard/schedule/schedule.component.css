@@ -89,3 +89,26 @@
 .btn-start-consult:hover {
   background-color: var(--teal-m);
 }
+
+@media (max-width: 576px) {
+  .schedule-header-card {
+    padding: 16px;
+  }
+
+  .timeline-item-card {
+    padding: 14px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .patient-meta-info {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .btn-start-consult {
+    width: 100%;
+    display: inline-flex;
+    justify-content: center;
+  }
+}

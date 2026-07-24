@@ -124,6 +124,17 @@ export class LandingComponent implements OnInit {
   public showToast = false;
   public toastMessage = '';
 
+  public apptTypeOptions = [
+    { label: 'New Patient', value: 'NEW_PATIENT' },
+    { label: 'Follow-up', value: 'FOLLOW_UP' },
+    { label: 'Referral', value: 'REFERRAL' }
+  ];
+
+  public sessionModeOptions = [
+    { label: 'In-Clinic Visit', value: 'IN_CLINIC' },
+    { label: 'Video Call', value: 'VIDEO_CALL' }
+  ];
+
   ngOnInit(): void {
     this.loadPatientProfileIfLoggedIn();
     this.loadAllRealData();

@@ -99,40 +99,36 @@
       </div>
 
       <!-- Sub-tabs Card -->
-      <div class="card p-4 border-0 shadow-sm">
-        <div class="d-flex gap-2 border-bottom pb-0 mb-4 overflow-x-auto">
+      <div class="card p-4 border-0 shadow-sm overflow-hidden">
+        <div class="sub-tabs-bar">
           <button 
-            class="btn" 
+            class="btn sub-tab-btn" 
             [class.btn-primary]="activeSubTab === 'branches'" 
             [class.btn-outline]="activeSubTab !== 'branches'" 
-            style="border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-bottom: -1px;"
             (click)="switchSubTab('branches')"
           >
             🏢 Facility Branches ({{ branches.length }})
           </button>
           <button 
-            class="btn" 
+            class="btn sub-tab-btn" 
             [class.btn-primary]="activeSubTab === 'specialties'" 
             [class.btn-outline]="activeSubTab !== 'specialties'" 
-            style="border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-bottom: -1px;"
             (click)="switchSubTab('specialties')"
           >
             🎓 Specialties ({{ clinicSpecialties.length }})
           </button>
           <button 
-            class="btn" 
+            class="btn sub-tab-btn" 
             [class.btn-primary]="activeSubTab === 'insurances'" 
             [class.btn-outline]="activeSubTab !== 'insurances'" 
-            style="border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-bottom: -1px;"
             (click)="switchSubTab('insurances')"
           >
             🛡️ Insurance Networks ({{ clinicInsurances.length }})
           </button>
           <button 
-            class="btn" 
+            class="btn sub-tab-btn" 
             [class.btn-primary]="activeSubTab === 'languages'" 
             [class.btn-outline]="activeSubTab !== 'languages'" 
-            style="border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-bottom: -1px;"
             (click)="switchSubTab('languages')"
           >
             🗣️ Languages ({{ clinicLanguages.length }})
@@ -314,7 +310,10 @@
 
         <div class="form-group mb-3">
           <label class="form-label">Clinic Logo Upload</label>
-          <input type="file" (change)="onLogoSelected($event)" class="form-control" accept="image/*">
+          <div class="file-upload-wrapper">
+            <span class="file-upload-icon">📷</span>
+            <input type="file" (change)="onLogoSelected($event)" class="form-control file-input-styled" accept="image/*">
+          </div>
         </div>
 
         <div class="form-group mb-3">
@@ -379,17 +378,26 @@
         <div class="form-row">
           <div class="form-group mb-3">
             <label class="form-label">City *</label>
-            <select formControlName="cityId" class="form-control" (change)="onCityChange($event)">
-              <option value="">-- Choose City --</option>
-              <option *ngFor="let c of globalCities" [value]="c.cityId">{{ c.nameEn }} ({{ c.nameAr }})</option>
-            </select>
+            <app-custom-select 
+              formControlName="cityId" 
+              [options]="citySelectOptions" 
+              bindLabel="label" 
+              bindValue="value" 
+              [searchable]="true"
+              placeholder="-- Choose City --"
+              (selectionChange)="onCitySelectChange($event)">
+            </app-custom-select>
           </div>
           <div class="form-group mb-3">
             <label class="form-label">Locality / District *</label>
-            <select formControlName="localityId" class="form-control">
-              <option value="">-- Choose Locality --</option>
-              <option *ngFor="let loc of branchLocalities" [value]="loc.localityId">{{ loc.nameEn }} ({{ loc.nameAr }})</option>
-            </select>
+            <app-custom-select 
+              formControlName="localityId" 
+              [options]="localitySelectOptions" 
+              bindLabel="label" 
+              bindValue="value" 
+              [searchable]="true"
+              placeholder="-- Choose Locality --">
+            </app-custom-select>
           </div>
         </div>
 
@@ -428,10 +436,14 @@
       <div class="modal-body">
         <div class="form-group m-0">
           <label class="form-label">Choose Specialty *</label>
-          <select formControlName="specialtyId" class="form-control">
-            <option value="">-- Choose Specialty --</option>
-            <option *ngFor="let s of globalSpecialties" [value]="s.specialtyId">{{ s.nameEn }}</option>
-          </select>
+          <app-custom-select 
+            formControlName="specialtyId" 
+            [options]="specialtyLinkSelectOptions" 
+            bindLabel="label" 
+            bindValue="value" 
+            [searchable]="true"
+            placeholder="-- Choose Specialty --">
+          </app-custom-select>
         </div>
       </div>
 
@@ -455,10 +467,14 @@
       <div class="modal-body">
         <div class="form-group mb-3">
           <label class="form-label">Insurance Provider *</label>
-          <select formControlName="providerId" class="form-control">
-            <option value="">-- Choose Provider --</option>
-            <option *ngFor="let ins of globalInsurances" [value]="ins.providerId">{{ ins.nameEn }}</option>
-          </select>
+          <app-custom-select 
+            formControlName="providerId" 
+            [options]="insuranceLinkSelectOptions" 
+            bindLabel="label" 
+            bindValue="value" 
+            [searchable]="true"
+            placeholder="-- Choose Provider --">
+          </app-custom-select>
         </div>
         <div class="form-group m-0">
           <label class="form-label">Network Class *</label>
@@ -486,10 +502,14 @@
       <div class="modal-body">
         <div class="form-group m-0">
           <label class="form-label">Choose Language *</label>
-          <select formControlName="languageId" class="form-control">
-            <option value="">-- Choose Language --</option>
-            <option *ngFor="let l of globalLanguages" [value]="l.languageId">{{ l.nameEn }}</option>
-          </select>
+          <app-custom-select 
+            formControlName="languageId" 
+            [options]="languageLinkSelectOptions" 
+            bindLabel="label" 
+            bindValue="value" 
+            [searchable]="true"
+            placeholder="-- Choose Language --">
+          </app-custom-select>
         </div>
       </div>
 

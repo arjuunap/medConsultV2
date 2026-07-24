@@ -21,10 +21,16 @@
           <!-- Clinic Select -->
           <form [formGroup]="linkForm" class="d-flex align-center gap-2 m-0" style="min-width: 250px;">
             <label class="form-label text-nowrap m-0 fw-semibold fs-sm">Clinic Facility:</label>
-            <select formControlName="clinicId" (change)="onClinicChange()" class="form-control m-0">
-              <option value="">-- Select Clinic --</option>
-              <option *ngFor="let c of clinics" [value]="c.clinicId">{{ c.nameEn }}</option>
-            </select>
+            <div class="flex-1">
+              <app-custom-select 
+                formControlName="clinicId" 
+                [options]="clinicSelectOptions" 
+                bindLabel="label" 
+                bindValue="value" 
+                placeholder="-- Select Clinic --"
+                (selectionChange)="onClinicChange()">
+              </app-custom-select>
+            </div>
           </form>
 
           <!-- Roster Search Filter Bar -->
@@ -88,7 +94,7 @@
           
           <div class="d-flex gap-2">
             <!-- View Schedule Action -->
-            <button class="btn btn-outline btn-sm" (click)="selectDoctor(dc.doctorId)">
+            <button class="btn btn-outline btn-sm" (click)="openScheduleModal(dc)">
               📅 View Schedule
             </button>
             
@@ -119,18 +125,25 @@
           <div class="modal-body">
             <div class="form-group mb-3">
               <label class="form-label">Select Branch *</label>
-              <select formControlName="branchId" class="form-control">
-                <option value="">-- Choose Branch --</option>
-                <option *ngFor="let b of branches" [value]="b.branchId">{{ b.branchNameEn }}</option>
-              </select>
+              <app-custom-select 
+                formControlName="branchId" 
+                [options]="branchSelectOptions" 
+                bindLabel="label" 
+                bindValue="value" 
+                placeholder="-- Choose Branch --">
+              </app-custom-select>
             </div>
 
             <div class="form-group mb-3">
               <label class="form-label">Select Doctor *</label>
-              <select formControlName="doctorId" class="form-control">
-                <option value="">-- Choose Doctor --</option>
-                <option *ngFor="let d of doctors" [value]="d.doctorId">{{ d.title }}. {{ d.fullName }}</option>
-              </select>
+              <app-custom-select 
+                formControlName="doctorId" 
+                [options]="doctorSelectOptions" 
+                bindLabel="label" 
+                bindValue="value" 
+                [searchable]="true"
+                placeholder="-- Choose Doctor --">
+              </app-custom-select>
             </div>
 
             <div class="form-row">
@@ -161,6 +174,130 @@
             <button type="submit" [disabled]="linkForm.invalid" class="btn btn-primary">Assign Placement</button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- Dedicated Doctor Consultation Schedule Modal -->
+    <div *ngIf="isScheduleModalOpen && selectedDcForSchedule" class="modal-backdrop">
+      <div class="modal-content" style="max-width: 680px; max-height: 90vh;">
+        <div class="modal-header">
+          <div>
+            <span class="badge badge-teal mb-1">Branch: {{ getBranchName(selectedDcForSchedule.branchId) }}</span>
+            <h3 class="fs-xl text-primary m-0 fw-bold">
+              📅 Consultation Schedule — {{ getDoctorName(selectedDcForSchedule.doctorId) }}
+            </h3>
+          </div>
+          <button class="btn-close" (click)="closeScheduleModal()">&times;</button>
+        </div>
+
+        <div class="modal-body">
+          <!-- Placement Details Info Box -->
+          <div class="bg-light p-3 rounded-md border mb-4 d-flex justify-between flex-wrap gap-2 fs-sm">
+            <div><strong>Department:</strong> {{ selectedDcForSchedule.department || 'General Practice' }}</div>
+            <div><strong>Fee:</strong> <span class="text-success fw-bold">SAR {{ selectedDcForSchedule.consultationFeeSar }}</span></div>
+            <div><strong>Placement Role:</strong> {{ selectedDcForSchedule.isPrimary ? 'Primary Specialist' : 'Consultant' }}</div>
+          </div>
+
+          <!-- Existing Active Schedules List -->
+          <div class="mb-4">
+            <h4 class="fs-sm text-primary fw-bold mb-2">📋 Configured Working Schedules</h4>
+            
+            <div *ngIf="doctorSchedules.length > 0" class="d-flex flex-col gap-2">
+              <div *ngFor="let s of doctorSchedules" class="p-3 bg-white border rounded d-flex justify-between align-center flex-wrap gap-2 fs-sm">
+                <div>
+                  <div class="fw-bold text-dark fs-md">
+                    🗓️ {{ getDayName(s.dayOfWeek) }}
+                    <span class="badge badge-teal ms-2 fs-xs">{{ s.sessionType.replace('_', ' ') }}</span>
+                    <span class="badge ms-1 fs-xs" [class.badge-success]="s.isActive" [class.badge-secondary]="!s.isActive">
+                      {{ s.isActive ? 'Active' : 'Inactive' }}
+                    </span>
+                  </div>
+                  <div class="text-muted fs-xs mt-1">
+                    ⏰ {{ s.startTime }} – {{ s.endTime }} | ⏱️ Duration: {{ s.slotDurationMin }} mins | 👥 Max Patients: {{ s.maxPatients }}
+                  </div>
+                </div>
+
+                <button class="btn btn-outline btn-danger btn-sm py-1 px-2 fs-xs" (click)="removeDoctorSchedule(s.scheduleId)">
+                  Remove Rule
+                </button>
+              </div>
+            </div>
+
+            <div *ngIf="doctorSchedules.length === 0" class="empty-state-card py-3">
+              <div class="empty-state-icon" style="font-size: 1.8rem;">📅</div>
+              <p class="empty-state-text fs-sm">No working schedule rules configured for this doctor placement yet.</p>
+              <small class="text-muted">Use the form below to add weekly working hours.</small>
+            </div>
+          </div>
+
+          <!-- Add Schedule Rule Form -->
+          <form [formGroup]="doctorScheduleForm" (ngSubmit)="submitDoctorSchedule()" class="pt-3 border-top">
+            <h4 class="fs-sm text-primary fw-bold mb-3">+ Configure New Working Schedule Rule</h4>
+            
+            <div class="form-row">
+              <div class="form-group mb-3">
+                <label class="form-label fs-xs">Day of Week *</label>
+                <app-custom-select 
+                  formControlName="dayOfWeek" 
+                  [options]="scheduleDayOptions" 
+                  bindLabel="label" 
+                  bindValue="value" 
+                  size="sm"
+                  placeholder="Select Day">
+                </app-custom-select>
+              </div>
+
+              <div class="form-group mb-3">
+                <label class="form-label fs-xs">Session Mode *</label>
+                <app-custom-select 
+                  formControlName="sessionType" 
+                  [options]="scheduleSessionTypeOptions" 
+                  bindLabel="label" 
+                  bindValue="value" 
+                  size="sm"
+                  placeholder="Select Mode">
+                </app-custom-select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group mb-3">
+                <label class="form-label fs-xs">Start Time *</label>
+                <input type="time" formControlName="startTime" class="form-control form-control-sm">
+              </div>
+
+              <div class="form-group mb-3">
+                <label class="form-label fs-xs">End Time *</label>
+                <input type="time" formControlName="endTime" class="form-control form-control-sm">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group mb-3">
+                <label class="form-label fs-xs">Slot Duration (Mins) *</label>
+                <input type="number" formControlName="slotDurationMin" class="form-control form-control-sm" placeholder="30">
+              </div>
+
+              <div class="form-group mb-3">
+                <label class="form-label fs-xs">Max Patients *</label>
+                <input type="number" formControlName="maxPatients" class="form-control form-control-sm" placeholder="16">
+              </div>
+            </div>
+
+            <div class="d-flex justify-between align-center mt-2">
+              <label class="fs-xs cursor-pointer d-flex align-center gap-1">
+                <input type="checkbox" formControlName="isActive"> Active Rule
+              </label>
+              <button type="submit" [disabled]="doctorScheduleForm.invalid" class="btn btn-primary btn-sm py-2 px-4">
+                Add Schedule Rule
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" (click)="closeScheduleModal()" class="btn btn-outline">Close</button>
+        </div>
       </div>
     </div>
   </div>

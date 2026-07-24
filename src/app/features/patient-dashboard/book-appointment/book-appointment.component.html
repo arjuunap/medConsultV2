@@ -50,23 +50,28 @@
     <!-- Step 1: Select Doctor -->
     <div class="form-step-section">
       <label class="step-label" for="doctorId">Step 1: Choose Specialist Doctor *</label>
-      <select id="doctorId" formControlName="doctorId" class="form-control" (change)="onDoctorChange()">
-        <option value="">-- Select Specialist Doctor --</option>
-        <option *ngFor="let doc of doctors" [value]="doc.doctorId">
-          👨‍⚕️ {{ doc.title }}. {{ doc.fullName }} ({{ doc.experienceYears }} yrs exp - Standard Fee: SAR {{ doc.consultationFeeSar || 150 }})
-        </option>
-      </select>
+      <app-custom-select 
+        formControlName="doctorId" 
+        [options]="doctorSelectOptions" 
+        bindLabel="label" 
+        bindValue="value" 
+        [searchable]="true"
+        placeholder="-- Select Specialist Doctor --"
+        (selectionChange)="onDoctorChange()">
+      </app-custom-select>
     </div>
 
     <!-- Step 2: Select Clinic Location -->
     <div class="form-step-section" *ngIf="wizardForm.get('doctorId')?.value">
       <label class="step-label" for="dcId">Step 2: Select Clinic Location *</label>
-      <select id="dcId" formControlName="dcId" class="form-control" (change)="onClinicOrDateChange()">
-        <option value="">-- Choose Clinic Location --</option>
-        <option *ngFor="let dc of doctorClinics" [value]="dc.dcId">
-          🏥 {{ dc.clinicNameEn }} - {{ dc.branchNameEn }} (SAR {{ dc.consultationFeeSar || 150 }})
-        </option>
-      </select>
+      <app-custom-select 
+        formControlName="dcId" 
+        [options]="clinicSelectOptions" 
+        bindLabel="label" 
+        bindValue="value" 
+        placeholder="-- Choose Clinic Location --"
+        (selectionChange)="onClinicOrDateChange()">
+      </app-custom-select>
       <div *ngIf="doctorClinics.length === 0" class="error-text mt-1 text-warning">
         No active clinic branch locations assigned to this doctor.
       </div>
@@ -117,15 +122,23 @@
       <div class="form-row">
         <div class="form-group mb-3">
           <label class="form-label" for="appointmentType">Appointment Type *</label>
-          <select id="appointmentType" formControlName="appointmentType" class="form-control">
-            <option *ngFor="let type of appointmentTypes" [value]="type">{{ type.replace('_', ' ') }}</option>
-          </select>
+          <app-custom-select 
+            formControlName="appointmentType" 
+            [options]="appointmentTypeOptions" 
+            bindLabel="label" 
+            bindValue="value" 
+            placeholder="Select appointment type">
+          </app-custom-select>
         </div>
         <div class="form-group mb-3">
           <label class="form-label" for="sessionType">Session Mode *</label>
-          <select id="sessionType" formControlName="sessionType" class="form-control">
-            <option *ngFor="let sType of sessionTypes" [value]="sType">{{ sType.replace('_', ' ') }}</option>
-          </select>
+          <app-custom-select 
+            formControlName="sessionType" 
+            [options]="sessionTypeOptions" 
+            bindLabel="label" 
+            bindValue="value" 
+            placeholder="Select session mode">
+          </app-custom-select>
         </div>
       </div>
 

@@ -8,12 +8,14 @@
   <div class="card mb-4 border-0 shadow-sm p-4">
     <form [formGroup]="clinicSelectForm" class="d-flex flex-col gap-2 m-0">
       <label class="form-label fw-bold">Select Clinic/Branch to Manage</label>
-      <select formControlName="dcId" (change)="onClinicChange()" class="form-control">
-        <option value="">-- Choose a Clinic/Branch --</option>
-        <option *ngFor="let c of doctorClinics" [value]="c.dcId">
-          🏥 {{ c.clinicNameEn }} - {{ c.branchNameEn }} ({{ c.department }})
-        </option>
-      </select>
+      <app-custom-select 
+        formControlName="dcId" 
+        [options]="clinicSelectOptions" 
+        bindLabel="label" 
+        bindValue="value" 
+        placeholder="-- Choose a Clinic/Branch --"
+        (selectionChange)="onClinicChange()">
+      </app-custom-select>
     </form>
   </div>
 
@@ -51,9 +53,13 @@
         <form [formGroup]="scheduleForm" (ngSubmit)="submitSchedule()" class="d-flex flex-wrap gap-3 mb-5 align-end bg-white p-4 border rounded-md shadow-sm">
           <div class="flex-1">
             <label class="form-label">Day of Week *</label>
-            <select formControlName="dayOfWeek" class="form-control">
-              <option *ngFor="let d of daysOfWeek" [value]="d.value">{{ d.label }}</option>
-            </select>
+            <app-custom-select 
+              formControlName="dayOfWeek" 
+              [options]="dayOfWeekSelectOptions" 
+              bindLabel="label" 
+              bindValue="value" 
+              placeholder="Select Day">
+            </app-custom-select>
           </div>
           <div class="flex-1">
             <label class="form-label">Start Time *</label>
@@ -69,9 +75,13 @@
           </div>
           <div class="flex-1">
             <label class="form-label">Type *</label>
-            <select formControlName="sessionType" class="form-control">
-              <option *ngFor="let st of sessionTypes" [value]="st">{{ st }}</option>
-            </select>
+            <app-custom-select 
+              formControlName="sessionType" 
+              [options]="sessionTypeSelectOptions" 
+              bindLabel="label" 
+              bindValue="value" 
+              placeholder="Select Type">
+            </app-custom-select>
           </div>
           <div>
             <button type="submit" [disabled]="scheduleForm.invalid" class="btn btn-primary w-100">+ Add Rule</button>
@@ -116,9 +126,13 @@
         <form [formGroup]="leaveForm" (ngSubmit)="submitLeave()" class="d-flex flex-wrap gap-3 mb-5 align-end bg-white p-4 border rounded-md shadow-sm">
           <div class="flex-1">
             <label class="form-label">Leave Type *</label>
-            <select formControlName="leaveType" class="form-control">
-              <option *ngFor="let lt of leaveTypes" [value]="lt">{{ lt }}</option>
-            </select>
+            <app-custom-select 
+              formControlName="leaveType" 
+              [options]="leaveTypeSelectOptions" 
+              bindLabel="label" 
+              bindValue="value" 
+              placeholder="Select Leave Type">
+            </app-custom-select>
           </div>
           <div class="flex-1">
             <label class="form-label">Start Date *</label>
@@ -201,9 +215,13 @@
             </div>
             <div class="flex-1">
               <label class="form-label">Type *</label>
-              <select formControlName="sessionType" class="form-control">
-                <option *ngFor="let st of sessionTypes" [value]="st">{{ st }}</option>
-              </select>
+              <app-custom-select 
+                formControlName="sessionType" 
+                [options]="sessionTypeSelectOptions" 
+                bindLabel="label" 
+                bindValue="value" 
+                placeholder="Select Type">
+              </app-custom-select>
             </div>
             <div>
               <button type="submit" [disabled]="slotForm.invalid" class="btn btn-primary w-100">Add Single Slot</button>

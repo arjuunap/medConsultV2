@@ -112,6 +112,7 @@
   left: 0;
   width: 100%;
   min-width: 180px;
+  max-width: 92vw;
   z-index: 1050;
   background: #ffffff;
   border: 1.5px solid var(--gray-200, #E5E7EB);

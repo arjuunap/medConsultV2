@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PatientService } from '../../../core/services/patient.service';
 import { ClinicalRecordService } from '../../../core/services/clinical-record.service';
 import { AppointmentService } from '../../../core/services/appointment.service';
@@ -14,6 +14,7 @@ import {
   PrescriptionResponseDto, PrescriptionItemResponseDto, PrescriptionStatus,
   LabResultResponseDto, LabResultStatus, ResultFlag
 } from '../../../core/models/clinical-record.model';
+import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
 
 interface PatientOption {
   patientId: string;
@@ -23,7 +24,7 @@ interface PatientOption {
 @Component({
   selector: 'app-patients',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, CustomSelectComponent],
   templateUrl: './patients.component.html',
   styleUrls: ['./patients.component.css']
 })
@@ -40,6 +41,19 @@ export class PatientsComponent implements OnInit {
   public patientList: PatientOption[] = [];
   public selectedPatientId = '';
   public selectedPatientName = '';
+
+  get patientChartSelectOptions() {
+    return this.patientList.map(p => ({
+      label: p.patientName,
+      value: p.patientId
+    }));
+  }
+
+  public rxRouteOptions = [
+    { label: 'Oral', value: 'ORAL' },
+    { label: 'Intravenous', value: 'INTRAVENOUS' },
+    { label: 'Topical', value: 'TOPICAL' }
+  ];
 
   // EMR Chart details
   public healthProfile: PatientHealthProfileResponseDto | null = null;
@@ -166,6 +180,19 @@ export class PatientsComponent implements OnInit {
         });
       }
     });
+  }
+
+  onPatientChartChange(patientId: any): void {
+    this.selectedPatientId = typeof patientId === 'string' ? patientId : (patientId?.value || '');
+    const opt = this.patientList.find(p => p.patientId === this.selectedPatientId);
+    this.selectedPatientName = opt ? opt.patientName : '';
+
+    if (!this.selectedPatientId) {
+      this.clearPatientDetails();
+      return;
+    }
+
+    this.loadPatientEMR();
   }
 
   onPatientSelect(event: Event): void {

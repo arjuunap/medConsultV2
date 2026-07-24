@@ -14,11 +14,12 @@ import {
   CaseRoomStatus,
   PostType
 } from '../../../../core/models/case-room.model';
+import { CustomSelectComponent } from '../../../../shared/components/custom-select/custom-select.component';
 
 @Component({
   selector: 'app-case-rooms',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, CustomSelectComponent],
   templateUrl: './case-rooms.component.html',
   styleUrls: []
 })
@@ -36,6 +37,34 @@ export class CaseRoomsComponent implements OnInit, OnDestroy {
   public posts: CaseRoomPostResponseDto[] = [];
   
   public patientsList: { patientId: string, patientName: string }[] = [];
+
+  get patientSelectOptions() {
+    return this.patientsList.map(p => ({
+      label: p.patientName,
+      value: p.patientId
+    }));
+  }
+
+  get prioritySelectOptions() {
+    return this.priorityOptions.map(p => ({
+      label: p,
+      value: p
+    }));
+  }
+
+  get statusSelectOptions() {
+    return this.statusOptions.map(s => ({
+      label: s.replace(/_/g, ' '),
+      value: s
+    }));
+  }
+
+  get postTypeSelectOptions() {
+    return this.postTypeOptions.map(pt => ({
+      label: pt.replace(/_/g, ' '),
+      value: pt
+    }));
+  }
 
   // Forms
   public showCreateModal = false;

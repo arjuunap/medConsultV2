@@ -8,11 +8,12 @@ import {
   SmokingStatus, AlcoholStatus, AllergyType, Severity, ConditionStatus,
   PatientHealthProfileResponseDto, PatientAllergyResponseDto, PatientChronicConditionResponseDto
 } from '../../../core/models/patient.model';
+import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
 
 @Component({
   selector: 'app-health-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, CustomSelectComponent],
   templateUrl: './health-profile.component.html',
   styleUrls: ['./health-profile.component.css']
 })
@@ -30,6 +31,26 @@ export class HealthProfileComponent implements OnInit {
   public isProfileEdit = false;
   public smokingStatuses = Object.values(SmokingStatus);
   public alcoholStatuses = Object.values(AlcoholStatus);
+
+  get smokingStatusOptions() {
+    return this.smokingStatuses.map(s => ({ label: s, value: s }));
+  }
+
+  get alcoholStatusOptions() {
+    return this.alcoholStatuses.map(a => ({ label: a, value: a }));
+  }
+
+  get allergyTypeOptions() {
+    return this.allergyTypes.map(t => ({ label: t, value: t }));
+  }
+
+  get severityOptions() {
+    return this.severities.map(s => ({ label: s, value: s }));
+  }
+
+  get conditionStatusOptions() {
+    return this.conditionStatuses.map(s => ({ label: s, value: s }));
+  }
 
   public healthForm: FormGroup = this.fb.group({
     weightKg: [0, [Validators.required, Validators.min(1)]],

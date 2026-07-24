@@ -59,9 +59,19 @@
   gap: 12px;
 }
 
+.emr-tabs-nav {
+  display: flex;
+  gap: 12px;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 0;
+  margin-bottom: 24px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .medication-card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
   gap: 16px;
   margin-top: 12px;
 }
@@ -75,7 +85,7 @@
 
 .vital-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
   gap: 16px;
 }
 
@@ -89,6 +99,6 @@
 
 @media (max-width: 576px) {
   .emr-card-item {
-    padding: 16px;
+    padding: 14px;
   }
 }

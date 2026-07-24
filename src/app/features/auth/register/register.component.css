@@ -175,17 +175,21 @@
 /* Mobile full-width with side padding below 480px */
 @media (max-width: 480px) {
   .auth-page-container {
-    padding: 16px;
+    padding: 12px;
   }
 
   .auth-card {
     max-width: 100%;
     border-radius: var(--radius-md);
-    padding: 24px 16px;
+    padding: 20px 14px;
   }
 
   .form-row {
     flex-direction: column;
-    gap: 18px;
+    gap: 14px;
+  }
+
+  .btn-auth {
+    min-height: 48px;
   }
 }

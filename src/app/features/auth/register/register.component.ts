@@ -6,11 +6,12 @@ import { switchMap } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { UiService } from '../../../core/services/ui.service';
 import { UserRole, Gender } from '../../../core/models/auth.model';
+import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, CustomSelectComponent],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
 })
@@ -30,6 +31,11 @@ export class RegisterComponent {
     { label: 'Male', value: Gender.MALE },
     { label: 'Female', value: Gender.FEMALE },
     { label: 'Prefer not to say', value: Gender.PREFER_NOT_TO_SAY }
+  ];
+
+  public languages = [
+    { label: 'English (EN)', value: 'en' },
+    { label: 'Arabic (AR)', value: 'ar' }
   ];
 
   public registerForm: FormGroup = this.fb.group({

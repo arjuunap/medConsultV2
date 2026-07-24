@@ -7,11 +7,12 @@ import { PatientService } from '../../../core/services/patient.service';
 import { UiService } from '../../../core/services/ui.service';
 import { ConsultationResponseDto, ConsultationMessageResponseDto, MessageType } from '../../../core/models/consultation.model';
 import { AuthService } from '../../../core/services/auth.service';
+import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
 
 @Component({
   selector: 'app-consultations',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, CustomSelectComponent],
   templateUrl: './consultations.component.html',
   styleUrls: ['./consultations.component.css']
 })
@@ -29,6 +30,13 @@ export class ConsultationsComponent implements OnInit, OnDestroy {
   public doctors: any[] = [];
   
   public patientId: string = '';
+
+  get doctorSelectOptions() {
+    return this.doctors.map(d => ({
+      label: `Dr. ${d.fullName} (${d.specialtyName || 'Specialist'})`,
+      value: d.doctorId
+    }));
+  }
 
   // Forms
   public messageForm: FormGroup = this.fb.group({

@@ -89,12 +89,13 @@
         <div class="form-row">
           <div class="form-group mb-3">
             <label class="form-label">Professional Title *</label>
-            <select formControlName="title" class="form-control">
-              <option value="DR">Dr. (Doctor)</option>
-              <option value="PROF">Prof. (Professor)</option>
-              <option value="CONSULTANT">Consultant</option>
-              <option value="SPECIALIST">Specialist</option>
-            </select>
+            <app-custom-select 
+              formControlName="title" 
+              [options]="titles" 
+              bindLabel="label" 
+              bindValue="value" 
+              placeholder="Select Title">
+            </app-custom-select>
           </div>
           <div class="form-group mb-3">
             <label class="form-label">MOH Registration Number *</label>
@@ -138,17 +139,25 @@
         <div class="form-row">
           <div class="form-group flex-1 mb-3">
             <label class="form-label">Specialty *</label>
-            <select formControlName="specialtyId" (change)="onSpecialtyChange()" class="form-control">
-              <option value="">-- Choose Specialty --</option>
-              <option *ngFor="let s of globalSpecialties" [value]="s.specialtyId">{{ s.nameEn }}</option>
-            </select>
+            <app-custom-select 
+              formControlName="specialtyId" 
+              [options]="specialtySelectOptions" 
+              bindLabel="label" 
+              bindValue="value" 
+              [searchable]="true" 
+              placeholder="-- Choose Specialty --"
+              (selectionChange)="onSpecialtyChange()">
+            </app-custom-select>
           </div>
           <div class="form-group flex-1 mb-3">
             <label class="form-label">Sub-Specialty (Optional)</label>
-            <select formControlName="subSpecialtyId" class="form-control">
-              <option value="">-- None --</option>
-              <option *ngFor="let ss of globalSubSpecialties" [value]="ss.subSpecialtyId">{{ ss.nameEn }}</option>
-            </select>
+            <app-custom-select 
+              formControlName="subSpecialtyId" 
+              [options]="subSpecialtySelectOptions" 
+              bindLabel="label" 
+              bindValue="value" 
+              placeholder="-- None --">
+            </app-custom-select>
           </div>
           <div class="form-group d-flex align-center gap-2 mt-4 mb-3">
             <input type="checkbox" id="mySpecPrimary" formControlName="isPrimary">
@@ -200,19 +209,24 @@
         <div class="form-row">
           <div class="form-group flex-1 mb-3">
             <label class="form-label">Language *</label>
-            <select formControlName="languageId" class="form-control">
-              <option value="">-- Choose Language --</option>
-              <option *ngFor="let l of globalLanguages" [value]="l.languageId">{{ l.nameEn }}</option>
-            </select>
+            <app-custom-select 
+              formControlName="languageId" 
+              [options]="languageSelectOptions" 
+              bindLabel="label" 
+              bindValue="value" 
+              [searchable]="true" 
+              placeholder="-- Choose Language --">
+            </app-custom-select>
           </div>
           <div class="form-group flex-1 mb-3">
             <label class="form-label">Proficiency *</label>
-            <select formControlName="proficiency" class="form-control">
-              <option value="NATIVE">Native</option>
-              <option value="FLUENT">Fluent</option>
-              <option value="INTERMEDIATE">Intermediate</option>
-              <option value="BASIC">Basic</option>
-            </select>
+            <app-custom-select 
+              formControlName="proficiency" 
+              [options]="proficiencies" 
+              bindLabel="label" 
+              bindValue="value" 
+              placeholder="Select proficiency">
+            </app-custom-select>
           </div>
           <div class="form-group d-flex align-end mb-3">
             <button type="submit" [disabled]="languageForm.invalid" class="btn btn-primary w-100">

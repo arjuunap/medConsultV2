@@ -100,12 +100,14 @@
         
         <div class="form-group mb-3">
           <label class="form-label">Select Doctor</label>
-          <select class="form-control" formControlName="doctorId">
-            <option value="">-- Choose a Doctor --</option>
-            <option *ngFor="let doc of doctors" [value]="doc.doctorId">
-              {{ doc.title || 'Dr.' }} {{ doc.fullName }}
-            </option>
-          </select>
+          <app-custom-select 
+            formControlName="doctorId" 
+            [options]="doctorSelectOptions" 
+            bindLabel="label" 
+            bindValue="value" 
+            [searchable]="true" 
+            placeholder="-- Choose a Doctor --">
+          </app-custom-select>
           <div class="error-text" *ngIf="bookForm.get('doctorId')?.touched && bookForm.get('doctorId')?.invalid">
             Doctor selection is required.
           </div>

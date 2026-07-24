@@ -11,11 +11,12 @@ import { DoctorResponseDto, DoctorClinicResponseDto, AppointmentSlotResponseDto 
 import { AppointmentType, SessionType } from '../../../core/models/appointment.model';
 import { ClinicService } from '../../../core/services/clinic.service';
 import { forkJoin, map, of } from 'rxjs';
+import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
 
 @Component({
   selector: 'app-book-appointment',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, CustomSelectComponent],
   templateUrl: './book-appointment.component.html',
   styleUrls: ['./book-appointment.component.css']
 })
@@ -37,6 +38,34 @@ export class BookAppointmentComponent implements OnInit {
 
   public appointmentTypes: string[] = Object.values(AppointmentType);
   public sessionTypes: string[] = Object.values(SessionType);
+
+  get doctorSelectOptions() {
+    return this.doctors.map(doc => ({
+      label: `👨‍⚕️ ${doc.title}. ${doc.fullName} (${doc.experienceYears} yrs exp - Standard Fee: SAR ${doc.consultationFeeSar || 150})`,
+      value: doc.doctorId
+    }));
+  }
+
+  get clinicSelectOptions() {
+    return this.doctorClinics.map(dc => ({
+      label: `🏥 ${dc.clinicNameEn} - ${dc.branchNameEn} (SAR ${dc.consultationFeeSar || 150})`,
+      value: dc.dcId
+    }));
+  }
+
+  get appointmentTypeOptions() {
+    return this.appointmentTypes.map(type => ({
+      label: type.replace(/_/g, ' '),
+      value: type
+    }));
+  }
+
+  get sessionTypeOptions() {
+    return this.sessionTypes.map(sType => ({
+      label: sType.replace(/_/g, ' '),
+      value: sType
+    }));
+  }
 
   // Form group for selection wizard
   public wizardForm: FormGroup = this.fb.group({

@@ -23,7 +23,7 @@
 
 .clinics-sidebar {
   flex: 1;
-  min-width: 300px;
+  min-width: min(100%, 300px);
   max-width: 380px;
   background-color: var(--white);
   border-radius: var(--radius-lg);
@@ -93,10 +93,36 @@
 
 .main-content-panel {
   flex: 3;
-  min-width: 320px;
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
 }
 
-@media (max-width: 768px) {
+.sub-tabs-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0;
+  margin-bottom: 24px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sub-tab-btn {
+  padding: 8px 14px;
+  font-size: 0.88rem;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  margin-bottom: -1px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+@media (max-width: 992px) {
   .clinic-admin-layout {
     flex-direction: column;
   }
@@ -104,5 +130,12 @@
   .clinics-sidebar {
     max-width: 100%;
     width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .sub-tab-btn {
+    padding: 8px 10px;
+    font-size: 0.82rem;
   }
 }

@@ -5,11 +5,12 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { PatientService } from '../../../core/services/patient.service';
 import { UiService } from '../../../core/services/ui.service';
 import { BloodType, MaritalStatus } from '../../../core/models/patient.model';
+import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule],
+  imports: [CommonModule, RouterLink, ReactiveFormsModule, CustomSelectComponent],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
 })
@@ -23,6 +24,27 @@ export class ProfileComponent implements OnInit {
 
   public bloodTypes = Object.values(BloodType);
   public maritalStatuses = Object.values(MaritalStatus);
+
+  get bloodTypeOptions() {
+    return this.bloodTypes.map(bt => ({
+      label: bt.replace(/_/g, ' '),
+      value: bt
+    }));
+  }
+
+  get nationalityOptions() {
+    return this.nationalities.map(nat => ({
+      label: `${nat.flag} ${nat.code}`,
+      value: nat.code
+    }));
+  }
+
+  get maritalStatusOptions() {
+    return this.maritalStatuses.map(ms => ({
+      label: ms,
+      value: ms
+    }));
+  }
   public nationalities: { code: string; flag: string }[] = [
     { code: 'SA', flag: '🇸🇦' },
     { code: 'AE', flag: '🇦🇪' },

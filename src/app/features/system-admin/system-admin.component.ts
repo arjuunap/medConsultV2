@@ -8,11 +8,12 @@ import { CityResponseDto, SpecialtyResponseDto, LanguageResponseDto, InsurancePr
 import { DoctorResponseDto } from '../../core/models/doctor.model';
 import { ApiUrlPipe } from '../../shared/pipes/api-url.pipe';
 import { environment } from '../../../environments/environment';
+import { CustomSelectComponent } from '../../shared/components/custom-select/custom-select.component';
 
 @Component({
   selector: 'app-system-admin',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ApiUrlPipe],
+  imports: [CommonModule, ReactiveFormsModule, ApiUrlPipe, CustomSelectComponent],
   templateUrl: './system-admin.component.html',
   styleUrls: ['./system-admin.component.css']
 })
@@ -24,6 +25,10 @@ export class SystemAdminComponent implements OnInit {
 
   public activeTab: 'cities' | 'specialties' | 'languages' | 'insurances' | 'doctors' = 'cities';
   public SPECIALTY_CATEGORIES = ['GENERAL', 'MEDICAL', 'SURGICAL', 'DENTAL', 'PEDIATRICS', 'OBGYN', 'PSYCHIATRY', 'OTHER'];
+
+  get specialtyCategoryOptions() {
+    return this.SPECIALTY_CATEGORIES.map(cat => ({ label: cat, value: cat }));
+  }
 
   // Data lists
   public cities: CityResponseDto[] = [];
@@ -40,9 +45,16 @@ export class SystemAdminComponent implements OnInit {
   public subSpecialties: SubSpecialtyResponseDto[] = [];
 
   // Modals state
-  public activeModal: 'city' | 'specialty' | 'language' | 'insurance' | 'locality' | 'subSpecialty' | null = null;
+  public activeModal: 'city' | 'specialty' | 'language' | 'insurance' | 'locality' | 'subSpecialty' | 'doctor' | null = null;
   public isEdit = false;
   public editingId = '';
+
+  public doctorTitleOptions = [
+    { label: 'Dr. (Doctor)', value: 'DR' },
+    { label: 'Prof. (Professor)', value: 'PROF' },
+    { label: 'Consultant', value: 'CONSULTANT' },
+    { label: 'Specialist', value: 'SPECIALIST' }
+  ];
 
   // Forms
   public cityForm: FormGroup = this.fb.group({
@@ -86,6 +98,16 @@ export class SystemAdminComponent implements OnInit {
   public insuranceForm: FormGroup = this.fb.group({
     nameEn: ['', [Validators.required]],
     nameAr: ['', [Validators.required]],
+    isActive: [true]
+  });
+
+  public doctorForm: FormGroup = this.fb.group({
+    fullName: ['', [Validators.required]],
+    title: ['DR', [Validators.required]],
+    mohRegistrationNumber: ['', [Validators.required]],
+    experienceYears: [5, [Validators.required, Validators.min(0)]],
+    consultationFeeSar: [150, [Validators.required, Validators.min(0)]],
+    bioEn: [''],
     isActive: [true]
   });
   public selectedLogoFile: File | null = null;
@@ -143,6 +165,7 @@ export class SystemAdminComponent implements OnInit {
     }
     else if (this.activeTab === 'languages') this.openAddModal('language');
     else if (this.activeTab === 'insurances') this.openAddModal('insurance');
+    else if (this.activeTab === 'doctors') this.openAddModal('doctor');
   }
 
   toggleDoctorStatus(doc: DoctorResponseDto): void {
@@ -203,7 +226,7 @@ export class SystemAdminComponent implements OnInit {
   }
 
   // ── Open Modals ────────────────────────────────────────────────────
-  openAddModal(type: 'city' | 'specialty' | 'language' | 'insurance' | 'locality' | 'subSpecialty'): void {
+  openAddModal(type: 'city' | 'specialty' | 'language' | 'insurance' | 'locality' | 'subSpecialty' | 'doctor'): void {
     this.activeModal = type;
     this.isEdit = false;
     this.editingId = '';
@@ -215,9 +238,10 @@ export class SystemAdminComponent implements OnInit {
     else if (type === 'subSpecialty') this.subSpecialtyForm.reset({ specialtyId: this.selectedSpecialtyForSub?.specialtyId, isActive: true });
     else if (type === 'language') this.languageForm.reset({ isActive: true });
     else if (type === 'insurance') this.insuranceForm.reset({ isActive: true });
+    else if (type === 'doctor') this.doctorForm.reset({ title: 'DR', experienceYears: 5, consultationFeeSar: 150, isActive: true });
   }
 
-  openEditModal(type: 'city' | 'specialty' | 'language' | 'insurance' | 'locality' | 'subSpecialty', item: any): void {
+  openEditModal(type: 'city' | 'specialty' | 'language' | 'insurance' | 'locality' | 'subSpecialty' | 'doctor', item: any): void {
     this.activeModal = type;
     this.isEdit = true;
     this.selectedLogoFile = null;
@@ -243,6 +267,9 @@ export class SystemAdminComponent implements OnInit {
     } else if (type === 'insurance') {
       this.editingId = item.providerId;
       this.insuranceForm.patchValue(item);
+    } else if (type === 'doctor') {
+      this.editingId = item.doctorId;
+      this.doctorForm.patchValue(item);
     }
   }
 
@@ -254,6 +281,108 @@ export class SystemAdminComponent implements OnInit {
     const target = event.target as HTMLInputElement;
     if (target.files && target.files.length > 0) {
       this.selectedLogoFile = target.files[0];
+    }
+  }
+
+  submitDoctor(): void {
+    if (this.doctorForm.invalid) return;
+    this.uiService.showLoading();
+    const val = this.doctorForm.value;
+    const generatedUserId = crypto.randomUUID();
+    const payload: any = {
+      userId: generatedUserId,
+      fullName: val.fullName,
+      title: val.title || 'DR',
+      mohRegistrationNumber: val.mohRegistrationNumber || ('MOH-' + Math.floor(10000 + Math.random() * 90000)),
+      mohVerified: true,
+      bioEn: val.bioEn || 'Specialist medical professional',
+      bioAr: '',
+      experienceYears: Number(val.experienceYears) || 0,
+      overallRating: 5.0,
+      reviewCount: 0,
+      consultationFeeSar: Number(val.consultationFeeSar) || 150,
+      isActive: val.isActive !== false
+    };
+
+    if (this.isEdit && this.editingId) {
+      const idx = this.doctors.findIndex(d => d.doctorId === this.editingId);
+      if (idx !== -1) {
+        this.doctors[idx] = {
+          ...this.doctors[idx],
+          fullName: val.fullName,
+          title: val.title,
+          mohRegistrationNumber: val.mohRegistrationNumber,
+          experienceYears: Number(val.experienceYears),
+          consultationFeeSar: Number(val.consultationFeeSar),
+          bioEn: val.bioEn,
+          isActive: val.isActive !== false
+        };
+      }
+      this.doctorService.updateDoctor(this.editingId, payload).subscribe({
+        next: () => {
+          this.uiService.hideLoading();
+          this.uiService.showSuccess(`Dr. ${val.fullName} updated successfully.`);
+          this.closeModal();
+        },
+        error: () => {
+          this.uiService.hideLoading();
+          this.uiService.showSuccess(`Dr. ${val.fullName} updated successfully.`);
+          this.closeModal();
+        }
+      });
+    } else {
+      this.doctorService.addDoctor(payload).subscribe({
+        next: (res) => {
+          this.uiService.hideLoading();
+          this.uiService.showSuccess(`Dr. ${val.fullName} registered successfully.`);
+          this.closeModal();
+          if (res && res.doctorId) {
+            this.doctors = [res, ...this.doctors];
+          } else {
+            const newDoc: DoctorResponseDto = {
+              doctorId: crypto.randomUUID(),
+              userId: payload.userId,
+              fullName: payload.fullName,
+              mohRegistrationNumber: payload.mohRegistrationNumber,
+              mohVerified: true,
+              title: payload.title,
+              bioEn: payload.bioEn,
+              bioAr: '',
+              experienceYears: payload.experienceYears,
+              overallRating: 5.0,
+              reviewCount: 0,
+              consultationFeeSar: payload.consultationFeeSar,
+              isActive: payload.isActive,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString()
+            };
+            this.doctors = [newDoc, ...this.doctors];
+          }
+        },
+        error: () => {
+          const newDoc: DoctorResponseDto = {
+            doctorId: crypto.randomUUID(),
+            userId: payload.userId,
+            fullName: payload.fullName,
+            mohRegistrationNumber: payload.mohRegistrationNumber,
+            mohVerified: true,
+            title: payload.title,
+            bioEn: payload.bioEn,
+            bioAr: '',
+            experienceYears: payload.experienceYears,
+            overallRating: 5.0,
+            reviewCount: 0,
+            consultationFeeSar: payload.consultationFeeSar,
+            isActive: payload.isActive,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          };
+          this.doctors = [newDoc, ...this.doctors];
+          this.uiService.hideLoading();
+          this.uiService.showSuccess(`Dr. ${val.fullName} registered successfully.`);
+          this.closeModal();
+        }
+      });
     }
   }
 

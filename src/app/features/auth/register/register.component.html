@@ -87,25 +87,36 @@
       <div class="form-row mb-3">
         <div class="form-group mb-0 flex-1">
           <label class="form-label" for="role">Sign up as</label>
-          <select id="role" formControlName="role" class="form-control">
-            <option *ngFor="let role of roles" [value]="role.value">{{ role.label }}</option>
-          </select>
+          <app-custom-select 
+            formControlName="role" 
+            [options]="roles" 
+            bindLabel="label" 
+            bindValue="value" 
+            placeholder="Select role">
+          </app-custom-select>
         </div>
         <div class="form-group mb-0 flex-1">
           <label class="form-label" for="gender">Gender</label>
-          <select id="gender" formControlName="gender" class="form-control">
-            <option *ngFor="let gender of genders" [value]="gender.value">{{ gender.label }}</option>
-          </select>
+          <app-custom-select 
+            formControlName="gender" 
+            [options]="genders" 
+            bindLabel="label" 
+            bindValue="value" 
+            placeholder="Select gender">
+          </app-custom-select>
         </div>
       </div>
 
       <!-- Preferred Language Field -->
       <div class="form-group mb-4">
         <label class="form-label" for="preferredLang">Preferred Language</label>
-        <select id="preferredLang" formControlName="preferredLang" class="form-control">
-          <option value="en">English (EN)</option>
-          <option value="ar">Arabic (AR)</option>
-        </select>
+        <app-custom-select 
+          formControlName="preferredLang" 
+          [options]="languages" 
+          bindLabel="label" 
+          bindValue="value" 
+          placeholder="Select language">
+        </app-custom-select>
       </div>
 
       <!-- Submit Button -->

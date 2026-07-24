@@ -440,18 +440,23 @@
       <div class="form-row mb-3">
         <div class="form-group">
           <label class="form-label">Appointment Type</label>
-          <select [(ngModel)]="selectedApptType" class="form-control">
-            <option value="NEW_PATIENT">New Patient</option>
-            <option value="FOLLOW_UP">Follow-up</option>
-            <option value="REFERRAL">Referral</option>
-          </select>
+          <app-custom-select 
+            [(ngModel)]="selectedApptType" 
+            [options]="apptTypeOptions" 
+            bindLabel="label" 
+            bindValue="value" 
+            placeholder="Select Type">
+          </app-custom-select>
         </div>
         <div class="form-group">
           <label class="form-label">Session Mode</label>
-          <select [(ngModel)]="selectedSessionType" class="form-control">
-            <option value="IN_CLINIC">In-Clinic Visit</option>
-            <option value="VIDEO_CALL">Video Call</option>
-          </select>
+          <app-custom-select 
+            [(ngModel)]="selectedSessionType" 
+            [options]="sessionModeOptions" 
+            bindLabel="label" 
+            bindValue="value" 
+            placeholder="Select Mode">
+          </app-custom-select>
         </div>
       </div>
 
