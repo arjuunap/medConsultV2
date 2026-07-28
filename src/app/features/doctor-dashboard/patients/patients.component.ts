@@ -41,6 +41,29 @@ export class PatientsComponent implements OnInit {
   public patientList: PatientOption[] = [];
   public selectedPatientId = '';
   public selectedPatientName = '';
+  public searchTerm = '';
+
+  get filteredPatients() {
+    if (!this.searchTerm.trim()) {
+      return this.patientList;
+    }
+    const term = this.searchTerm.toLowerCase();
+    return this.patientList.filter(p => 
+      p.patientName.toLowerCase().includes(term) || 
+      p.patientId.toLowerCase().includes(term)
+    );
+  }
+
+  selectPatient(patientId: string, patientName: string): void {
+    this.selectedPatientId = patientId;
+    this.selectedPatientName = patientName;
+    this.loadPatientEMR();
+  }
+
+  backToDirectory(): void {
+    this.selectedPatientId = '';
+    this.clearPatientDetails();
+  }
 
   get patientChartSelectOptions() {
     return this.patientList.map(p => ({

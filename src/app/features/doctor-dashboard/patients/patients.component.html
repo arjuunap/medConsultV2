@@ -1,9 +1,9 @@
-<!-- Doctor Patient EMR Viewer template -->
-<div class="patients-directory-card">
+<!-- Top Header / Navigation -->
+<div class="patients-directory-card" *ngIf="!selectedPatientId">
   <div class="d-flex justify-between align-center flex-wrap gap-3">
     <div>
       <h2 class="fs-xl text-primary m-0 fw-bold">📋 Patient Medical Directory</h2>
-      <p class="text-muted fs-sm mt-1 m-0">Search and select a registered patient to review clinical records</p>
+      <p class="text-muted fs-sm mt-1 m-0">Select a registered patient from the list below to review their full EMR chart and profile</p>
     </div>
     
     <!-- Searchable Select patient dropdown with "View Chart" action -->
@@ -15,13 +15,55 @@
         [searchable]="true" 
         [ngModel]="selectedPatientId" 
         (selectionChange)="onPatientChartChange($event)"
-        placeholder="-- Choose Patient Chart --">
+        placeholder="-- Quick Search Chart --">
       </app-custom-select>
     </div>
   </div>
+
+  <!-- Search Input filter -->
+  <div class="search-bar-wrapper mt-4">
+    <span class="search-icon-inside">🔍</span>
+    <input type="text" [(ngModel)]="searchTerm" placeholder="Search patient name or ID..." class="form-control search-input" />
+  </div>
+
+  <!-- Directory Cards Grid -->
+  <div class="patients-grid mt-4" *ngIf="filteredPatients.length > 0">
+    <div *ngFor="let p of filteredPatients" class="patient-profile-card">
+      <div class="patient-card-avatar">👤</div>
+      <div class="patient-card-info">
+        <h3>{{ p.patientName }}</h3>
+        <p class="patient-id-sub">ID: {{ p.patientId }}</p>
+      </div>
+      <button class="btn btn-primary btn-sm w-100 mt-3" (click)="selectPatient(p.patientId, p.patientName)">
+        📋 Open EMR &amp; Profile Details
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="filteredPatients.length === 0" class="text-center text-muted py-5 mt-4 border rounded-lg bg-light">
+    <span class="fs-lg d-block mb-1">🚫 No Patients Found</span>
+    <span class="fs-xs">Try adjusting your search terms or verify patient list rosters.</span>
+  </div>
 </div>
 
-<!-- EMR chart dashboard if patient is selected -->
+<!-- Back header if a patient is selected -->
+<div class="chart-back-nav-bar mb-3 d-flex align-center justify-between" *ngIf="selectedPatientId">
+  <button class="btn btn-outline btn-sm d-flex align-center gap-1" (click)="backToDirectory()">
+    ⬅️ Back to Patient Directory
+  </button>
+  <div style="min-width: 260px;">
+    <app-custom-select 
+      [options]="patientChartSelectOptions" 
+      bindLabel="label" 
+      bindValue="value" 
+      [searchable]="true" 
+      [ngModel]="selectedPatientId" 
+      (selectionChange)="onPatientChartChange($event)"
+      placeholder="-- Quick Switch Chart --">
+    </app-custom-select>
+  </div>
+</div>
+
 <!-- EMR chart dashboard if patient is selected -->
 <div *ngIf="selectedPatientId" class="d-flex flex-col gap-4 mt-2">
   <!-- Profile summary card -->
