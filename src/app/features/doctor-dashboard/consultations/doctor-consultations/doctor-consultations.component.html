@@ -1,12 +1,4 @@
 <div class="consultations-container">
-  <!-- Top Banner -->
-  <div class="chat-header-banner">
-    <div>
-      <h2 class="banner-title">💬 Tele-Consultations</h2>
-      <p class="banner-subtitle">Manage, review, and reply to patients in real-time</p>
-    </div>
-  </div>
-
   <div class="consultations-layout shadow-sm" [class.chat-active]="isChatActive" [class.sidebar-open]="showPatientInfo">
     <!-- Inbox List Sidebar -->
     <div class="inbox-sidebar">
@@ -77,6 +69,18 @@
         <div class="header-actions">
           <button type="button" class="btn btn-outline btn-sm btn-toggle-info" (click)="togglePatientInfo()" [class.active]="showPatientInfo">
             ℹ️ Patient Info
+          </button>
+
+          <!-- Prescription Button -->
+          <button type="button" class="btn btn-rx btn-sm" (click)="togglePrescriptionPanel()" [class.active]="showPrescriptionPanel">
+            💊 Prescriptions
+            <span *ngIf="prescriptions.length > 0" class="rx-count-badge">{{ prescriptions.length }}</span>
+          </button>
+
+          <!-- Lab Results Button -->
+          <button type="button" class="btn btn-lab btn-sm" (click)="toggleLabPanel()" [class.active]="showLabPanel">
+            🔬 Lab Results
+            <span *ngIf="labResults.length > 0" class="lab-count-badge">{{ labResults.length }}</span>
           </button>
           
           <form [formGroup]="statusForm" class="status-update-form">
@@ -232,6 +236,427 @@
         <div class="icon-bubble">💬</div>
         <h3>No Consultation Selected</h3>
         <p>Choose a patient consultation from the inbox list to read messages and reply.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Prescription Slide Panel (Modal overlay) -->
+  <div class="rx-panel-overlay" *ngIf="showPrescriptionPanel" (click)="closePrescriptionPanel()"></div>
+  <div class="rx-slide-panel" [class.rx-panel-open]="showPrescriptionPanel">
+    <!-- Panel Header -->
+    <div class="rx-panel-header">
+      <div>
+        <h3 class="rx-panel-title m-0">💊 Prescriptions</h3>
+        <p class="rx-panel-subtitle m-0" *ngIf="selectedConsultation">
+          {{ selectedConsultation.patientName }} · {{ selectedConsultation.subject }}
+        </p>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-primary btn-sm" (click)="startNewPrescription()" *ngIf="!isCreatingPrescription">
+          + New Prescription
+        </button>
+        <button class="btn-close-rx" (click)="closePrescriptionPanel()">&times;</button>
+      </div>
+    </div>
+
+    <div class="rx-panel-body">
+
+      <!-- NEW PRESCRIPTION FORM -->
+      <div *ngIf="isCreatingPrescription" class="rx-create-form">
+        <h4 class="rx-section-title">📋 New Prescription Details</h4>
+        <form [formGroup]="prescriptionForm" (ngSubmit)="submitPrescription()">
+          <div class="rx-form-row">
+            <div class="rx-form-group">
+              <label class="rx-label">Issued Date *</label>
+              <input type="date" formControlName="issuedDate" class="form-control form-control-sm">
+            </div>
+            <div class="rx-form-group">
+              <label class="rx-label">Valid Until</label>
+              <input type="date" formControlName="validUntil" class="form-control form-control-sm">
+            </div>
+          </div>
+          <div class="rx-form-group">
+            <label class="rx-label">Diagnosis Notes</label>
+            <textarea formControlName="diagnosisNotes" class="form-control form-control-sm" rows="2" placeholder="Primary diagnosis, ICD-10 code..."></textarea>
+          </div>
+          <div class="rx-form-group">
+            <label class="rx-label">Pharmacist Notes</label>
+            <textarea formControlName="pharmacistNotes" class="form-control form-control-sm" rows="2" placeholder="Instructions for the pharmacist..."></textarea>
+          </div>
+          <div class="rx-form-actions">
+            <button type="button" class="btn btn-outline btn-sm" (click)="isCreatingPrescription = false">Cancel</button>
+            <button type="submit" [disabled]="prescriptionForm.invalid" class="btn btn-primary btn-sm">Create Prescription</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- PRESCRIPTION LIST -->
+      <div *ngIf="!isCreatingPrescription">
+
+        <!-- Empty state -->
+        <div *ngIf="prescriptions.length === 0" class="rx-empty-state">
+          <div class="rx-empty-icon">💊</div>
+          <p class="rx-empty-text">No prescriptions yet for this consultation.</p>
+          <button class="btn btn-primary btn-sm" (click)="startNewPrescription()">+ Create First Prescription</button>
+        </div>
+
+        <!-- Prescription selector tabs -->
+        <div *ngIf="prescriptions.length > 0" class="rx-tabs">
+          <button *ngFor="let rx of prescriptions"
+            class="rx-tab-btn"
+            [class.active]="selectedPrescription?.prescriptionId === rx.prescriptionId"
+            (click)="selectPrescription(rx)">
+            Rx — {{ rx.issuedDate | date:'mediumDate' }}
+            <span class="rx-status-dot" [class.dot-active]="rx.status === 'ACTIVE'" [class.dot-dispensed]="rx.status === 'DISPENSED'" [class.dot-expired]="rx.status === 'EXPIRED'"></span>
+          </button>
+        </div>
+
+        <!-- Selected prescription detail -->
+        <div *ngIf="selectedPrescription" class="rx-detail-card">
+          <!-- Header info -->
+          <div class="rx-detail-header">
+            <div class="rx-detail-meta">
+              <span class="rx-meta-chip">📅 {{ selectedPrescription.issuedDate | date:'mediumDate' }}</span>
+              <span *ngIf="selectedPrescription.validUntil" class="rx-meta-chip">⏳ Valid until {{ selectedPrescription.validUntil | date:'mediumDate' }}</span>
+              <span class="rx-status-badge" [class.status-active]="selectedPrescription.status === 'ACTIVE'"
+                [class.status-dispensed]="selectedPrescription.status === 'DISPENSED'"
+                [class.status-expired]="selectedPrescription.status === 'EXPIRED' || selectedPrescription.status === 'CANCELLED'">
+                {{ selectedPrescription.status }}
+              </span>
+            </div>
+            <button class="btn btn-outline btn-danger btn-sm" (click)="deletePrescription(selectedPrescription.prescriptionId)">
+              🗑 Delete Rx
+            </button>
+          </div>
+
+          <!-- Diagnosis notes -->
+          <div *ngIf="selectedPrescription.diagnosisNotes" class="rx-diagnosis-notes">
+            <strong>📋 Diagnosis:</strong> {{ selectedPrescription.diagnosisNotes }}
+          </div>
+
+          <!-- Medications List -->
+          <div class="rx-meds-section">
+            <div class="d-flex justify-between align-center mb-3">
+              <h5 class="rx-meds-title m-0">💊 Medications ({{ prescriptionItems.length }})</h5>
+              <button class="btn btn-outline btn-sm rx-add-med-btn" (click)="startAddItem()" *ngIf="!isAddingItem">
+                + Add Medication
+              </button>
+            </div>
+
+            <!-- Add Medication Form -->
+            <div *ngIf="isAddingItem" class="rx-add-item-form">
+              <h6 class="rx-section-title mb-3">+ New Medication</h6>
+              <form [formGroup]="itemForm" (ngSubmit)="submitItem()">
+                <div class="rx-form-row">
+                  <div class="rx-form-group flex-2">
+                    <label class="rx-label">Drug Name *</label>
+                    <input type="text" formControlName="drugName" class="form-control form-control-sm" placeholder="e.g. Amoxicillin">
+                  </div>
+                  <div class="rx-form-group">
+                    <label class="rx-label">Dosage *</label>
+                    <input type="text" formControlName="dosage" class="form-control form-control-sm" placeholder="e.g. 500mg">
+                  </div>
+                </div>
+                <div class="rx-form-row">
+                  <div class="rx-form-group">
+                    <label class="rx-label">Route</label>
+                    <select formControlName="route" class="form-control form-control-sm">
+                      <option *ngFor="let r of routeOptions" [value]="r.value">{{ r.label }}</option>
+                    </select>
+                  </div>
+                  <div class="rx-form-group flex-2">
+                    <label class="rx-label">Frequency *</label>
+                    <input type="text" formControlName="frequency" class="form-control form-control-sm" placeholder="e.g. Twice daily (BID)">
+                  </div>
+                </div>
+                <div class="rx-form-row">
+                  <div class="rx-form-group">
+                    <label class="rx-label">Duration (days) *</label>
+                    <input type="number" formControlName="durationDays" class="form-control form-control-sm" min="1">
+                  </div>
+                  <div class="rx-form-group">
+                    <label class="rx-label">Quantity *</label>
+                    <input type="number" formControlName="quantity" class="form-control form-control-sm" min="1">
+                  </div>
+                  <div class="rx-form-group">
+                    <label class="rx-label">Refills Allowed</label>
+                    <input type="number" formControlName="refillsAllowed" class="form-control form-control-sm" min="0">
+                  </div>
+                </div>
+                <div class="rx-form-group">
+                  <label class="rx-label">Special Instructions</label>
+                  <input type="text" formControlName="specialInstructions" class="form-control form-control-sm" placeholder="e.g. Take with food">
+                </div>
+                <div class="rx-form-actions">
+                  <button type="button" class="btn btn-outline btn-sm" (click)="isAddingItem = false">Cancel</button>
+                  <button type="submit" [disabled]="itemForm.invalid" class="btn btn-primary btn-sm">Add Medication</button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Medication Items List -->
+            <div *ngIf="prescriptionItems.length === 0 && !isAddingItem" class="rx-items-empty">
+              No medications added yet. Click "+ Add Medication" to start.
+            </div>
+
+            <div class="rx-items-list" *ngIf="prescriptionItems.length > 0">
+              <div *ngFor="let item of prescriptionItems; let i = index" class="rx-item-card">
+                <div class="rx-item-num">{{ i + 1 }}</div>
+                <div class="rx-item-info flex-1">
+                  <div class="rx-item-name">{{ item.drugName }}</div>
+                  <div class="rx-item-details">
+                    <span class="rx-chip">{{ item.dosage }}</span>
+                    <span class="rx-chip">{{ item.route }}</span>
+                    <span class="rx-chip">{{ item.frequency }}</span>
+                    <span class="rx-chip">{{ item.durationDays }}d</span>
+                    <span class="rx-chip">Qty: {{ item.quantity }}</span>
+                    <span *ngIf="item.refillsAllowed > 0" class="rx-chip rx-chip-refill">Refills: {{ item.refillsAllowed }}</span>
+                  </div>
+                  <div *ngIf="item.specialInstructions" class="rx-item-instructions">
+                    📝 {{ item.specialInstructions }}
+                  </div>
+                </div>
+                <button class="rx-item-delete" (click)="deleteItem(item.itemId)" title="Remove medication">&times;</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lab Results Slide Panel (Modal overlay) -->
+  <div class="lab-panel-overlay" *ngIf="showLabPanel" (click)="closeLabPanel()"></div>
+  <div class="lab-slide-panel" [class.lab-panel-open]="showLabPanel">
+    <!-- Panel Header -->
+    <div class="lab-panel-header">
+      <div>
+        <h3 class="lab-panel-title m-0">🔬 Lab Results</h3>
+        <p class="lab-panel-subtitle m-0" *ngIf="selectedConsultation">
+          {{ selectedConsultation.patientName }} · {{ selectedConsultation.subject }}
+        </p>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-primary btn-sm" (click)="startNewLabResult()" *ngIf="!isCreatingLabResult">
+          + New Lab Result
+        </button>
+        <button class="btn-close-lab" (click)="closeLabPanel()">&times;</button>
+      </div>
+    </div>
+
+    <div class="lab-panel-body">
+
+      <!-- NEW LAB RESULT FORM -->
+      <div *ngIf="isCreatingLabResult" class="lab-create-form">
+        <h4 class="lab-section-title">📋 New Lab Report Details</h4>
+        <form [formGroup]="labForm" (ngSubmit)="submitLabResult()">
+          <div class="lab-form-group">
+            <label class="lab-label">Lab Facility Name *</label>
+            <input type="text" formControlName="labName" class="form-control form-control-sm" placeholder="E.g. Al Borg Diagnostics">
+          </div>
+          <div class="lab-form-row">
+            <div class="lab-form-group flex-2">
+              <label class="lab-label">Report Type / Test Category *</label>
+              <input type="text" formControlName="reportType" class="form-control form-control-sm" placeholder="E.g. Lipid Profile, Blood Test">
+            </div>
+            <div class="lab-form-group">
+              <label class="lab-label">Report Date *</label>
+              <input type="date" formControlName="reportDate" class="form-control form-control-sm">
+            </div>
+          </div>
+          <div class="lab-form-row">
+            <div class="lab-form-group">
+              <label class="lab-label">Status *</label>
+              <select formControlName="status" class="form-control form-control-sm">
+                <option value="PENDING">Pending</option>
+                <option value="RECEIVED">Received</option>
+                <option value="REVIEWED">Reviewed</option>
+                <option value="ABNORMAL">Abnormal</option>
+                <option value="CRITICAL">Critical</option>
+              </select>
+            </div>
+            <div class="lab-form-group">
+              <label class="lab-label">Overall Flag *</label>
+              <select formControlName="overallFlag" class="form-control form-control-sm">
+                <option value="NORMAL">Normal</option>
+                <option value="ABNORMAL">Abnormal</option>
+                <option value="CRITICAL">Critical</option>
+              </select>
+            </div>
+          </div>
+          <div class="lab-form-group">
+            <label class="lab-label">Select Report Attachment (PDF/Image)</label>
+            <div class="file-upload-wrapper">
+              <span class="file-upload-icon">📎</span>
+              <input type="file" (change)="onLabFileSelected($event)" class="form-control form-control-sm file-input-styled">
+            </div>
+            <div *ngIf="selectedLabFile" class="selected-file-name">
+              📄 {{ selectedLabFile.name }} ({{ (selectedLabFile.size / 1024) | number:'1.0-1' }} KB)
+            </div>
+          </div>
+          <div class="lab-form-group">
+            <label class="lab-label">Clinical Annotation Notes</label>
+            <textarea formControlName="doctorAnnotation" class="form-control form-control-sm" rows="3" placeholder="Enter diagnostic observations, abnormal flags..."></textarea>
+          </div>
+          <div class="lab-form-actions">
+            <button type="button" class="btn btn-outline btn-sm" (click)="isCreatingLabResult = false">Cancel</button>
+            <button type="submit" [disabled]="labForm.invalid" class="btn btn-primary btn-sm">Create Lab Result</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- LAB RESULTS LIST -->
+      <div *ngIf="!isCreatingLabResult">
+
+        <!-- Empty state -->
+        <div *ngIf="labResults.length === 0" class="lab-empty-state">
+          <div class="lab-empty-icon">🔬</div>
+          <p class="lab-empty-text">No lab results recorded yet for this consultation.</p>
+          <button class="btn btn-primary btn-sm" (click)="startNewLabResult()">+ Create First Lab Result</button>
+        </div>
+
+        <!-- Lab selector tabs -->
+        <div *ngIf="labResults.length > 0" class="lab-tabs">
+          <button *ngFor="let lab of labResults"
+            class="lab-tab-btn"
+            [class.active]="selectedLabResult?.labResultId === lab.labResultId"
+            (click)="selectLabResult(lab)">
+            🧪 {{ lab.reportType }} — {{ lab.reportDate | date:'mediumDate' }}
+            <span class="lab-status-dot" 
+              [class.dot-normal]="lab.overallFlag === 'NORMAL'" 
+              [class.dot-abnormal]="lab.overallFlag === 'ABNORMAL'" 
+              [class.dot-critical]="lab.overallFlag === 'CRITICAL'">
+            </span>
+          </button>
+        </div>
+
+        <!-- Selected lab result detail -->
+        <div *ngIf="selectedLabResult" class="lab-detail-card">
+          <!-- Header info -->
+          <div class="lab-detail-header">
+            <div class="lab-detail-meta">
+              <span class="lab-meta-chip">📅 {{ selectedLabResult.reportDate | date:'mediumDate' }}</span>
+              <span class="lab-meta-chip">🏥 {{ selectedLabResult.labName }}</span>
+              <span class="lab-status-badge" [class.status-normal]="selectedLabResult.overallFlag === 'NORMAL'"
+                [class.status-abnormal]="selectedLabResult.overallFlag === 'ABNORMAL'"
+                [class.status-critical]="selectedLabResult.overallFlag === 'CRITICAL'">
+                {{ selectedLabResult.overallFlag }}
+              </span>
+            </div>
+            <button class="btn btn-outline btn-danger btn-sm" (click)="deleteLabResult(selectedLabResult.labResultId)">
+              🗑 Delete
+            </button>
+          </div>
+
+          <!-- File Attachment View -->
+          <div *ngIf="selectedLabResult.fileId" class="lab-file-attachment-bar">
+            <span class="file-icon">📄</span>
+            <div class="flex-1">
+              <div class="file-name">Lab Attachment Document</div>
+              <div class="file-subtext">Uploaded report file</div>
+            </div>
+            <button class="btn btn-primary btn-sm d-flex align-center gap-1" (click)="downloadLabResultFile(selectedLabResult.fileId)">
+              📥 Download
+            </button>
+          </div>
+
+          <!-- Diagnosis/Annotation notes -->
+          <div *ngIf="selectedLabResult.doctorAnnotation" class="lab-annotation-notes">
+            <strong>📋 Clinical Notes:</strong> {{ selectedLabResult.doctorAnnotation }}
+          </div>
+
+          <!-- Lab Items List -->
+          <div class="lab-items-section">
+            <div class="d-flex justify-between align-center mb-3">
+              <h5 class="lab-items-title m-0">🧪 Test Items ({{ labItems.length }})</h5>
+              <button class="btn btn-outline btn-sm lab-add-item-btn" (click)="startAddLabItem()" *ngIf="!isAddingLabItem">
+                + Add Test Item
+              </button>
+            </div>
+
+            <!-- Add Lab Item Form -->
+            <div *ngIf="isAddingLabItem" class="lab-add-item-form">
+              <h6 class="lab-section-title mb-3">+ New Test Item</h6>
+              <form [formGroup]="labItemForm" (ngSubmit)="submitLabItem()">
+                <div class="lab-form-row">
+                  <div class="lab-form-group flex-2">
+                    <label class="lab-label">Test Name *</label>
+                    <input type="text" formControlName="testName" class="form-control form-control-sm" placeholder="e.g. Hemoglobin, LDL Cholesterol">
+                  </div>
+                  <div class="lab-form-group">
+                    <label class="lab-label">Value *</label>
+                    <input type="text" formControlName="value" class="form-control form-control-sm" placeholder="e.g. 13.5, 110">
+                  </div>
+                  <div class="lab-form-group">
+                    <label class="lab-label">Unit *</label>
+                    <input type="text" formControlName="unit" class="form-control form-control-sm" placeholder="e.g. g/dL, mg/dL">
+                  </div>
+                </div>
+                <div class="lab-form-row">
+                  <div class="lab-form-group">
+                    <label class="lab-label">Flag *</label>
+                    <select formControlName="flag" class="form-control form-control-sm">
+                      <option value="NORMAL">Normal</option>
+                      <option value="HIGH">High</option>
+                      <option value="LOW">Low</option>
+                      <option value="CRITICAL_HIGH">Critical High</option>
+                      <option value="CRITICAL_LOW">Critical Low</option>
+                      <option value="ABNORMAL">Abnormal</option>
+                    </select>
+                  </div>
+                  <div class="lab-form-group">
+                    <label class="lab-label">LOINC Code</label>
+                    <input type="text" formControlName="loincCode" class="form-control form-control-sm" placeholder="e.g. 2345-7">
+                  </div>
+                </div>
+                <div class="lab-form-row">
+                  <div class="lab-form-group">
+                    <label class="lab-label">Reference Low</label>
+                    <input type="number" formControlName="referenceLow" class="form-control form-control-sm" placeholder="e.g. 12.0">
+                  </div>
+                  <div class="lab-form-group">
+                    <label class="lab-label">Reference High</label>
+                    <input type="number" formControlName="referenceHigh" class="form-control form-control-sm" placeholder="e.g. 16.0">
+                  </div>
+                </div>
+                <div class="lab-form-actions">
+                  <button type="button" class="btn btn-outline btn-sm" (click)="isAddingLabItem = false">Cancel</button>
+                  <button type="submit" [disabled]="labItemForm.invalid" class="btn btn-primary btn-sm">Add Item</button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Lab Items List -->
+            <div *ngIf="labItems.length === 0 && !isAddingLabItem" class="lab-items-empty">
+              No test items added yet. Click "+ Add Test Item" to start.
+            </div>
+
+            <div class="lab-items-list" *ngIf="labItems.length > 0">
+              <div *ngFor="let item of labItems; let i = index" class="lab-item-card">
+                <div class="lab-item-num">{{ i + 1 }}</div>
+                <div class="lab-item-info flex-1">
+                  <div class="d-flex justify-between align-center">
+                    <div class="lab-item-name">{{ item.testName }}</div>
+                    <span class="badge" 
+                      [class.badge-success]="item.flag === 'NORMAL'"
+                      [class.badge-danger]="item.flag === 'CRITICAL_HIGH' || item.flag === 'CRITICAL_LOW' || item.flag === 'CRITICAL'"
+                      [class.badge-warning]="item.flag === 'HIGH' || item.flag === 'LOW' || item.flag === 'ABNORMAL'">
+                      {{ item.flag }}
+                    </span>
+                  </div>
+                  <div class="lab-item-details">
+                    <span class="lab-chip font-bold">Value: {{ item.value }} {{ item.unit }}</span>
+                    <span *ngIf="item.referenceLow !== null || item.referenceHigh !== null" class="lab-chip">
+                      Ref Range: {{ item.referenceLow !== null ? item.referenceLow : '--' }} - {{ item.referenceHigh !== null ? item.referenceHigh : '--' }}
+                    </span>
+                    <span *ngIf="item.loincCode" class="lab-chip">LOINC: {{ item.loincCode }}</span>
+                  </div>
+                </div>
+                <button class="lab-item-delete" (click)="deleteLabItem(item.itemId)" title="Remove item">&times;</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

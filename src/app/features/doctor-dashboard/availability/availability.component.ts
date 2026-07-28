@@ -57,6 +57,11 @@ export class AvailabilityComponent implements OnInit {
     }));
   }
 
+  get selectedClinic(): DoctorClinicResponseDto | null {
+    if (!this.selectedDcId) return null;
+    return this.doctorClinics.find(c => c.dcId === this.selectedDcId) || null;
+  }
+
   get dayOfWeekSelectOptions() {
     return this.daysOfWeek.map(d => ({
       label: d.label,

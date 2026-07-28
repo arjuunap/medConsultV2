@@ -5,13 +5,17 @@ import { DoctorService } from '../../../core/services/doctor.service';
 import { ReferenceService } from '../../../core/services/reference.service';
 import { UiService } from '../../../core/services/ui.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ClinicService } from '../../../core/services/clinic.service';
 import { environment } from '../../../../environments/environment';
 import { 
   DoctorDetailResponse, DoctorTitle,
-  DoctorSpecialtyResponseDto, DoctorLanguageResponseDto, DoctorQualificationResponseDto 
+  DoctorSpecialtyResponseDto, DoctorLanguageResponseDto, DoctorQualificationResponseDto,
+  DoctorClinicResponseDto
 } from '../../../core/models/doctor.model';
 import { SpecialtyResponseDto, LanguageResponseDto, SubSpecialtyResponseDto } from '../../../core/models/reference.model';
 import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-doctor-profile',
@@ -25,10 +29,12 @@ export class DoctorProfileComponent implements OnInit {
   private referenceService = inject(ReferenceService);
   private uiService = inject(UiService);
   private authService = inject(AuthService);
+  private clinicService = inject(ClinicService);
   private fb = inject(FormBuilder);
 
   public apiUrl = environment.apiUrl;
   public doctorProfile: DoctorDetailResponse | null = null;
+  public enrichedClinics: DoctorClinicResponseDto[] = [];
   public activeTab: 'general' | 'specialties' | 'languages' | 'qualifications' | 'clinics' = 'general';
 
   // Global reference lists
@@ -180,10 +186,38 @@ export class DoctorProfileComponent implements OnInit {
           bioAr: profile.doctor.bioAr || ''
         });
         this.uiService.hideLoading();
+        this.enrichClinics(profile.clinics || []);
       },
       error: () => {
         this.uiService.hideLoading();
       }
+    });
+  }
+
+  enrichClinics(clinics: DoctorClinicResponseDto[]): void {
+    if (!clinics || clinics.length === 0) {
+      this.enrichedClinics = [];
+      return;
+    }
+
+    const requests = clinics.map(dc =>
+      forkJoin({
+        clinic: this.clinicService.getClinicById(dc.clinicId).pipe(catchError(() => of(null))),
+        branches: this.clinicService.getClinicBranches(dc.clinicId).pipe(catchError(() => of([])))
+      }).pipe(
+        map(res => {
+          const enriched = { ...dc };
+          if (res.clinic) enriched.clinicNameEn = (res.clinic as any).nameEn || 'Clinic';
+          const branch = ((res.branches as any[]) || []).find((b: any) => b.branchId === dc.branchId);
+          if (branch) enriched.branchNameEn = branch.branchNameEn;
+          return enriched;
+        })
+      )
+    );
+
+    forkJoin(requests).subscribe({
+      next: (enriched) => { this.enrichedClinics = enriched; },
+      error: () => { this.enrichedClinics = clinics; }
     });
   }
 
@@ -437,5 +471,13 @@ export class DoctorProfileComponent implements OnInit {
   getLanguageName(languageId: string): string {
     const l = this.globalLanguages.find(x => x.languageId === languageId);
     return l ? l.nameEn : languageId;
+  }
+
+  get activeClinicsCount(): number {
+    return this.enrichedClinics.filter(c => c.isActive).length;
+  }
+
+  get primaryClinicsCount(): number {
+    return this.enrichedClinics.filter(c => c.isPrimary).length;
   }
 }

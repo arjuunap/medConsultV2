@@ -27,7 +27,7 @@
   </button>
 
   <!-- Animated Floating Popover Panel -->
-  <div class="select-dropdown-menu" *ngIf="isOpen">
+  <div class="select-dropdown-menu" [class.placement-top]="placement === 'top'" *ngIf="isOpen">
     
     <!-- Optional Quick Search Bar -->
     <div class="search-container" *ngIf="searchable" (click)="$event.stopPropagation()">

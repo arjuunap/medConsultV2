@@ -1,19 +1,13 @@
 <div class="caserooms-container">
-  <!-- Top Banner -->
-  <div class="page-title-row">
-    <div>
-      <h2 class="banner-title">🏥 Collaborative Case Rooms</h2>
-      <p class="banner-subtitle">Discuss complex patient cases with medical specialists and colleagues</p>
-    </div>
-    <button class="btn btn-primary btn-open-case" (click)="openCreateModal()">+ Open Case Room</button>
-  </div>
-
   <div class="caserooms-layout shadow-sm" [class.chat-active]="isChatActive">
     <!-- Case Rooms List Sidebar -->
     <div class="caserooms-sidebar">
-      <div class="inbox-header">
-        <h3 class="inbox-title">Active Cases</h3>
-        <span class="inbox-count-badge">{{ caseRooms.length }} total</span>
+      <div class="inbox-header d-flex justify-between align-center">
+        <div>
+          <h3 class="inbox-title">Active Cases</h3>
+          <span class="inbox-count-badge">{{ caseRooms.length }} total</span>
+        </div>
+        <button class="btn btn-primary btn-sm" (click)="openCreateModal()">+ Open Case</button>
       </div>
       
       <div class="inbox-list">
@@ -141,7 +135,8 @@
               [options]="postTypeSelectOptions" 
               bindLabel="label" 
               bindValue="value" 
-              placeholder="Post Type">
+              placeholder="Post Type"
+              placement="top">
             </app-custom-select>
           </div>
           <textarea 
@@ -208,6 +203,28 @@
         <div class="form-group mb-3">
           <label class="form-label">Clinical Background Description</label>
           <textarea class="form-control" formControlName="description" rows="3" placeholder="Provide preliminary case details, symptoms, and diagnostic observations..."></textarea>
+        </div>
+
+        <!-- Multi-select Doctor Invite Section -->
+        <div class="form-group mb-3">
+          <label class="form-label d-flex justify-between align-center">
+            <span>Invite Specialists & Colleagues</span>
+            <span class="badge badge-outline" *ngIf="selectedDoctorIds.length > 0">{{ selectedDoctorIds.length }} selected</span>
+          </label>
+          <div class="doctor-search-box mb-2">
+            <input type="text" [(ngModel)]="doctorSearchTerm" [ngModelOptions]="{standalone: true}" placeholder="🔍 Search doctors by name..." class="form-control form-control-sm">
+          </div>
+          <div class="doctors-multi-select-list">
+            <div *ngFor="let doc of filteredDoctors" class="doctor-checkbox-item">
+              <label class="d-flex align-center gap-2 cursor-pointer">
+                <input type="checkbox" [checked]="isDoctorSelected(doc.doctorId)" (change)="toggleDoctorSelection(doc.doctorId)">
+                <span class="doctor-checkbox-name">Dr. {{ doc.fullName }}</span>
+              </label>
+            </div>
+            <div *ngIf="filteredDoctors.length === 0" class="no-doctors-found">
+              No specialists found.
+            </div>
+          </div>
         </div>
 
         <div class="form-group m-0">

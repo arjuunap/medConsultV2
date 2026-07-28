@@ -328,35 +328,83 @@
 
     <!-- TAB 5: Clinic Placements -->
     <div *ngIf="activeTab === 'clinics'">
-      <div class="table-responsive">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Clinic &amp; Facility</th>
-              <th>Branch Location</th>
-              <th>Department</th>
-              <th>Consultation Fee</th>
-              <th>Role</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let c of doctorProfile.clinics">
-              <td class="fw-bold text-primary">🏥 {{ c.clinicNameEn || 'Clinic Facility' }}</td>
-              <td>{{ c.branchNameEn || 'Main Branch' }}</td>
-              <td><span class="badge badge-info">{{ c.department || 'General Practice' }}</span></td>
-              <td class="fw-bold text-success">SAR {{ c.consultationFeeSar || 150 }}</td>
-              <td>
-                <span class="badge" [class.badge-success]="c.isPrimary" [class.badge-secondary]="!c.isPrimary">
-                  {{ c.isPrimary ? '⭐ Primary Doctor' : 'Consultant' }}
-                </span>
-              </td>
-            </tr>
-            <tr *ngIf="doctorProfile.clinics.length === 0">
-              <td colspan="5" class="text-center text-muted p-5">You are currently not assigned to any clinic branch.</td>
-            </tr>
-          </tbody>
-        </table>
+
+      <!-- Summary strip -->
+      <div class="clinics-summary-strip mb-4" *ngIf="enrichedClinics.length > 0">
+        <div class="clinic-summary-stat">
+          <span class="clinic-sum-num">{{ enrichedClinics.length }}</span>
+          <span class="clinic-sum-label">Total Placements</span>
+        </div>
+        <div class="clinic-summary-stat">
+          <span class="clinic-sum-num text-success">{{ activeClinicsCount }}</span>
+          <span class="clinic-sum-label">Active</span>
+        </div>
+        <div class="clinic-summary-stat">
+          <span class="clinic-sum-num text-primary">{{ primaryClinicsCount }}</span>
+          <span class="clinic-sum-label">Primary</span>
+        </div>
       </div>
+
+      <!-- Placement Cards Grid -->
+      <div class="clinics-placement-grid" *ngIf="enrichedClinics.length > 0">
+        <div *ngFor="let c of enrichedClinics" class="clinic-placement-card"
+             [class.placement-active]="c.isActive"
+             [class.placement-inactive]="!c.isActive">
+
+          <!-- Card Header: Clinic Name + Status -->
+          <div class="clinic-card-header">
+            <div class="clinic-icon-wrap">🏥</div>
+            <div class="clinic-card-title-group flex-1">
+              <h4 class="clinic-card-name m-0">{{ c.clinicNameEn || 'Medical Facility' }}</h4>
+              <div class="clinic-card-branch">📍 {{ c.branchNameEn || 'Main Branch' }}</div>
+            </div>
+            <div class="clinic-card-status-col">
+              <span class="clinic-active-badge" [class.badge-active]="c.isActive" [class.badge-inactive]="!c.isActive">
+                <span class="placement-dot" [class.dot-green]="c.isActive" [class.dot-gray]="!c.isActive"></span>
+                {{ c.isActive ? 'Active' : 'Inactive' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Divider -->
+          <div class="clinic-card-divider"></div>
+
+          <!-- Details Grid -->
+          <div class="clinic-details-grid">
+            <div class="clinic-detail-item">
+              <span class="clinic-detail-label">Department</span>
+              <span class="clinic-dept-chip">{{ c.department || 'General Practice' }}</span>
+            </div>
+            <div class="clinic-detail-item">
+              <span class="clinic-detail-label">Consultation Fee</span>
+              <span class="clinic-detail-value text-success fw-bold">SAR {{ c.consultationFeeSar || '—' }}</span>
+            </div>
+            <div class="clinic-detail-item">
+              <span class="clinic-detail-label">Role</span>
+              <span class="clinic-role-badge" [class.role-primary]="c.isPrimary" [class.role-consultant]="!c.isPrimary">
+                {{ c.isPrimary ? '⭐ Primary Specialist' : '👤 Consultant' }}
+              </span>
+            </div>
+            <div class="clinic-detail-item">
+              <span class="clinic-detail-label">Since</span>
+              <span class="clinic-detail-value">{{ c.startDate | date:'mediumDate' }}</span>
+            </div>
+            <div class="clinic-detail-item" *ngIf="c.endDate">
+              <span class="clinic-detail-label">Until</span>
+              <span class="clinic-detail-value text-warning">{{ c.endDate | date:'mediumDate' }}</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="enrichedClinics.length === 0" class="clinic-empty-state">
+        <div class="clinic-empty-icon">🏥</div>
+        <h4 class="clinic-empty-title">No Clinic Placements Yet</h4>
+        <p class="clinic-empty-text">You are currently not assigned to any clinic branch. Contact your clinic administrator to get assigned.</p>
+      </div>
+
     </div>
 
   </div>

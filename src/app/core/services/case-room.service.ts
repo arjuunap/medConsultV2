@@ -9,7 +9,9 @@ import {
   UpdateCaseRoomStatusRequest,
   CaseRoomPostRequestDto,
   CaseRoomPostResponseDto,
-  UpdateCaseRoomPostActionRequest
+  UpdateCaseRoomPostActionRequest,
+  CaseRoomMemberRequestDto,
+  CaseRoomMemberResponseDto
 } from '../models/case-room.model';
 import { Page } from '../models/common.model';
 
@@ -51,5 +53,19 @@ export class CaseRoomService {
 
   updatePostActionStatus(postId: string, statusRequest: UpdateCaseRoomPostActionRequest): Observable<CaseRoomPostResponseDto> {
     return this.http.patch<CaseRoomPostResponseDto>(`${this.apiUrl}/posts/${postId}/action-status`, statusRequest);
+  }
+
+  // --- Members ---
+
+  addMember(dto: CaseRoomMemberRequestDto): Observable<CaseRoomMemberResponseDto> {
+    return this.http.post<CaseRoomMemberResponseDto>(`${this.apiUrl}/members/`, dto);
+  }
+
+  getMembersForRoom(caseRoomId: string): Observable<CaseRoomMemberResponseDto[]> {
+    return this.http.get<CaseRoomMemberResponseDto[]>(`${this.apiUrl}/members/room/${caseRoomId}`);
+  }
+
+  removeMember(memberId: string): Observable<CaseRoomMemberResponseDto> {
+    return this.http.delete<CaseRoomMemberResponseDto>(`${this.apiUrl}/members/${memberId}`);
   }
 }

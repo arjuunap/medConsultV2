@@ -94,3 +94,26 @@ export interface UpdateCaseRoomStatusRequest {
 export interface UpdateCaseRoomPostActionRequest {
   actionStatus: ActionStatus;
 }
+
+export enum CaseRoomRole {
+  OWNER = 'OWNER',
+  CONTRIBUTOR = 'CONTRIBUTOR',
+  OBSERVER = 'OBSERVER'
+}
+
+export interface CaseRoomMemberRequestDto {
+  caseRoomId: string;
+  doctorId: string;
+  role: CaseRoomRole;
+}
+
+export interface CaseRoomMemberResponseDto {
+  memberId: string;
+  caseRoomId: string;
+  doctorId: string;
+  doctorName: string;
+  specialty?: string;
+  role: CaseRoomRole;
+  joinedAt: string;
+  isActive: boolean;
+}

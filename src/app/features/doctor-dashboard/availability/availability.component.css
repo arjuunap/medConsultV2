@@ -56,3 +56,153 @@
     padding: 10px 6px;
   }
 }
+
+/* ── Placement Info Card ──────────────────────────────── */
+.placement-info-card {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e8f4fd 100%);
+  border: 1.5px solid #bae6fd;
+  border-left: 5px solid var(--primary, #0ea5e9);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  box-shadow: 0 2px 12px rgba(14, 165, 233, 0.08);
+}
+
+.placement-info-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.placement-clinic-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary, #0ea5e9), #38bdf8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+}
+
+.placement-clinic-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-dark, #1e293b);
+}
+
+.placement-role-badge {
+  display: inline-block;
+  border-radius: 20px;
+  padding: 3px 12px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.placement-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.active-badge {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.inactive-badge {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dot-on {
+  background-color: #22c55e;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.5);
+}
+
+.dot-off {
+  background-color: #94a3b8;
+}
+
+.placement-branch-line {
+  font-size: 0.85rem;
+  color: var(--t3, #64748b);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+.placement-dept-chip {
+  display: inline-block;
+  background: #e0f2fe;
+  color: #0369a1;
+  border-radius: 12px;
+  padding: 1px 10px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ── Placement Stats Grid ─────────────────────────────── */
+.placement-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+  border-top: 1px solid #bae6fd;
+  padding-top: 16px;
+}
+
+.placement-stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.placement-stat-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--t4, #94a3b8);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.placement-stat-value {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text-dark, #1e293b);
+}
+
+@media (max-width: 576px) {
+  .placement-info-card {
+    padding: 16px;
+  }
+
+  .placement-info-header {
+    gap: 12px;
+  }
+
+  .placement-clinic-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 1.2rem;
+  }
+
+  .placement-info-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

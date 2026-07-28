@@ -5,6 +5,7 @@ import { ConsultationService } from '../../../../core/services/consultation.serv
 import { DoctorService } from '../../../../core/services/doctor.service';
 import { UiService } from '../../../../core/services/ui.service';
 import { AuthService } from '../../../../core/services/auth.service';
+import { ClinicalRecordService } from '../../../../core/services/clinical-record.service';
 import { 
   ConsultationResponseDto, 
   ConsultationMessageResponseDto, 
@@ -13,6 +14,13 @@ import {
 } from '../../../../core/models/consultation.model';
 import { CustomSelectComponent } from '../../../../shared/components/custom-select/custom-select.component';
 import { PatientService } from '../../../../core/services/patient.service';
+import {
+  LabResultResponseDto,
+  LabResultStatus,
+  ResultFlag,
+  LabItemResponseDto,
+  LabItemFlag
+} from '../../../../core/models/clinical-record.model';
 
 @Component({
   selector: 'app-doctor-consultations',
@@ -27,6 +35,7 @@ export class DoctorConsultationsComponent implements OnInit, OnDestroy {
   private uiService = inject(UiService);
   public authService = inject(AuthService);
   private patientService = inject(PatientService);
+  private clinicalRecordService = inject(ClinicalRecordService);
   private fb = inject(FormBuilder);
 
   public doctorId: string = '';
@@ -39,6 +48,23 @@ export class DoctorConsultationsComponent implements OnInit, OnDestroy {
   public showPatientInfo: boolean = false;
   public isChatActive: boolean = false;
 
+  // ── Prescription State ─────────────────────────────────────────────
+  public showPrescriptionPanel: boolean = false;
+  public prescriptions: any[] = [];
+  public selectedPrescription: any = null;
+  public prescriptionItems: any[] = [];
+  public isCreatingPrescription: boolean = false;
+  public isAddingItem: boolean = false;
+
+  // ── Lab Results State ──────────────────────────────────────────────
+  public showLabPanel: boolean = false;
+  public labResults: LabResultResponseDto[] = [];
+  public selectedLabResult: LabResultResponseDto | null = null;
+  public labItems: LabItemResponseDto[] = [];
+  public isCreatingLabResult: boolean = false;
+  public isAddingLabItem: boolean = false;
+  public selectedLabFile: File | null = null;
+
   public messageForm: FormGroup = this.fb.group({
     body: ['', Validators.required]
   });
@@ -46,6 +72,61 @@ export class DoctorConsultationsComponent implements OnInit, OnDestroy {
   public statusForm: FormGroup = this.fb.group({
     status: ['', Validators.required]
   });
+
+  // Prescription header form
+  public prescriptionForm: FormGroup = this.fb.group({
+    issuedDate: [new Date().toISOString().split('T')[0], Validators.required],
+    validUntil: [''],
+    diagnosisNotes: [''],
+    pharmacistNotes: [''],
+    status: ['ACTIVE']
+  });
+
+  // Medication item form
+  public itemForm: FormGroup = this.fb.group({
+    drugName: ['', Validators.required],
+    dosage: ['', Validators.required],
+    route: ['ORAL'],
+    frequency: ['', Validators.required],
+    durationDays: [7, [Validators.required, Validators.min(1)]],
+    quantity: [1, [Validators.required, Validators.min(1)]],
+    refillsAllowed: [0],
+    specialInstructions: ['']
+  });
+
+  // Lab Result Form
+  public labForm: FormGroup = this.fb.group({
+    labName: ['', Validators.required],
+    reportType: ['', Validators.required],
+    reportDate: [new Date().toISOString().split('T')[0], Validators.required],
+    status: [LabResultStatus.RECEIVED, Validators.required],
+    overallFlag: [ResultFlag.NORMAL, Validators.required],
+    doctorAnnotation: ['']
+  });
+
+  // Lab Item Form
+  public labItemForm: FormGroup = this.fb.group({
+    testName: ['', Validators.required],
+    value: ['', Validators.required],
+    unit: ['', Validators.required],
+    flag: [LabItemFlag.NORMAL, Validators.required],
+    loincCode: [''],
+    referenceLow: [null],
+    referenceHigh: [null]
+  });
+
+  public routeOptions = [
+    { label: 'Oral', value: 'ORAL' },
+    { label: 'Intravenous (IV)', value: 'IV' },
+    { label: 'Intramuscular (IM)', value: 'IM' },
+    { label: 'Subcutaneous (SC)', value: 'SC' },
+    { label: 'Topical', value: 'TOPICAL' },
+    { label: 'Inhaled', value: 'INHALED' },
+    { label: 'Sublingual', value: 'SUBLINGUAL' },
+    { label: 'Rectal', value: 'RECTAL' },
+    { label: 'Ophthalmic', value: 'OPHTHALMIC' },
+    { label: 'Nasal', value: 'NASAL' }
+  ];
 
   public statusOptions = Object.values(ConsultationStatus);
 
@@ -117,6 +198,7 @@ export class DoctorConsultationsComponent implements OnInit, OnDestroy {
     this.loadMessages(c.consultationId);
     this.startPolling(c.consultationId);
     this.loadPatientDetails(c.patientId);
+    this.loadLabResults();
     this.isChatActive = true;
     this.showPatientInfo = false;
   }
@@ -127,6 +209,171 @@ export class DoctorConsultationsComponent implements OnInit, OnDestroy {
 
   backToInbox(): void {
     this.isChatActive = false;
+    this.showPrescriptionPanel = false;
+    this.showLabPanel = false;
+  }
+
+  // ── Prescription Methods ───────────────────────────────────────────
+  togglePrescriptionPanel(): void {
+    this.showPrescriptionPanel = !this.showPrescriptionPanel;
+    if (this.showPrescriptionPanel && this.selectedConsultation) {
+      this.loadPrescriptions();
+      this.showPatientInfo = false;
+    }
+  }
+
+  loadPrescriptions(): void {
+    if (!this.selectedConsultation) return;
+    this.clinicalRecordService.searchPrescriptions({
+      patientId: this.selectedConsultation.patientId,
+      page: 0,
+      size: 20
+    }).subscribe({
+      next: (page: any) => {
+        // Filter to this consultation if consultationId is available
+        const all = page.content || [];
+        this.prescriptions = all.filter((rx: any) =>
+          rx.consultationId === this.selectedConsultation!.consultationId ||
+          !rx.consultationId
+        );
+        // Auto-select first
+        if (this.prescriptions.length > 0 && !this.selectedPrescription) {
+          this.selectPrescription(this.prescriptions[0]);
+        }
+      },
+      error: () => this.prescriptions = []
+    });
+  }
+
+  selectPrescription(rx: any): void {
+    this.selectedPrescription = rx;
+    this.isCreatingPrescription = false;
+    this.isAddingItem = false;
+    this.loadPrescriptionItems(rx.prescriptionId);
+  }
+
+  loadPrescriptionItems(prescriptionId: string): void {
+    this.clinicalRecordService.getPrescriptionItems(prescriptionId).subscribe({
+      next: (items) => this.prescriptionItems = items,
+      error: () => this.prescriptionItems = []
+    });
+  }
+
+  startNewPrescription(): void {
+    this.isCreatingPrescription = true;
+    this.selectedPrescription = null;
+    this.prescriptionItems = [];
+    this.prescriptionForm.reset({
+      issuedDate: new Date().toISOString().split('T')[0],
+      validUntil: '',
+      diagnosisNotes: '',
+      pharmacistNotes: '',
+      status: 'ACTIVE'
+    });
+  }
+
+  submitPrescription(): void {
+    if (this.prescriptionForm.invalid || !this.selectedConsultation) return;
+    this.uiService.showLoading();
+
+    const payload: any = {
+      ...this.prescriptionForm.value,
+      patientId: this.selectedConsultation.patientId,
+      consultationId: this.selectedConsultation.consultationId
+    };
+    if (!payload.validUntil) delete payload.validUntil;
+
+    this.clinicalRecordService.createPrescription(payload).subscribe({
+      next: (rx) => {
+        this.uiService.hideLoading();
+        this.uiService.showSuccess('Prescription created successfully.');
+        this.isCreatingPrescription = false;
+        this.prescriptions = [rx, ...this.prescriptions];
+        this.selectPrescription(rx);
+      },
+      error: (err) => {
+        this.uiService.hideLoading();
+        this.uiService.showError(err.error?.message || 'Failed to create prescription.');
+      }
+    });
+  }
+
+  startAddItem(): void {
+    this.isAddingItem = true;
+    this.itemForm.reset({
+      drugName: '',
+      dosage: '',
+      route: 'ORAL',
+      frequency: '',
+      durationDays: 7,
+      quantity: 1,
+      refillsAllowed: 0,
+      specialInstructions: ''
+    });
+  }
+
+  submitItem(): void {
+    if (this.itemForm.invalid || !this.selectedPrescription) return;
+    this.uiService.showLoading();
+
+    this.clinicalRecordService.addPrescriptionItem(
+      this.selectedPrescription.prescriptionId,
+      this.itemForm.value
+    ).subscribe({
+      next: (item) => {
+        this.uiService.hideLoading();
+        this.uiService.showSuccess('Medication added.');
+        this.prescriptionItems = [...this.prescriptionItems, item];
+        this.isAddingItem = false;
+        this.itemForm.reset({ route: 'ORAL', durationDays: 7, quantity: 1, refillsAllowed: 0 });
+      },
+      error: (err) => {
+        this.uiService.hideLoading();
+        this.uiService.showError(err.error?.message || 'Failed to add medication.');
+      }
+    });
+  }
+
+  deleteItem(itemId: string): void {
+    if (!confirm('Remove this medication from the prescription?')) return;
+    this.uiService.showLoading();
+    this.clinicalRecordService.deletePrescriptionItem(itemId).subscribe({
+      next: () => {
+        this.uiService.hideLoading();
+        this.uiService.showSuccess('Medication removed.');
+        this.prescriptionItems = this.prescriptionItems.filter(i => i.itemId !== itemId);
+      },
+      error: () => {
+        this.uiService.hideLoading();
+        this.uiService.showError('Failed to remove medication.');
+      }
+    });
+  }
+
+  deletePrescription(prescriptionId: string): void {
+    if (!confirm('Delete this entire prescription?')) return;
+    this.uiService.showLoading();
+    this.clinicalRecordService.deletePrescription(prescriptionId).subscribe({
+      next: () => {
+        this.uiService.hideLoading();
+        this.uiService.showSuccess('Prescription deleted.');
+        this.prescriptions = this.prescriptions.filter(rx => rx.prescriptionId !== prescriptionId);
+        this.selectedPrescription = null;
+        this.prescriptionItems = [];
+      },
+      error: () => {
+        this.uiService.hideLoading();
+        this.uiService.showError('Failed to delete prescription.');
+      }
+    });
+  }
+
+  closePrescriptionPanel(): void {
+    this.showPrescriptionPanel = false;
+    this.isCreatingPrescription = false;
+    this.isAddingItem = false;
+    this.selectedPrescription = null;
+    this.prescriptionItems = [];
   }
 
   loadPatientDetails(patientId: string): void {
@@ -220,6 +467,194 @@ export class DoctorConsultationsComponent implements OnInit, OnDestroy {
         this.uiService.showError('Failed to update status.');
       }
     });
+  }
+
+  // ── Lab Results Methods ─────────────────────────────────────────────
+  toggleLabPanel(): void {
+    this.showLabPanel = !this.showLabPanel;
+    if (this.showLabPanel && this.selectedConsultation) {
+      this.loadLabResults();
+      this.showPatientInfo = false;
+      this.showPrescriptionPanel = false;
+    }
+  }
+
+  loadLabResults(): void {
+    if (!this.selectedConsultation) return;
+    this.clinicalRecordService.searchLabResults({
+      patientId: this.selectedConsultation.patientId,
+      page: 0,
+      size: 20
+    }).subscribe({
+      next: (page: any) => {
+        this.labResults = page.content || [];
+        if (this.labResults.length > 0 && !this.selectedLabResult) {
+          this.selectLabResult(this.labResults[0]);
+        }
+      },
+      error: () => this.labResults = []
+    });
+  }
+
+  selectLabResult(lab: any): void {
+    this.selectedLabResult = lab;
+    this.isCreatingLabResult = false;
+    this.isAddingLabItem = false;
+    this.loadLabItems(lab.labResultId);
+  }
+
+  loadLabItems(labResultId: string): void {
+    this.clinicalRecordService.getLabItems(labResultId).subscribe({
+      next: (items) => this.labItems = items || [],
+      error: () => this.labItems = []
+    });
+  }
+
+  startNewLabResult(): void {
+    this.isCreatingLabResult = true;
+    this.selectedLabResult = null;
+    this.labItems = [];
+    this.selectedLabFile = null;
+    this.labForm.reset({
+      labName: '',
+      reportType: '',
+      reportDate: new Date().toISOString().split('T')[0],
+      status: LabResultStatus.RECEIVED,
+      overallFlag: ResultFlag.NORMAL,
+      doctorAnnotation: ''
+    });
+  }
+
+  onLabFileSelected(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    if (target.files && target.files.length > 0) {
+      this.selectedLabFile = target.files[0];
+    }
+  }
+
+  submitLabResult(): void {
+    if (this.labForm.invalid || !this.selectedConsultation) return;
+    this.uiService.showLoading();
+
+    const payload = {
+      ...this.labForm.value,
+      patientId: this.selectedConsultation.patientId
+    };
+
+    this.clinicalRecordService.createLabResult(payload, this.selectedLabFile || undefined).subscribe({
+      next: (lab) => {
+        this.uiService.hideLoading();
+        this.uiService.showSuccess('Lab result created successfully.');
+        this.isCreatingLabResult = false;
+        this.labResults = [lab, ...this.labResults];
+        this.selectLabResult(lab);
+      },
+      error: (err) => {
+        this.uiService.hideLoading();
+        this.uiService.showError(err.error?.message || 'Failed to create lab result.');
+      }
+    });
+  }
+
+  startAddLabItem(): void {
+    this.isAddingLabItem = true;
+    this.labItemForm.reset({
+      testName: '',
+      value: '',
+      unit: '',
+      flag: LabItemFlag.NORMAL,
+      loincCode: '',
+      referenceLow: null,
+      referenceHigh: null
+    });
+  }
+
+  submitLabItem(): void {
+    if (this.labItemForm.invalid || !this.selectedLabResult) return;
+    this.uiService.showLoading();
+
+    this.clinicalRecordService.addLabItem(
+      this.selectedLabResult.labResultId,
+      this.labItemForm.value
+    ).subscribe({
+      next: (item) => {
+        this.uiService.hideLoading();
+        this.uiService.showSuccess('Lab item added.');
+        this.labItems = [...this.labItems, item];
+        this.isAddingLabItem = false;
+      },
+      error: (err) => {
+        this.uiService.hideLoading();
+        this.uiService.showError(err.error?.message || 'Failed to add lab item.');
+      }
+    });
+  }
+
+  deleteLabItem(itemId: string): void {
+    if (!confirm('Remove this test item from the lab report?')) return;
+    this.uiService.showLoading();
+    this.clinicalRecordService.deleteLabItem(itemId).subscribe({
+      next: () => {
+        this.uiService.hideLoading();
+        this.uiService.showSuccess('Lab item removed.');
+        this.labItems = this.labItems.filter(i => i.itemId !== itemId);
+      },
+      error: () => {
+        this.uiService.hideLoading();
+        this.uiService.showError('Failed to remove lab item.');
+      }
+    });
+  }
+
+  deleteLabResult(labResultId: string): void {
+    if (!confirm('Delete this entire lab result?')) return;
+    this.uiService.showLoading();
+    this.clinicalRecordService.deleteLabResult(labResultId).subscribe({
+      next: () => {
+        this.uiService.hideLoading();
+        this.uiService.showSuccess('Lab result deleted.');
+        this.labResults = this.labResults.filter(lab => lab.labResultId !== labResultId);
+        this.selectedLabResult = null;
+        this.labItems = [];
+      },
+      error: () => {
+        this.uiService.hideLoading();
+        this.uiService.showError('Failed to delete lab result.');
+      }
+    });
+  }
+
+  downloadLabResultFile(fileId: string): void {
+    if (!fileId) return;
+    this.uiService.showLoading();
+    this.clinicalRecordService.downloadFile(fileId).subscribe({
+      next: (blob: Blob) => {
+        this.uiService.hideLoading();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Lab_Report_${fileId.substring(0, 8)}`;
+        a.target = '_blank';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        this.uiService.hideLoading();
+        console.error('Failed to download lab attachment:', err);
+        this.uiService.showError('Could not download lab report file.');
+      }
+    });
+  }
+
+  closeLabPanel(): void {
+    this.showLabPanel = false;
+    this.isCreatingLabResult = false;
+    this.isAddingLabItem = false;
+    this.selectedLabResult = null;
+    this.labItems = [];
+    this.selectedLabFile = null;
   }
 
   private scrollToBottom(): void {

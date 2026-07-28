@@ -19,6 +19,48 @@
     </form>
   </div>
 
+  <!-- Clinic Placement Details Card -->
+  <div *ngIf="selectedDcId && selectedClinic" class="placement-info-card mb-4">
+    <div class="placement-info-header">
+      <div class="placement-clinic-icon">🏥</div>
+      <div class="flex-1">
+        <div class="d-flex align-center gap-2 flex-wrap mb-1">
+          <h3 class="placement-clinic-name m-0">{{ selectedClinic.clinicNameEn || 'Clinic' }}</h3>
+          <span class="placement-role-badge" [class.badge-primary]="selectedClinic.isPrimary" [class.badge-secondary]="!selectedClinic.isPrimary">
+            {{ selectedClinic.isPrimary ? '⭐ Primary Specialist' : '👤 Consultant' }}
+          </span>
+          <span class="placement-status-badge" [class.active-badge]="selectedClinic.isActive" [class.inactive-badge]="!selectedClinic.isActive">
+            <span class="status-dot" [class.dot-on]="selectedClinic.isActive" [class.dot-off]="!selectedClinic.isActive"></span>
+            {{ selectedClinic.isActive ? 'Active' : 'Inactive' }}
+          </span>
+        </div>
+        <div class="placement-branch-line">
+          📍 {{ selectedClinic.branchNameEn || 'Branch' }}
+          <span class="placement-dept-chip">{{ selectedClinic.department || 'General Practice' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="placement-info-grid mt-3">
+      <div class="placement-stat-item">
+        <span class="placement-stat-label">Consultation Fee</span>
+        <span class="placement-stat-value text-success">SAR {{ selectedClinic.consultationFeeSar || '—' }}</span>
+      </div>
+      <div class="placement-stat-item">
+        <span class="placement-stat-label">Joined Since</span>
+        <span class="placement-stat-value">{{ selectedClinic.startDate | date:'mediumDate' }}</span>
+      </div>
+      <div class="placement-stat-item" *ngIf="selectedClinic.endDate">
+        <span class="placement-stat-label">Contract Until</span>
+        <span class="placement-stat-value text-warning">{{ selectedClinic.endDate | date:'mediumDate' }}</span>
+      </div>
+      <div class="placement-stat-item">
+        <span class="placement-stat-label">Total Placements</span>
+        <span class="placement-stat-value">{{ doctorClinics.length }} Clinic(s)</span>
+      </div>
+    </div>
+  </div>
+
   <!-- Main Content Area -->
   <div *ngIf="selectedDcId" class="card border-0 shadow-sm p-4">
     <div class="d-flex flex-wrap gap-3 border-bottom pb-3 mb-4">

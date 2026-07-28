@@ -42,6 +42,7 @@ export class CustomSelectComponent implements ControlValueAccessor {
   @Input() bindLabel: string = 'label';
   @Input() bindValue: string = 'value';
   @Input() customClass: string = '';
+  @Input() placement: 'top' | 'bottom' = 'bottom';
 
   @Output() selectionChange = new EventEmitter<any>();
 

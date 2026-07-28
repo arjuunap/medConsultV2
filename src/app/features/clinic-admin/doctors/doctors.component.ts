@@ -8,7 +8,8 @@ import { UiService } from '../../../core/services/ui.service';
 import { 
   DoctorResponseDto, DoctorClinicResponseDto, DoctorDetailResponse,
   DoctorSpecialtyResponseDto, DoctorLanguageResponseDto, DoctorQualificationResponseDto,
-  DoctorScheduleRequestDto, DoctorScheduleResponseDto, SessionType
+  DoctorScheduleRequestDto, DoctorScheduleResponseDto, SessionType,
+  DoctorLeaveResponseDto
 } from '../../../core/models/doctor.model';
 import { ClinicResponseDto, ClinicBranchResponseDto } from '../../../core/models/clinic.model';
 import { SpecialtyResponseDto, LanguageResponseDto, SubSpecialtyResponseDto } from '../../../core/models/reference.model';
@@ -131,6 +132,11 @@ export class DoctorsComponent implements OnInit {
   public doctorSchedules: DoctorScheduleResponseDto[] = [];
   public isScheduleModalOpen = false;
 
+  // Doctor Leave state
+  public selectedDcForLeave: DoctorClinicResponseDto | null = null;
+  public doctorLeaves: DoctorLeaveResponseDto[] = [];
+  public isLeaveModalOpen = false;
+
   public doctorScheduleForm: FormGroup = this.fb.group({
     dayOfWeek: [1, Validators.required],
     startTime: ['09:00', Validators.required],
@@ -230,6 +236,87 @@ export class DoctorsComponent implements OnInit {
   getDayName(dayOfWeek: number): string {
     const days = ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     return days[dayOfWeek] || `Day ${dayOfWeek}`;
+  }
+
+  // ── DOCTOR LEAVE MANAGEMENT (Clinic Side) ──────────────────────────────
+  openLeaveModal(dc: DoctorClinicResponseDto): void {
+    this.selectedDcForLeave = dc;
+    this.isLeaveModalOpen = true;
+    this.loadDcLeaves(dc.dcId);
+  }
+
+  closeLeaveModal(): void {
+    this.isLeaveModalOpen = false;
+    this.selectedDcForLeave = null;
+    this.doctorLeaves = [];
+  }
+
+  loadDcLeaves(dcId: string): void {
+    this.uiService.showLoading();
+    this.doctorService.getDcLeave(dcId).subscribe({
+      next: (data) => {
+        this.doctorLeaves = data;
+        this.uiService.hideLoading();
+      },
+      error: () => {
+        this.doctorLeaves = [];
+        this.uiService.hideLoading();
+      }
+    });
+  }
+
+  approveLeave(leave: DoctorLeaveResponseDto): void {
+    if (!confirm(`Approve leave for ${this.getDoctorName(this.selectedDcForLeave?.doctorId || '')} from ${leave.startDate} to ${leave.endDate}?`)) return;
+    this.uiService.showLoading();
+    const payload = {
+      dcId: leave.dcId,
+      leaveType: leave.leaveType,
+      startDate: leave.startDate,
+      endDate: leave.endDate,
+      isApproved: true,
+      notes: leave.notes
+    };
+    this.doctorService.updateLeave(leave.leaveId, payload).subscribe({
+      next: () => {
+        this.uiService.showSuccess('Leave request approved.');
+        this.loadDcLeaves(this.selectedDcForLeave!.dcId);
+      },
+      error: (err) => {
+        this.uiService.hideLoading();
+        this.uiService.showError(err.error?.message || 'Failed to approve leave.');
+      }
+    });
+  }
+
+  rejectLeave(leave: DoctorLeaveResponseDto): void {
+    if (!confirm(`Reject this leave request from ${leave.startDate} to ${leave.endDate}?`)) return;
+    this.uiService.showLoading();
+    const payload = {
+      dcId: leave.dcId,
+      leaveType: leave.leaveType,
+      startDate: leave.startDate,
+      endDate: leave.endDate,
+      isApproved: false,
+      notes: leave.notes
+    };
+    this.doctorService.updateLeave(leave.leaveId, payload).subscribe({
+      next: () => {
+        this.uiService.showSuccess('Leave request rejected.');
+        this.loadDcLeaves(this.selectedDcForLeave!.dcId);
+      },
+      error: (err) => {
+        this.uiService.hideLoading();
+        this.uiService.showError(err.error?.message || 'Failed to reject leave.');
+      }
+    });
+  }
+
+  get pendingLeavesCount(): number {
+    return this.doctorLeaves.filter(l => !l.isApproved).length;
+  }
+
+  get approvedLeavesCount(): number {
+    return this.doctorLeaves.filter(l => l.isApproved === true).length;
   }
 
   ngOnInit(): void {
