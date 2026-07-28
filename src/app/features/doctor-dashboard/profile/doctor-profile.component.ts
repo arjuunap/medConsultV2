@@ -7,7 +7,7 @@ import { UiService } from '../../../core/services/ui.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ClinicService } from '../../../core/services/clinic.service';
 import { environment } from '../../../../environments/environment';
-import { 
+import {
   DoctorDetailResponse, DoctorTitle,
   DoctorSpecialtyResponseDto, DoctorLanguageResponseDto, DoctorQualificationResponseDto,
   DoctorClinicResponseDto
@@ -89,10 +89,10 @@ export class DoctorProfileComponent implements OnInit {
 
   // Specialty Form
   public specialtyForm: FormGroup = this.fb.group({
-    doctorId:[''],
+    doctorId: [''],
     specialtyId: ['', Validators.required],
     subSpecialtyId: [''],
-    isPrimary: [false]
+    isPrimary: [false],
   });
 
   // Language Form
@@ -118,6 +118,7 @@ export class DoctorProfileComponent implements OnInit {
   loadReferences(): void {
     this.referenceService.getAllSpecialties().subscribe(data => this.globalSpecialties = data);
     this.referenceService.getAllLanguages().subscribe(data => this.globalLanguages = data);
+    console.log(this.globalLanguages)
   }
 
   loadDoctorData(): void {
@@ -144,7 +145,7 @@ export class DoctorProfileComponent implements OnInit {
             reviewCount: 0,
             consultationFeeSar: 150,
             isActive: true,
-            docterId:''
+            docterId: ''
           };
 
           this.doctorService.addDoctor(initPayload).subscribe({
@@ -170,7 +171,7 @@ export class DoctorProfileComponent implements OnInit {
 
   fetchFullProfile(doctorId: string): void {
     this.doctorService.getDoctorProfile(doctorId).subscribe({
-      
+
       next: (profile) => {
         console.log(profile)
         if (profile && profile.doctor) {
@@ -331,7 +332,7 @@ export class DoctorProfileComponent implements OnInit {
 
     this.doctorService.removeSpecialty(specialtyId).subscribe({
       next: () => {
-        
+
         this.uiService.showSuccess('Specialty removed.');
         const docId = this.doctorProfile?.doctor?.doctorId || this.doctorProfile?.doctorId;
         if (docId) {
@@ -467,7 +468,7 @@ export class DoctorProfileComponent implements OnInit {
     const s = this.globalSpecialties.find(x => x.specialtyId === specialtyId);
     return s ? s.nameEn : specialtyId;
   }
-  
+
   getLanguageName(languageId: string): string {
     const l = this.globalLanguages.find(x => x.languageId === languageId);
     return l ? l.nameEn : languageId;

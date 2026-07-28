@@ -9,17 +9,15 @@
         </div>
         <button class="btn btn-primary btn-sm" (click)="openCreateModal()">+ Open Case</button>
       </div>
-      
+
       <div class="inbox-list">
         <div *ngIf="caseRooms.length === 0" class="no-conversations">
           No active case rooms available.
         </div>
-        
-        <div *ngFor="let room of caseRooms" 
-             class="inbox-item-card" 
-             [class.active]="selectedRoom?.caseRoomId === room.caseRoomId"
-             (click)="selectRoom(room)">
-          
+
+        <div *ngFor="let room of caseRooms" class="inbox-item-card"
+          [class.active]="selectedRoom?.caseRoomId === room.caseRoomId" (click)="selectRoom(room)">
+
           <div class="avatar-circle">
             {{ room.patientName.charAt(0).toUpperCase() }}
           </div>
@@ -27,11 +25,12 @@
           <div class="inbox-item-details">
             <div class="inbox-item-top">
               <strong class="patient-name truncate" style="max-width: 140px;">{{ room.title }}</strong>
-              <span class="status-indicator-dot" [ngClass]="room.status === 'ACTIVE' ? 'dot-success' : 'dot-secondary'"></span>
+              <span class="status-indicator-dot"
+                [ngClass]="room.status === 'ACTIVE' ? 'dot-success' : 'dot-secondary'"></span>
             </div>
-            
+
             <div class="subject-snippet">Patient: {{ room.patientName }}</div>
-            
+
             <div class="d-flex justify-between align-center mt-2 flex-wrap gap-1">
               <span class="opened-time">By Dr. {{ room.openedByName }}</span>
               <span class="badge" [ngClass]="{
@@ -57,17 +56,15 @@
           <div>
             <h3 class="chat-subject-title">{{ selectedRoom.title }}</h3>
             <div class="chat-patient-subtitle">
-              Patient: <strong>{{ selectedRoom.patientName }}</strong> • 
+              Patient: <strong>{{ selectedRoom.patientName }}</strong> •
               Opened by: <strong>Dr. {{ selectedRoom.openedByName }}</strong>
             </div>
-            
+
             <!-- Room Members List -->
             <div class="room-members-bar mt-2 d-flex align-center gap-2 flex-wrap">
               <span class="fs-xs text-muted fw-bold">Case Specialists:</span>
-              <a *ngFor="let member of roomMembers" 
-                 [routerLink]="['/doctors', member.doctorId]" 
-                 class="member-doctor-chip"
-                 title="Click to view profile">
+              <a *ngFor="let member of roomMembers" [routerLink]="['/doctors', member.doctorId]"
+                class="member-doctor-chip" title="Click to view profile">
                 👨‍⚕️ {{ member.doctorName }}
               </a>
             </div>
@@ -77,36 +74,30 @@
             </p>
           </div>
         </div>
-        
+
         <!-- Status Update Action -->
         <div class="header-actions flex-shrink-0">
           <form [formGroup]="statusForm" class="status-update-form">
             <div class="custom-select-wrapper">
-              <app-custom-select 
-                formControlName="status" 
-                [options]="statusSelectOptions" 
-                bindLabel="label" 
-                bindValue="value" 
-                size="sm"
-                placeholder="Select status">
+              <app-custom-select formControlName="status" [options]="statusSelectOptions" bindLabel="label"
+                bindValue="value" size="sm" placeholder="Select status">
               </app-custom-select>
             </div>
-            <button class="btn btn-primary btn-sm btn-update-status" type="button" (click)="updateRoomStatus()">Update</button>
+            <button class="btn btn-primary btn-sm btn-update-status" type="button"
+              (click)="updateRoomStatus()">Update</button>
           </form>
         </div>
       </div>
-      
+
       <!-- Post stream / message list -->
       <div id="caseroom-posts-container" class="message-stream">
         <div *ngIf="posts.length === 0" class="no-messages-prompt">
           No posts in this case room yet. Start the collaborative discussion below!
         </div>
-        
-        <div *ngFor="let post of posts" 
-             class="message-bubble-wrapper"
-             [class.sent-by-me]="post.authorId === authService.currentUser()?.userId"
-             style="max-width: 82%;">
-          
+
+        <div *ngFor="let post of posts" class="message-bubble-wrapper"
+          [class.sent-by-me]="post.authorId === authService.currentUser()?.userId" style="max-width: 82%;">
+
           <div class="message-meta">
             <span class="sender-name">Dr. {{ post.authorName }}</span>
             <span class="sent-time">• {{ post.postedAt | date:'mediumTime' }}</span>
@@ -116,27 +107,26 @@
               'badge-primary-soft': post.postType === 'FILE'
             }">{{ post.postType }}</span>
           </div>
-          
-          <div class="message-bubble post-bubble-card"
-               [ngClass]="{
+
+          <div class="message-bubble post-bubble-card" [ngClass]="{
                  'post-action-item': post.postType === 'ACTION_ITEM',
                  'post-file': post.postType === 'FILE',
                  'post-note': post.postType === 'NOTE'
                }">
             <div class="post-body-text">{{ post.body }}</div>
-            
+
             <!-- File attachment download strip -->
             <div *ngIf="post.fileId" class="mt-2 pt-2 border-top">
-              <button type="button" class="btn btn-outline btn-xs d-inline-flex align-center gap-1 bg-light text-teal" 
-                      (click)="downloadChatFile(post.fileId, post.body || 'attachment')">
+              <button type="button" class="btn btn-outline btn-xs d-inline-flex align-center gap-1 bg-light text-teal"
+                (click)="downloadChatFile(post.fileId, post.body || 'attachment')">
                 <span>📎 Attachment:</span>
                 <strong>Download File</strong>
               </button>
             </div>
 
             <!-- Action item details block -->
-            <div *ngIf="post.postType === 'ACTION_ITEM' && post.actionAssignedToName" 
-                 class="action-item-details-box mt-2">
+            <div *ngIf="post.postType === 'ACTION_ITEM' && post.actionAssignedToName"
+              class="action-item-details-box mt-2">
               <div class="d-flex justify-between align-center flex-wrap gap-2">
                 <span><strong>👤 Assignee:</strong> Dr. {{ post.actionAssignedToName }}</span>
                 <span><strong>📅 Due:</strong> {{ post.actionDueDate }}</span>
@@ -149,50 +139,48 @@
 
       <!-- Text reply block -->
       <div class="chat-footer-input" *ngIf="selectedRoom.status !== 'RESOLVED' && selectedRoom.status !== 'ARCHIVED'">
-        
+
         <!-- File staging preview strip -->
-        <div *ngIf="chatFile" class="d-flex align-center gap-2 mb-2 p-2 bg-light rounded border" style="max-width: 400px; margin-left: auto; border-color: var(--teal);">
-          <span class="fs-xs text-muted">📄 staged: <strong>{{ chatFile.name }}</strong> ({{ chatFile.size | number }} bytes)</span>
-          <button type="button" class="btn btn-outline btn-xs text-danger" style="padding: 2px 6px;" (click)="clearChatFile()">Remove</button>
+        <div *ngIf="chatFile" class="d-flex align-center gap-2 mb-2 p-2 bg-light rounded border"
+          style="max-width: 400px; margin-left: auto; border-color: var(--teal);">
+          <span class="fs-xs text-muted">📄 staged: <strong>{{ chatFile.name }}</strong> ({{ chatFile.size | number }}
+            bytes)</span>
+          <button type="button" class="btn btn-outline btn-xs text-danger" style="padding: 2px 6px;"
+            (click)="clearChatFile()">Remove</button>
         </div>
 
         <form [formGroup]="postForm" (ngSubmit)="submitPost()" class="chat-form align-start gap-2">
           <div style="width: 140px; flex-shrink: 0;">
-            <app-custom-select 
-              formControlName="postType" 
-              [options]="postTypeSelectOptions" 
-              bindLabel="label" 
-              bindValue="value" 
-              placeholder="Post Type"
-              placement="top">
+            <app-custom-select formControlName="postType" [options]="postTypeSelectOptions" bindLabel="label"
+              bindValue="value" placeholder="Post Type" placement="top">
             </app-custom-select>
           </div>
-          <textarea 
-            formControlName="body" 
-            class="chat-text-input flex-1 m-0" 
-            placeholder="Share clinical notes, assign action items, or post files..." 
-            rows="2" 
-            style="resize: none; border-radius: 12px;"
-          ></textarea>
-          
+          <textarea formControlName="body" class="chat-text-input flex-1 m-0"
+            placeholder="Share clinical notes, assign action items, or post files..." rows="2"
+            style="resize: none; border-radius: 12px;"></textarea>
+
           <!-- Attachment action trigger -->
           <div class="d-flex flex-col gap-1 flex-shrink-0">
             <input type="file" #chatFileInput (change)="onChatFileSelected($event)" style="display: none;">
-            <button type="button" class="btn btn-outline d-flex align-center justify-center" style="height: 50px; width: 50px; border-radius: 12px; font-size: 1.25rem; padding: 0;" (click)="chatFileInput.click()" title="Attach File">
+            <!-- <button type="button" class="btn btn-outline d-flex align-center justify-center"
+              style="height: 50px; width: 50px; border-radius: 12px; font-size: 1.25rem; padding: 0;"
+              (click)="chatFileInput.click()" title="Attach File">
               📎
-            </button>
+            </button> -->
           </div>
 
-          <button type="submit" class="btn-send-message px-4" style="border-radius: 12px; height: 50px;" [disabled]="!postForm.get('body')?.value && !chatFile">Post</button>
+          <button type="submit" class="btn-send-message px-4" style="border-radius: 12px; height: 50px;"
+            [disabled]="!postForm.get('body')?.value && !chatFile">Post</button>
         </form>
       </div>
-      
+
       <!-- Resolved / Archived Block -->
       <div class="chat-footer-closed" *ngIf="selectedRoom.status === 'RESOLVED' || selectedRoom.status === 'ARCHIVED'">
-        🔒 This Collaborative Case Room is marked as <strong>{{ selectedRoom.status }}</strong>. Discussion is read-only.
+        🔒 This Collaborative Case Room is marked as <strong>{{ selectedRoom.status }}</strong>. Discussion is
+        read-only.
       </div>
     </div>
-    
+
     <!-- Empty State -->
     <div class="no-selection-container" *ngIf="!selectedRoom">
       <div class="no-selection-placeholder">
@@ -213,16 +201,11 @@
     </div>
     <form [formGroup]="createForm" (ngSubmit)="submitCreateRoom()">
       <div class="modal-body">
-        
+
         <div class="form-group mb-3">
           <label class="form-label">Select Patient Case *</label>
-          <app-custom-select 
-            formControlName="patientId" 
-            [options]="patientSelectOptions" 
-            bindLabel="label" 
-            bindValue="value" 
-            [searchable]="true" 
-            placeholder="-- Choose Patient --">
+          <app-custom-select formControlName="patientId" [options]="patientSelectOptions" bindLabel="label"
+            bindValue="value" [searchable]="true" placeholder="-- Choose Patient --">
           </app-custom-select>
           <div class="error-text" *ngIf="createForm.get('patientId')?.touched && createForm.get('patientId')?.invalid">
             Patient selection is required.
@@ -231,7 +214,8 @@
 
         <div class="form-group mb-3">
           <label class="form-label">Case Room Title *</label>
-          <input type="text" class="form-control" formControlName="title" placeholder="e.g. Consultation on unexplained chronic fatigue">
+          <input type="text" class="form-control" formControlName="title"
+            placeholder="e.g. Consultation on unexplained chronic fatigue">
           <div class="error-text" *ngIf="createForm.get('title')?.touched && createForm.get('title')?.invalid">
             Title is required.
           </div>
@@ -239,22 +223,26 @@
 
         <div class="form-group mb-3">
           <label class="form-label">Clinical Background Description</label>
-          <textarea class="form-control" formControlName="description" rows="3" placeholder="Provide preliminary case details, symptoms, and diagnostic observations..."></textarea>
+          <textarea class="form-control" formControlName="description" rows="3"
+            placeholder="Provide preliminary case details, symptoms, and diagnostic observations..."></textarea>
         </div>
 
         <!-- Multi-select Doctor Invite Section -->
         <div class="form-group mb-3">
           <label class="form-label d-flex justify-between align-center">
             <span>Invite Specialists & Colleagues</span>
-            <span class="badge badge-outline" *ngIf="selectedDoctorIds.length > 0">{{ selectedDoctorIds.length }} selected</span>
+            <span class="badge badge-outline" *ngIf="selectedDoctorIds.length > 0">{{ selectedDoctorIds.length }}
+              selected</span>
           </label>
           <div class="doctor-search-box mb-2">
-            <input type="text" [(ngModel)]="doctorSearchTerm" [ngModelOptions]="{standalone: true}" placeholder="🔍 Search doctors by name..." class="form-control form-control-sm">
+            <input type="text" [(ngModel)]="doctorSearchTerm" [ngModelOptions]="{standalone: true}"
+              placeholder="🔍 Search doctors by name..." class="form-control form-control-sm">
           </div>
           <div class="doctors-multi-select-list">
             <div *ngFor="let doc of filteredDoctors" class="doctor-checkbox-item">
               <label class="d-flex align-center gap-2 cursor-pointer">
-                <input type="checkbox" [checked]="isDoctorSelected(doc.doctorId)" (change)="toggleDoctorSelection(doc.doctorId)">
+                <input type="checkbox" [checked]="isDoctorSelected(doc.doctorId)"
+                  (change)="toggleDoctorSelection(doc.doctorId)">
                 <span class="doctor-checkbox-name">Dr. {{ doc.fullName }}</span>
               </label>
             </div>
@@ -266,12 +254,8 @@
 
         <div class="form-group m-0">
           <label class="form-label">Priority Level *</label>
-          <app-custom-select 
-            formControlName="priority" 
-            [options]="prioritySelectOptions" 
-            bindLabel="label" 
-            bindValue="value" 
-            placeholder="Select priority">
+          <app-custom-select formControlName="priority" [options]="prioritySelectOptions" bindLabel="label"
+            bindValue="value" placeholder="Select priority">
           </app-custom-select>
         </div>
       </div>
