@@ -1,18 +1,21 @@
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CaseRoomService } from '../../../../core/services/case-room.service';
 import { UiService } from '../../../../core/services/ui.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { AppointmentService } from '../../../../core/services/appointment.service';
 import { ConsultationService } from '../../../../core/services/consultation.service';
 import { DoctorService } from '../../../../core/services/doctor.service';
+import { ClinicalRecordService } from '../../../../core/services/clinical-record.service';
 import { 
   CaseRoomResponseDto, 
   CaseRoomPostResponseDto, 
   CasePriority,
   CaseRoomStatus,
-  PostType
+  PostType,
+  CaseRoomMemberResponseDto
 } from '../../../../core/models/case-room.model';
 import { CustomSelectComponent } from '../../../../shared/components/custom-select/custom-select.component';
 import { forkJoin } from 'rxjs';
@@ -20,7 +23,7 @@ import { forkJoin } from 'rxjs';
 @Component({
   selector: 'app-case-rooms',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, CustomSelectComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, CustomSelectComponent, RouterLink],
   templateUrl: './case-rooms.component.html',
   styleUrls: ['./case-rooms.component.css']
 })
@@ -31,14 +34,17 @@ export class CaseRoomsComponent implements OnInit, OnDestroy {
   private appointmentService = inject(AppointmentService);
   private consultationService = inject(ConsultationService);
   private doctorService = inject(DoctorService);
+  private clinicalRecordService = inject(ClinicalRecordService);
   private fb = inject(FormBuilder);
 
   public isChatActive = false;
   public caseRooms: CaseRoomResponseDto[] = [];
   public selectedRoom: CaseRoomResponseDto | null = null;
   public posts: CaseRoomPostResponseDto[] = [];
+  public roomMembers: CaseRoomMemberResponseDto[] = [];
   
   public patientsList: { patientId: string, patientName: string }[] = [];
+  public chatFile: File | null = null;
 
   get patientSelectOptions() {
     return this.patientsList.map(p => ({
@@ -222,6 +228,11 @@ export class CaseRoomsComponent implements OnInit, OnDestroy {
   selectRoom(room: CaseRoomResponseDto): void {
     this.selectedRoom = room;
     this.statusForm.patchValue({ status: room.status });
+    this.roomMembers = [];
+    this.caseRoomService.getMembersForRoom(room.caseRoomId).subscribe({
+      next: (mems) => this.roomMembers = mems || [],
+      error: () => this.roomMembers = []
+    });
     this.loadPosts(room.caseRoomId);
     this.startPolling(room.caseRoomId);
     this.isChatActive = true;
@@ -265,28 +276,96 @@ export class CaseRoomsComponent implements OnInit, OnDestroy {
     }
   }
 
-  submitPost(): void {
-    if (this.postForm.invalid || !this.selectedRoom) return;
-    
+  onChatFileSelected(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    if (target.files && target.files.length > 0) {
+      this.chatFile = target.files[0];
+    }
+  }
+
+  clearChatFile(): void {
+    this.chatFile = null;
+  }
+
+  downloadChatFile(fileId: string, filename: string): void {
+    if (!fileId) return;
     this.uiService.showLoading();
-    const val = this.postForm.value;
-    
-    this.caseRoomService.createPost({
-      caseRoomId: this.selectedRoom.caseRoomId,
-      postType: val.postType,
-      body: val.body
-    }).subscribe({
-      next: (post) => {
+    this.clinicalRecordService.downloadFile(fileId).subscribe({
+      next: (blob) => {
         this.uiService.hideLoading();
-        this.posts.push(post); // Append to bottom
-        this.postForm.reset({ postType: PostType.NOTE });
-        this.scrollToBottom();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename || 'attachment';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
       },
       error: () => {
         this.uiService.hideLoading();
-        this.uiService.showError('Failed to post');
+        this.uiService.showError('Failed to download attachment.');
       }
     });
+  }
+
+  submitPost(): void {
+    if (!this.selectedRoom) return;
+    
+    const val = this.postForm.value;
+    if (!val.body && !this.chatFile) return;
+
+    this.uiService.showLoading();
+
+    if (this.chatFile) {
+      // Upload file first
+      this.caseRoomService.uploadFile(this.chatFile, 'MEDICAL_RECORD', this.selectedRoom.patientId).subscribe({
+        next: (fileMeta) => {
+          const postType = PostType.FILE;
+          const body = val.body || this.chatFile!.name;
+
+          this.caseRoomService.createPost({
+            caseRoomId: this.selectedRoom!.caseRoomId,
+            postType: postType,
+            body: body,
+            fileId: fileMeta.fileId
+          }).subscribe({
+            next: (post) => {
+              this.uiService.hideLoading();
+              this.posts.push(post); // Append to bottom
+              this.postForm.reset({ postType: PostType.NOTE });
+              this.chatFile = null;
+              this.scrollToBottom();
+            },
+            error: () => {
+              this.uiService.hideLoading();
+              this.uiService.showError('Failed to send file post.');
+            }
+          });
+        },
+        error: () => {
+          this.uiService.hideLoading();
+          this.uiService.showError('Failed to upload file.');
+        }
+      });
+    } else {
+      this.caseRoomService.createPost({
+        caseRoomId: this.selectedRoom.caseRoomId,
+        postType: val.postType || PostType.NOTE,
+        body: val.body
+      }).subscribe({
+        next: (post) => {
+          this.uiService.hideLoading();
+          this.posts.push(post); // Append to bottom
+          this.postForm.reset({ postType: PostType.NOTE });
+          this.scrollToBottom();
+        },
+        error: () => {
+          this.uiService.hideLoading();
+          this.uiService.showError('Failed to post message.');
+        }
+      });
+    }
   }
 
   updateRoomStatus(): void {

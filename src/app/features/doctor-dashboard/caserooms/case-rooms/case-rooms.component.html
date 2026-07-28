@@ -60,6 +60,18 @@
               Patient: <strong>{{ selectedRoom.patientName }}</strong> • 
               Opened by: <strong>Dr. {{ selectedRoom.openedByName }}</strong>
             </div>
+            
+            <!-- Room Members List -->
+            <div class="room-members-bar mt-2 d-flex align-center gap-2 flex-wrap">
+              <span class="fs-xs text-muted fw-bold">Case Specialists:</span>
+              <a *ngFor="let member of roomMembers" 
+                 [routerLink]="['/doctors', member.doctorId]" 
+                 class="member-doctor-chip"
+                 title="Click to view profile">
+                👨‍⚕️ {{ member.doctorName }}
+              </a>
+            </div>
+
             <p class="case-description" *ngIf="selectedRoom.description">
               📝 {{ selectedRoom.description }}
             </p>
@@ -113,6 +125,15 @@
                }">
             <div class="post-body-text">{{ post.body }}</div>
             
+            <!-- File attachment download strip -->
+            <div *ngIf="post.fileId" class="mt-2 pt-2 border-top">
+              <button type="button" class="btn btn-outline btn-xs d-inline-flex align-center gap-1 bg-light text-teal" 
+                      (click)="downloadChatFile(post.fileId, post.body || 'attachment')">
+                <span>📎 Attachment:</span>
+                <strong>Download File</strong>
+              </button>
+            </div>
+
             <!-- Action item details block -->
             <div *ngIf="post.postType === 'ACTION_ITEM' && post.actionAssignedToName" 
                  class="action-item-details-box mt-2">
@@ -128,7 +149,14 @@
 
       <!-- Text reply block -->
       <div class="chat-footer-input" *ngIf="selectedRoom.status !== 'RESOLVED' && selectedRoom.status !== 'ARCHIVED'">
-        <form [formGroup]="postForm" (ngSubmit)="submitPost()" class="chat-form align-start">
+        
+        <!-- File staging preview strip -->
+        <div *ngIf="chatFile" class="d-flex align-center gap-2 mb-2 p-2 bg-light rounded border" style="max-width: 400px; margin-left: auto; border-color: var(--teal);">
+          <span class="fs-xs text-muted">📄 staged: <strong>{{ chatFile.name }}</strong> ({{ chatFile.size | number }} bytes)</span>
+          <button type="button" class="btn btn-outline btn-xs text-danger" style="padding: 2px 6px;" (click)="clearChatFile()">Remove</button>
+        </div>
+
+        <form [formGroup]="postForm" (ngSubmit)="submitPost()" class="chat-form align-start gap-2">
           <div style="width: 140px; flex-shrink: 0;">
             <app-custom-select 
               formControlName="postType" 
@@ -146,7 +174,16 @@
             rows="2" 
             style="resize: none; border-radius: 12px;"
           ></textarea>
-          <button type="submit" class="btn-send-message px-4" style="border-radius: 12px; height: 50px;" [disabled]="postForm.invalid">Post</button>
+          
+          <!-- Attachment action trigger -->
+          <div class="d-flex flex-col gap-1 flex-shrink-0">
+            <input type="file" #chatFileInput (change)="onChatFileSelected($event)" style="display: none;">
+            <button type="button" class="btn btn-outline d-flex align-center justify-center" style="height: 50px; width: 50px; border-radius: 12px; font-size: 1.25rem; padding: 0;" (click)="chatFileInput.click()" title="Attach File">
+              📎
+            </button>
+          </div>
+
+          <button type="submit" class="btn-send-message px-4" style="border-radius: 12px; height: 50px;" [disabled]="!postForm.get('body')?.value && !chatFile">Post</button>
         </form>
       </div>
       

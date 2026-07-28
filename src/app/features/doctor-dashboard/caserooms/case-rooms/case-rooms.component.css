@@ -602,3 +602,35 @@
   border-color: var(--teal);
   box-shadow: 0 0 0 3px var(--teal-glow);
 }
+
+/* Case Room Members Doctor Chips */
+.room-members-bar {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.member-doctor-chip {
+  background-color: var(--teal-l, #E6F7F2);
+  color: var(--teal-d, #0F6E56);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(29, 158, 117, 0.15);
+  text-decoration: none;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.member-doctor-chip:hover {
+  background-color: var(--teal, #0D9488);
+  color: var(--white) !important;
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 8px rgba(29, 158, 117, 0.12);
+}
+

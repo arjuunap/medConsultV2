@@ -68,4 +68,15 @@ export class CaseRoomService {
   removeMember(memberId: string): Observable<CaseRoomMemberResponseDto> {
     return this.http.delete<CaseRoomMemberResponseDto>(`${this.apiUrl}/members/${memberId}`);
   }
+
+  // --- General Files Upload ---
+  uploadFile(file: File, category: string = 'OTHER', patientId?: string): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('category', category);
+    if (patientId) {
+      formData.append('patientId', patientId);
+    }
+    return this.http.post<any>(`${environment.apiUrl}/api/medconsult/files/`, formData);
+  }
 }
