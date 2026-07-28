@@ -78,28 +78,33 @@
               <span>Role Designation:</span>
               <span>{{ dc.isPrimary ? '⭐ Primary Specialist' : 'Consultant' }}</span>
             </div>
+            <div class="d-flex justify-between fs-xs text-muted pt-1">
+              <span>Roster Since:</span>
+              <span>{{ dc.startDate | date:'mediumDate' }}</span>
+            </div>
           </div>
         </div>
 
-        <div class="d-flex justify-between align-center pt-2 border-top gap-2 flex-wrap">
-          <span class="fs-xs text-muted">Since {{ dc.startDate | date:'mediumDate' }}</span>
+        <!-- Action Grid Layout for Doctor Cards -->
+        <div class="doctor-card-actions-grid pt-3 border-top">
+          <!-- View Doctor Profile Details -->
+          <a [routerLink]="['/doctors', dc.doctorId]" class="btn btn-outline btn-sm d-flex align-center justify-center gap-1" style="text-decoration: none;" title="View Profile Details">
+            👤 Profile
+          </a>
 
-          <div class="d-flex gap-2">
-            <!-- View Leaves Action (Clinic can approve/reject) -->
-            <button class="btn btn-outline btn-sm leave-btn" (click)="openLeaveModal(dc)">
-              🏖️ Leaves
-            </button>
+          <!-- View Schedule Action -->
+          <button class="btn btn-outline btn-sm d-flex align-center justify-center gap-1" (click)="openScheduleModal(dc)">
+            📅 Schedule
+          </button>
 
-            <!-- View Schedule Action -->
-            <button class="btn btn-outline btn-sm" (click)="openScheduleModal(dc)">
-              📅 Schedule
-            </button>
+          <!-- View Leaves Action (Clinic can approve/reject) -->
+          <button class="btn btn-outline btn-sm leave-btn d-flex align-center justify-center gap-1" (click)="openLeaveModal(dc)">
+            🏖️ Leaves
+          </button>
 
-            <button (click)="unlinkDoctor(dc.dcId)" class="btn btn-outline btn-danger btn-sm">
-              Unassign
-            </button>
-          </div>
-
+          <button (click)="unlinkDoctor(dc.dcId)" class="btn btn-outline btn-danger btn-sm d-flex align-center justify-center gap-1">
+            ❌ Unassign
+          </button>
         </div>
       </div>
     </div>

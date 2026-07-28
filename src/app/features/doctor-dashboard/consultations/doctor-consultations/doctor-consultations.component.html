@@ -4,21 +4,21 @@
     <div class="inbox-sidebar">
       <div class="inbox-header">
         <h3 class="inbox-title">Inbox</h3>
-        <span class="inbox-count-badge">{{ consultations.length }} active</span>
+        <span class="inbox-count-badge">{{ filteredConsultations.length }} active</span>
       </div>
 
-      <!-- Quick Mock Search Bar for Visual Polish -->
+      <!-- Search Bar -->
       <div class="inbox-search-bar">
         <span class="search-icon">🔍</span>
-        <input type="text" placeholder="Search consultations..." class="search-input" disabled>
+        <input type="text" [(ngModel)]="searchQuery" placeholder="Search consultations..." class="search-input">
       </div>
 
       <div class="inbox-list">
-        <div *ngIf="consultations.length === 0" class="no-conversations">
-          No consultations assigned to you.
+        <div *ngIf="filteredConsultations.length === 0" class="no-conversations">
+          No consultations found.
         </div>
         
-        <div *ngFor="let c of consultations" 
+        <div *ngFor="let c of filteredConsultations" 
              class="inbox-item-card" 
              [class.active]="selectedConsultation?.consultationId === c.consultationId"
              (click)="selectConsultation(c)">

@@ -59,6 +59,11 @@
         placeholder="-- Select Specialist Doctor --"
         (selectionChange)="onDoctorChange()">
       </app-custom-select>
+      <div *ngIf="wizardForm.get('doctorId')?.value" class="mt-2 text-right">
+        <a [routerLink]="['/doctors', wizardForm.get('doctorId')?.value]" class="btn btn-outline btn-xs" style="text-decoration: none; padding: 4px 10px; font-size: 0.8rem; border-radius: var(--radius-sm);">
+          👤 View Doctor Profile, Biography &amp; Specialties
+        </a>
+      </div>
     </div>
 
     <!-- Step 2: Select Clinic Location -->

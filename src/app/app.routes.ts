@@ -67,6 +67,17 @@ export const routes: Routes = [
     ]
   },
   {
+    path: '',
+    component: LayoutComponent,
+    canActivate: [authGuard],
+    children: [
+      {
+        path: 'doctors/:id',
+        loadComponent: () => import('./features/doctor-detail/doctor-detail.component').then(m => m.DoctorDetailComponent)
+      }
+    ]
+  },
+  {
     path: 'doctor',
     component: LayoutComponent,
     canActivate: [authGuard, roleGuard([UserRole.DOCTOR])],

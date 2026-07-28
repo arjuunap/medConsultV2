@@ -1,0 +1,325 @@
+/* ═══════════════════════════════════════════════════════════════
+   DOCTOR DETAILS PROFILE VIEW STYLE SHEETS
+   ═══════════════════════════════════════════════════════════════ */
+
+.doctor-detail-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* Detail Header Navigation */
+.detail-header-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.back-button {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+}
+
+.page-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 1.4rem;
+  color: var(--dark);
+  margin: 0;
+}
+
+/* Profile Banner/Hero Card */
+.profile-hero-card {
+  background: linear-gradient(135deg, var(--teal, #0D9488) 0%, var(--teal-m, #0F6E56) 100%);
+  border-radius: var(--radius-lg);
+  padding: 36px;
+  color: var(--white);
+  box-shadow: var(--shadow-md);
+  margin-bottom: 24px;
+}
+
+.doctor-big-avatar {
+  font-size: 3.2rem;
+  width: 90px;
+  height: 90px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 3px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.doctor-display-name {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 2.2rem;
+  margin: 8px 0;
+  letter-spacing: -0.02em;
+  color: var(--white);
+}
+
+.stars-gold {
+  color: #FBBF24;
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+.rating-count {
+  font-size: 0.88rem;
+  opacity: 0.9;
+  margin-left: 8px;
+}
+
+/* Grid Layout */
+.profile-workspace-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.workspace-sidebar, .workspace-main {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Detail Section Card */
+.detail-section-card {
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.section-card-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--dark);
+  margin: 0;
+  padding-bottom: 12px;
+  border-bottom: 1.5px solid var(--border-color);
+}
+
+/* Consultation & Billing styles */
+.billing-fee-box {
+  background-color: var(--teal-l);
+  border: 1px solid rgba(29, 158, 117, 0.15);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+
+.fee-label {
+  font-size: 0.85rem;
+  color: var(--teal-d);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.fee-amount {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 1.8rem;
+  color: var(--teal-d);
+  margin-top: 4px;
+}
+
+.stats-list-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: var(--t2);
+}
+
+.stats-row strong {
+  color: var(--dark);
+}
+
+/* Languages list styling */
+.languages-vertical-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.language-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--t2);
+}
+
+.badge-outline-teal {
+  border: 1px solid var(--teal);
+  color: var(--teal);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 20px;
+}
+
+/* Biography text styles */
+.bio-text {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--t2);
+  margin-bottom: 14px;
+}
+
+.bio-ar {
+  font-family: Arial, Helvetica, sans-serif;
+  border-top: 1px dashed var(--border-color);
+  padding-top: 14px;
+}
+
+/* Associated Clinics location strip styles */
+.clinic-location-strip {
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 16px;
+  transition: var(--transition);
+}
+
+.clinic-location-strip:last-child {
+  margin-bottom: 0;
+}
+
+.clinic-location-strip:hover {
+  border-color: var(--teal);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(29, 158, 117, 0.08);
+}
+
+.clinic-strip-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.clinic-location-icon {
+  font-size: 1.4rem;
+}
+
+.clinic-strip-names {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.clinic-strip-names strong {
+  font-size: 1rem;
+  color: var(--dark);
+}
+
+.clinic-strip-names span {
+  font-size: 0.8rem;
+  color: var(--t3);
+}
+
+.designation-badge {
+  font-size: 0.72rem;
+  border-radius: 20px;
+}
+
+.clinic-strip-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+  font-size: 0.82rem;
+  color: var(--t2);
+  background-color: var(--off);
+  padding: 10px 14px;
+  border-radius: 8px;
+}
+
+/* Academic Qualifications styling */
+.qualification-strip {
+  background-color: var(--off);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  transition: var(--transition);
+}
+
+.qualification-strip:last-child {
+  margin-bottom: 0;
+}
+
+.qualification-strip:hover {
+  border-color: var(--teal);
+  background-color: var(--teal-l);
+  transform: translateX(3px);
+}
+
+.qualification-strip-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.degree-icon {
+  font-size: 1.3rem;
+}
+
+.qualification-strip-meta {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.qualification-strip-meta strong {
+  font-size: 0.95rem;
+  color: var(--dark);
+}
+
+.qualification-strip-meta span {
+  font-size: 0.8rem;
+  color: var(--t3);
+}
+
+.graduation-year-badge {
+  background-color: var(--teal-l);
+  color: var(--teal-d);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 20px;
+}
+
+/* Responsive Media Queries */
+@media (max-width: 900px) {
+  .profile-workspace-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .profile-hero-card {
+    padding: 24px;
+  }
+  
+  .doctor-display-name {
+    font-size: 1.7rem;
+  }
+}

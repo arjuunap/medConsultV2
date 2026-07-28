@@ -272,3 +272,22 @@
   background-color: #16a34a;
   color: #fff;
 }
+
+/* Doctor card actions grid layout */
+.doctor-card-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  width: 100%;
+}
+
+.doctor-card-actions-grid .btn {
+  font-size: 0.82rem;
+  padding: 8px 6px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  width: 100%;
+}

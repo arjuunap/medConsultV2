@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ConsultationService } from '../../../../core/services/consultation.service';
 import { DoctorService } from '../../../../core/services/doctor.service';
 import { UiService } from '../../../../core/services/ui.service';
@@ -25,7 +25,7 @@ import {
 @Component({
   selector: 'app-doctor-consultations',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, CustomSelectComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, CustomSelectComponent],
   templateUrl: './doctor-consultations.component.html',
   styleUrls: ['./doctor-consultations.component.css']
 })
@@ -47,6 +47,18 @@ export class DoctorConsultationsComponent implements OnInit, OnDestroy {
   public patientChronicConditions: any[] = [];
   public showPatientInfo: boolean = false;
   public isChatActive: boolean = false;
+  public searchQuery: string = '';
+
+  get filteredConsultations() {
+    if (!this.searchQuery.trim()) {
+      return this.consultations;
+    }
+    const query = this.searchQuery.toLowerCase();
+    return this.consultations.filter(c => 
+      c.patientName?.toLowerCase().includes(query) ||
+      c.subject?.toLowerCase().includes(query)
+    );
+  }
 
   // ── Prescription State ─────────────────────────────────────────────
   public showPrescriptionPanel: boolean = false;

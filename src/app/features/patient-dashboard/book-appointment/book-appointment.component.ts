@@ -40,10 +40,19 @@ export class BookAppointmentComponent implements OnInit {
   public sessionTypes: string[] = Object.values(SessionType);
 
   get doctorSelectOptions() {
-    return this.doctors.map(doc => ({
-      label: `👨‍⚕️ ${doc.title}. ${doc.fullName} (${doc.experienceYears} yrs exp - Standard Fee: SAR ${doc.consultationFeeSar || 150})`,
-      value: doc.doctorId
-    }));
+    return this.doctors.map(doc => {
+      const title = doc.title || '';
+      const name = doc.fullName || '';
+      const nameLower = name.toLowerCase().trim();
+      const displayName = (nameLower.startsWith('dr') || nameLower.startsWith('prof') || nameLower.startsWith('consultant'))
+        ? name
+        : `${title ? title + '. ' : ''}${name}`;
+      
+      return {
+        label: `👨‍⚕️ ${displayName} (${doc.experienceYears} yrs exp - Standard Fee: SAR ${doc.consultationFeeSar || 150})`,
+        value: doc.doctorId
+      };
+    });
   }
 
   get clinicSelectOptions() {

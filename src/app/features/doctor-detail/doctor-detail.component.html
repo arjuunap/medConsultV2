@@ -1,0 +1,163 @@
+<div class="doctor-detail-container" *ngIf="doctorDetail">
+  <!-- Top Navigation Header -->
+  <div class="detail-header-nav mb-4">
+    <button class="btn btn-outline btn-sm back-button" onclick="history.back()">
+      ⬅️ Back
+    </button>
+    <h2 class="page-title">Doctor Profile Details</h2>
+  </div>
+
+  <!-- Profile Banner/Hero Card -->
+  <div class="profile-hero-card">
+    <div class="d-flex align-center gap-4 flex-wrap">
+      <!-- Big Avatar -->
+      <div class="doctor-big-avatar">
+        👨‍⚕️
+      </div>
+
+      <!-- Identity & Specialties -->
+      <div class="doctor-identity-info flex-1">
+        <div class="d-flex align-center gap-2 mb-1 flex-wrap">
+          <span class="badge badge-success" *ngIf="doctorDetail.doctor.isActive">Active Specialist</span>
+          <span class="badge badge-warning" *ngIf="!doctorDetail.doctor.isActive">Temporarily Unavailable</span>
+          <span class="badge badge-outline" *ngIf="doctorDetail.doctor.mohVerified">✓ MOH Verified</span>
+        </div>
+        
+        <h1 class="doctor-display-name">
+          {{ doctorDisplayName }}
+        </h1>
+
+        <!-- Specialty Badges -->
+        <div class="doctor-specialty-tags mt-2">
+          <span *ngFor="let sp of doctorDetail.specialties" 
+                class="badge" 
+                [class.badge-primary]="sp.isPrimary"
+                [class.badge-secondary]="!sp.isPrimary">
+            {{ getSpecialtyName(sp.specialtyId) }}
+          </span>
+          <span *ngIf="doctorDetail.specialties.length === 0" class="badge badge-secondary">
+            General Practitioner
+          </span>
+        </div>
+
+        <!-- Rating Summary -->
+        <div class="doctor-ratings-row mt-3">
+          <span class="stars-gold">⭐ {{ doctorDetail.doctor.overallRating | number:'1.1-1' }}</span>
+          <span class="rating-count">({{ doctorDetail.doctor.reviewCount }} verified consultations reviews)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Detailed Workspace -->
+  <div class="profile-workspace-grid mt-4">
+    
+    <!-- Left Column: Core Stats/Sidebar -->
+    <div class="workspace-sidebar flex-col gap-4">
+      
+      <!-- Consulting Card -->
+      <div class="detail-section-card">
+        <h3 class="section-card-title">💵 Consultation & Billing</h3>
+        <div class="billing-fee-box mt-3">
+          <div class="fee-label">Consultation Fee</div>
+          <div class="fee-amount">SAR {{ doctorDetail.doctor.consultationFeeSar || 150 }}</div>
+        </div>
+        <div class="stats-list-box mt-3">
+          <div class="stats-row">
+            <span>⌛ Experience:</span>
+            <strong>{{ doctorDetail.doctor.experienceYears }} Years</strong>
+          </div>
+          <div class="stats-row">
+            <span>📋 Registration ID:</span>
+            <strong>{{ doctorDetail.doctor.mohRegistrationNumber }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spoken Languages -->
+      <div class="detail-section-card">
+        <h3 class="section-card-title">🗣️ Spoken Languages</h3>
+        <div class="languages-vertical-list mt-3">
+          <div *ngFor="let lang of doctorDetail.languages" class="language-detail-row">
+            <span>🌐 {{ getLanguageName(lang.languageId) }}</span>
+            <span class="badge badge-outline-teal">{{ lang.proficiency }}</span>
+          </div>
+          <div *ngIf="doctorDetail.languages.length === 0" class="text-muted fs-sm">
+            No languages documented.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Biography, Clinics, and Qualifications -->
+    <div class="workspace-main flex-col gap-4">
+      
+      <!-- Biography notes -->
+      <div class="detail-section-card">
+        <h3 class="section-card-title">📝 Professional Biography</h3>
+        <div class="bio-content-box mt-3">
+          <p class="bio-text" *ngIf="doctorDetail.doctor.bioEn">
+            {{ doctorDetail.doctor.bioEn }}
+          </p>
+          <p class="bio-text bio-ar" *ngIf="doctorDetail.doctor.bioAr" dir="rtl">
+            {{ doctorDetail.doctor.bioAr }}
+          </p>
+          <div *ngIf="!doctorDetail.doctor.bioEn && !doctorDetail.doctor.bioAr" class="text-muted fs-sm">
+            No bio notes provided.
+          </div>
+        </div>
+      </div>
+
+      <!-- Affiliated Clinics & Locations -->
+      <div class="detail-section-card">
+        <h3 class="section-card-title">🏥 Associated Clinics & Locations</h3>
+        <div class="clinics-vertical-deck mt-3">
+          <div *ngFor="let cl of doctorDetail.clinics" class="clinic-location-strip">
+            <div class="clinic-strip-header">
+              <span class="clinic-location-icon">🏥</span>
+              <div class="clinic-strip-names">
+                <strong>{{ cl.clinicNameEn || 'Clinic Location' }}</strong>
+                <span>{{ cl.branchNameEn || 'Main Branch' }}</span>
+              </div>
+              <span class="badge badge-outline-teal designation-badge" *ngIf="cl.isPrimary">Primary Location</span>
+            </div>
+            
+            <div class="clinic-strip-details mt-2">
+              <div>🎯 <strong>Department:</strong> {{ cl.department || 'General Practice' }}</div>
+              <div>💵 <strong>Fee:</strong> SAR {{ cl.consultationFeeSar || doctorDetail.doctor.consultationFeeSar }}</div>
+              <div>📅 <strong>Joined:</strong> {{ cl.startDate | date:'mediumDate' }}</div>
+            </div>
+          </div>
+          
+          <div *ngIf="doctorDetail.clinics.length === 0" class="text-center text-muted py-4 fs-sm">
+            No registered clinical locations assigned.
+          </div>
+        </div>
+      </div>
+
+      <!-- Academic Qualifications -->
+      <div class="detail-section-card">
+        <h3 class="section-card-title">🎓 Academic Qualifications</h3>
+        <div class="qualifications-vertical-deck mt-3">
+          <div *ngFor="let ql of doctorDetail.qualifications" class="qualification-strip">
+            <div class="qualification-strip-header">
+              <span class="degree-icon">📜</span>
+              <div class="qualification-strip-meta">
+                <strong>{{ ql.degree }}</strong>
+                <span>{{ ql.institution }}, {{ ql.country }}</span>
+              </div>
+              <span class="graduation-year-badge">Year {{ ql.yearObtained }}</span>
+            </div>
+          </div>
+
+          <div *ngIf="doctorDetail.qualifications.length === 0" class="text-center text-muted py-4 fs-sm">
+            No qualifications recorded on profile file.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>

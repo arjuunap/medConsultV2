@@ -15,10 +15,12 @@ import { ClinicResponseDto, ClinicBranchResponseDto } from '../../../core/models
 import { SpecialtyResponseDto, LanguageResponseDto, SubSpecialtyResponseDto } from '../../../core/models/reference.model';
 import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
 
+import { RouterLink } from '@angular/router';
+
 @Component({
   selector: 'app-doctors',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, CustomSelectComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, CustomSelectComponent, RouterLink],
   templateUrl: './doctors.component.html',
   styleUrls: ['./doctors.component.css']
 })
@@ -409,7 +411,14 @@ export class DoctorsComponent implements OnInit {
 
   getDoctorName(doctorId: string): string {
     const doc = this.doctors.find(d => d.doctorId === doctorId);
-    return doc ? `${doc.title}. ${doc.fullName}` : doctorId;
+    if (!doc) return doctorId;
+    const title = doc.title || '';
+    const name = doc.fullName || '';
+    const nameLower = name.toLowerCase().trim();
+    if (nameLower.startsWith('dr') || nameLower.startsWith('prof') || nameLower.startsWith('consultant')) {
+      return name;
+    }
+    return `${title ? title + '. ' : ''}${name}`;
   }
 
   getBranchName(branchId: string): string {
