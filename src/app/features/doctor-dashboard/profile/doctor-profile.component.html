@@ -3,16 +3,16 @@
   <!-- Header Banner -->
   <div class="d-flex justify-between align-center border-bottom pb-4 mb-4 flex-wrap gap-3">
     <div>
-      <h2 class="fs-xl text-primary m-0 fw-bold">👨‍⚕️ Doctor Professional Profile</h2>
-      <p class="text-muted fs-sm mt-1 m-0">Manage personal bio, clinical credentials, spoken languages, and academic qualifications</p>
+      <h2 class="fs-xl text-primary m-0 fw-bold">👨‍⚕️ {{ 'Professional Profile' | translate }}</h2>
+      <p class="text-muted fs-sm mt-1 m-0">{{ 'Manage personal bio, clinical credentials, spoken languages, and academic qualifications' | translate }}</p>
     </div>
 
     <div class="d-flex align-center gap-2">
       <span class="badge" [class.badge-success]="doctorProfile.doctor.mohVerified" [class.badge-info]="!doctorProfile.doctor.mohVerified">
-        {{ doctorProfile.doctor.mohVerified ? '✓ MOH Verified License' : 'MOH Verification Pending' }}
+        {{ (doctorProfile.doctor.mohVerified ? '✓ MOH Verified License' : 'MOH Verification Pending') | translate }}
       </span>
       <span class="badge badge-primary" *ngIf="doctorProfile.doctor.mohRegistrationNumber">
-        MOH #: {{ doctorProfile.doctor.mohRegistrationNumber }}
+        {{ 'Registration ID:' | translate }} {{ doctorProfile.doctor.mohRegistrationNumber }}
       </span>
     </div>
   </div>
@@ -20,7 +20,7 @@
   <!-- Card 1: Doctor Personal Overview & License Card (Distinct Personal Info Section) -->
   <div class="profile-card-group" style="border-left: 5px solid var(--teal);">
     <div class="group-card-header">
-      <h3 class="group-card-title">1. Personal Overview &amp; Practice Details</h3>
+      <h3 class="group-card-title">1. {{ 'Personal Overview & Practice Details' | translate }}</h3>
     </div>
     
     <div class="d-flex justify-between align-center flex-wrap gap-3">
@@ -31,9 +31,9 @@
         <div>
           <h3 class="fs-xl text-primary m-0 fw-bold">{{ doctorDisplayName }}</h3>
           <div class="d-flex align-center gap-3 fs-xs text-muted mt-2 flex-wrap">
-            <span>Experience: <strong>{{ doctorProfile.experienceYears !== undefined && doctorProfile.experienceYears !== null ? doctorProfile.experienceYears : 0 }} Years</strong></span>
-            <span>Rating: <strong>⭐ {{ doctorProfile.overallRating || '5.0' }} ({{ doctorProfile.reviewCount || 0 }} reviews)</strong></span>
-            <span>Standard Fee: <strong class="text-success">SAR {{ doctorProfile.consultationFeeSar || 150 }}</strong></span>
+            <span>{{ 'Experience' | translate }}: <strong>{{ doctorProfile.experienceYears !== undefined && doctorProfile.experienceYears !== null ? doctorProfile.experienceYears : 0 }} {{ 'Years' | translate }}</strong></span>
+            <span>{{ 'Rating:' | translate }} <strong>⭐ {{ doctorProfile.overallRating || '5.0' }} ({{ doctorProfile.reviewCount || 0 }} {{ 'reviews' | translate }})</strong></span>
+            <span>{{ 'Standard Fee:' | translate }} <strong class="text-success">SAR {{ doctorProfile.consultationFeeSar || 150 }}</strong></span>
           </div>
         </div>
       </div>
@@ -43,7 +43,7 @@
   <!-- Card 2: Professional Credentials & Qualifications Card (Distinct Credentials Section) -->
   <div class="profile-card-group" style="border-left: 5px solid var(--accent);">
     <div class="group-card-header">
-      <h3 class="group-card-title">2. Professional Credentials, Bio &amp; Qualifications</h3>
+      <h3 class="group-card-title">2. {{ 'Professional Credentials, Bio & Qualifications' | translate }}</h3>
     </div>
 
     <!-- Sub-Navigation Tabs Bar -->
@@ -53,35 +53,35 @@
         [class.active]="activeTab === 'general'" 
         (click)="switchTab('general')"
       >
-        📝 Bio &amp; General Details
+        📝 {{ 'Bio & General Details' | translate }}
       </button>
       <button 
         class="sub-tab-btn" 
         [class.active]="activeTab === 'specialties'" 
         (click)="switchTab('specialties')"
       >
-        🎓 Specialties ({{ doctorProfile.specialties.length }})
+        🎓 {{ 'Specialties' | translate }} ({{ doctorProfile.specialties.length }})
       </button>
       <button 
         class="sub-tab-btn" 
         [class.active]="activeTab === 'languages'" 
         (click)="switchTab('languages')"
       >
-        🗣️ Spoken Languages ({{ doctorProfile.languages.length }})
+        🗣️ {{ 'Spoken Languages' | translate }} ({{ doctorProfile.languages.length }})
       </button>
       <button 
         class="sub-tab-btn" 
         [class.active]="activeTab === 'qualifications'" 
         (click)="switchTab('qualifications')"
       >
-        📜 Qualifications ({{ doctorProfile.qualifications.length }})
+        📜 {{ 'Qualifications' | translate }} ({{ doctorProfile.qualifications.length }})
       </button>
       <button 
         class="sub-tab-btn" 
         [class.active]="activeTab === 'clinics'" 
         (click)="switchTab('clinics')"
       >
-        🏢 Clinic Placements ({{ doctorProfile.clinics.length }})
+        🏢 {{ 'Clinics' | translate }} ({{ doctorProfile.clinics.length }})
       </button>
     </div>
 
@@ -90,7 +90,7 @@
       <form [formGroup]="profileForm" (ngSubmit)="saveGeneralProfile()">
         <div class="form-row">
           <div class="form-group mb-3">
-            <label class="form-label">Professional Title *</label>
+            <label class="form-label">{{ 'Professional Title' | translate }} *</label>
             <app-custom-select 
               formControlName="title" 
               [options]="titles" 
@@ -100,35 +100,35 @@
             </app-custom-select>
           </div>
           <div class="form-group mb-3">
-            <label class="form-label">MOH Registration Number *</label>
+            <label class="form-label">{{ 'MOH Registration Number' | translate }} *</label>
             <input type="text" formControlName="mohRegistrationNumber" class="form-control" placeholder="MOH-123456">
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group mb-3">
-            <label class="form-label">Years of Experience *</label>
+            <label class="form-label">{{ 'Years of Experience' | translate }} *</label>
             <input type="number" formControlName="experienceYears" class="form-control" placeholder="10">
           </div>
           <div class="form-group mb-3">
-            <label class="form-label">Base Consultation Fee (SAR) *</label>
+            <label class="form-label">{{ 'Base Consultation Fee (SAR)' | translate }} *</label>
             <input type="number" formControlName="consultationFeeSar" class="form-control" placeholder="150">
           </div>
         </div>
 
         <div class="form-group mb-3">
-          <label class="form-label">English Biography / Summary</label>
+          <label class="form-label">{{ 'English Biography / Summary' | translate }}</label>
           <textarea formControlName="bioEn" class="form-control" rows="3" placeholder="Describe your medical background, expertise, and patient care philosophy in English..."></textarea>
         </div>
 
         <div class="form-group mb-3">
-          <label class="form-label">Arabic Biography / Summary</label>
+          <label class="form-label">{{ 'Arabic Biography / Summary' | translate }}</label>
           <textarea formControlName="bioAr" class="form-control" rows="3" placeholder="نبذة عن خبراتك الطبية وتخصصك باللغة العربية..."></textarea>
         </div>
 
         <div class="d-flex justify-end pt-3 border-top">
           <button type="submit" [disabled]="profileForm.invalid" class="btn btn-primary">
-            💾 Save General Details
+            💾 {{ 'Save General Profile' | translate }}
           </button>
         </div>
       </form>
@@ -137,10 +137,10 @@
     <!-- TAB 2: Specialties -->
     <div *ngIf="activeTab === 'specialties'">
       <form [formGroup]="specialtyForm" (ngSubmit)="submitSpecialty()" class="card p-4 border bg-light mb-4 shadow-sm">
-        <h4 class="fs-sm text-primary uppercase fw-bold mb-3">+ Add Medical Specialty</h4>
+        <h4 class="fs-sm text-primary uppercase fw-bold mb-3">+ {{ 'Add Medical Specialty' | translate }}</h4>
         <div class="form-row">
           <div class="form-group flex-1 mb-3">
-            <label class="form-label">Specialty *</label>
+            <label class="form-label">{{ 'Specialty' | translate }} *</label>
             <app-custom-select 
               formControlName="specialtyId" 
               [options]="specialtySelectOptions" 
@@ -152,7 +152,7 @@
             </app-custom-select>
           </div>
           <div class="form-group flex-1 mb-3">
-            <label class="form-label">Sub-Specialty (Optional)</label>
+            <label class="form-label">{{ 'Sub-Specialty (Optional)' | translate }}</label>
             <app-custom-select 
               formControlName="subSpecialtyId" 
               [options]="subSpecialtySelectOptions" 
@@ -163,11 +163,11 @@
           </div>
           <div class="form-group d-flex align-center gap-2 mt-4 mb-3">
             <input type="checkbox" id="mySpecPrimary" formControlName="isPrimary">
-            <label for="mySpecPrimary" class="form-label m-0 cursor-pointer">Primary Specialty</label>
+            <label for="mySpecPrimary" class="form-label m-0 cursor-pointer">{{ 'Primary Specialty' | translate }}</label>
           </div>
           <div class="form-group d-flex align-end mb-3">
             <button type="submit" [disabled]="specialtyForm.invalid" class="btn btn-primary w-100">
-              + Add Specialty
+              + {{ 'Add Specialty' | translate }}
             </button>
           </div>
         </div>
@@ -177,9 +177,9 @@
         <table class="table">
           <thead>
             <tr>
-              <th>Specialty Name</th>
-              <th>Primary Status</th>
-              <th class="text-end">Actions</th>
+              <th>{{ 'Specialty Name' | translate }}</th>
+              <th>{{ 'Primary Status' | translate }}</th>
+              <th class="text-end">{{ 'Actions' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -187,17 +187,17 @@
               <td class="fw-bold text-dark">🎓 {{ getSpecialtyName(s.specialtyId) }}</td>
               <td>
                 <span class="badge" [class.badge-primary]="s.isPrimary" [class.badge-secondary]="!s.isPrimary">
-                  {{ s.isPrimary ? 'Primary' : 'Secondary' }}
+                  {{ (s.isPrimary ? 'Primary' : 'Secondary') | translate }}
                 </span>
               </td>
               <td class="text-end">
                 <button (click)="removeSpecialty(s.specialtyId || s.id)" class="btn btn-outline btn-danger btn-sm">
-                  Remove
+                  {{ 'Remove' | translate }}
                 </button>
               </td>
             </tr>
             <tr *ngIf="doctorProfile.specialties.length === 0">
-              <td colspan="3" class="text-center text-muted p-4">No medical specialties listed on your profile yet.</td>
+              <td colspan="3" class="text-center text-muted p-4">{{ 'No medical specialties listed on your profile yet.' | translate }}</td>
             </tr>
           </tbody>
         </table>
@@ -207,10 +207,10 @@
     <!-- TAB 3: Spoken Languages -->
     <div *ngIf="activeTab === 'languages'">
       <form [formGroup]="languageForm" (ngSubmit)="submitLanguage()" class="card p-4 border bg-light mb-4 shadow-sm">
-        <h4 class="fs-sm text-primary uppercase fw-bold mb-3">+ Add Spoken Language</h4>
+        <h4 class="fs-sm text-primary uppercase fw-bold mb-3">+ {{ 'Add Spoken Language' | translate }}</h4>
         <div class="form-row">
           <div class="form-group flex-1 mb-3">
-            <label class="form-label">Language *</label>
+            <label class="form-label">{{ 'Language *' | translate }}</label>
             <app-custom-select 
               formControlName="languageId" 
               [options]="languageSelectOptions" 
@@ -221,7 +221,7 @@
             </app-custom-select>
           </div>
           <div class="form-group flex-1 mb-3">
-            <label class="form-label">Proficiency *</label>
+            <label class="form-label">{{ 'Proficiency *' | translate }}</label>
             <app-custom-select 
               formControlName="proficiency" 
               [options]="proficiencies" 
@@ -232,7 +232,7 @@
           </div>
           <div class="form-group d-flex align-end mb-3">
             <button type="submit" [disabled]="languageForm.invalid" class="btn btn-primary w-100">
-              + Add Language
+              + {{ 'Add Language' | translate }}
             </button>
           </div>
         </div>
@@ -242,23 +242,23 @@
         <table class="table">
           <thead>
             <tr>
-              <th>Language</th>
-              <th>Proficiency Level</th>
-              <th class="text-end">Actions</th>
+              <th>{{ 'Language' | translate }}</th>
+              <th>{{ 'Proficiency Level' | translate }}</th>
+              <th class="text-end">{{ 'Actions' | translate }}</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let l of doctorProfile.languages">
               <td class="fw-bold text-dark">🗣️ {{ getLanguageName(l.languageId) }}</td>
-              <td><span class="badge badge-info">{{ l.proficiency }}</span></td>
+              <td><span class="badge badge-info">{{ l.proficiency | translate }}</span></td>
               <td class="text-end">
                 <button (click)="removeLanguage(l.id)" class="btn btn-outline btn-danger btn-sm">
-                  Remove
+                  {{ 'Remove' | translate }}
                 </button>
               </td>
             </tr>
             <tr *ngIf="doctorProfile.languages.length === 0">
-              <td colspan="3" class="text-center text-muted p-4">No languages listed on your profile yet.</td>
+              <td colspan="3" class="text-center text-muted p-4">{{ 'No languages listed on your profile yet.' | translate }}</td>
             </tr>
           </tbody>
         </table>
@@ -268,30 +268,30 @@
     <!-- TAB 4: Qualifications -->
     <div *ngIf="activeTab === 'qualifications'">
       <form [formGroup]="qualificationForm" (ngSubmit)="submitQualification()" class="card p-4 border bg-light mb-4 shadow-sm">
-        <h4 class="fs-sm text-primary uppercase fw-bold mb-3">+ Add Academic Degree / Qualification</h4>
+        <h4 class="fs-sm text-primary uppercase fw-bold mb-3">+ {{ 'Add Degree' | translate }}</h4>
         <div class="form-row">
           <div class="form-group mb-3">
-            <label class="form-label">Degree *</label>
+            <label class="form-label">{{ 'Degree *' | translate }}</label>
             <input type="text" formControlName="degree" class="form-control" placeholder="E.g. MBBS, MD, Board Certification">
           </div>
           <div class="form-group mb-3">
-            <label class="form-label">Institution / University *</label>
+            <label class="form-label">{{ 'Institution / University *' | translate }}</label>
             <input type="text" formControlName="institution" class="form-control" placeholder="University Name">
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group mb-3">
-            <label class="form-label">Country *</label>
+            <label class="form-label">{{ 'Country *' | translate }}</label>
             <input type="text" formControlName="country" class="form-control" placeholder="Saudi Arabia">
           </div>
           <div class="form-group mb-3">
-            <label class="form-label">Year Obtained *</label>
+            <label class="form-label">{{ 'Year Obtained *' | translate }}</label>
             <input type="number" formControlName="yearObtained" class="form-control" placeholder="2018">
           </div>
           <div class="form-group d-flex align-end mb-3">
             <button type="submit" [disabled]="qualificationForm.invalid" class="btn btn-primary w-100">
-              + Add Degree
+              + {{ 'Add Degree' | translate }}
             </button>
           </div>
         </div>
@@ -301,10 +301,10 @@
         <table class="table">
           <thead>
             <tr>
-              <th>Degree Title</th>
-              <th>University / Institution</th>
-              <th>Country &amp; Year</th>
-              <th class="text-end">Actions</th>
+              <th>{{ 'Degree Title' | translate }}</th>
+              <th>{{ 'University / Institution' | translate }}</th>
+              <th>{{ 'Country & Year' | translate }}</th>
+              <th class="text-end">{{ 'Actions' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -314,34 +314,33 @@
               <td>{{ q.country }} ({{ q.yearObtained }})</td>
               <td class="text-end">
                 <button (click)="removeQualification(q.qualId)" class="btn btn-outline btn-danger btn-sm">
-                  Remove
+                  {{ 'Remove' | translate }}
                 </button>
               </td>
             </tr>
             <tr *ngIf="doctorProfile.qualifications.length === 0">
-              <td colspan="4" class="text-center text-muted p-4">No academic qualifications listed yet.</td>
+              <td colspan="4" class="text-center text-muted p-4">{{ 'No qualifications listed on your profile yet.' | translate }}</td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- TAB 5: Clinic Placements -->
+    <!-- TAB 5: Clinics -->
     <div *ngIf="activeTab === 'clinics'">
-
       <!-- Summary strip -->
       <div class="clinics-summary-strip mb-4" *ngIf="enrichedClinics.length > 0">
         <div class="clinic-summary-stat">
           <span class="clinic-sum-num">{{ enrichedClinics.length }}</span>
-          <span class="clinic-sum-label">Total Placements</span>
+          <span class="clinic-sum-label">{{ 'Total Placements' | translate }}</span>
         </div>
         <div class="clinic-summary-stat">
           <span class="clinic-sum-num text-success">{{ activeClinicsCount }}</span>
-          <span class="clinic-sum-label">Active</span>
+          <span class="clinic-sum-label">{{ 'Active' | translate }}</span>
         </div>
         <div class="clinic-summary-stat">
           <span class="clinic-sum-num text-primary">{{ primaryClinicsCount }}</span>
-          <span class="clinic-sum-label">Primary</span>
+          <span class="clinic-sum-label">{{ 'Primary' | translate }}</span>
         </div>
       </div>
 
@@ -355,13 +354,13 @@
           <div class="clinic-card-header">
             <div class="clinic-icon-wrap">🏥</div>
             <div class="clinic-card-title-group flex-1">
-              <h4 class="clinic-card-name m-0">{{ c.clinicNameEn || 'Medical Facility' }}</h4>
-              <div class="clinic-card-branch">📍 {{ c.branchNameEn || 'Main Branch' }}</div>
+              <h4 class="clinic-card-name m-0">{{ languageService.translate(c.clinicNameEn, c.clinicNameAr) || ('Medical Facility' | translate) }}</h4>
+              <div class="clinic-card-branch">📍 {{ languageService.translate(c.branchNameEn, c.branchNameAr) || ('Main Branch' | translate) }}</div>
             </div>
             <div class="clinic-card-status-col">
               <span class="clinic-active-badge" [class.badge-active]="c.isActive" [class.badge-inactive]="!c.isActive">
                 <span class="placement-dot" [class.dot-green]="c.isActive" [class.dot-gray]="!c.isActive"></span>
-                {{ c.isActive ? 'Active' : 'Inactive' }}
+                {{ (c.isActive ? 'Active' : 'Inactive') | translate }}
               </span>
             </div>
           </div>
@@ -372,25 +371,25 @@
           <!-- Details Grid -->
           <div class="clinic-details-grid">
             <div class="clinic-detail-item">
-              <span class="clinic-detail-label">Department</span>
-              <span class="clinic-dept-chip">{{ c.department || 'General Practice' }}</span>
+              <span class="clinic-detail-label">{{ 'Department' | translate }}</span>
+              <span class="clinic-dept-chip">{{ (c.department | translate) || ('General Practice' | translate) }}</span>
             </div>
             <div class="clinic-detail-item">
-              <span class="clinic-detail-label">Consultation Fee</span>
+              <span class="clinic-detail-label">{{ 'Consultation Fee' | translate }}</span>
               <span class="clinic-detail-value text-success fw-bold">SAR {{ c.consultationFeeSar || '—' }}</span>
             </div>
             <div class="clinic-detail-item">
-              <span class="clinic-detail-label">Role</span>
+              <span class="clinic-detail-label">{{ 'Role' | translate }}</span>
               <span class="clinic-role-badge" [class.role-primary]="c.isPrimary" [class.role-consultant]="!c.isPrimary">
-                {{ c.isPrimary ? '⭐ Primary Specialist' : '👤 Consultant' }}
+                {{ (c.isPrimary ? 'Primary Specialist' : 'Consultant') | translate }}
               </span>
             </div>
             <div class="clinic-detail-item">
-              <span class="clinic-detail-label">Since</span>
+              <span class="clinic-detail-label">{{ 'Since' | translate }}</span>
               <span class="clinic-detail-value">{{ c.startDate | date:'mediumDate' }}</span>
             </div>
             <div class="clinic-detail-item" *ngIf="c.endDate">
-              <span class="clinic-detail-label">Until</span>
+              <span class="clinic-detail-label">{{ 'Until' | translate }}</span>
               <span class="clinic-detail-value text-warning">{{ c.endDate | date:'mediumDate' }}</span>
             </div>
           </div>
@@ -401,10 +400,9 @@
       <!-- Empty State -->
       <div *ngIf="enrichedClinics.length === 0" class="clinic-empty-state">
         <div class="clinic-empty-icon">🏥</div>
-        <h4 class="clinic-empty-title">No Clinic Placements Yet</h4>
-        <p class="clinic-empty-text">You are currently not assigned to any clinic branch. Contact your clinic administrator to get assigned.</p>
+        <h4 class="clinic-empty-title">{{ 'No Clinic Placements Yet' | translate }}</h4>
+        <p class="clinic-empty-text">{{ 'You are currently not assigned to any clinic branch. Contact your clinic administrator to get assigned.' | translate }}</p>
       </div>
-
     </div>
 
   </div>
@@ -412,6 +410,6 @@
 
 <ng-template #loadingTemplate>
   <div class="card p-6 border-0 text-center text-muted">
-    Loading your professional profile details...
+    {{ 'Loading your professional profile details...' | translate }}
   </div>
 </ng-template>

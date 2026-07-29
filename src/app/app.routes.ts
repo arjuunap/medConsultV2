@@ -57,6 +57,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/patient-dashboard/book-appointment/book-appointment.component').then(m => m.BookAppointmentComponent)
       },
       {
+        path: 'clinics',
+        loadComponent: () => import('./features/patient-dashboard/clinic-explorer/clinic-explorer.component').then(m => m.ClinicExplorerComponent)
+      },
+      {
         path: 'emr',
         loadComponent: () => import('./features/patient-dashboard/emr/emr.component').then(m => m.EmrComponent)
       },

@@ -2,6 +2,8 @@ import { Component, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { LanguageService } from '../../../core/services/language.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { UserRole } from '../../../core/models/auth.model';
 import { ApiUrlPipe } from '../../pipes/api-url.pipe';
 import { environment } from '../../../../environments/environment';
@@ -15,12 +17,13 @@ interface MenuItem {
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, ApiUrlPipe],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, ApiUrlPipe, TranslatePipe],
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.css']
 })
 export class LayoutComponent {
   public authService = inject(AuthService);
+  public languageService = inject(LanguageService);
   private router = inject(Router);
 
   public isSidebarOpen = signal<boolean>(false);
@@ -51,6 +54,7 @@ export class LayoutComponent {
       case UserRole.PATIENT:
         return [
           { label: 'Home Dashboard', route: '/patient/home', icon: '📊' },
+          { label: 'Clinics & Branches', route: '/patient/clinics', icon: '🏥' },
           { label: 'Medical Records (EMR)', route: '/patient/emr', icon: '📁' },
           { label: 'Book Appointment', route: '/patient/book-appointment', icon: '📅' },
           { label: 'Tele-Consultations', route: '/patient/consultations', icon: '💬' },

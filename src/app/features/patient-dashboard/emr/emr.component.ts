@@ -10,10 +10,12 @@ import {
   VitalResponseDto, LabResultResponseDto, VitalSource
 } from '../../../core/models/clinical-record.model';
 
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+
 @Component({
   selector: 'app-emr',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, TranslatePipe],
   templateUrl: './emr.component.html',
   styleUrls: ['./emr.component.css']
 })

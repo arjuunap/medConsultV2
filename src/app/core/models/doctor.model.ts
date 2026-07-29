@@ -89,7 +89,9 @@ export interface DoctorClinicResponseDto {
   createdAt: string;
   updatedAt: string;
   clinicNameEn?: string; // Appended by frontend
+  clinicNameAr?: string; // Appended by frontend
   branchNameEn?: string; // Appended by frontend
+  branchNameAr?: string; // Appended by frontend
 }
 
 export interface DoctorLanguageRequestDto {

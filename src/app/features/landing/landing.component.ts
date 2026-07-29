@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -11,6 +11,8 @@ import { AppointmentService } from '../../core/services/appointment.service';
 import { PatientService } from '../../core/services/patient.service';
 import { AuthService } from '../../core/services/auth.service';
 import { UiService } from '../../core/services/ui.service';
+import { LanguageService } from '../../core/services/language.service';
+import { TranslatePipe, TranslateObjPipe } from '../../shared/pipes/translate.pipe';
 import { environment } from '../../../environments/environment';
 import { ClinicResponseDto, ClinicDetailResponse } from '../../core/models/clinic.model';
 import { SpecialtyResponseDto, LanguageResponseDto, CityResponseDto, InsuranceProviderResponseDto } from '../../core/models/reference.model';
@@ -32,6 +34,7 @@ export interface DoctorCardDisplay {
   avatarBg: string;
   avatarColor: string;
   consultationFeeSar?: number;
+  branchName?: string;
 }
 
 export interface ClinicCardDisplay extends ClinicResponseDto {
@@ -51,7 +54,7 @@ import { CustomSelectComponent } from '../../shared/components/custom-select/cus
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterLink, CustomSelectComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterLink, CustomSelectComponent, TranslatePipe, TranslateObjPipe],
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.css']
 })
@@ -65,19 +68,30 @@ export class LandingComponent implements OnInit {
   private uiService = inject(UiService);
   private fb = inject(FormBuilder);
   private router = inject(Router);
+  public languageService = inject(LanguageService);
+
+  constructor() {
+    effect(() => {
+      // Access current language signal to reactively update data lists
+      this.languageService.currentLang();
+      this.processRealClinicsAndDoctors();
+    });
+  }
 
   public apiUrl = environment.apiUrl;
   public specialties: SpecialtyResponseDto[] = [];
   public languages: LanguageResponseDto[] = [];
   public cities: CityResponseDto[] = [];
   public insuranceProviders: InsuranceProviderResponseDto[] = [];
-  
+
   public rawClinics: ClinicResponseDto[] = [];
   public rawDoctors: DoctorResponseDto[] = [];
   public clinics: ClinicCardDisplay[] = [];
   public filteredClinics: ClinicCardDisplay[] = [];
   public selectedClinicDetail: ClinicDetailResponse | null = null;
   public patientId = '';
+  public doctorToClinicIds: { [doctorId: string]: string[] } = {};
+  public doctorClinicLinks: { [doctorId: string]: any[] } = {};
 
   // Active Filters
   public activeSpecialtyId = '';
@@ -95,17 +109,19 @@ export class LandingComponent implements OnInit {
     location: ['']
   });
 
-  public sortSelectOptions = [
-    { label: 'Best match', value: 'best' },
-    { label: 'Highest rated ⭐', value: 'rating' },
-    { label: 'Most reviews', value: 'reviews' },
-    { label: 'Alphabetical (A-Z)', value: 'alpha' }
-  ];
+  get sortSelectOptions() {
+    return [
+      { label: this.languageService.translate('Best match', 'أفضل تطابق'), value: 'best' },
+      { label: this.languageService.translate('Highest rated ⭐', 'الأعلى تقييماً ⭐'), value: 'rating' },
+      { label: this.languageService.translate('Most reviews', 'الأكثر مراجعة'), value: 'reviews' },
+      { label: this.languageService.translate('Alphabetical (A-Z)', 'أبجدي (أ-ي)'), value: 'alpha' }
+    ];
+  }
 
   get citySelectOptions(): { label: string; value: string }[] {
-    const opts = [{ label: '📍 All Cities / Areas', value: '' }];
+    const opts = [{ label: this.languageService.translate('📍 All Cities / Areas', '📍 جميع المدن / المناطق'), value: '' }];
     if (this.cities && this.cities.length) {
-      this.cities.forEach(c => opts.push({ label: c.nameEn, value: c.cityId }));
+      this.cities.forEach(c => opts.push({ label: this.languageService.translate(c.nameEn, c.nameAr), value: c.cityId }));
     }
     return opts;
   }
@@ -124,16 +140,20 @@ export class LandingComponent implements OnInit {
   public showToast = false;
   public toastMessage = '';
 
-  public apptTypeOptions = [
-    { label: 'New Patient', value: 'NEW_PATIENT' },
-    { label: 'Follow-up', value: 'FOLLOW_UP' },
-    { label: 'Referral', value: 'REFERRAL' }
-  ];
+  get apptTypeOptions() {
+    return [
+      { label: this.languageService.translate('New Patient', 'مريض جديد'), value: 'NEW_PATIENT' },
+      { label: this.languageService.translate('Follow-up', 'متابعة'), value: 'FOLLOW_UP' },
+      { label: this.languageService.translate('Referral', 'إحالة'), value: 'REFERRAL' }
+    ];
+  }
 
-  public sessionModeOptions = [
-    { label: 'In-Clinic Visit', value: 'IN_CLINIC' },
-    { label: 'Video Call', value: 'VIDEO_CALL' }
-  ];
+  get sessionModeOptions() {
+    return [
+      { label: this.languageService.translate('In-Clinic Visit', 'زيارة العيادة'), value: 'IN_CLINIC' },
+      { label: this.languageService.translate('Video Call', 'مكالمة فيديو'), value: 'VIDEO_CALL' }
+    ];
+  }
 
   ngOnInit(): void {
     this.loadPatientProfileIfLoggedIn();
@@ -144,7 +164,7 @@ export class LandingComponent implements OnInit {
     if (this.authService.isLoggedIn() && this.authService.currentUser()?.role === 'PATIENT') {
       this.patientService.getMyProfile().subscribe({
         next: (p) => this.patientId = p.patientId,
-        error: () => {}
+        error: () => { }
       });
     }
   }
@@ -168,8 +188,40 @@ export class LandingComponent implements OnInit {
         this.rawClinics = res.clinics;
         this.rawDoctors = res.doctors;
 
-        this.processRealClinicsAndDoctors();
-        this.uiService.hideLoading();
+        if (this.rawDoctors && this.rawDoctors.length > 0) {
+          const doctorClinicsRequests = this.rawDoctors.map(doc =>
+            this.doctorService.getDoctorClinics(doc.doctorId).pipe(
+              catchError(() => of([]))
+            )
+          );
+
+          forkJoin(doctorClinicsRequests).subscribe({
+            next: (allDoctorClinics) => {
+              this.doctorToClinicIds = {};
+              this.doctorClinicLinks = {};
+              this.rawDoctors.forEach((doc, idx) => {
+                const clinicsAssigned = allDoctorClinics[idx] || [];
+                const activeClinics = clinicsAssigned.filter((link: any) => link.isActive);
+                this.doctorToClinicIds[doc.doctorId] = activeClinics.map((link: any) => link.clinicId);
+                this.doctorClinicLinks[doc.doctorId] = activeClinics;
+              });
+
+              this.processRealClinicsAndDoctors();
+              this.uiService.hideLoading();
+            },
+            error: () => {
+              this.doctorToClinicIds = {};
+              this.doctorClinicLinks = {};
+              this.processRealClinicsAndDoctors();
+              this.uiService.hideLoading();
+            }
+          });
+        } else {
+          this.doctorToClinicIds = {};
+          this.doctorClinicLinks = {};
+          this.processRealClinicsAndDoctors();
+          this.uiService.hideLoading();
+        }
       },
       error: () => {
         this.uiService.hideLoading();
@@ -184,7 +236,7 @@ export class LandingComponent implements OnInit {
       return;
     }
 
-    const detailRequests = this.rawClinics.map(c => 
+    const detailRequests = this.rawClinics.map(c =>
       this.clinicService.getClinicDetail(c.clinicId).pipe(
         catchError(() => of(null))
       )
@@ -209,48 +261,69 @@ export class LandingComponent implements OnInit {
     const primaryBranch = detail?.branches?.find(b => b.isPrimary) || detail?.branches?.[0];
     const fallbackCityId = (this.cities && this.cities.length > 0) ? this.cities[idx % this.cities.length].cityId : '';
     const cityId = primaryBranch?.cityId || fallbackCityId;
-    const cityName = cityId ? this.getCityName(cityId) : 'Saudi Arabia';
-    const area = primaryBranch ? (primaryBranch.addressLine1 || primaryBranch.branchNameEn) : cityName;
+    const cityName = cityId ? this.getCityName(cityId) : this.languageService.translate('Saudi Arabia', 'المملكة العربية السعودية');
+    const area = primaryBranch ? (this.languageService.translate(primaryBranch.addressLine1, primaryBranch.branchNameAr) || this.languageService.translate(primaryBranch.branchNameEn, primaryBranch.branchNameAr)) : cityName;
 
     const specNames = detail?.specialties?.map(s => {
       const found = this.specialties.find(x => x.specialtyId === s.specialtyId);
-      return found ? found.nameEn : '';
+      return found ? this.languageService.translate(found.nameEn, found.nameAr) : '';
     }).filter(Boolean) as string[] || [];
 
     const langNames = detail?.languages?.map(l => {
       const found = this.languages.find(x => x.languageId === l.languageId);
-      return found ? found.nameEn : '';
+      return found ? this.languageService.translate(found.nameEn, found.nameAr) : '';
     }).filter(Boolean) as string[] || [];
 
     const insNames = detail?.insurances?.map(i => {
       const found = this.insuranceProviders.find(x => x.providerId === i.providerId);
-      return found ? found.nameEn : '';
+      return found ? this.languageService.translate(found.nameEn, found.nameAr) : '';
     }).filter(Boolean) as string[] || [];
 
     // Map real doctors assigned to this clinic's branches
     const matchedDoctors: DoctorCardDisplay[] = [];
 
     if (this.rawDoctors && this.rawDoctors.length > 0) {
-      this.rawDoctors.forEach((doc, dIdx) => {
+      const clinicDoctors = this.rawDoctors.filter(doc => {
+        const assignedClinicIds = this.doctorToClinicIds[doc.doctorId] || [];
+        return assignedClinicIds.includes(c.clinicId);
+      });
+
+      clinicDoctors.forEach((doc, dIdx) => {
         const initials = doc.fullName ? doc.fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'DR';
         const bgColors = ['#E1F5EE', '#DBEAFE', '#EDE9FE', '#FEF3C7', '#DCFCE7'];
         const textColors = ['#085041', '#1E40AF', '#5B21B6', '#92400E', '#166534'];
 
+        const docTitle = this.languageService.translate((doc.title as string) || 'Dr', doc.title === 'DR' ? 'د.' : 'طبيب');
+        const specName = specNames[0] || this.languageService.translate('Specialist Doctor', 'طبيب أخصائي');
+        const nextSlot = dIdx % 2 === 0 ? this.languageService.translate('Today 2:00 PM', 'اليوم ٢:٠٠ م') : this.languageService.translate('Tomorrow 10:00 AM', 'غداً ١٠:٠٠ ص');
+
+        // Resolve branch name
+        let branchName = '';
+        const links = this.doctorClinicLinks[doc.doctorId] || [];
+        const linkForThisClinic = links.find((link: any) => link.clinicId === c.clinicId);
+        if (linkForThisClinic && detail?.branches) {
+          const branch = detail.branches.find(b => b.branchId === linkForThisClinic.branchId);
+          if (branch) {
+            branchName = this.languageService.translate(branch.branchNameEn, branch.branchNameAr);
+          }
+        }
+
         matchedDoctors.push({
           doctorId: doc.doctorId,
-          name: `${doc.title || 'Dr'}. ${doc.fullName}`,
+          name: `${docTitle}. ${doc.fullName}`,
           title: doc.title || 'Dr',
-          spec: specNames[0] || 'Specialist Doctor',
+          spec: specName,
           rating: doc.overallRating || 5.0,
           reviews: doc.reviewCount || 10,
           exp: doc.experienceYears || 5,
           avail: dIdx % 2 === 0 ? 'today' : 'tomorrow',
-          nextSlot: dIdx % 2 === 0 ? 'Today 2:00 PM' : 'Tomorrow 10:00 AM',
+          nextSlot: nextSlot,
           langs: langNames.length > 0 ? langNames.map(l => l.substring(0, 2).toUpperCase()) : ['AR', 'EN'],
           initials,
           avatarBg: bgColors[dIdx % bgColors.length],
           avatarColor: textColors[dIdx % textColors.length],
-          consultationFeeSar: doc.consultationFeeSar || 150
+          consultationFeeSar: doc.consultationFeeSar || 150,
+          branchName: branchName || this.languageService.translate('Main Branch', 'الفرع الرئيسي')
         });
       });
     }
@@ -261,9 +334,9 @@ export class LandingComponent implements OnInit {
       cityName,
       cityId,
       addressLine1: primaryBranch?.addressLine1 || area,
-      specs: specNames.length > 0 ? specNames : ['General Practice', 'Internal Medicine'],
-      languages: langNames.length > 0 ? langNames : ['Arabic', 'English'],
-      insurances: insNames.length > 0 ? insNames : ['Tawuniya', 'Bupa Arabia'],
+      specs: specNames.length > 0 ? specNames : [this.languageService.translate('General Practice', 'الطب العام'), this.languageService.translate('Internal Medicine', 'الطب الباطني')],
+      languages: langNames.length > 0 ? langNames : [this.languageService.translate('Arabic', 'العربية'), this.languageService.translate('English', 'الإنجليزية')],
+      insurances: insNames.length > 0 ? insNames : [this.languageService.translate('Tawuniya', 'التعاونية'), this.languageService.translate('Bupa Arabia', 'بوبا العربية')],
       doctors: matchedDoctors,
       expanded: false
     };
@@ -395,30 +468,30 @@ export class LandingComponent implements OnInit {
   }
 
   // ── Real Booking Modal Engine ─────────────────────────────────────
-  openBooking(doc: DoctorCardDisplay, clinicName: string): void {
+  openBooking(doc: DoctorCardDisplay, clinicId: string, clinicName: string): void {
     this.bookingDoctor = doc;
     this.bookingClinicName = clinicName;
     this.bookingModalOpen = true;
     this.bookingReason = '';
 
-    // Provide default time slots immediately so modal opens with selectable slots
-    this.availableSlots = [
-      { slotId: 'slot-1', dcId: doc.dcId || 'dc-1', slotDate: this.selectedDate, startTime: '09:00:00', endTime: '09:30:00', sessionType: 'IN_CLINIC' as any, status: SlotStatus.AVAILABLE, createdAt: '' },
-      { slotId: 'slot-2', dcId: doc.dcId || 'dc-1', slotDate: this.selectedDate, startTime: '11:00:00', endTime: '11:30:00', sessionType: 'IN_CLINIC' as any, status: SlotStatus.AVAILABLE, createdAt: '' },
-      { slotId: 'slot-3', dcId: doc.dcId || 'dc-1', slotDate: this.selectedDate, startTime: '14:00:00', endTime: '14:30:00', sessionType: 'IN_CLINIC' as any, status: SlotStatus.AVAILABLE, createdAt: '' },
-      { slotId: 'slot-4', dcId: doc.dcId || 'dc-1', slotDate: this.selectedDate, startTime: '16:30:00', endTime: '17:00:00', sessionType: 'IN_CLINIC' as any, status: SlotStatus.AVAILABLE, createdAt: '' }
-    ];
-    this.selectedSlot = this.availableSlots[0];
+    // Clear available slots initially to avoid submitting fake slots
+    this.availableSlots = [];
+    this.selectedSlot = null;
 
-    // Fetch real placement dcId for doctor if available
+    // Fetch real placement dcId for doctor matching this clinic
     this.doctorService.getDoctorClinics(doc.doctorId).subscribe({
       next: (dcList) => {
         if (dcList && dcList.length > 0) {
-          doc.dcId = dcList[0].dcId;
+          const match = dcList.find(dc => dc.clinicId === clinicId);
+          if (match) {
+            doc.dcId = match.dcId;
+          } else {
+            doc.dcId = dcList[0].dcId;
+          }
           this.fetchRealSlotsForDoctor(doc.dcId, this.selectedDate);
         }
       },
-      error: () => {}
+      error: () => { }
     });
   }
 
@@ -433,12 +506,13 @@ export class LandingComponent implements OnInit {
     this.doctorService.getAvailableSlots(dcId, date).subscribe({
       next: (slots) => {
         const available = slots.filter(s => s.status === SlotStatus.AVAILABLE);
-        if (available.length > 0) {
-          this.availableSlots = available;
-          this.selectedSlot = available[0];
-        }
+        this.availableSlots = available;
+        this.selectedSlot = available.length > 0 ? available[0] : null;
       },
-      error: () => {}
+      error: () => {
+        this.availableSlots = [];
+        this.selectedSlot = null;
+      }
     });
   }
 
@@ -552,7 +626,7 @@ export class LandingComponent implements OnInit {
           this.selectedClinicDetail = detail;
         }
       },
-      error: () => {}
+      error: () => { }
     });
   }
 
@@ -579,7 +653,7 @@ export class LandingComponent implements OnInit {
   // Helpers
   getCityName(cityId: string): string {
     const c = this.cities.find(x => x.cityId === cityId);
-    return c ? c.nameEn : 'Saudi Arabia';
+    return c ? this.languageService.translate(c.nameEn, c.nameAr) : this.languageService.translate('Saudi Arabia', 'المملكة العربية السعودية');
   }
 
   getLogoUrl(logoPath?: string): string {

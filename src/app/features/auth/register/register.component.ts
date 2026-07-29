@@ -5,6 +5,8 @@ import { Router, RouterLink } from '@angular/router';
 import { switchMap } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { UiService } from '../../../core/services/ui.service';
+import { LanguageService } from '../../../core/services/language.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { UserRole, Gender } from '../../../core/models/auth.model';
 import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
 import { environment } from '../../../../environments/environment';
@@ -12,7 +14,7 @@ import { environment } from '../../../../environments/environment';
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, CustomSelectComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, CustomSelectComponent, TranslatePipe],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
 })
@@ -21,27 +23,34 @@ export class RegisterComponent {
   private authService = inject(AuthService);
   private uiService = inject(UiService);
   private router = inject(Router);
+  public languageService = inject(LanguageService);
 
   loginWithGoogle(): void {
     window.location.href = `${environment.apiUrl}/oauth2/authorization/google`;
   }
 
-  public roles = [
-    { label: 'Patient', value: UserRole.PATIENT },
-    { label: 'Doctor', value: UserRole.DOCTOR },
-    { label: 'Clinic Administrator', value: UserRole.CLINIC_ADMIN }
-  ];
+  get roles() {
+    return [
+      { label: this.languageService.translate('Patient', 'مريض'), value: UserRole.PATIENT },
+      { label: this.languageService.translate('Doctor', 'طبيب'), value: UserRole.DOCTOR },
+      { label: this.languageService.translate('Clinic Administrator', 'مدير عيادة'), value: UserRole.CLINIC_ADMIN }
+    ];
+  }
 
-  public genders = [
-    { label: 'Male', value: Gender.MALE },
-    { label: 'Female', value: Gender.FEMALE },
-    { label: 'Prefer not to say', value: Gender.PREFER_NOT_TO_SAY }
-  ];
+  get genders() {
+    return [
+      { label: this.languageService.translate('Male', 'ذكر'), value: Gender.MALE },
+      { label: this.languageService.translate('Female', 'أنثى'), value: Gender.FEMALE },
+      { label: this.languageService.translate('Prefer not to say', 'أفضل عدم الإفصاح'), value: Gender.PREFER_NOT_TO_SAY }
+    ];
+  }
 
-  public languages = [
-    { label: 'English (EN)', value: 'en' },
-    { label: 'Arabic (AR)', value: 'ar' }
-  ];
+  get languages() {
+    return [
+      { label: this.languageService.translate('English (EN)', 'الإنجليزية (EN)'), value: 'en' },
+      { label: this.languageService.translate('Arabic (AR)', 'العربية (AR)'), value: 'ar' }
+    ];
+  }
 
   public registerForm: FormGroup = this.fb.group({
     fullName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],

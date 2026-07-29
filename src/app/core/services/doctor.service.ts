@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import {
   DoctorRequestDto,
@@ -34,7 +35,18 @@ export class DoctorService {
   }
 
   getDoctorProfile(id: string): Observable<DoctorDetailResponse> {
-    return this.http.get<DoctorDetailResponse>(`${environment.apiUrl}/api/medconsult/doctors/profile/${id}`);
+    return forkJoin({
+      profile: this.http.get<DoctorDetailResponse>(`${environment.apiUrl}/api/medconsult/doctors/profile/${id}`),
+      languages: this.getDoctorLanguages(id).pipe(catchError(() => of([]))),
+      qualifications: this.getDoctorQualifications(id).pipe(catchError(() => of([])))
+    }).pipe(
+      map(res => {
+        const profile = res.profile;
+        profile.languages = res.languages;
+        profile.qualifications = res.qualifications;
+        return profile;
+      })
+    );
   }
 
   addDoctor(dto: DoctorRequestDto): Observable<DoctorResponseDto> {

@@ -1,18 +1,21 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DoctorService } from '../../core/services/doctor.service';
 import { ReferenceService } from '../../core/services/reference.service';
 import { UiService } from '../../core/services/ui.service';
+import { LanguageService } from '../../core/services/language.service';
+import { ClinicService } from '../../core/services/clinic.service';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { DoctorDetailResponse } from '../../core/models/doctor.model';
 import { SpecialtyResponseDto, LanguageResponseDto } from '../../core/models/reference.model';
 import { forkJoin, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-doctor-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe, RouterLink],
   templateUrl: './doctor-detail.component.html',
   styleUrls: ['./doctor-detail.component.css']
 })
@@ -21,6 +24,8 @@ export class DoctorDetailComponent implements OnInit {
   private doctorService = inject(DoctorService);
   private referenceService = inject(ReferenceService);
   private uiService = inject(UiService);
+  public languageService = inject(LanguageService);
+  private clinicService = inject(ClinicService);
 
   public doctorDetail: DoctorDetailResponse | null = null;
   public doctorId: string | null = null;
@@ -47,7 +52,42 @@ export class DoctorDetailComponent implements OnInit {
         this.doctorDetail = res.profile;
         this.globalSpecialties = res.specialties;
         this.globalLanguages = res.languages;
-        this.uiService.hideLoading();
+        
+        // Enrich clinics with real names from clinicService
+        if (this.doctorDetail && this.doctorDetail.clinics && this.doctorDetail.clinics.length > 0) {
+          const clinicCalls = this.doctorDetail.clinics.map(c => 
+            forkJoin({
+              clinic: this.clinicService.getClinicById(c.clinicId).pipe(catchError(() => of(null))),
+              branches: this.clinicService.getClinicBranches(c.clinicId).pipe(catchError(() => of([])))
+            }).pipe(catchError(() => of(null)))
+          );
+          forkJoin(clinicCalls).subscribe({
+            next: (clinicsRes) => {
+              if (this.doctorDetail && this.doctorDetail.clinics) {
+                this.doctorDetail.clinics.forEach((c, idx) => {
+                  const res = clinicsRes[idx];
+                  if (res && res.clinic) {
+                    (c as any).clinicNameEn = res.clinic.nameEn;
+                    (c as any).clinicNameAr = res.clinic.nameAr;
+                    if (res.branches) {
+                      const br = res.branches.find((b: any) => b.branchId === c.branchId);
+                      if (br) {
+                        (c as any).branchNameEn = br.branchNameEn;
+                        (c as any).branchNameAr = br.branchNameAr;
+                      }
+                    }
+                  }
+                });
+              }
+              this.uiService.hideLoading();
+            },
+            error: () => {
+              this.uiService.hideLoading();
+            }
+          });
+        } else {
+          this.uiService.hideLoading();
+        }
       },
       error: (err) => {
         this.uiService.hideLoading();
@@ -92,11 +132,11 @@ export class DoctorDetailComponent implements OnInit {
 
   getSpecialtyName(specialtyId: string): string {
     const specialty = this.globalSpecialties.find(s => s.specialtyId === specialtyId);
-    return specialty ? specialty.nameEn : 'Specialist';
+    return specialty ? this.languageService.translate(specialty.nameEn, specialty.nameAr) : 'Specialist';
   }
 
   getLanguageName(languageId: string): string {
     const lang = this.globalLanguages.find(l => l.languageId === languageId);
-    return lang ? lang.nameEn : 'Unknown Language';
+    return lang ? this.languageService.translate(lang.nameEn, lang.nameAr) : 'Unknown Language';
   }
 }

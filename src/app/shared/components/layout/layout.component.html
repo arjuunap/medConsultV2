@@ -20,19 +20,23 @@
         class="menu-item"
       >
         <span class="menu-icon">{{ item.icon }}</span>
-        <span>{{ item.label }}</span>
+        <span>{{ item.label | translate }}</span>
       </a>
 
       <!-- Quick Public Portal Link -->
       <a routerLink="/" class="menu-item portal-link">
         <span class="menu-icon">🌐</span>
-        <span>Public Portal Home</span>
+        <span>{{ 'Public Portal Home' | translate }}</span>
       </a>
     </nav>
 
-    <div class="sidebar-footer">
+    <div class="sidebar-footer d-flex flex-col gap-2">
+      <!-- Language Switcher in Sidebar -->
+      <button class="btn btn-outline w-100 lang-toggle-btn" (click)="languageService.toggleLanguage()">
+        🌐 {{ languageService.currentLang() === 'en' ? 'العربية' : 'English' }}
+      </button>
       <button class="btn btn-outline w-100 logout-btn" (click)="handleLogout()">
-        🚪 Logout
+        🚪 {{ 'Logout' | translate }}
       </button>
     </div>
   </aside>
@@ -41,7 +45,7 @@
   <div class="main-area">
     <!-- Top Header Bar -->
     <header class="header">
-      <div class="d-flex align-center gap-3">
+      <div class="d-flex align-center gap-3 flex-wrap">
         <!-- Mobile Toggle Button -->
         <button class="hamburger-btn" (click)="toggleSidebar()" aria-label="Toggle navigation menu">
           <span></span>
@@ -50,11 +54,16 @@
         </button>
 
         <div class="page-title m-0">
-          Dashboard
+          {{ 'Dashboard Title' | translate }}
         </div>
         <a routerLink="/" class="btn btn-sm btn-outline-primary py-1 px-3 fs-xs rounded-pill portal-pill-btn">
-          🌐 View Public Portal
+          🌐 {{ 'View Public Portal' | translate }}
         </a>
+
+        <!-- Quick Language Toggle in Header -->
+        <button class="btn btn-sm btn-outline-secondary py-1 px-3 fs-xs rounded-pill lang-header-btn" (click)="languageService.toggleLanguage()">
+          🌐 {{ languageService.currentLang() === 'en' ? 'العربية' : 'English' }}
+        </button>
       </div>
 
       <div class="user-profile" *ngIf="authService.currentUser() as user">
@@ -66,7 +75,7 @@
           <span class="user-name">{{ user.fullName }}</span>
           <span class="user-role-badge">{{ user.role.replace('_', ' ') }}</span>
         </div>
-        <button class="btn btn-sm text-danger border-0 bg-transparent ms-2 cursor-pointer logout-icon-btn" (click)="handleLogout()" title="Logout">
+        <button class="btn btn-sm text-danger border-0 bg-transparent ms-2 cursor-pointer logout-icon-btn" (click)="handleLogout()" [title]="'Logout' | translate">
           🚪
         </button>
       </div>

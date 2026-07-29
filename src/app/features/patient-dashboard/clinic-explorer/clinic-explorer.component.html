@@ -1,0 +1,344 @@
+<div class="explorer-container">
+  <!-- Header Title -->
+  <div class="explorer-header-section">
+    <div class="header-content">
+      <span class="eyebrow-badge">🇸🇦 {{ 'SA MOH Verified Network' | translate }}</span>
+      <h1 class="page-title">{{ 'Clinics & Branches' | translate }}</h1>
+      <p class="page-subtitle">
+        {{ 'Search verified private clinics across Saudi Arabia. Browse doctors, filter by specialty, city, language,
+        and availability — and book real appointments online.' | translate }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Dashboard Columns Layout -->
+  <div class="explorer-grid">
+
+    <!-- COLUMN 1: Clinic Listing & Search -->
+    <div class="grid-column clinic-column">
+      <div class="column-card">
+        <div class="card-header-sticky">
+          <h2 class="column-title">🏢 {{ 'Clinics List' | translate }}</h2>
+          <form [formGroup]="searchForm" (ngSubmit)="onSearch()" class="search-form-wrapper">
+            <div class="input-wrapper">
+              <span class="search-icon">🔍</span>
+              <input type="text" formControlName="query" (input)="onSearch()"
+                [placeholder]="'Search clinics' | translate" class="search-input" />
+            </div>
+          </form>
+        </div>
+
+        <div class="scroll-content">
+          <div *ngIf="filteredClinics.length === 0" class="empty-state">
+            <span class="empty-icon">🏥</span>
+            <p>{{ 'No medical clinics found matching your current filter criteria.' | translate }}</p>
+          </div>
+
+          <div *ngFor="let clinic of filteredClinics" class="clinic-list-card"
+            [class.active]="selectedClinic?.clinicId === clinic.clinicId" (click)="selectClinic(clinic)">
+            <div class="card-banner-status">
+              <span *ngIf="clinic.mohVerified" class="verified-tag">✓ MOH Verified</span>
+              <span *ngIf="clinic.isActive" class="active-tag">🟢 Active</span>
+            </div>
+
+            <div class="card-main-info">
+              <div class="logo-placeholder-avatar">
+                <img *ngIf="clinic.logoUrl" [src]="apiUrl +'/'+ clinic.logoUrl" [alt]="clinic | translateObj:'name'"
+                  class="clinic-logo-img" />
+                <span *ngIf="!clinic.logoUrl" class="logo-initial">{{ (clinic.nameEn || '').substring(0,
+                  2).toUpperCase() }}</span>
+              </div>
+
+              <div class="info-text">
+                <h3 class="clinic-name">{{ clinic | translateObj:'name' }}</h3>
+                <div class="rating-reviews-line">
+                  <span class="stars-gold">★</span>
+                  <span class="rating-val">{{ clinic.overallRating || 4.9 }}</span>
+                  <span class="reviews-count">({{ clinic.reviewCount || 12 }} {{ 'reviews' | translate }})</span>
+                </div>
+                <div class="meta-row">
+                  <span class="meta-item">📞 {{ clinic.phonePrimary }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUMN 2: Clinic Detail & Branches -->
+    <div class="grid-column branch-column">
+      <div class="column-card placeholder-card" *ngIf="!selectedClinic">
+        <div class="centered-placeholder">
+          <span class="placeholder-icon pulse-animation">🏥</span>
+          <h3>{{ 'Select a clinic' | translate }}</h3>
+          <p>{{ 'Choose a clinic from the list to view its branches and specialties.' | translate }}</p>
+        </div>
+      </div>
+
+      <div class="column-card" *ngIf="selectedClinic">
+        <div class="scroll-content">
+          <!-- Clinic Detail Section -->
+          <div class="clinic-detail-header-card">
+            <div class="logo-title-row">
+              <div class="detail-logo-avatar">
+                <img *ngIf="selectedClinic.logoUrl" [src]="apiUrl + '/' + selectedClinic.logoUrl"
+                  [alt]="selectedClinic | translateObj:'name'" />
+                <span *ngIf="!selectedClinic.logoUrl">{{ (selectedClinic.nameEn || '').substring(0, 2).toUpperCase()
+                  }}</span>
+              </div>
+              <div>
+                <h2 class="detail-clinic-name">{{ selectedClinic | translateObj:'name' }}</h2>
+                <p class="license-number">{{ 'MOH License:' | translate }} {{ selectedClinic.mohLicenseNumber ||
+                  'MOH-SA-10023' }}</p>
+              </div>
+            </div>
+
+            <p class="detail-description">
+              {{ (selectedClinic | translateObj:'description') || ('Premier medical facility description' | translate)
+              }}
+            </p>
+
+            <div class="detail-contact-strip">
+              <span *ngIf="selectedClinic.website"><a [href]="selectedClinic.website" target="_blank"
+                  class="clinic-web-link">🌐 {{ selectedClinic.website }}</a></span>
+              <span *ngIf="selectedClinic.email">✉️ {{ selectedClinic.email }}</span>
+              <span>📞 {{ selectedClinic.phonePrimary }}</span>
+            </div>
+          </div>
+
+          <!-- Branches Section -->
+          <div class="branches-list-section">
+            <h3 class="section-subtitle">📍 {{ 'Branches & Locations' | translate }}</h3>
+
+            <div *ngIf="!selectedClinic.branches || selectedClinic.branches.length === 0" class="empty-state">
+              <p>{{ 'No active clinic branch locations assigned.' | translate }}</p>
+            </div>
+
+            <div *ngFor="let branch of selectedClinic.branches" class="branch-list-card"
+              [class.active]="selectedBranch?.branchId === branch.branchId" (click)="selectBranch(branch)">
+              <div class="branch-card-header">
+                <h4 class="branch-name">{{ branch | translateObj:'branchName' }}</h4>
+                <span *ngIf="branch.isPrimary" class="primary-badge">{{ 'Primary Location' | translate }}</span>
+              </div>
+              <p class="branch-address">📍 {{ branch.addressLine1 }} {{ branch.addressLine2 }}</p>
+              <div class="branch-contact-line">
+                <span *ngIf="branch.phone">📞 {{ branch.phone }}</span>
+                <span *ngIf="branch.email">✉️ {{ branch.email }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUMN 3: Branch Info & Doctors -->
+    <div class="grid-column doctor-column">
+      <div class="column-card placeholder-card" *ngIf="!selectedBranch">
+        <div class="centered-placeholder">
+          <span class="placeholder-icon">📍</span>
+          <h3>{{ 'Select a branch' | translate }}</h3>
+          <p>{{ 'Choose a clinic branch to view its operating hours and assigned specialist doctors.' | translate }}</p>
+        </div>
+      </div>
+
+      <div class="column-card" *ngIf="selectedBranch">
+        <div class="scroll-content">
+          <!-- Selected Branch Header -->
+          <div class="branch-header-card">
+            <h3 class="branch-header-title">🏢 {{ selectedBranch | translateObj:'branchName' }}</h3>
+            <p class="branch-header-sub">📍 {{ selectedBranch.addressLine1 }}</p>
+
+            <!-- Operating Hours Accordion/Section -->
+            <div class="operating-hours-box">
+              <h4 class="box-title">⏰ {{ 'Availability & Slots' | translate }}</h4>
+              <div class="hours-grid">
+                <div *ngFor="let hr of branchOperatingHours" class="hours-row" [class.closed]="hr.isClosed">
+                  <span class="day-label">{{ getDaysOfWeekName(hr.dayOfWeek) }}</span>
+                  <span class="time-label" *ngIf="!hr.isClosed">⏰ {{ hr.openTime }} - {{ hr.closeTime }}</span>
+                  <span class="time-label closed-text" *ngIf="hr.isClosed">🔴 {{ 'Closed' | translate }}</span>
+                </div>
+                <div *ngIf="branchOperatingHours.length === 0" class="no-hours-text">
+                  {{ 'No schedules listed for this branch.' | translate }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Doctors roster at this branch -->
+          <div class="doctors-roster-section">
+            <h3 class="section-subtitle">👨‍⚕️ {{ 'Doctors Roster' | translate }}</h3>
+
+            <div *ngIf="branchDoctors.length === 0" class="empty-state">
+              <span class="empty-icon">🩺</span>
+              <p>{{ 'No active clinic branch locations assigned to this doctor.' | translate }}</p>
+            </div>
+
+            <div *ngFor="let item of branchDoctors" class="doctor-profile-card">
+              <!-- Doctor Card Header -->
+              <div class="doctor-card-main">
+                <div class="doctor-avatar-circle" [style.backgroundColor]="getAvatarBg(item.doctor.fullName)"
+                  [style.color]="getAvatarColor(item.doctor.fullName)">
+                  {{ getInitials(item.doctor.fullName) }}
+                </div>
+                <div class="doctor-primary-details">
+                  <h4 class="doctor-name">
+                    {{ item.doctor.title === 'DR' ? ('Dr. ' | translate) : '' }}{{ item.doctor.fullName }}
+                  </h4>
+                  <p class="doctor-department">🩺 {{ item.dcLink.department }}</p>
+
+                  <div class="doctor-badge-row">
+                    <span class="exp-badge">🏆 {{ item.doctor.experienceYears }} {{ 'Years Exp' | translate }}</span>
+                    <span class="fee-badge">💰 {{ item.dcLink.consultationFeeSar }} SAR</span>
+                  </div>
+
+                  <div class="rating-reviews-line">
+                    <span class="stars-gold">★</span>
+                    <span class="rating-val">{{ item.doctor.overallRating || 5.0 }}</span>
+                    <span class="reviews-count">({{ item.doctor.reviewCount || 15 }} {{ 'reviews' | translate }})</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Doctor Card Body -->
+              <div class="doctor-card-body">
+                <h5 class="body-sub-title">{{ 'Professional Biography' | translate }}</h5>
+                <p class="doctor-bio">{{ (item.doctor | translateObj:'bio') || ('No bio notes provided.' | translate) }}
+                </p>
+
+                <!-- Spoken languages -->
+                <div class="languages-line" *ngIf="item.languages && item.languages.length > 0">
+                  <strong>💬 {{ 'Spoken Languages' | translate }}:</strong>
+                  <span *ngFor="let lang of item.languages" class="lang-pill">
+                    {{ getLanguageName(lang.languageId) }}
+                  </span>
+                </div>
+
+                <!-- Academic Qualifications -->
+                <div class="qualifications-list" *ngIf="item.qualifications && item.qualifications.length > 0">
+                  <h5 class="body-sub-title">🎓 {{ 'Academic Qualifications' | translate }}</h5>
+                  <div *ngFor="let qual of item.qualifications" class="qual-item">
+                    <span class="qual-degree">🎓 {{ qual.degree }}</span>
+                    <span class="qual-inst">- {{ qual.institution }}, {{ qual.country }} ({{ qual.yearObtained
+                      }})</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Book Button -->
+              <div class="doctor-card-action">
+                <button class="btn-book-now" (click)="openBooking(item.doctor, item.dcLink)">
+                  📅 {{ 'Book appointment' | translate }}
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOOKING MODAL DIALOG -->
+  <div class="booking-modal-overlay" *ngIf="bookingModalOpen" (click)="closeBooking()">
+    <div class="booking-modal-card" (click)="$event.stopPropagation()">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h3 class="modal-title">📅 {{ 'Schedule Your Consultation' | translate }}</h3>
+        <button class="btn-close-modal" (click)="closeBooking()">✕</button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body-content">
+        <!-- Selected Context -->
+        <div class="selected-details-summary" *ngIf="bookingDoctor && bookingDcLink">
+          <div class="summary-doctor-profile">
+            <span class="doctor-icon">👨‍⚕️</span>
+            <div>
+              <h4 class="summary-doc-name">
+                {{ bookingDoctor.title === 'DR' ? ('Dr. ' | translate) : '' }}{{ bookingDoctor.fullName }}
+              </h4>
+              <p class="summary-doc-subtitle">
+                {{ bookingDcLink.department }} · {{ selectedClinic | translateObj:'name' }} - {{ selectedBranch |
+                translateObj:'branchName' }}
+              </p>
+              <p class="summary-fee-line">💰 {{ 'Standard Fee:' | translate }} <strong>{{
+                  bookingDcLink.consultationFeeSar }} SAR</strong></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Date & Available Slots Picker -->
+        <div class="modal-form-section">
+          <label class="section-label">📅 {{ 'Select Appointment Date *' | translate }}</label>
+          <input type="date" [value]="bookingDate" (change)="onDateChange($event)" class="modal-date-picker-input"
+            [min]="bookingDate" />
+
+          <!-- Slots lists -->
+          <div class="available-slots-container">
+            <label class="section-label">⏰ {{ 'Available Slots for' | translate }} {{ bookingDate }}</label>
+
+            <div *ngIf="availableSlots.length === 0" class="no-slots-warning-card">
+              ⚠️ {{ 'No open slots warning' | translate }}
+            </div>
+
+            <div class="slots-grid-wrapper" *ngIf="availableSlots.length > 0">
+              <button *ngFor="let slot of availableSlots" type="button" class="slot-time-btn"
+                [class.selected]="selectedSlot?.slotId === slot.slotId" (click)="selectSlot(slot)">
+                {{ slot.startTime }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Details booking inputs -->
+        <form [formGroup]="bookingForm" class="booking-wizard-form">
+          <div class="form-row-grid">
+            <div class="form-control-wrapper">
+              <label class="section-label">{{ 'Appointment Type *' | translate }}</label>
+              <select formControlName="appointmentType" class="modal-select-input">
+                <option *ngFor="let type of appointmentTypes" [value]="type">
+                  {{ type.replace('_', ' ') }}
+                </option>
+              </select>
+            </div>
+
+            <div class="form-control-wrapper">
+              <label class="section-label">{{ 'Session Mode *' | translate }}</label>
+              <select formControlName="sessionType" class="modal-select-input">
+                <option *ngFor="let sMode of sessionTypes" [value]="sMode">
+                  {{ sMode.replace('_', ' ') }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-control-wrapper">
+            <label class="section-label">{{ 'Reason for Visit / Symptoms (Optional)' | translate }}</label>
+            <textarea formControlName="reason" class="modal-textarea-input"
+              [placeholder]="'Symptoms placeholder' | translate"></textarea>
+            <span class="char-counter" *ngIf="bookingForm.value.reason">
+              {{ bookingForm.value.reason.length }}/255
+            </span>
+          </div>
+        </form>
+
+      </div>
+
+      <!-- Modal Footer actions -->
+      <div class="modal-footer">
+        <button class="btn-modal-action btn-cancel-booking" (click)="closeBooking()">
+          {{ 'Cancel' | translate }}
+        </button>
+        <button class="btn-modal-action btn-confirm-booking" [disabled]="isSubmittingBooking || !selectedSlot"
+          (click)="confirmBooking()">
+          <span *ngIf="isSubmittingBooking">⏳ {{ 'Processing Booking...' | translate }}</span>
+          <span *ngIf="!isSubmittingBooking">🚀 {{ 'Confirm & Book Appointment' | translate }}</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

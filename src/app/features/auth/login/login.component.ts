@@ -7,10 +7,12 @@ import { UiService } from '../../../core/services/ui.service';
 import { UserRole } from '../../../core/models/auth.model';
 import { environment } from '../../../../environments/environment';
 
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, TranslatePipe],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })

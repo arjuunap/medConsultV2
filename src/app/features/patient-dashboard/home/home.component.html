@@ -4,15 +4,15 @@
   <div class="welcome-banner">
     <div>
       <h1 class="welcome-title">
-        Hello, {{ currentUser()?.fullName || 'Welcome!' }} 👋
+        {{ 'Hello,' | translate }} {{ currentUser()?.fullName || ('Welcome!' | translate) }} 👋
       </h1>
       
       <!-- If profile is initialized -->
       <div *ngIf="!needProfileInit">
-        <p class="welcome-subtitle">Here is your general health summary and upcoming care schedule.</p>
+        <p class="welcome-subtitle">{{ 'Here is your general health summary and upcoming care schedule.' | translate }}</p>
         <div class="profile-pills">
-          <span class="profile-pill">🆔 National ID: {{ patientProfile?.nationalId || 'N/A' }}</span>
-          <span class="profile-pill">🩸 Blood Type: {{ patientProfile?.bloodType || 'Unknown' }}</span>
+          <span class="profile-pill">🆔 {{ 'National ID:' | translate }} {{ patientProfile?.nationalId || 'N/A' }}</span>
+          <span class="profile-pill">🩸 {{ 'Blood Type:' | translate }} {{ patientProfile?.bloodType || ('Unknown' | translate) }}</span>
           <span class="profile-pill" *ngIf="patientProfile?.nationality">🌍 {{ patientProfile?.nationality }}</span>
         </div>
       </div>
@@ -20,9 +20,9 @@
       <!-- If profile is NOT initialized -->
       <div *ngIf="needProfileInit">
         <p class="welcome-subtitle text-warning fw-semibold">
-          Welcome to MedConsult! Please complete your patient profile to unlock bookings and health records.
+          {{ 'Welcome to MedConsult! Please complete your patient profile to unlock bookings and health records.' | translate }}
         </p>
-        <a routerLink="/patient/profile" class="btn btn-primary btn-action-touch mt-2">Initialize Profile Now</a>
+        <a routerLink="/patient/profile" class="btn btn-primary btn-action-touch mt-2">{{ 'Initialize Profile Now' | translate }}</a>
       </div>
     </div>
 
@@ -34,24 +34,24 @@
     <a routerLink="/patient/book-appointment" class="action-card">
       <div class="action-icon">📅</div>
       <div class="action-info">
-        <h3>Book Appointment</h3>
-        <p>Find doctors, clinics & slots</p>
+        <h3>{{ 'Book Appointment' | translate }}</h3>
+        <p>{{ 'Find doctors, clinics & slots' | translate }}</p>
       </div>
     </a>
 
     <a routerLink="/patient/emr" class="action-card">
       <div class="action-icon">📋</div>
       <div class="action-info">
-        <h3>View EMR Records</h3>
-        <p>Prescriptions, vitals & labs</p>
+        <h3>{{ 'View EMR Records' | translate }}</h3>
+        <p>{{ 'Prescriptions, vitals & labs' | translate }}</p>
       </div>
     </a>
 
     <a routerLink="/patient/consultations" class="action-card">
       <div class="action-icon">💬</div>
       <div class="action-info">
-        <h3>Message Doctor</h3>
-        <p>Tele-consultations & advice</p>
+        <h3>{{ 'Message Doctor' | translate }}</h3>
+        <p>{{ 'Tele-consultations & advice' | translate }}</p>
       </div>
     </a>
   </div>
@@ -60,10 +60,10 @@
   <div class="section-card" *ngIf="!needProfileInit">
     <div class="section-header">
       <h2 class="section-title">
-        <span>📅</span> Upcoming Consultations ({{ upcomingAppointments.length }})
+        <span>📅</span> {{ 'Upcoming Consultations' | translate }} ({{ upcomingAppointments.length }})
       </h2>
       <a routerLink="/patient/book-appointment" class="btn btn-accent btn-action-touch">
-        + Book New Appointment
+        + {{ 'Book New Appointment' | translate }}
       </a>
     </div>
 
@@ -82,10 +82,10 @@
         </div>
 
         <div class="d-flex align-center gap-3 flex-wrap">
-          <span class="app-status-badge">{{ app.appointmentType.replace('_', ' ') }}</span>
-          <span class="badge badge-success">{{ app.status }}</span>
+          <span class="app-status-badge">{{ app.appointmentType.replace('_', ' ') | translate }}</span>
+          <span class="badge badge-success">{{ app.status | translate }}</span>
           <button class="btn btn-outline btn-danger btn-action-touch" (click)="openCancelModal(app)">
-            Cancel
+            {{ 'Cancel' | translate }}
           </button>
         </div>
       </div>
@@ -93,10 +93,10 @@
 
     <!-- Empty State -->
     <div *ngIf="upcomingAppointments.length === 0" class="empty-state-box">
-      <p class="fs-md fw-semibold mb-2">No upcoming appointments booked.</p>
-      <p class="fs-sm mb-3">Need to see a doctor? Book a new consultation slot in seconds.</p>
+      <p class="fs-md fw-semibold mb-2">{{ 'No upcoming appointments booked.' | translate }}</p>
+      <p class="fs-sm mb-3">{{ 'Need to see a doctor? Book a new consultation slot in seconds.' | translate }}</p>
       <a routerLink="/patient/book-appointment" class="btn btn-primary btn-action-touch">
-        Book Appointment
+        {{ 'Book Appointment' | translate }}
       </a>
     </div>
   </div>
@@ -107,29 +107,31 @@
 <div *ngIf="selectedCancelAppointment" class="modal-backdrop">
   <div class="modal-content">
     <div class="modal-header">
-      <h3 class="fs-xl text-danger m-0">Cancel Appointment</h3>
+      <h3 class="fs-xl text-danger m-0">{{ 'Cancel Appointment' | translate }}</h3>
     </div>
     
     <div class="modal-body">
-      <p class="text-muted mb-4 fs-sm">Are you sure you want to cancel your consultation with
-        <strong class="text-dark">{{ selectedCancelAppointment.doctorName }}</strong> on {{
-        selectedCancelAppointment.scheduledDate }}?</p>
+      <p class="text-muted mb-4 fs-sm">
+        {{ 'Are you sure you want to cancel your consultation with' | translate }}
+        <strong class="text-dark">{{ selectedCancelAppointment.doctorName }}</strong> 
+        {{ 'on' | translate }} {{ selectedCancelAppointment.scheduledDate }}?
+      </p>
 
       <form [formGroup]="cancelForm" (ngSubmit)="submitCancel()">
         <div class="form-group m-0">
-          <label class="form-label" for="cancelReason">Reason for Cancellation</label>
+          <label class="form-label" for="cancelReason">{{ 'Reason for Cancellation' | translate }}</label>
           <textarea id="cancelReason" formControlName="cancelReason" class="form-control"
-            placeholder="Please explain why you are cancelling..." rows="3"></textarea>
+            [placeholder]="'Cancel placeholder' | translate" rows="3"></textarea>
           <div *ngIf="cancelForm.get('cancelReason')?.touched && cancelForm.get('cancelReason')?.invalid" class="error-text">
-            Cancellation reason is required (max 255 chars).
+            {{ 'Cancel error' | translate }}
           </div>
         </div>
       </form>
     </div>
 
     <div class="modal-footer">
-      <button type="button" class="btn btn-outline" (click)="closeCancelModal()">Go Back</button>
-      <button type="button" class="btn btn-danger" (click)="submitCancel()">Confirm Cancellation</button>
+      <button type="button" class="btn btn-outline" (click)="closeCancelModal()">{{ 'Go Back' | translate }}</button>
+      <button type="button" class="btn btn-danger" (click)="submitCancel()">{{ 'Confirm Cancellation' | translate }}</button>
     </div>
   </div>
 </div>

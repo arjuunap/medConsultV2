@@ -12,11 +12,13 @@ import { AppointmentType, SessionType } from '../../../core/models/appointment.m
 import { ClinicService } from '../../../core/services/clinic.service';
 import { forkJoin, map, of } from 'rxjs';
 import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
+import { LanguageService } from '../../../core/services/language.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-book-appointment',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, CustomSelectComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, CustomSelectComponent, TranslatePipe],
   templateUrl: './book-appointment.component.html',
   styleUrls: ['./book-appointment.component.css']
 })
@@ -28,6 +30,7 @@ export class BookAppointmentComponent implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private clinicService = inject(ClinicService);
+  private langService = inject(LanguageService);
 
   public patientId = '';
   public needProfileInit = false;
@@ -40,6 +43,7 @@ export class BookAppointmentComponent implements OnInit {
   public sessionTypes: string[] = Object.values(SessionType);
 
   get doctorSelectOptions() {
+    const isAr = this.langService.isArabic;
     return this.doctors.map(doc => {
       const title = doc.title || '';
       const name = doc.fullName || '';
@@ -48,30 +52,38 @@ export class BookAppointmentComponent implements OnInit {
         ? name
         : `${title ? title + '. ' : ''}${name}`;
       
+      const yrsText = isAr ? 'سنة خبرة' : 'yrs exp';
+      const feeText = isAr ? 'رسوم الكشف القياسية: ريال سعودي' : 'Standard Fee: SAR';
       return {
-        label: `👨‍⚕️ ${displayName} (${doc.experienceYears} yrs exp - Standard Fee: SAR ${doc.consultationFeeSar || 150})`,
+        label: `👨‍⚕️ ${displayName} (${doc.experienceYears} ${yrsText} - ${feeText} ${doc.consultationFeeSar || 150})`,
         value: doc.doctorId
       };
     });
   }
 
   get clinicSelectOptions() {
-    return this.doctorClinics.map(dc => ({
-      label: `🏥 ${dc.clinicNameEn} - ${dc.branchNameEn} (SAR ${dc.consultationFeeSar || 150})`,
-      value: dc.dcId
-    }));
+    const isAr = this.langService.isArabic;
+    return this.doctorClinics.map(dc => {
+      const clinicName = isAr ? (dc.clinicNameAr || dc.clinicNameEn) : dc.clinicNameEn;
+      const branchName = isAr ? (dc.branchNameAr || dc.branchNameEn) : dc.branchNameEn;
+      const sarText = isAr ? 'ريال سعودي' : 'SAR';
+      return {
+        label: `🏥 ${clinicName} - ${branchName} (${sarText} ${dc.consultationFeeSar || 150})`,
+        value: dc.dcId
+      };
+    });
   }
 
   get appointmentTypeOptions() {
     return this.appointmentTypes.map(type => ({
-      label: type.replace(/_/g, ' '),
+      label: this.langService.instant(type.replace(/_/g, ' ')),
       value: type
     }));
   }
 
   get sessionTypeOptions() {
     return this.sessionTypes.map(sType => ({
-      label: sType.replace(/_/g, ' '),
+      label: this.langService.instant(sType.replace(/_/g, ' ')),
       value: sType
     }));
   }
@@ -146,8 +158,10 @@ export class BookAppointmentComponent implements OnInit {
           }).pipe(
             map(res => {
               dc.clinicNameEn = res.clinic.nameEn;
+              dc.clinicNameAr = res.clinic.nameAr;
               const branch = res.branches.find(b => b.branchId === dc.branchId);
               dc.branchNameEn = branch ? branch.branchNameEn : 'Unknown Branch';
+              dc.branchNameAr = branch ? branch.branchNameAr : 'فرع غير معروف';
               return dc;
             })
           );

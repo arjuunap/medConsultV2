@@ -1,8 +1,8 @@
 <!-- EMR Records template -->
 <div *ngIf="needProfileInit" class="card p-6 text-center mb-5 border-0" style="border-left: 5px solid var(--warning); background-color: #fffbeb;">
-  <h3 class="mb-2" style="color: #b45309;">Registration Required</h3>
-  <p class="mb-4" style="color: #78350f;">Please initialize your General Patient Profile before accessing your Electronic Medical Records (EMR).</p>
-  <a routerLink="/patient/profile" class="btn btn-primary mx-auto">Setup Profile</a>
+  <h3 class="mb-2" style="color: #b45309;">{{ 'Registration Required' | translate }}</h3>
+  <p class="mb-4" style="color: #78350f;">{{ 'Please initialize your General Patient Profile before accessing your Electronic Medical Records (EMR).' | translate }}</p>
+  <a routerLink="/patient/profile" class="btn btn-primary mx-auto">{{ 'Setup Profile' | translate }}</a>
 </div>
 
 <div *ngIf="!needProfileInit" class="emr-container">
@@ -14,21 +14,21 @@
       [class.active]="activeTab === 'prescriptions'"
       (click)="switchTab('prescriptions')"
     >
-      💊 Prescriptions &amp; Adherence
+      💊 {{ 'Prescriptions & Adherence' | translate }}
     </button>
     <button 
       class="tab-btn" 
       [class.active]="activeTab === 'vitals'"
       (click)="switchTab('vitals')"
     >
-      📊 Vitals History Log
+      📊 {{ 'Vitals History Log' | translate }}
     </button>
     <button 
       class="tab-btn" 
       [class.active]="activeTab === 'labs'"
       (click)="switchTab('labs')"
     >
-      🔬 Lab Test Reports
+      🔬 {{ 'Lab Test Reports' | translate }}
     </button>
   </div>
 
@@ -37,30 +37,30 @@
     <div *ngFor="let rx of prescriptions" class="emr-card-item">
       <div class="emr-card-header">
         <div>
-          <h3 class="text-primary fs-lg m-0 fw-bold">Prescription Reference: {{ rx.naphiesReference || 'Local Record' }}</h3>
-          <span class="text-muted fs-sm mt-1 d-block">Issued: {{ rx.issuedDate | date:'longDate' }} | Valid Until: {{ rx.validUntil | date:'longDate' }}</span>
+          <h3 class="text-primary fs-lg m-0 fw-bold">{{ 'Prescription Reference:' | translate }} {{ rx.naphiesReference || ('Local Record' | translate) }}</h3>
+          <span class="text-muted fs-sm mt-1 d-block">{{ 'Issued:' | translate }} {{ rx.issuedDate | date:'longDate' }} | {{ 'Valid Until:' | translate }} {{ rx.validUntil | date:'longDate' }}</span>
         </div>
-        <span class="badge" [class.badge-success]="rx.status === 'ACTIVE'" [class.badge-danger]="rx.status === 'EXPIRED'">{{ rx.status }}</span>
+        <span class="badge" [class.badge-success]="rx.status === 'ACTIVE'" [class.badge-danger]="rx.status === 'EXPIRED'">{{ rx.status | translate }}</span>
       </div>
 
       <div class="mb-4">
-        <h4 class="fs-xs text-uppercase text-muted mb-2 fw-bold">Diagnosis &amp; Clinical Notes</h4>
-        <p class="fs-sm bg-light p-3 rounded-md m-0 border">{{ rx.diagnosisNotes || 'No diagnosis notes available.' }}</p>
+        <h4 class="fs-xs text-uppercase text-muted mb-2 fw-bold">{{ 'Diagnosis & Clinical Notes' | translate }}</h4>
+        <p class="fs-sm bg-light p-3 rounded-md m-0 border">{{ rx.diagnosisNotes || ('No diagnosis notes available.' | translate) }}</p>
       </div>
 
       <!-- Medication Cards Grid -->
       <div>
-        <h4 class="fs-xs text-uppercase text-muted mb-2 fw-bold">Prescribed Medications</h4>
+        <h4 class="fs-xs text-uppercase text-muted mb-2 fw-bold">{{ 'Prescribed Medications' | translate }}</h4>
         <div class="medication-card-grid">
           <div *ngFor="let item of selectedRxItems[rx.prescriptionId]" class="med-card">
             <div class="d-flex justify-between align-start flex-wrap gap-2 mb-2">
               <div>
                 <strong class="text-primary fs-md d-block">{{ item.drugName }}</strong>
                 <div class="fs-sm text-dark mt-1">
-                  Dosage: {{ item.dosage }} | Route: {{ item.route }} | Frequency: {{ item.frequency }}
+                  {{ 'Dosage:' | translate }} {{ item.dosage }} | {{ 'Route:' | translate }} {{ item.route | translate }} | {{ 'Frequency:' | translate }} {{ item.frequency | translate }}
                 </div>
                 <div class="fs-xs text-muted mt-1">
-                  Duration: {{ item.durationDays }} Days | Refills: {{ item.refillsUsed }}/{{ item.refillsAllowed }} Used
+                  {{ 'Duration:' | translate }} {{ item.durationDays }} {{ 'Days' | translate }} | {{ 'Refills:' | translate }} {{ item.refillsUsed }}/{{ item.refillsAllowed }} {{ 'Used' | translate }}
                 </div>
               </div>
             </div>
@@ -73,18 +73,18 @@
             <div class="d-flex justify-between align-center pt-2 border-top flex-wrap gap-2">
               <div class="d-flex gap-2">
                 <button class="btn btn-accent btn-sm" (click)="logAdherence(item.itemId, true)">
-                  ✓ Took Today
+                  ✓ {{ 'Took Today' | translate }}
                 </button>
                 <button class="btn btn-outline btn-danger btn-sm" (click)="logAdherence(item.itemId, false, 'Patient skipped')">
-                  Skipped
+                  {{ 'Skipped' | translate }}
                 </button>
               </div>
               <div class="fs-xs text-muted">
-                Latest: 
+                {{ 'Latest:' | translate }} 
                 <span *ngIf="adherenceLogs[item.itemId] && adherenceLogs[item.itemId].length > 0; else noLogs">
-                  {{ adherenceLogs[item.itemId][0].taken ? 'Taken' : 'Skipped' }} on {{ adherenceLogs[item.itemId][0].logDate | date }}
+                  {{ (adherenceLogs[item.itemId][0].taken ? 'Taken' : 'Skipped') | translate }} {{ 'on' | translate }} {{ adherenceLogs[item.itemId][0].logDate | date }}
                 </span>
-                <ng-template #noLogs>None recorded</ng-template>
+                <ng-template #noLogs>{{ 'None recorded' | translate }}</ng-template>
               </div>
             </div>
           </div>
@@ -93,15 +93,15 @@
     </div>
     
     <div *ngIf="prescriptions.length === 0" class="text-center text-muted p-6 bg-white rounded-lg border shadow-sm">
-      No prescriptions found on your EMR file.
+      {{ 'No prescriptions found on your EMR file.' | translate }}
     </div>
   </div>
 
   <!-- TAB 2: VITALS LOG (Card-Grouped Cards instead of raw table) -->
   <div *ngIf="activeTab === 'vitals'">
     <div class="d-flex justify-between align-center mb-4">
-      <h3 class="fs-lg text-primary m-0 fw-bold">Vital Metrics History</h3>
-      <button class="btn btn-primary" (click)="openVitalModal()">+ Log New Vitals</button>
+      <h3 class="fs-lg text-primary m-0 fw-bold">{{ 'Vital Metrics History' | translate }}</h3>
+      <button class="btn btn-primary" (click)="openVitalModal()">+ {{ 'Log New Vitals' | translate }}</button>
     </div>
 
     <div class="vital-cards-grid" *ngIf="vitals.length > 0">
@@ -109,29 +109,29 @@
         <div class="d-flex justify-between align-center border-bottom pb-2 mb-3">
           <span class="fs-xs text-muted">🗓️ {{ v.recordedAt | date:'medium' }}</span>
           <span class="badge" [class.badge-success]="v.source==='PATIENT_APP'" [class.badge-info]="v.source==='DOCTOR_ENTRY'">
-            {{ v.source.replace('_', ' ') }}
+            {{ v.source | translate }}
           </span>
         </div>
 
         <div class="d-flex flex-col gap-2 fs-sm">
           <div class="d-flex justify-between">
-            <span class="text-muted">Blood Pressure:</span>
+            <span class="text-muted">{{ 'Blood Pressure:' | translate }}</span>
             <span class="fw-bold">{{ v.bloodPressureSystolic }}/{{ v.bloodPressureDiastolic }} mmHg</span>
           </div>
           <div class="d-flex justify-between">
-            <span class="text-muted">Heart Rate:</span>
+            <span class="text-muted">{{ 'Heart Rate:' | translate }}</span>
             <span class="fw-bold text-danger">{{ v.heartRateBpm }} BPM</span>
           </div>
           <div class="d-flex justify-between" *ngIf="v.bloodGlucoseMmol">
-            <span class="text-muted">Blood Glucose:</span>
+            <span class="text-muted">{{ 'Blood Glucose:' | translate }}</span>
             <span class="fw-bold">{{ v.bloodGlucoseMmol }} mmol/L</span>
           </div>
           <div class="d-flex justify-between" *ngIf="v.weightKg">
-            <span class="text-muted">Weight:</span>
+            <span class="text-muted">{{ 'Weight:' | translate }}</span>
             <span class="fw-bold">{{ v.weightKg }} kg</span>
           </div>
           <div class="d-flex justify-between" *ngIf="v.oxygenSaturation">
-            <span class="text-muted">O2 Saturation:</span>
+            <span class="text-muted">{{ 'O2 Saturation:' | translate }}</span>
             <span class="fw-bold">{{ v.oxygenSaturation }}%</span>
           </div>
         </div>
@@ -139,7 +139,7 @@
     </div>
 
     <div *ngIf="vitals.length === 0" class="text-center text-muted p-6 bg-white rounded-lg border shadow-sm">
-      No vitals records listed. Click above to log your first metric.
+      {{ 'No vitals records warning' | translate }}
     </div>
   </div>
 
@@ -149,35 +149,35 @@
       <div class="d-flex justify-between align-start border-bottom pb-3 mb-3 flex-wrap gap-3">
         <div>
           <h3 class="text-primary fs-lg m-0 fw-bold">{{ lab.labName }}</h3>
-          <span class="text-muted fs-sm mt-1 d-block">Report: {{ lab.reportType }} | Date: {{ lab.reportDate | date }}</span>
+          <span class="text-muted fs-sm mt-1 d-block">{{ 'Report:' | translate }} {{ lab.reportType | translate }} | {{ 'Date:' | translate }} {{ lab.reportDate | date }}</span>
         </div>
         <div class="d-flex gap-2 align-center">
           <span class="badge" [class.badge-danger]="lab.overallFlag === 'CRITICAL'" [class.badge-warning]="lab.overallFlag === 'ABNORMAL'" [class.badge-success]="lab.overallFlag === 'NORMAL'">
-            {{ lab.overallFlag }}
+            {{ lab.overallFlag | translate }}
           </span>
-          <span class="badge badge-info">{{ lab.status }}</span>
+          <span class="badge badge-info">{{ lab.status | translate }}</span>
         </div>
       </div>
 
       <div class="mb-3">
-        <h4 class="fs-xs text-uppercase text-muted mb-2 fw-bold">Doctor's Annotations</h4>
+        <h4 class="fs-xs text-uppercase text-muted mb-2 fw-bold">{{ 'Doctors Annotations' | translate }}</h4>
         <p class="fs-sm bg-light p-3 rounded-md m-0 border">
-          {{ lab.doctorAnnotation || 'No clinical annotation added.' }}
+          {{ lab.doctorAnnotation || ('No clinical annotation added.' | translate) }}
         </p>
       </div>
 
       <div *ngIf="lab.fileId" class="border-top pt-3 d-flex justify-between align-center flex-wrap gap-2">
         <span class="text-muted fs-sm d-flex align-center gap-1">
-          📎 <strong>Attachment Document</strong> (ID: {{ lab.fileId.substring(0, 8) }}...)
+          📎 <strong>{{ 'Attachment Document' | translate }}</strong> (ID: {{ lab.fileId.substring(0, 8) }}...)
         </span>
         <button class="btn btn-primary btn-sm" (click)="downloadLabFile(lab.fileId)">
-          ⬇️ Download Attachment
+          ⬇️ {{ 'Download Attachment' | translate }}
         </button>
       </div>
     </div>
 
     <div *ngIf="labResults.length === 0" class="text-center text-muted p-6 bg-white rounded-lg border shadow-sm">
-      No lab report files uploaded on your file.
+      {{ 'No lab report files warning' | translate }}
     </div>
   </div>
 
@@ -187,7 +187,7 @@
 <div *ngIf="isVitalModalOpen" class="modal-backdrop">
   <div class="modal-content">
     <div class="modal-header">
-      <h3 class="fs-xl text-primary m-0">Log New Vital Entry</h3>
+      <h3 class="fs-xl text-primary m-0">{{ 'Log New Vital Entry' | translate }}</h3>
       <button class="btn-close" (click)="closeVitalModal()">&times;</button>
     </div>
     
@@ -195,47 +195,47 @@
       <form [formGroup]="vitalForm" (ngSubmit)="submitVital()">
         <div class="form-row">
           <div class="form-group mb-3">
-            <label class="form-label" for="bpSystolic">Systolic BP (mmHg)</label>
+            <label class="form-label" for="bpSystolic">{{ 'Systolic BP (mmHg)' | translate }}</label>
             <input type="number" id="bpSystolic" formControlName="bloodPressureSystolic" class="form-control">
           </div>
           <div class="form-group mb-3">
-            <label class="form-label" for="bpDiastolic">Diastolic BP (mmHg)</label>
+            <label class="form-label" for="bpDiastolic">{{ 'Diastolic BP (mmHg)' | translate }}</label>
             <input type="number" id="bpDiastolic" formControlName="bloodPressureDiastolic" class="form-control">
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group mb-3">
-            <label class="form-label" for="hrBpm">Heart Rate (BPM)</label>
+            <label class="form-label" for="hrBpm">{{ 'Heart Rate (BPM)' | translate }}</label>
             <input type="number" id="hrBpm" formControlName="heartRateBpm" class="form-control">
           </div>
           <div class="form-group mb-3">
-            <label class="form-label" for="glucose">Blood Glucose (mmol/L)</label>
+            <label class="form-label" for="glucose">{{ 'Blood Glucose (mmol/L)' | translate }}</label>
             <input type="number" step="0.1" id="glucose" formControlName="bloodGlucoseMmol" class="form-control">
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group mb-3">
-            <label class="form-label" for="weight">Weight (kg)</label>
+            <label class="form-label" for="weight">{{ 'Weight (kg)' | translate }}</label>
             <input type="number" id="weight" formControlName="weightKg" class="form-control">
           </div>
           <div class="form-group mb-3">
-            <label class="form-label" for="temp">Body Temp (°C)</label>
+            <label class="form-label" for="temp">{{ 'Body Temp (°C)' | translate }}</label>
             <input type="number" step="0.1" id="temp" formControlName="temperatureC" class="form-control">
           </div>
         </div>
 
         <div class="form-group m-0">
-          <label class="form-label" for="vitalNotes">Log Notes</label>
-          <textarea id="vitalNotes" formControlName="notes" class="form-control" rows="2" placeholder="Context, symptom notes..."></textarea>
+          <label class="form-label" for="vitalNotes">{{ 'Log Notes' | translate }}</label>
+          <textarea id="vitalNotes" formControlName="notes" class="form-control" rows="2" [placeholder]="'Context, symptom notes placeholder' | translate"></textarea>
         </div>
       </form>
     </div>
 
     <div class="modal-footer">
-      <button type="button" class="btn btn-outline" (click)="closeVitalModal()">Cancel</button>
-      <button type="button" class="btn btn-accent" (click)="submitVital()" [disabled]="vitalForm.invalid">Record Vitals</button>
+      <button type="button" class="btn btn-outline" (click)="closeVitalModal()">{{ 'Cancel' | translate }}</button>
+      <button type="button" class="btn btn-accent" (click)="submitVital()" [disabled]="vitalForm.invalid">{{ 'Record Vitals' | translate }}</button>
     </div>
   </div>
 </div>

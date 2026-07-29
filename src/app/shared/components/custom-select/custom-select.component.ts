@@ -146,15 +146,13 @@ export class CustomSelectComponent implements ControlValueAccessor {
   }
 
   get displayLabel(): string {
+    const found = this.options?.find(opt => this.getOptionValue(opt) === this.selectedValue);
+    if (found) {
+      this.selectedOption = found;
+      return this.getOptionLabel(found);
+    }
     if (this.selectedOption !== null && this.selectedOption !== undefined) {
       return this.getOptionLabel(this.selectedOption);
-    }
-    if (this.selectedValue !== null && this.selectedValue !== undefined && this.selectedValue !== '') {
-      const found = this.options?.find(opt => this.getOptionValue(opt) === this.selectedValue);
-      if (found) {
-        this.selectedOption = found;
-        return this.getOptionLabel(found);
-      }
     }
     return this.placeholder;
   }

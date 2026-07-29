@@ -6,6 +6,8 @@ import { ReferenceService } from '../../../core/services/reference.service';
 import { UiService } from '../../../core/services/ui.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ClinicService } from '../../../core/services/clinic.service';
+import { LanguageService } from '../../../core/services/language.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { environment } from '../../../../environments/environment';
 import {
   DoctorDetailResponse, DoctorTitle,
@@ -20,7 +22,7 @@ import { catchError, map } from 'rxjs/operators';
 @Component({
   selector: 'app-doctor-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, CustomSelectComponent],
+  imports: [CommonModule, ReactiveFormsModule, CustomSelectComponent, TranslatePipe],
   templateUrl: './doctor-profile.component.html',
   styleUrls: ['./doctor-profile.component.css']
 })
@@ -31,6 +33,7 @@ export class DoctorProfileComponent implements OnInit {
   private authService = inject(AuthService);
   private clinicService = inject(ClinicService);
   private fb = inject(FormBuilder);
+  public languageService = inject(LanguageService);
 
   public apiUrl = environment.apiUrl;
   public doctorProfile: DoctorDetailResponse | null = null;
@@ -42,37 +45,41 @@ export class DoctorProfileComponent implements OnInit {
   public globalSubSpecialties: SubSpecialtyResponseDto[] = [];
   public globalLanguages: LanguageResponseDto[] = [];
 
-  public titles = [
-    { label: 'Dr. (Doctor)', value: 'DR' },
-    { label: 'Prof. (Professor)', value: 'PROF' },
-    { label: 'Consultant', value: 'CONSULTANT' },
-    { label: 'Specialist', value: 'SPECIALIST' }
-  ];
+  get titles() {
+    return [
+      { label: this.languageService.translate('Dr. (Doctor)', 'د. (طبيب)'), value: 'DR' },
+      { label: this.languageService.translate('Prof. (Professor)', 'أ.د. (بروفيسور)'), value: 'PROF' },
+      { label: this.languageService.translate('Consultant', 'استشاري'), value: 'CONSULTANT' },
+      { label: this.languageService.translate('Specialist', 'أخصائي'), value: 'SPECIALIST' }
+    ];
+  }
 
-  public proficiencies = [
-    { label: 'Native', value: 'NATIVE' },
-    { label: 'Fluent', value: 'FLUENT' },
-    { label: 'Intermediate', value: 'INTERMEDIATE' },
-    { label: 'Basic', value: 'BASIC' }
-  ];
+  get proficiencies() {
+    return [
+      { label: this.languageService.translate('Native', 'اللغة الأم'), value: 'NATIVE' },
+      { label: this.languageService.translate('Fluent', 'طلاقة'), value: 'FLUENT' },
+      { label: this.languageService.translate('Intermediate', 'متوسط'), value: 'INTERMEDIATE' },
+      { label: this.languageService.translate('Basic', 'مبتدئ'), value: 'BASIC' }
+    ];
+  }
 
   get specialtySelectOptions() {
     return this.globalSpecialties.map(s => ({
-      label: s.nameEn,
+      label: this.languageService.translate(s.nameEn, s.nameAr),
       value: s.specialtyId
     }));
   }
 
   get subSpecialtySelectOptions() {
     return this.globalSubSpecialties.map(ss => ({
-      label: ss.nameEn,
+      label: this.languageService.translate(ss.nameEn, ss.nameAr),
       value: ss.subSpecialtyId
     }));
   }
 
   get languageSelectOptions() {
     return this.globalLanguages.map(l => ({
-      label: l.nameEn,
+      label: this.languageService.translate(l.nameEn, l.nameAr),
       value: l.languageId
     }));
   }
@@ -207,10 +214,16 @@ export class DoctorProfileComponent implements OnInit {
         branches: this.clinicService.getClinicBranches(dc.clinicId).pipe(catchError(() => of([])))
       }).pipe(
         map(res => {
-          const enriched = { ...dc };
-          if (res.clinic) enriched.clinicNameEn = (res.clinic as any).nameEn || 'Clinic';
+          const enriched = { ...dc } as any;
+          if (res.clinic) {
+            enriched.clinicNameEn = (res.clinic as any).nameEn || 'Clinic';
+            enriched.clinicNameAr = (res.clinic as any).nameAr || 'Clinic';
+          }
           const branch = ((res.branches as any[]) || []).find((b: any) => b.branchId === dc.branchId);
-          if (branch) enriched.branchNameEn = branch.branchNameEn;
+          if (branch) {
+            enriched.branchNameEn = branch.branchNameEn;
+            enriched.branchNameAr = branch.branchNameAr;
+          }
           return enriched;
         })
       )
@@ -466,12 +479,12 @@ export class DoctorProfileComponent implements OnInit {
 
   getSpecialtyName(specialtyId: string): string {
     const s = this.globalSpecialties.find(x => x.specialtyId === specialtyId);
-    return s ? s.nameEn : specialtyId;
+    return s ? this.languageService.translate(s.nameEn, s.nameAr) : specialtyId;
   }
 
   getLanguageName(languageId: string): string {
     const l = this.globalLanguages.find(x => x.languageId === languageId);
-    return l ? l.nameEn : languageId;
+    return l ? this.languageService.translate(l.nameEn, l.nameAr) : languageId;
   }
 
   get activeClinicsCount(): number {

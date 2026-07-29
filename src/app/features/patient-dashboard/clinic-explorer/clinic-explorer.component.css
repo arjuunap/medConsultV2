@@ -1,0 +1,1026 @@
+/* CSS Design for Clinics & Branches Explorer Component */
+
+.explorer-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 80px);
+  padding: 1.5rem;
+  box-sizing: border-box;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: #1e293b;
+  background-color: #f8fafc;
+}
+
+/* Header Banner */
+.explorer-header-section {
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #064e3b 0%, #022c22 100%);
+  padding: 1.5rem 2rem;
+  border-radius: 1rem;
+  color: #ffffff;
+  box-shadow: 0 10px 25px -5px rgba(6, 78, 59, 0.15), 0 8px 10px -6px rgba(6, 78, 59, 0.1);
+}
+
+.eyebrow-badge {
+  display: inline-block;
+  background-color: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(4px);
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+}
+
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.02em;
+}
+
+.page-subtitle {
+  font-size: 0.9rem;
+  margin: 0;
+  color: #a7f3d0;
+  max-width: 800px;
+  line-height: 1.5;
+}
+
+/* 3-Column Layout Grid */
+.explorer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1.5rem;
+  flex: 1;
+  min-height: 0; /* Important for inner scroll to work */
+}
+
+.grid-column {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.column-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Column Sticky Header */
+.card-header-sticky {
+  padding: 1.25rem;
+  border-bottom: 1px solid #f1f5f9;
+  background-color: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.column-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0 0 1rem 0;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Scrollable Container inside Column */
+.scroll-content {
+  padding: 1.25rem;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: #fafbfc;
+}
+
+/* Custom Scrollbar styling */
+.scroll-content::-webkit-scrollbar {
+  width: 6px;
+}
+.scroll-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scroll-content::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 10px;
+}
+
+/* Search Box styling */
+.search-form-wrapper .input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.75rem;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.65rem 0.75rem 0.65rem 2.25rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  color: #1e293b;
+  background-color: #f8fafc;
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #059669;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+}
+
+/* Placeholders (Empty States) */
+.placeholder-card {
+  justify-content: center;
+  align-items: center;
+  background-color: #f8fafc;
+  border: 2px dashed #cbd5e1;
+}
+
+.centered-placeholder {
+  text-align: center;
+  padding: 2rem;
+  max-width: 280px;
+}
+
+.placeholder-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.pulse-animation {
+  animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.7; }
+}
+
+.centered-placeholder h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: #475569;
+}
+
+.centered-placeholder p {
+  font-size: 0.85rem;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Clinic Cards List */
+.clinic-list-card {
+  background-color: #ffffff;
+  border: 2px solid transparent;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  position: relative;
+}
+
+.clinic-list-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.06);
+  border-color: #e2e8f0;
+}
+
+.clinic-list-card.active {
+  border-color: #059669;
+  background-color: #f0fdf4;
+  box-shadow: 0 10px 15px -3px rgba(5, 150, 105, 0.08);
+}
+
+.card-banner-status {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.verified-tag {
+  background-color: #d1fae5;
+  color: #065f46;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  letter-spacing: 0.02em;
+}
+
+.active-tag {
+  background-color: #e2e8f0;
+  color: #334155;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+}
+
+.card-main-info {
+  display: flex;
+  gap: 0.85rem;
+  align-items: center;
+}
+
+.logo-placeholder-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 0.5rem;
+  background: linear-gradient(135deg, #059669 0%, #064e3b 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.clinic-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.info-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.clinic-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 0.25rem 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rating-reviews-line {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  margin-bottom: 0.25rem;
+}
+
+.stars-gold {
+  color: #f59e0b;
+}
+
+.rating-val {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.reviews-count {
+  color: #64748b;
+}
+
+.meta-row {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+/* Clinic Details Display */
+.clinic-detail-header-card {
+  background-color: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+
+.logo-title-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.detail-logo-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, #059669 0%, #064e3b 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 1.35rem;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.detail-logo-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.detail-clinic-name {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.15rem 0;
+}
+
+.license-number {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.detail-description {
+  font-size: 0.85rem;
+  color: #475569;
+  line-height: 1.6;
+  margin: 0 0 1rem 0;
+}
+
+.detail-contact-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  color: #64748b;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 0.75rem;
+}
+
+.clinic-web-link {
+  color: #059669;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.clinic-web-link:hover {
+  text-decoration: underline;
+}
+
+/* Branch List cards */
+.branches-list-section {
+  margin-top: 1rem;
+}
+
+.section-subtitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 0.85rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.branch-list-card {
+  background-color: #ffffff;
+  border: 2px solid transparent;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  margin-bottom: 0.75rem;
+}
+
+.branch-list-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.04);
+  border-color: #cbd5e1;
+}
+
+.branch-list-card.active {
+  border-color: #059669;
+  background-color: #f0fdf4;
+  box-shadow: 0 6px 12px rgba(5, 150, 105, 0.05);
+}
+
+.branch-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.branch-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.primary-badge {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+
+.branch-address {
+  font-size: 0.8rem;
+  color: #475569;
+  margin: 0 0 0.5rem 0;
+}
+
+.branch-contact-line {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+/* Branch Detail Card */
+.branch-header-card {
+  background-color: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+
+.branch-header-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.25rem 0;
+}
+
+.branch-header-sub {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 0 0 1rem 0;
+}
+
+/* Operating Hours accordion */
+.operating-hours-box {
+  background-color: #f8fafc;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+}
+
+.box-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.hours-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.hours-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #475569;
+}
+
+.hours-row.closed {
+  color: #94a3b8;
+}
+
+.day-label {
+  font-weight: 500;
+}
+
+.time-label {
+  font-family: monospace;
+}
+
+.closed-text {
+  font-weight: 600;
+}
+
+/* Doctors Roster section */
+.doctors-roster-section {
+  margin-top: 1rem;
+}
+
+.doctor-profile-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.doctor-card-main {
+  display: flex;
+  gap: 0.85rem;
+  align-items: center;
+}
+
+.doctor-avatar-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.doctor-primary-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.doctor-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 0.15rem 0;
+}
+
+.doctor-department {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin: 0 0 0.35rem 0;
+}
+
+.doctor-badge-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.exp-badge {
+  background-color: #f1f5f9;
+  color: #475569;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+
+.fee-badge {
+  background-color: #ecfdf5;
+  color: #047857;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+
+.doctor-card-body {
+  border-top: 1px solid #f1f5f9;
+  padding-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.body-sub-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #475569;
+  margin: 0;
+}
+
+.doctor-bio {
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.languages-line {
+  font-size: 0.75rem;
+  color: #475569;
+}
+
+.lang-pill {
+  display: inline-block;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  font-size: 0.7rem;
+  padding: 0.05rem 0.3rem;
+  border-radius: 4px;
+  margin-left: 0.25rem;
+}
+
+.qualifications-list {
+  background-color: #fafbfc;
+  border: 1px solid #f1f5f9;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+}
+
+.qual-item {
+  font-size: 0.7rem;
+  color: #475569;
+  margin-top: 0.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.qual-degree {
+  font-weight: 600;
+}
+
+.doctor-card-action {
+  margin-top: 0.25rem;
+}
+
+.btn-book-now {
+  width: 100%;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  border: none;
+  padding: 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.15);
+}
+
+.btn-book-now:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(16, 185, 129, 0.25);
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+.btn-book-now:active {
+  transform: translateY(0);
+}
+
+/* BOOKING MODAL */
+.booking-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 1rem;
+}
+
+.booking-modal-card {
+  background-color: #ffffff;
+  border-radius: 1.25rem;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: modalEnter 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalEnter {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.modal-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+.btn-close-modal {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0.25rem;
+  transition: color 0.15s ease;
+}
+
+.btn-close-modal:hover {
+  color: #475569;
+}
+
+.modal-body-content {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Selected details summary banner */
+.selected-details-summary {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  border: 1px solid #b9f6ca;
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.summary-doctor-profile {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.doctor-icon {
+  font-size: 2.25rem;
+}
+
+.summary-doc-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #065f46;
+  margin: 0 0 0.15rem 0;
+}
+
+.summary-doc-subtitle {
+  font-size: 0.75rem;
+  color: #047857;
+  margin: 0 0 0.25rem 0;
+}
+
+.summary-fee-line {
+  font-size: 0.75rem;
+  color: #374151;
+  margin: 0;
+}
+
+/* Form Sections */
+.modal-form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.section-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.modal-date-picker-input {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  color: #1e293b;
+  outline: none;
+}
+
+.modal-date-picker-input:focus {
+  border-color: #059669;
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+}
+
+/* Available Slots Container */
+.available-slots-container {
+  margin-top: 0.5rem;
+}
+
+.no-slots-warning-card {
+  background-color: #fffbeb;
+  border: 1px solid #fef3c7;
+  color: #b45309;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.slots-grid-wrapper {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  max-height: 120px;
+  overflow-y: auto;
+  padding: 0.25rem;
+}
+
+.slot-time-btn {
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.35rem;
+  padding: 0.45rem 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+  font-family: monospace;
+}
+
+.slot-time-btn:hover {
+  border-color: #059669;
+  background-color: #ecfdf5;
+  color: #047857;
+}
+
+.slot-time-btn.selected {
+  background-color: #059669;
+  border-color: #059669;
+  color: #ffffff;
+  box-shadow: 0 4px 6px -1px rgba(5, 150, 105, 0.2);
+}
+
+/* Form structure */
+.booking-wizard-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-row-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-control-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  position: relative;
+}
+
+.modal-select-input {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  color: #1e293b;
+  outline: none;
+  background-color: #ffffff;
+}
+
+.modal-select-input:focus {
+  border-color: #059669;
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+}
+
+.modal-textarea-input {
+  width: 100%;
+  height: 80px;
+  padding: 0.65rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  color: #1e293b;
+  outline: none;
+  resize: none;
+}
+
+.modal-textarea-input:focus {
+  border-color: #059669;
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+}
+
+.char-counter {
+  position: absolute;
+  bottom: -1rem;
+  right: 0.25rem;
+  font-size: 0.65rem;
+  color: #94a3b8;
+}
+
+/* Modal Footer Actions */
+.modal-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  background-color: #f8fafc;
+}
+
+.btn-modal-action {
+  padding: 0.6rem 1.25rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: none;
+}
+
+.btn-cancel-booking {
+  background-color: #e2e8f0;
+  color: #475569;
+}
+
+.btn-cancel-booking:hover {
+  background-color: #cbd5e1;
+}
+
+.btn-confirm-booking {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 6px -1px rgba(10, 185, 129, 0.15);
+}
+
+.btn-confirm-booking:hover:not(:disabled) {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  box-shadow: 0 6px 12px rgba(10, 185, 129, 0.25);
+}
+
+.btn-confirm-booking:disabled {
+  background: #cbd5e1;
+  color: #94a3b8;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Responsive Rules */
+@media (max-width: 1024px) {
+  .explorer-container {
+    height: auto;
+    overflow-y: auto;
+  }
+
+  .explorer-grid {
+    grid-template-columns: 1fr;
+    height: auto;
+    overflow: visible;
+  }
+
+  .grid-column {
+    height: auto;
+    overflow: visible;
+  }
+
+  .column-card {
+    height: auto;
+    overflow: visible;
+    max-height: 500px;
+  }
+
+  .scroll-content {
+    overflow-y: auto;
+    max-height: 400px;
+  }
+}

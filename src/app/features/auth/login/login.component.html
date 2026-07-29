@@ -8,8 +8,8 @@
 
     <!-- Header Text -->
     <div class="auth-header text-center">
-      <h2 class="auth-title">Welcome Back</h2>
-      <p class="auth-subtitle">Please enter your credentials to access your account</p>
+      <h2 class="auth-title">{{ 'Welcome Back' | translate }}</h2>
+      <p class="auth-subtitle">{{ 'Please enter your credentials to access your account' | translate }}</p>
     </div>
 
     <!-- Error Alert Message -->
@@ -21,7 +21,7 @@
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
       <!-- Email Field -->
       <div class="form-group mb-4">
-        <label class="form-label" for="email">Email Address</label>
+        <label class="form-label" for="email">{{ 'Email Address' | translate }}</label>
         <input 
           type="email" 
           id="email" 
@@ -31,13 +31,13 @@
           placeholder="name@example.com"
         >
         <div *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid" class="error-text">
-          Please enter a valid email address.
+          {{ 'Please enter a valid email address.' | translate }}
         </div>
       </div>
 
       <!-- Password Field -->
       <div class="form-group mb-4">
-        <label class="form-label" for="password">Password</label>
+        <label class="form-label" for="password">{{ 'Password' | translate }}</label>
         <input 
           type="password" 
           id="password" 
@@ -47,18 +47,18 @@
           placeholder="••••••••"
         >
         <div *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid" class="error-text">
-          Password must be at least 6 characters.
+          {{ 'Password must be at least 6 characters.' | translate }}
         </div>
       </div>
 
       <!-- Submit Button -->
       <button type="submit" class="btn btn-primary w-100 py-3 mb-3 btn-auth">
-        Sign In
+        {{ 'Sign In' | translate }}
       </button>
 
       <!-- Divider -->
       <div class="auth-divider mb-3">
-        <span>or</span>
+        <span>{{ 'or' | translate }}</span>
       </div>
 
       <!-- Google Button -->
@@ -69,13 +69,13 @@
           <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22c-.87-2.6-2.87-4.53-5.84-4.53z" fill="#FBBC05"/>
           <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
         </svg>
-        <span>Continue with Google</span>
+        <span>{{ 'Continue with Google' | translate }}</span>
       </button>
 
       <!-- Footer Link to Register -->
       <div class="auth-footer">
-        <span>Don't have an account?</span> 
-        <a routerLink="/register" class="auth-link">Create an account</a>
+        <span>{{ "Don't have an account?" | translate }}</span> 
+        <a routerLink="/register" class="auth-link">{{ 'Create an account' | translate }}</a>
       </div>
     </form>
   </div>

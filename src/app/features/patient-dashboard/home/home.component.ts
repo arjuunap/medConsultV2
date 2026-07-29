@@ -11,10 +11,12 @@ import { PatientResponseDto } from '../../../core/models/patient.model';
 import { AppointmentResponseDto } from '../../../core/models/appointment.model';
 import { VitalResponseDto } from '../../../core/models/clinical-record.model';
 
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule],
+  imports: [CommonModule, RouterLink, ReactiveFormsModule, TranslatePipe],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
