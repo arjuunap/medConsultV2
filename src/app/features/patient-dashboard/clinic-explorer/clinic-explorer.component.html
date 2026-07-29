@@ -46,7 +46,7 @@
                 <img *ngIf="clinic.logoUrl" [src]="apiUrl +'/'+ clinic.logoUrl" [alt]="clinic | translateObj:'name'"
                   class="clinic-logo-img" />
                 <span *ngIf="!clinic.logoUrl" class="logo-initial">{{ (clinic.nameEn || '').substring(0,
-                  2).toUpperCase() }}</span>
+                  2).toUpperCase() }}</span>  
               </div>
 
               <div class="info-text">
@@ -273,8 +273,30 @@
         <!-- Date & Available Slots Picker -->
         <div class="modal-form-section">
           <label class="section-label">📅 {{ 'Select Appointment Date *' | translate }}</label>
-          <input type="date" [value]="bookingDate" (change)="onDateChange($event)" class="modal-date-picker-input"
-            [min]="bookingDate" />
+
+          <!-- Date Chips Scroll Container -->
+          <div class="date-chips-scroll-container">
+            <div 
+              *ngFor="let day of nextDays" 
+              class="date-chip" 
+              [class.selected]="bookingDate === day.date"
+              [class.has-slots]="day.hasSlots"
+              [class.no-slots]="!day.hasSlots"
+              (click)="selectDateChip(day.date)"
+            >
+              <span class="chip-day-name">{{ day.dayName }}</span>
+              <span class="chip-date-label">{{ day.label }}</span>
+              <span class="slots-badge" *ngIf="day.hasSlots">🟢</span>
+              <span class="slots-badge" *ngIf="!day.hasSlots">🔴</span>
+            </div>
+          </div>
+
+          <!-- Calendar Picker for Custom Dates -->
+          <div class="custom-date-picker-row">
+            <label class="section-label-sub">{{ 'Or choose another date:' | translate }}</label>
+            <input type="date" [value]="bookingDate" (change)="onDateChange($event)" class="modal-date-picker-input"
+              [min]="bookingDate" />
+          </div>
 
           <!-- Slots lists -->
           <div class="available-slots-container">

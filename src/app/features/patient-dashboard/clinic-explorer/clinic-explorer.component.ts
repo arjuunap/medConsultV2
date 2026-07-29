@@ -67,6 +67,7 @@ export class ClinicExplorerComponent implements OnInit {
   public availableSlots: AppointmentSlotResponseDto[] = [];
   public selectedSlot: AppointmentSlotResponseDto | null = null;
   public bookingDate = new Date().toISOString().split('T')[0];
+  public nextDays: { date: string; label: string; dayName: string; hasSlots: boolean }[] = [];
 
   public appointmentTypes = Object.values(AppointmentType);
   public sessionTypes = Object.values(SessionType);
@@ -276,6 +277,7 @@ export class ClinicExplorerComponent implements OnInit {
     this.bookingDate = new Date().toISOString().split('T')[0];
     this.availableSlots = [];
     this.selectedSlot = null;
+    this.nextDays = [];
     this.bookingForm.reset({
       appointmentType: AppointmentType.NEW_PATIENT,
       sessionType: SessionType.IN_CLINIC,
@@ -283,13 +285,68 @@ export class ClinicExplorerComponent implements OnInit {
     });
 
     this.bookingModalOpen = true;
-    this.fetchSlots(dcLink.dcId, this.bookingDate);
+    this.checkAvailabilityForNext7Days(dcLink.dcId);
   }
 
   onDateChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input && input.value && this.bookingDcLink) {
       this.bookingDate = input.value;
+      this.fetchSlots(this.bookingDcLink.dcId, this.bookingDate);
+    }
+  }
+
+  checkAvailabilityForNext7Days(dcId: string): void {
+    this.uiService.showLoading();
+    const today = new Date();
+    const dates: string[] = [];
+    const requests = [];
+
+    for (let i = 0; i < 7; i++) {
+      const d = new Date();
+      d.setDate(today.getDate() + i);
+      const dateStr = d.toISOString().split('T')[0];
+      dates.push(dateStr);
+      requests.push(this.doctorService.getAvailableSlots(dcId, dateStr).pipe(
+        catchError(() => of([]))
+      ));
+    }
+
+    forkJoin(requests).subscribe({
+      next: (results) => {
+        this.nextDays = dates.map((dateStr, idx) => {
+          const slotsForDay = results[idx] || [];
+          const availableSlots = slotsForDay.filter(s => s.status === 'AVAILABLE');
+          
+          const d = new Date(dateStr);
+          const label = d.toLocaleDateString(this.languageService.isArabic ? 'ar-SA' : 'en-US', { day: 'numeric', month: 'short' });
+          const dayName = d.toLocaleDateString(this.languageService.isArabic ? 'ar-SA' : 'en-US', { weekday: 'short' });
+
+          return {
+            date: dateStr,
+            label,
+            dayName,
+            hasSlots: availableSlots.length > 0
+          };
+        });
+
+        // Pre-select the first date with slots, or today if none
+        const firstAvailable = this.nextDays.find(d => d.hasSlots);
+        const defaultDate = firstAvailable ? firstAvailable.date : this.bookingDate;
+        this.bookingDate = defaultDate;
+        this.fetchSlots(dcId, this.bookingDate);
+        
+        this.uiService.hideLoading();
+      },
+      error: () => {
+        this.uiService.hideLoading();
+      }
+    });
+  }
+
+  selectDateChip(dateStr: string): void {
+    this.bookingDate = dateStr;
+    if (this.bookingDcLink) {
       this.fetchSlots(this.bookingDcLink.dcId, this.bookingDate);
     }
   }

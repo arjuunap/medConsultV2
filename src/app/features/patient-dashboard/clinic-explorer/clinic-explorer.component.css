@@ -995,6 +995,103 @@
   box-shadow: none;
 }
 
+/* Date Chips Scrollbar & Styles */
+.date-chips-scroll-container {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding: 0.25rem 0 0.75rem 0;
+  margin-bottom: 0.5rem;
+}
+
+.date-chips-scroll-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.date-chips-scroll-container::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+.date-chips-scroll-container::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 10px;
+}
+
+.date-chip {
+  flex: 0 0 85px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 0.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  background-color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  text-align: center;
+}
+
+.date-chip:hover {
+  border-color: #10b981;
+  background-color: #ecfdf5;
+  transform: translateY(-1px);
+}
+
+.date-chip.selected {
+  border-color: #059669;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
+}
+
+.date-chip.selected .chip-day-name {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.date-chip.selected .chip-date-label {
+  color: #ffffff;
+}
+
+.date-chip.no-slots {
+  opacity: 0.55;
+  border-style: dashed;
+}
+
+.chip-day-name {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64748b;
+  margin-bottom: 0.2rem;
+}
+
+.chip-date-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.slots-badge {
+  font-size: 0.6rem;
+  margin-top: 0.25rem;
+}
+
+.custom-date-picker-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.section-label-sub {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+}
+
 /* Responsive Rules */
 @media (max-width: 1024px) {
   .explorer-container {

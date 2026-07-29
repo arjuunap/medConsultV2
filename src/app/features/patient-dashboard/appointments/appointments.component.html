@@ -1,0 +1,322 @@
+<div class="appointments-container">
+
+  <!-- Header Banner -->
+  <div class="page-header-banner">
+    <div>
+      <span class="eyebrow-badge">🗓️ {{ 'Appointment Center' | translate }}</span>
+      <h1 class="page-title">{{ 'My Appointments' | translate }}</h1>
+      <p class="page-subtitle">
+        {{ 'Manage your upcoming consultations, view clinical session history, and modify scheduled visits.' | translate }}
+      </p>
+    </div>
+    <div>
+      <a routerLink="/patient/book-appointment" class="btn btn-primary btn-action-touch">
+        + {{ 'Book New Appointment' | translate }}
+      </a>
+    </div>
+  </div>
+
+  <!-- Tabs Navigation -->
+  <div class="tabs-navigation-strip">
+    <button 
+      class="tab-btn" 
+      [class.active]="activeTab === 'upcoming'"
+      (click)="switchTab('upcoming')"
+    >
+      📅 {{ 'Upcoming Consultations' | translate }}
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="activeTab === 'history'"
+      (click)="switchTab('history')"
+    >
+      ⏳ {{ 'Consultation History' | translate }}
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="activeTab === 'all'"
+      (click)="switchTab('all')"
+    >
+      📋 {{ 'All Records' | translate }}
+    </button>
+  </div>
+
+  <!-- Appointments Roster -->
+  <div class="appointments-list-wrapper">
+    
+    <!-- Empty State -->
+    <div *ngIf="filteredAppointments.length === 0" class="empty-state-card">
+      <div class="empty-icon">🗓️</div>
+      <h3>{{ 'No appointments found' | translate }}</h3>
+      <p>{{ 'You do not have any consultations listed in this tab.' | translate }}</p>
+      <a routerLink="/patient/book-appointment" class="btn btn-accent btn-action-touch mt-3">
+        {{ 'Book a Consultation Now' | translate }}
+      </a>
+    </div>
+
+    <!-- Roster Grid -->
+    <div class="appointments-grid" *ngIf="filteredAppointments.length > 0">
+      <div *ngFor="let app of filteredAppointments" class="appointment-card">
+        
+        <!-- Top Status Banner -->
+        <div class="card-status-strip">
+          <span class="status-badge" [class]="app.status.toLowerCase()">
+            {{ app.status | translate }}
+          </span>
+          <span class="session-type-badge" [class]="app.sessionType.toLowerCase()">
+            {{ app.sessionType === 'IN_CLINIC' ? ('In-Clinic' | translate) : ('Telehealth' | translate) }}
+          </span>
+        </div>
+
+        <!-- Doctor details row -->
+        <div class="card-doctor-profile">
+          <div 
+            class="doctor-avatar-circle"
+            [style.backgroundColor]="getAvatarBg(app.doctorName)"
+            [style.color]="getAvatarColor(app.doctorName)"
+          >
+            {{ getInitials(app.doctorName) }}
+          </div>
+          <div class="doctor-details">
+            <h4 class="doctor-name">Dr. {{ app.doctorName }}</h4>
+            <p class="doctor-department">🩺 {{ app.department }}</p>
+          </div>
+        </div>
+
+        <!-- Appointment info block -->
+        <div class="card-details-block">
+          <div class="detail-row">
+            <span class="icon">🗓️</span>
+            <div>
+              <p class="label">{{ 'Date & Time' | translate }}</p>
+              <p class="value">{{ app.scheduledDate | date:'fullDate' }} &#64; {{ app.startTime.substring(0, 5) }}</p>
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <span class="icon">🏢</span>
+            <div>
+              <p class="label">{{ 'Clinic Location' | translate }}</p>
+              <p class="value">
+                {{ languageService.isArabic ? app.clinicNameAr : app.clinicNameEn }} · {{ languageService.isArabic ? app.branchNameAr : app.branchNameEn }}
+              </p>
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <span class="icon">💰</span>
+            <div>
+              <p class="label">{{ 'Consultation Fee' | translate }}</p>
+              <p class="value">{{ app.consultationFeeSar }} SAR</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Strip -->
+        <div class="card-action-strip">
+          <button class="btn-card-action btn-view" (click)="openDetails(app)">
+            🔍 {{ 'View Details' | translate }}
+          </button>
+          
+          <ng-container *ngIf="app.status === 'SCHEDULED' || app.status === 'CONFIRMED'">
+            <button class="btn-card-action btn-reschedule" (click)="openReschedule(app)">
+              🔄 {{ 'Reschedule' | translate }}
+            </button>
+            <button class="btn-card-action btn-cancel" (click)="openCancel(app)">
+              ✕ {{ 'Cancel' | translate }}
+            </button>
+          </ng-container>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 1. DETAILS MODAL DIALOG -->
+<div class="modal-backdrop-overlay" *ngIf="showDetailsModal && selectedAppointment" (click)="closeDetails()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>🔍 {{ 'Appointment Summary' | translate }}</h3>
+      <button class="btn-close-modal" (click)="closeDetails()">✕</button>
+    </div>
+    
+    <div class="modal-body">
+      <div class="summary-doc-header">
+        <div class="badge-icon">👨‍⚕️</div>
+        <div>
+          <h4>Dr. {{ selectedAppointment.doctorName }}</h4>
+          <p>{{ selectedAppointment.department }}</p>
+        </div>
+      </div>
+
+      <table class="details-table">
+        <tr>
+          <th>{{ 'Clinic Name' | translate }}</th>
+          <td>{{ languageService.isArabic ? selectedAppointment.clinicNameAr : selectedAppointment.clinicNameEn }}</td>
+        </tr>
+        <tr>
+          <th>{{ 'Branch Location' | translate }}</th>
+          <td>{{ languageService.isArabic ? selectedAppointment.branchNameAr : selectedAppointment.branchNameEn }}</td>
+        </tr>
+        <tr>
+          <th>{{ 'Date & Time' | translate }}</th>
+          <td>{{ selectedAppointment.scheduledDate | date:'fullDate' }} &#64; {{ selectedAppointment.startTime.substring(0, 5) }}</td>
+        </tr>
+        <tr>
+          <th>{{ 'Visit Type' | translate }}</th>
+          <td>{{ selectedAppointment.appointmentType.replace('_', ' ') }}</td>
+        </tr>
+        <tr>
+          <th>{{ 'Session Mode' | translate }}</th>
+          <td>{{ selectedAppointment.sessionType === 'IN_CLINIC' ? ('In-Clinic' | translate) : ('Telehealth' | translate) }}</td>
+        </tr>
+        <tr>
+          <th>{{ 'Consultation Fee' | translate }}</th>
+          <td>{{ selectedAppointment.consultationFeeSar }} SAR</td>
+        </tr>
+        <tr>
+          <th>{{ 'Current Status' | translate }}</th>
+          <td>
+            <span class="status-badge" [class]="selectedAppointment.status.toLowerCase()">
+              {{ selectedAppointment.status | translate }}
+            </span>
+          </td>
+        </tr>
+        <tr *ngIf="selectedAppointment.reason">
+          <th>{{ 'Reason for Visit' | translate }}</th>
+          <td>{{ selectedAppointment.reason }}</td>
+        </tr>
+        <tr *ngIf="selectedAppointment.status === 'CANCELLED' && selectedAppointment.cancelReason">
+          <th class="text-danger">{{ 'Cancellation Reason' | translate }}</th>
+          <td class="text-danger">{{ selectedAppointment.cancelReason }}</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" (click)="closeDetails()">{{ 'Close' | translate }}</button>
+    </div>
+  </div>
+</div>
+
+<!-- 2. CANCELLATION MODAL DIALOG -->
+<div class="modal-backdrop-overlay" *ngIf="showCancelModal && selectedAppointment" (click)="closeCancel()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3 class="text-danger">✕ {{ 'Cancel Appointment' | translate }}</h3>
+      <button class="btn-close-modal" (click)="closeCancel()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <p class="warning-alert-text">
+        {{ 'Are you sure you want to cancel your consultation with' | translate }}
+        <strong>Dr. {{ selectedAppointment.doctorName }}</strong>?
+        {{ 'This action cannot be undone once confirmed.' | translate }}
+      </p>
+
+      <form [formGroup]="cancelForm">
+        <div class="form-control-wrapper">
+          <label class="section-label">{{ 'Reason for Cancellation *' | translate }}</label>
+          <textarea 
+            formControlName="cancelReason" 
+            class="modal-textarea-input"
+            [placeholder]="'Please tell us why you need to cancel this appointment' | translate"
+            rows="3"
+          ></textarea>
+          <span class="error-msg" *ngIf="cancelForm.get('cancelReason')?.touched && cancelForm.get('cancelReason')?.invalid">
+            {{ 'Reason is required (max 255 chars).' | translate }}
+          </span>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" (click)="closeCancel()">{{ 'Go Back' | translate }}</button>
+      <button class="btn btn-danger" [disabled]="cancelForm.invalid" (click)="submitCancel()">
+        {{ 'Confirm Cancellation' | translate }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 3. RESCHEDULE MODAL DIALOG -->
+<div class="modal-backdrop-overlay" *ngIf="rescheduleModalOpen && selectedAppointment" (click)="closeReschedule()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>🔄 {{ 'Reschedule Consultation' | translate }}</h3>
+      <button class="btn-close-modal" (click)="closeReschedule()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="reschedule-context-strip">
+        <span class="icon">👨‍⚕️</span>
+        <div>
+          <h4>Dr. {{ selectedAppointment.doctorName }}</h4>
+          <p>{{ languageService.isArabic ? selectedAppointment.clinicNameAr : selectedAppointment.clinicNameEn }}</p>
+        </div>
+      </div>
+
+      <!-- Dates horizontal picker -->
+      <div class="reschedule-section">
+        <label class="section-label">📅 {{ 'Select New Appointment Date *' | translate }}</label>
+        
+        <div class="date-chips-scroll-container">
+          <div 
+            *ngFor="let day of nextDays" 
+            class="date-chip" 
+            [class.selected]="bookingDate === day.date"
+            [class.has-slots]="day.hasSlots"
+            [class.no-slots]="!day.hasSlots"
+            (click)="selectDateChip(day.date)"
+          >
+            <span class="chip-day-name">{{ day.dayName }}</span>
+            <span class="chip-date-label">{{ day.label }}</span>
+            <span class="slots-badge" *ngIf="day.hasSlots">🟢</span>
+            <span class="slots-badge" *ngIf="!day.hasSlots">🔴</span>
+          </div>
+        </div>
+
+        <div class="custom-date-picker-row">
+          <label class="section-label-sub">{{ 'Or choose another date:' | translate }}</label>
+          <input type="date" [value]="bookingDate" (change)="onDateChange($event)" class="modal-date-picker-input"
+            [min]="bookingDate" />
+        </div>
+      </div>
+
+      <!-- Slots selection grid -->
+      <div class="reschedule-section mt-3">
+        <label class="section-label">⏰ {{ 'Available Slots for' | translate }} {{ bookingDate }}</label>
+        
+        <div *ngIf="availableSlots.length === 0" class="no-slots-warning-card">
+          ⚠️ {{ 'No open slots warning' | translate }}
+        </div>
+
+        <div class="slots-grid-wrapper" *ngIf="availableSlots.length > 0">
+          <button 
+            *ngFor="let slot of availableSlots" 
+            type="button" 
+            class="slot-time-btn"
+            [class.selected]="selectedSlot?.slotId === slot.slotId"
+            (click)="selectSlot(slot)"
+          >
+            {{ slot.startTime }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" (click)="closeReschedule()">{{ 'Cancel' | translate }}</button>
+      <button 
+        class="btn btn-success" 
+        [disabled]="isSubmittingReschedule || !selectedSlot"
+        (click)="confirmReschedule()"
+      >
+        <span *ngIf="isSubmittingReschedule">⏳ {{ 'Processing...' | translate }}</span>
+        <span *ngIf="!isSubmittingReschedule">🚀 {{ 'Confirm Reschedule' | translate }}</span>
+      </button>
+    </div>
+  </div>
+</div>

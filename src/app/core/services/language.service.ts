@@ -14,7 +14,7 @@ export class LanguageService {
       localStorage.setItem('preferredLang', lang);
       document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
       document.documentElement.lang = lang;
-      
+
       if (lang === 'ar') {
         document.body.classList.add('rtl-mode');
         document.body.classList.remove('ltr-mode');
@@ -58,6 +58,7 @@ const translations: { [lang in Lang]: { [key: string]: string } } = {
     // Menu
     'Home Dashboard': 'Home Dashboard',
     'Clinics & Branches': 'Clinics & Branches',
+    'My Appointments': 'My Appointments',
     'Medical Records (EMR)': 'Medical Records (EMR)',
     'Book Appointment': 'Book Appointment',
     'Tele-Consultations': 'Tele-Consultations',
@@ -388,6 +389,7 @@ const translations: { [lang in Lang]: { [key: string]: string } } = {
     // Menu
     'Home Dashboard': 'لوحة التحكم الرئيسية',
     'Clinics & Branches': 'العيادات والفروع',
+    'My Appointments': 'مواعيدي',
     'Medical Records (EMR)': 'السجلات الطبية (EMR)',
     'Book Appointment': 'حجز موعد',
     'Tele-Consultations': 'الاستشارات الطبية',

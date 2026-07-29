@@ -55,6 +55,7 @@ export class LayoutComponent {
         return [
           { label: 'Home Dashboard', route: '/patient/home', icon: '📊' },
           { label: 'Clinics & Branches', route: '/patient/clinics', icon: '🏥' },
+          { label: 'My Appointments', route: '/patient/appointments', icon: '🗓️' },
           { label: 'Medical Records (EMR)', route: '/patient/emr', icon: '📁' },
           { label: 'Book Appointment', route: '/patient/book-appointment', icon: '📅' },
           { label: 'Tele-Consultations', route: '/patient/consultations', icon: '💬' },
