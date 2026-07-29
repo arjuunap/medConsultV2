@@ -75,6 +75,8 @@
   --shadow-premium: 0 20px 25px -5px rgba(29, 158, 117, 0.08), 0 10px 10px -5px rgba(29, 158, 117, 0.04);
   
   --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --px: clamp(16px, 5vw, 64px);
+  --py: clamp(40px, 6vw, 80px);
 }
 
 /* Base Styles */

@@ -636,6 +636,23 @@
   color: #ffffff;
 }
 
+.slot-time-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed !important;
+  pointer-events: none;
+  background-color: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+  color: #94a3b8 !important;
+}
+
+.slot-time-btn:disabled.booked {
+  text-decoration: line-through;
+}
+
+.slot-time-btn:disabled.blocked {
+  text-decoration: line-through;
+}
+
 /* Warnings and textareas */
 .warning-alert-text {
   font-size: 0.85rem;

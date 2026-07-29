@@ -59,7 +59,8 @@
             </div>
             <div style="min-width: 190px;">
               <app-custom-select formControlName="location" [options]="citySelectOptions" [searchable]="true"
-                [placeholder]="'All Cities / Areas' | translate" (selectionChange)="onLocationChange()">
+                [placeholder]="'All Cities / Areas' | translate" (selectionChange)="onLocationChange()"
+                [multiple]="true">
               </app-custom-select>
             </div>
             <button class="hs-search-btn" type="submit">{{ 'Search clinics' | translate }}</button>
@@ -67,10 +68,10 @@
 
           <div class="hs-row2">
             <span class="hs-label">{{ 'Specialty:' | translate }}</span>
-            <div class="hs-chip" [class.on]="activeSpecialtyId === ''" (click)="clearFilters()">{{ 'All' | translate }}
+            <div class="hs-chip" [class.on]="activeSpecialtyIds.length === 0" (click)="clearSpecialtyFilter()">{{ 'All' | translate }}
             </div>
             <div *ngFor="let spec of (specialties | slice:0:6)" class="hs-chip"
-              [class.on]="activeSpecialtyId === spec.specialtyId"
+              [class.on]="activeSpecialtyIds.includes(spec.specialtyId)"
               (click)="setSpecialtyFilter(spec.specialtyId, spec.nameEn)">
               {{ spec | translateObj:'name' | translate }}
             </div>
@@ -143,7 +144,7 @@
         <div class="fs-group-title">{{ 'Accepted Insurance' | translate }}</div>
         <div *ngFor="let ins of (insuranceProviders | slice:0:5)" class="fs-option"
           (click)="setInsuranceFilter(ins.providerId)">
-          <div class="fs-cb" [class.on]="selectedInsId === ins.providerId">{{ selectedInsId === ins.providerId ? '✓' :
+          <div class="fs-cb" [class.on]="selectedInsIds.includes(ins.providerId)">{{ selectedInsIds.includes(ins.providerId) ? '✓' :
             '' }}</div>
           {{ ins | translateObj:'name' }}
         </div>
@@ -212,13 +213,8 @@
               </div>
               <div class="doc-mini-exp mb-2">{{ doc.exp }} {{ 'Years Exp' | translate }} · SAR {{ doc.consultationFeeSar
                 }}</div>
-              <div class="avail-badge" [class.av-today]="doc.avail === 'today'"
-                [class.av-soon]="doc.avail === 'tomorrow'">
-                {{ (doc.avail === 'today' ? '🟢 Available today' : '🟡 Tomorrow') | translate }}
-              </div>
-              <div class="doc-mini-langs">
-                <span *ngFor="let l of doc.langs" class="tag tg-gray" style="font-size:10px">{{ l }}</span>
-              </div>
+              
+             
               <div class="fs-xs text-muted mb-2">{{ 'Next Slot:' | translate }} <strong class="text-primary">{{
                   doc.nextSlot }}</strong></div>
               <button class="doc-mini-book"
@@ -259,8 +255,7 @@
       <div class="how-num">1</div>
       <div class="how-icon">🏥</div>
       <div class="how-title">{{ 'Search for a clinic' | translate }}</div>
-      <div class="how-sub">{{ 'Search by clinic name, city location, specialty or doctor. Filter by ratings, language,
-        and insurance.' | translate }}</div>
+      <div class="how-sub">{{ 'Search by clinic name, city location, specialty or doctor. Filter by ratings, language, and insurance.' | translate }}</div>
     </div>
     <div class="how-step">
       <div class="how-num">2</div>
@@ -446,11 +441,33 @@
     </div>
 
     <div style="padding:24px;">
-      <!-- Date Picker -->
+      <!-- Date Picker with Chips -->
       <div class="form-group mb-4">
-        <label class="form-label">{{ 'Select Appointment Date *' | translate }}</label>
-        <input type="date" class="form-control" [value]="selectedDate"
-          (change)="onDateChange($any($event.target).value)">
+        <label class="form-label">📅 {{ 'Select Appointment Date *' | translate }}</label>
+
+        <!-- Date Chips Scroll Container -->
+        <div class="date-chips-scroll-container">
+          <div 
+            *ngFor="let day of nextDays" 
+            class="date-chip" 
+            [class.selected]="selectedDate === day.date"
+            [class.has-slots]="day.hasSlots"
+            [class.no-slots]="!day.hasSlots"
+            (click)="selectDateChip(day.date)"
+          >
+            <span class="chip-day-name">{{ day.dayName }}</span>
+            <span class="chip-date-label">{{ day.label }}</span>
+            <span class="slots-badge" *ngIf="day.hasSlots">🟢</span>
+            <span class="slots-badge" *ngIf="!day.hasSlots">🔴</span>
+          </div>
+        </div>
+
+        <!-- Custom Date Selection Picker -->
+        <div class="custom-date-picker-row">
+          <label class="section-label-sub">{{ 'Or choose another date:' | translate }}</label>
+          <input type="date" class="form-control" [value]="selectedDate"
+            (change)="onDateChange($any($event.target).value)" [min]="selectedDate" />
+        </div>
       </div>
 
       <!-- Real Slots Grid -->
@@ -459,8 +476,17 @@
         <div class="d-flex flex-wrap gap-2 mt-2" *ngIf="availableSlots.length > 0">
           <button *ngFor="let slot of availableSlots" class="btn btn-sm"
             [class.btn-primary]="selectedSlot?.slotId === slot.slotId"
-            [class.btn-outline]="selectedSlot?.slotId !== slot.slotId" (click)="selectedSlot = slot">
-            {{ slot.startTime.substring(0, 5) }} {{ selectedSlot?.slotId === slot.slotId ? '✓' : '' }}
+            [class.btn-outline]="selectedSlot?.slotId !== slot.slotId && slot.status === 'AVAILABLE'"
+            [class.btn-disabled]="slot.status !== 'AVAILABLE'"
+            [class.booked]="slot.status === 'BOOKED'"
+            [class.blocked]="slot.status === 'BLOCKED'"
+            [disabled]="slot.status !== 'AVAILABLE'"
+            (click)="selectedSlot = slot">
+            {{ slot.startTime.substring(0, 5) }}
+            <span class="slot-status-label" style="font-size: 10px; opacity: 0.85;" *ngIf="slot.status !== 'AVAILABLE'">
+              ({{ slot.status === 'BOOKED' ? ('Booked' | translate) : ('Blocked' | translate) }})
+            </span>
+            {{ selectedSlot?.slotId === slot.slotId ? '✓' : '' }}
           </button>
         </div>
 

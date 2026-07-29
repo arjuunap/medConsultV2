@@ -1,6 +1,8 @@
-<div *ngIf="needProfileInit" class="card p-6 text-center mb-5 border-0 shadow-sm" style="border-left: 5px solid var(--warning); background-color: #fffbeb;">
+<div *ngIf="needProfileInit" class="card p-6 text-center mb-5 border-0 shadow-sm"
+  style="border-left: 5px solid var(--warning); background-color: #fffbeb;">
   <h3 class="mb-2" style="color: #b45309;">{{ 'Registration Required' | translate }}</h3>
-  <p class="mb-4" style="color: #78350f;">{{ 'Please initialize your General Patient Profile before booking a new appointment.' | translate }}</p>
+  <p class="mb-4" style="color: #78350f;">{{ 'Please initialize your General Patient Profile before booking a new
+    appointment.' | translate }}</p>
   <a routerLink="/patient/profile" class="btn btn-primary mx-auto">{{ 'Setup Profile' | translate }}</a>
 </div>
 
@@ -8,32 +10,37 @@
   <div class="booking-header d-flex justify-between align-center flex-wrap gap-2">
     <div>
       <h2 class="booking-title">📅 {{ 'Schedule Your Consultation' | translate }}</h2>
-      <p class="booking-subtitle">{{ 'Follow the steps below to choose your doctor, date, and time slot' | translate }}</p>
+      <p class="booking-subtitle">{{ 'Follow the steps below to choose your doctor, date, and time slot' | translate }}
+      </p>
     </div>
     <span class="badge badge-teal">{{ 'SA MOH Verified Network' | translate }}</span>
   </div>
 
   <!-- Step Flow Progress Bar -->
   <div class="step-flow-bar">
-    <div class="step-item" [class.active]="!wizardForm.get('doctorId')?.value" [class.completed]="!!wizardForm.get('doctorId')?.value">
+    <div class="step-item" [class.active]="!wizardForm.get('doctorId')?.value"
+      [class.completed]="!!wizardForm.get('doctorId')?.value">
       <span class="step-num">1</span>
       <span>{{ 'Doctor' | translate }}</span>
     </div>
     <span class="step-divider">›</span>
-    
-    <div class="step-item" [class.active]="wizardForm.get('doctorId')?.value && !wizardForm.get('dcId')?.value" [class.completed]="!!wizardForm.get('dcId')?.value">
+
+    <div class="step-item" [class.active]="wizardForm.get('doctorId')?.value && !wizardForm.get('dcId')?.value"
+      [class.completed]="!!wizardForm.get('dcId')?.value">
       <span class="step-num">2</span>
       <span>{{ 'Clinic' | translate }}</span>
     </div>
     <span class="step-divider">›</span>
 
-    <div class="step-item" [class.active]="wizardForm.get('dcId')?.value && !wizardForm.get('scheduledDate')?.value" [class.completed]="!!wizardForm.get('scheduledDate')?.value">
+    <div class="step-item" [class.active]="wizardForm.get('dcId')?.value && !wizardForm.get('scheduledDate')?.value"
+      [class.completed]="!!wizardForm.get('scheduledDate')?.value">
       <span class="step-num">3</span>
       <span>{{ 'Date' | translate }}</span>
     </div>
     <span class="step-divider">›</span>
 
-    <div class="step-item" [class.active]="wizardForm.get('scheduledDate')?.value && !wizardForm.get('slotId')?.value" [class.completed]="!!wizardForm.get('slotId')?.value">
+    <div class="step-item" [class.active]="wizardForm.get('scheduledDate')?.value && !wizardForm.get('slotId')?.value"
+      [class.completed]="!!wizardForm.get('slotId')?.value">
       <span class="step-num">4</span>
       <span>{{ 'Slot' | translate }}</span>
     </div>
@@ -46,21 +53,17 @@
   </div>
 
   <form [formGroup]="wizardForm" (ngSubmit)="onSubmit()">
-    
+
     <!-- Step 1: Select Doctor -->
     <div class="form-step-section">
       <label class="step-label" for="doctorId">{{ 'Step 1: Choose Specialist Doctor *' | translate }}</label>
-      <app-custom-select 
-        formControlName="doctorId" 
-        [options]="doctorSelectOptions" 
-        bindLabel="label" 
-        bindValue="value" 
-        [searchable]="true"
-        [placeholder]="'-- Select Specialist Doctor --' | translate"
+      <app-custom-select formControlName="doctorId" [options]="doctorSelectOptions" bindLabel="label" bindValue="value"
+        [searchable]="true" [placeholder]="'-- Select Specialist Doctor --' | translate"
         (selectionChange)="onDoctorChange()">
       </app-custom-select>
       <div *ngIf="wizardForm.get('doctorId')?.value" class="mt-2 text-right">
-        <a [routerLink]="['/doctors', wizardForm.get('doctorId')?.value]" class="btn btn-outline btn-xs" style="text-decoration: none; padding: 4px 10px; font-size: 0.8rem; border-radius: var(--radius-sm);">
+        <a [routerLink]="['/doctors', wizardForm.get('doctorId')?.value]" class="btn btn-outline btn-xs"
+          style="text-decoration: none; padding: 4px 10px; font-size: 0.8rem; border-radius: var(--radius-sm);">
           👤 {{ 'View Doctor Profile, Biography & Specialties' | translate }}
         </a>
       </div>
@@ -69,13 +72,8 @@
     <!-- Step 2: Select Clinic Location -->
     <div class="form-step-section" *ngIf="wizardForm.get('doctorId')?.value">
       <label class="step-label" for="dcId">{{ 'Step 2: Select Clinic Location *' | translate }}</label>
-      <app-custom-select 
-        formControlName="dcId" 
-        [options]="clinicSelectOptions" 
-        bindLabel="label" 
-        bindValue="value" 
-        [placeholder]="'-- Choose Clinic Location --' | translate"
-        (selectionChange)="onClinicOrDateChange()">
+      <app-custom-select formControlName="dcId" [options]="clinicSelectOptions" bindLabel="label" bindValue="value"
+        [placeholder]="'-- Choose Clinic Location --' | translate" (selectionChange)="onClinicOrDateChange()">
       </app-custom-select>
       <div *ngIf="doctorClinics.length === 0" class="error-text mt-1 text-warning">
         {{ 'No active clinic branch locations assigned to this doctor.' | translate }}
@@ -85,32 +83,25 @@
     <!-- Step 3: Select Date -->
     <div class="form-step-section" *ngIf="wizardForm.get('dcId')?.value">
       <label class="step-label" for="scheduledDate">{{ 'Step 3: Choose Appointment Date *' | translate }}</label>
-      <input 
-        type="date" 
-        id="scheduledDate" 
-        formControlName="scheduledDate" 
-        class="form-control"
-        (change)="onClinicOrDateChange()"
-      >
+      <input type="date" id="scheduledDate" formControlName="scheduledDate" class="form-control"
+        (change)="onClinicOrDateChange()">
     </div>
 
     <!-- Step 4: Select Time Slot -->
     <div class="form-step-section" *ngIf="wizardForm.get('scheduledDate')?.value && wizardForm.get('dcId')?.value">
       <label class="step-label">{{ 'Step 4: Select Available Time Slot *' | translate }}</label>
-      
+
       <div class="slots-grid">
-        <label 
-          *ngFor="let slot of slots" 
-          class="slot-pill-label"
+        <label *ngFor="let slot of slots" class="slot-pill-label"
           [class.selected]="wizardForm.get('slotId')?.value === slot.slotId"
-        >
-          <input 
-            type="radio" 
-            formControlName="slotId" 
-            [value]="slot.slotId" 
-            class="d-none"
-          >
+          [class.disabled]="slot.status !== 'AVAILABLE'" [class.booked]="slot.status === 'BOOKED'"
+          [class.blocked]="slot.status === 'BLOCKED'">
+          <input type="radio" formControlName="slotId" [value]="slot.slotId" [disabled]="slot.status !== 'AVAILABLE'"
+            class="d-none">
           <span>{{ slot.startTime.substring(0, 5) }}</span>
+          <span class="slot-status-label" style="font-size: 10px; opacity: 0.85;" *ngIf="slot.status !== 'AVAILABLE'">
+            ({{ slot.status === 'BOOKED' ? ('Booked' | translate) : ('Blocked' | translate) }})
+          </span>
           <span *ngIf="wizardForm.get('slotId')?.value === slot.slotId">✓</span>
         </label>
       </div>
@@ -127,35 +118,22 @@
       <div class="form-row">
         <div class="form-group mb-3">
           <label class="form-label" for="appointmentType">{{ 'Appointment Type *' | translate }}</label>
-          <app-custom-select 
-            formControlName="appointmentType" 
-            [options]="appointmentTypeOptions" 
-            bindLabel="label" 
-            bindValue="value" 
-            [placeholder]="'Select appointment type' | translate">
+          <app-custom-select formControlName="appointmentType" [options]="appointmentTypeOptions" bindLabel="label"
+            bindValue="value" [placeholder]="'Select appointment type' | translate">
           </app-custom-select>
         </div>
         <div class="form-group mb-3">
           <label class="form-label" for="sessionType">{{ 'Session Mode *' | translate }}</label>
-          <app-custom-select 
-            formControlName="sessionType" 
-            [options]="sessionTypeOptions" 
-            bindLabel="label" 
-            bindValue="value" 
-            [placeholder]="'Select session mode' | translate">
+          <app-custom-select formControlName="sessionType" [options]="sessionTypeOptions" bindLabel="label"
+            bindValue="value" [placeholder]="'Select session mode' | translate">
           </app-custom-select>
         </div>
       </div>
 
       <div class="form-group mb-3">
         <label class="form-label" for="reason">{{ 'Reason for Visit / Symptoms (Optional)' | translate }}</label>
-        <textarea 
-          id="reason" 
-          formControlName="reason" 
-          class="form-control" 
-          [placeholder]="'Symptoms placeholder' | translate"
-          rows="3"
-        ></textarea>
+        <textarea id="reason" formControlName="reason" class="form-control"
+          [placeholder]="'Symptoms placeholder' | translate" rows="3"></textarea>
       </div>
 
       <button type="submit" class="btn btn-primary w-100 btn-book-submit" [disabled]="wizardForm.invalid">

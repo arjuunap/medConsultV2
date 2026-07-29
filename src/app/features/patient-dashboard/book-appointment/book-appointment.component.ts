@@ -51,7 +51,7 @@ export class BookAppointmentComponent implements OnInit {
       const displayName = (nameLower.startsWith('dr') || nameLower.startsWith('prof') || nameLower.startsWith('consultant'))
         ? name
         : `${title ? title + '. ' : ''}${name}`;
-      
+
       const yrsText = isAr ? 'سنة خبرة' : 'yrs exp';
       const feeText = isAr ? 'رسوم الكشف القياسية: ريال سعودي' : 'Standard Fee: SAR';
       return {
@@ -144,7 +144,7 @@ export class BookAppointmentComponent implements OnInit {
     this.doctorService.getDoctorClinics(docId).subscribe({
       next: (data) => {
         const activeClinics = data.filter((c: any) => c.isActive);
-        
+
         if (activeClinics.length === 0) {
           this.doctorClinics = [];
           this.uiService.hideLoading();
@@ -195,8 +195,7 @@ export class BookAppointmentComponent implements OnInit {
     this.uiService.showLoading();
     this.doctorService.getAvailableSlots(dcId, date).subscribe({
       next: (data) => {
-        // filter slots status AVAILABLE
-        this.slots = data.filter((s: any) => s.status === 'AVAILABLE');
+        this.slots = data || [];
         this.uiService.hideLoading();
       },
       error: () => {

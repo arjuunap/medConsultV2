@@ -355,8 +355,9 @@ export class ClinicExplorerComponent implements OnInit {
     this.uiService.showLoading();
     this.doctorService.getAvailableSlots(dcId, date).subscribe({
       next: (slots) => {
-        this.availableSlots = slots.filter(s => s.status === 'AVAILABLE');
-        this.selectedSlot = this.availableSlots.length > 0 ? this.availableSlots[0] : null;
+        this.availableSlots = slots || [];
+        const firstAvail = this.availableSlots.find(s => s.status === 'AVAILABLE');
+        this.selectedSlot = firstAvail || null;
         this.uiService.hideLoading();
       },
       error: () => {

@@ -43,8 +43,11 @@ export interface ClinicCardDisplay extends ClinicResponseDto {
   cityName?: string;
   addressLine1?: string;
   specs?: string[];
+  specialtyIds?: string[];
   languages?: string[];
   insurances?: string[];
+  insuranceProviderIds?: string[];
+  languageIds?: string[];
   doctors?: DoctorCardDisplay[];
   expanded?: boolean;
 }
@@ -94,19 +97,19 @@ export class LandingComponent implements OnInit {
   public doctorClinicLinks: { [doctorId: string]: any[] } = {};
 
   // Active Filters
-  public activeSpecialtyId = '';
-  public activeSpecialtyName = '';
-  public selectedCityId = '';
+  public activeSpecialtyIds: string[] = [];
+  public activeSpecialtyNames: string[] = [];
+  public selectedCityIds: string[] = [];
   public selectedRating = 0;
-  public selectedLangId = '';
-  public selectedInsId = '';
+  public selectedLangIds: string[] = [];
+  public selectedInsIds: string[] = [];
   public filterTodayOnly = false;
   public sortBy = 'best';
 
   // Search Form
   public searchForm: FormGroup = this.fb.group({
     query: [''],
-    location: ['']
+    location: [[]]
   });
 
   get sortSelectOptions() {
@@ -133,6 +136,7 @@ export class LandingComponent implements OnInit {
   public availableSlots: AppointmentSlotResponseDto[] = [];
   public selectedSlot: AppointmentSlotResponseDto | null = null;
   public selectedDate = new Date().toISOString().split('T')[0];
+  public nextDays: { date: string; label: string; dayName: string; hasSlots: boolean }[] = [];
   public selectedApptType = 'NEW_PATIENT';
   public selectedSessionType = 'IN_CLINIC';
   public bookingReason = '';
@@ -269,6 +273,8 @@ export class LandingComponent implements OnInit {
       return found ? this.languageService.translate(found.nameEn, found.nameAr) : '';
     }).filter(Boolean) as string[] || [];
 
+    const specialtyIds = detail?.specialties?.map(s => s.specialtyId) || [];
+
     const langNames = detail?.languages?.map(l => {
       const found = this.languages.find(x => x.languageId === l.languageId);
       return found ? this.languageService.translate(found.nameEn, found.nameAr) : '';
@@ -279,51 +285,53 @@ export class LandingComponent implements OnInit {
       return found ? this.languageService.translate(found.nameEn, found.nameAr) : '';
     }).filter(Boolean) as string[] || [];
 
+    const insuranceProviderIds = detail?.insurances?.map(i => i.providerId) || [];
+    const languageIds = detail?.languages?.map(l => l.languageId) || [];
+
     // Map real doctors assigned to this clinic's branches
     const matchedDoctors: DoctorCardDisplay[] = [];
 
     if (this.rawDoctors && this.rawDoctors.length > 0) {
-      const clinicDoctors = this.rawDoctors.filter(doc => {
-        const assignedClinicIds = this.doctorToClinicIds[doc.doctorId] || [];
-        return assignedClinicIds.includes(c.clinicId);
-      });
-
-      clinicDoctors.forEach((doc, dIdx) => {
-        const initials = doc.fullName ? doc.fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'DR';
-        const bgColors = ['#E1F5EE', '#DBEAFE', '#EDE9FE', '#FEF3C7', '#DCFCE7'];
-        const textColors = ['#085041', '#1E40AF', '#5B21B6', '#92400E', '#166534'];
-
-        const docTitle = this.languageService.translate((doc.title as string) || 'Dr', doc.title === 'DR' ? 'د.' : 'طبيب');
-        const specName = specNames[0] || this.languageService.translate('Specialist Doctor', 'طبيب أخصائي');
-        const nextSlot = dIdx % 2 === 0 ? this.languageService.translate('Today 2:00 PM', 'اليوم ٢:٠٠ م') : this.languageService.translate('Tomorrow 10:00 AM', 'غداً ١٠:٠٠ ص');
-
-        // Resolve branch name
-        let branchName = '';
+      this.rawDoctors.forEach((doc, dIdx) => {
         const links = this.doctorClinicLinks[doc.doctorId] || [];
-        const linkForThisClinic = links.find((link: any) => link.clinicId === c.clinicId);
-        if (linkForThisClinic && detail?.branches) {
-          const branch = detail.branches.find(b => b.branchId === linkForThisClinic.branchId);
-          if (branch) {
-            branchName = this.languageService.translate(branch.branchNameEn, branch.branchNameAr);
-          }
-        }
+        const clinicLinks = links.filter((link: any) => link.clinicId === c.clinicId);
 
-        matchedDoctors.push({
-          doctorId: doc.doctorId,
-          name: `${docTitle}. ${doc.fullName}`,
-          title: doc.title || 'Dr',
-          spec: specName,
-          rating: doc.overallRating || 5.0,
-          reviews: doc.reviewCount || 10,
-          exp: doc.experienceYears || 5,
-          avail: dIdx % 2 === 0 ? 'today' : 'tomorrow',
-          nextSlot: nextSlot,
-          langs: langNames.length > 0 ? langNames.map(l => l.substring(0, 2).toUpperCase()) : ['AR', 'EN'],
-          initials,
-          avatarBg: bgColors[dIdx % bgColors.length],
-          avatarColor: textColors[dIdx % textColors.length],
-          consultationFeeSar: doc.consultationFeeSar || 150,
-          branchName: branchName || this.languageService.translate('Main Branch', 'الفرع الرئيسي')
+        clinicLinks.forEach((link: any) => {
+          const initials = doc.fullName ? doc.fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'DR';
+          const bgColors = ['#E1F5EE', '#DBEAFE', '#EDE9FE', '#FEF3C7', '#DCFCE7'];
+          const textColors = ['#085041', '#1E40AF', '#5B21B6', '#92400E', '#166534'];
+
+          const docTitle = this.languageService.translate((doc.title as string) || 'Dr', doc.title === 'DR' ? 'د.' : 'طبيب');
+          const specName = specNames[0] || this.languageService.translate('Specialist Doctor', 'طبيب أخصائي');
+          const nextSlot = dIdx % 2 === 0 ? this.languageService.translate('Today 2:00 PM', 'اليوم ٢:٠٠ م') : this.languageService.translate('Tomorrow 10:00 AM', 'غداً ١٠:٠٠ ص');
+
+          // Resolve branch name
+          let branchName = '';
+          if (detail?.branches) {
+            const branch = detail.branches.find(b => b.branchId === link.branchId);
+            if (branch) {
+              branchName = this.languageService.translate(branch.branchNameEn, branch.branchNameAr);
+            }
+          }
+
+          matchedDoctors.push({
+            doctorId: doc.doctorId,
+            dcId: link.dcId,
+            name: `${docTitle}. ${doc.fullName}`,
+            title: doc.title || 'Dr',
+            spec: specName,
+            rating: doc.overallRating || 5.0,
+            reviews: doc.reviewCount || 10,
+            exp: doc.experienceYears || 5,
+            avail: dIdx % 2 === 0 ? 'today' : 'tomorrow',
+            nextSlot: nextSlot,
+            langs: langNames.length > 0 ? langNames.map(l => l.substring(0, 2).toUpperCase()) : ['AR', 'EN'],
+            initials,
+            avatarBg: bgColors[dIdx % bgColors.length],
+            avatarColor: textColors[dIdx % textColors.length],
+            consultationFeeSar: link.consultationFeeSar || doc.consultationFeeSar || 150,
+            branchName: branchName || this.languageService.translate('Main Branch', 'الفرع الرئيسي')
+          });
         });
       });
     }
@@ -337,6 +345,9 @@ export class LandingComponent implements OnInit {
       specs: specNames.length > 0 ? specNames : [this.languageService.translate('General Practice', 'الطب العام'), this.languageService.translate('Internal Medicine', 'الطب الباطني')],
       languages: langNames.length > 0 ? langNames : [this.languageService.translate('Arabic', 'العربية'), this.languageService.translate('English', 'الإنجليزية')],
       insurances: insNames.length > 0 ? insNames : [this.languageService.translate('Tawuniya', 'التعاونية'), this.languageService.translate('Bupa Arabia', 'بوبا العربية')],
+      insuranceProviderIds,
+      languageIds,
+      specialtyIds,
       doctors: matchedDoctors,
       expanded: false
     };
@@ -344,38 +355,70 @@ export class LandingComponent implements OnInit {
 
   // ── Filter Engine ────────────────────────────────────────────────
   setSpecialtyFilter(specId: string, specName: string): void {
-    if (this.activeSpecialtyId === specId) {
-      this.activeSpecialtyId = '';
-      this.activeSpecialtyName = '';
+    const idx = this.activeSpecialtyIds.indexOf(specId);
+    if (idx > -1) {
+      this.activeSpecialtyIds = this.activeSpecialtyIds.filter(id => id !== specId);
+      this.activeSpecialtyNames = this.activeSpecialtyNames.filter(name => name !== specName);
     } else {
-      this.activeSpecialtyId = specId;
-      this.activeSpecialtyName = specName;
+      this.activeSpecialtyIds = [...this.activeSpecialtyIds, specId];
+      this.activeSpecialtyNames = [...this.activeSpecialtyNames, specName];
     }
+    this.applyFilters();
+  }
+
+  clearSpecialtyFilter(): void {
+    this.activeSpecialtyIds = [];
+    this.activeSpecialtyNames = [];
     this.applyFilters();
   }
 
   setCityFilter(cityId: string): void {
-    if (this.selectedCityId === cityId) {
-      this.selectedCityId = '';
+    const idx = this.selectedCityIds.indexOf(cityId);
+    if (idx > -1) {
+      this.selectedCityIds = this.selectedCityIds.filter(id => id !== cityId);
     } else {
-      this.selectedCityId = cityId;
+      this.selectedCityIds = [...this.selectedCityIds, cityId];
     }
-    this.searchForm.patchValue({ location: this.selectedCityId }, { emitEvent: false });
+    this.searchForm.patchValue({ location: this.selectedCityIds }, { emitEvent: false });
     this.applyFilters();
   }
 
   onLocationChange(): void {
-    this.selectedCityId = this.searchForm.value.location || '';
+    let locs = this.searchForm.value.location;
+    if (!Array.isArray(locs)) {
+      locs = locs ? [locs] : [];
+    }
+    const hasAll = locs.includes('');
+    if (hasAll && locs.length > 1) {
+      const lastSelected = locs[locs.length - 1];
+      if (lastSelected === '') {
+        locs = [''];
+      } else {
+        locs = locs.filter((l: string) => l !== '');
+      }
+      this.searchForm.patchValue({ location: locs }, { emitEvent: false });
+    }
+    this.selectedCityIds = locs.filter((l: string) => l !== '');
     this.applyFilters();
   }
 
   setLanguageFilter(langId: string): void {
-    this.selectedLangId = this.selectedLangId === langId ? '' : langId;
+    const idx = this.selectedLangIds.indexOf(langId);
+    if (idx > -1) {
+      this.selectedLangIds = this.selectedLangIds.filter(id => id !== langId);
+    } else {
+      this.selectedLangIds = [...this.selectedLangIds, langId];
+    }
     this.applyFilters();
   }
 
   setInsuranceFilter(insId: string): void {
-    this.selectedInsId = this.selectedInsId === insId ? '' : insId;
+    const idx = this.selectedInsIds.indexOf(insId);
+    if (idx > -1) {
+      this.selectedInsIds = this.selectedInsIds.filter(id => id !== insId);
+    } else {
+      this.selectedInsIds = [...this.selectedInsIds, insId];
+    }
     this.applyFilters();
   }
 
@@ -396,11 +439,6 @@ export class LandingComponent implements OnInit {
 
   applyFilters(): void {
     const query = (this.searchForm.value.query || '').toLowerCase().trim();
-    const locationVal = (this.searchForm.value.location || this.selectedCityId || '').trim();
-
-    const selectedCityObj = this.cities.find(ct => ct.cityId === locationVal || ct.cityId.toLowerCase() === locationVal.toLowerCase());
-    const selectedCityNameEn = selectedCityObj?.nameEn?.toLowerCase() || '';
-    const selectedCityNameAr = selectedCityObj?.nameAr?.toLowerCase() || '';
 
     let list = this.clinics.filter(c => {
       // 1. Text Query Search (Clinic name, Doctor name, Specialty, Address, City)
@@ -413,21 +451,27 @@ export class LandingComponent implements OnInit {
 
       const queryMatch = !query || matchesNameEn || matchesNameAr || matchesCity || matchesAddr || matchesSpec || matchesDoc;
 
-      // 2. Location / City Filter
+      // 2. Location / City Filter (Multi-select)
       let locMatch = true;
-      if (locationVal) {
-        const targetLow = locationVal.toLowerCase();
-        const matchById = c.cityId?.toLowerCase() === targetLow;
-        const matchByCityName = !!c.cityName?.toLowerCase().includes(targetLow);
-        const matchByAddr = !!c.addressLine1?.toLowerCase().includes(targetLow) || !!(c.area && c.area.toLowerCase().includes(targetLow));
-        const matchBySelectedObjEn = selectedCityNameEn ? (!!c.cityName?.toLowerCase().includes(selectedCityNameEn) || !!c.addressLine1?.toLowerCase().includes(selectedCityNameEn)) : false;
-        const matchBySelectedObjAr = selectedCityNameAr ? (!!c.cityName?.toLowerCase().includes(selectedCityNameAr) || !!c.addressLine1?.toLowerCase().includes(selectedCityNameAr)) : false;
+      if (this.selectedCityIds.length > 0) {
+        locMatch = this.selectedCityIds.some(cityId => {
+          const selectedCityObj = this.cities.find(ct => ct.cityId === cityId || ct.cityId.toLowerCase() === cityId.toLowerCase());
+          const selectedCityNameEn = selectedCityObj?.nameEn?.toLowerCase() || '';
+          const selectedCityNameAr = selectedCityObj?.nameAr?.toLowerCase() || '';
 
-        locMatch = matchById || matchByCityName || matchByAddr || matchBySelectedObjEn || matchBySelectedObjAr;
+          const matchById = c.cityId?.toLowerCase() === cityId.toLowerCase();
+          const matchByCityName = !!c.cityName?.toLowerCase().includes(cityId.toLowerCase());
+          const matchByAddr = !!c.addressLine1?.toLowerCase().includes(cityId.toLowerCase()) || !!(c.area && c.area.toLowerCase().includes(cityId.toLowerCase()));
+          const matchBySelectedObjEn = selectedCityNameEn ? (!!c.cityName?.toLowerCase().includes(selectedCityNameEn) || !!c.addressLine1?.toLowerCase().includes(selectedCityNameEn)) : false;
+          const matchBySelectedObjAr = selectedCityNameAr ? (!!c.cityName?.toLowerCase().includes(selectedCityNameAr) || !!c.addressLine1?.toLowerCase().includes(selectedCityNameAr)) : false;
+
+          return matchById || matchByCityName || matchByAddr || matchBySelectedObjEn || matchBySelectedObjAr;
+        });
       }
 
-      // 3. Specialty Filter
-      const specMatch = !this.activeSpecialtyName || c.specs?.some(s => s.toLowerCase().includes(this.activeSpecialtyName.toLowerCase()));
+      // 3. Specialty Filter (Multi-select)
+      const specMatch = this.activeSpecialtyIds.length === 0 || 
+        c.specialtyIds?.some(id => this.activeSpecialtyIds.includes(id));
 
       // 4. Rating Filter
       const ratingMatch = !this.selectedRating || (c.overallRating || 0) >= this.selectedRating;
@@ -435,7 +479,15 @@ export class LandingComponent implements OnInit {
       // 5. Today Only Filter
       const todayMatch = !this.filterTodayOnly || c.doctors?.some(d => d.avail === 'today');
 
-      return queryMatch && locMatch && specMatch && ratingMatch && todayMatch;
+      // 6. Insurance Filter (Multi-select)
+      const insuranceMatch = this.selectedInsIds.length === 0 || 
+        c.insuranceProviderIds?.some(id => this.selectedInsIds.includes(id));
+
+      // 7. Language Filter (Multi-select)
+      const langMatch = this.selectedLangIds.length === 0 || 
+        c.languageIds?.some(id => this.selectedLangIds.includes(id));
+
+      return queryMatch && locMatch && specMatch && ratingMatch && todayMatch && insuranceMatch && langMatch;
     });
 
     // Apply Sorting
@@ -451,15 +503,15 @@ export class LandingComponent implements OnInit {
   }
 
   clearFilters(): void {
-    this.activeSpecialtyId = '';
-    this.activeSpecialtyName = '';
-    this.selectedCityId = '';
-    this.selectedLangId = '';
-    this.selectedInsId = '';
+    this.activeSpecialtyIds = [];
+    this.activeSpecialtyNames = [];
+    this.selectedCityIds = [];
+    this.selectedLangIds = [];
+    this.selectedInsIds = [];
     this.selectedRating = 0;
     this.filterTodayOnly = false;
     this.sortBy = 'best';
-    this.searchForm.reset({ query: '', location: '' });
+    this.searchForm.reset({ query: '', location: [] });
     this.applyFilters();
   }
 
@@ -477,18 +529,19 @@ export class LandingComponent implements OnInit {
     // Clear available slots initially to avoid submitting fake slots
     this.availableSlots = [];
     this.selectedSlot = null;
+    this.nextDays = [];
 
     // Fetch real placement dcId for doctor matching this clinic
     this.doctorService.getDoctorClinics(doc.doctorId).subscribe({
       next: (dcList) => {
         if (dcList && dcList.length > 0) {
-          const match = dcList.find(dc => dc.clinicId === clinicId);
+          const match = dcList.find(dc => dc.dcId === doc.dcId) || dcList.find(dc => dc.clinicId === clinicId);
           if (match) {
             doc.dcId = match.dcId;
           } else {
             doc.dcId = dcList[0].dcId;
           }
-          this.fetchRealSlotsForDoctor(doc.dcId, this.selectedDate);
+          this.checkAvailabilityForNext7Days(doc.dcId);
         }
       },
       error: () => { }
@@ -502,12 +555,66 @@ export class LandingComponent implements OnInit {
     }
   }
 
+  selectDateChip(dateStr: string): void {
+    this.selectedDate = dateStr;
+    if (this.bookingDoctor?.dcId) {
+      this.fetchRealSlotsForDoctor(this.bookingDoctor.dcId, this.selectedDate);
+    }
+  }
+
+  checkAvailabilityForNext7Days(dcId: string): void {
+    this.uiService.showLoading();
+    const today = new Date();
+    const dates: string[] = [];
+    const requests = [];
+
+    for (let i = 0; i < 7; i++) {
+      const d = new Date();
+      d.setDate(today.getDate() + i);
+      const dateStr = d.toISOString().split('T')[0];
+      dates.push(dateStr);
+      requests.push(this.doctorService.getAvailableSlots(dcId, dateStr).pipe(
+        catchError(() => of([]))
+      ));
+    }
+
+    forkJoin(requests).subscribe({
+      next: (results) => {
+        this.nextDays = dates.map((dateStr, idx) => {
+          const slotsForDay = results[idx] || [];
+          const availableSlots = slotsForDay.filter(s => s.status === SlotStatus.AVAILABLE);
+          
+          const d = new Date(dateStr);
+          const label = d.toLocaleDateString(this.languageService.isArabic ? 'ar-SA' : 'en-US', { day: 'numeric', month: 'short' });
+          const dayName = d.toLocaleDateString(this.languageService.isArabic ? 'ar-SA' : 'en-US', { weekday: 'short' });
+
+          return {
+            date: dateStr,
+            label,
+            dayName,
+            hasSlots: availableSlots.length > 0
+          };
+        });
+
+        // Pre-select the first date with slots, or today if none
+        const firstAvailable = this.nextDays.find(d => d.hasSlots);
+        const defaultDate = firstAvailable ? firstAvailable.date : this.selectedDate;
+        this.selectedDate = defaultDate;
+        this.fetchRealSlotsForDoctor(dcId, this.selectedDate);
+        this.uiService.hideLoading();
+      },
+      error: () => {
+        this.uiService.hideLoading();
+      }
+    });
+  }
+
   fetchRealSlotsForDoctor(dcId: string, date: string): void {
     this.doctorService.getAvailableSlots(dcId, date).subscribe({
       next: (slots) => {
-        const available = slots.filter(s => s.status === SlotStatus.AVAILABLE);
-        this.availableSlots = available;
-        this.selectedSlot = available.length > 0 ? available[0] : null;
+        this.availableSlots = slots || [];
+        const firstAvail = this.availableSlots.find(s => s.status === SlotStatus.AVAILABLE);
+        this.selectedSlot = firstAvail || null;
       },
       error: () => {
         this.availableSlots = [];

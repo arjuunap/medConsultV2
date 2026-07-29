@@ -205,3 +205,25 @@
     width: 100%;
   }
 }
+
+.slot-pill-label.disabled {
+  opacity: 0.55;
+  border-style: dashed;
+  background-color: var(--off);
+  color: var(--t3);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.slot-pill-label.disabled:hover {
+  border-color: var(--border-color);
+  background-color: var(--off);
+}
+
+.slot-pill-label.booked {
+  text-decoration: line-through;
+}
+
+.slot-pill-label.blocked {
+  text-decoration: line-through;
+}

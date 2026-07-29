@@ -299,9 +299,15 @@
             type="button" 
             class="slot-time-btn"
             [class.selected]="selectedSlot?.slotId === slot.slotId"
+            [class.booked]="slot.status === 'BOOKED'"
+            [class.blocked]="slot.status === 'BLOCKED'"
+            [disabled]="slot.status !== 'AVAILABLE'"
             (click)="selectSlot(slot)"
           >
-            {{ slot.startTime }}
+            {{ slot.startTime.substring(0, 5) }}
+            <span class="slot-status-label" style="font-size: 10px; opacity: 0.85;" *ngIf="slot.status !== 'AVAILABLE'">
+              ({{ slot.status === 'BOOKED' ? ('Booked' | translate) : ('Blocked' | translate) }})
+            </span>
           </button>
         </div>
       </div>

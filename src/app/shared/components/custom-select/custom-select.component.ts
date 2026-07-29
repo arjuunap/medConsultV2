@@ -43,6 +43,7 @@ export class CustomSelectComponent implements ControlValueAccessor {
   @Input() bindValue: string = 'value';
   @Input() customClass: string = '';
   @Input() placement: 'top' | 'bottom' = 'bottom';
+  @Input() multiple: boolean = false;
 
   @Output() selectionChange = new EventEmitter<any>();
 
@@ -57,7 +58,11 @@ export class CustomSelectComponent implements ControlValueAccessor {
   constructor(private elementRef: ElementRef, private cdr: ChangeDetectorRef) {}
 
   writeValue(value: any): void {
-    this.selectedValue = value;
+    if (this.multiple) {
+      this.selectedValue = Array.isArray(value) ? value : (value ? [value] : []);
+    } else {
+      this.selectedValue = value;
+    }
     this.updateSelectedOption();
     this.cdr.markForCheck();
   }
@@ -96,11 +101,26 @@ export class CustomSelectComponent implements ControlValueAccessor {
       event.stopPropagation();
     }
     const val = this.getOptionValue(option);
-    this.selectedValue = val;
-    this.selectedOption = option;
-    this.onChange(val);
-    this.selectionChange.emit(val);
-    this.isOpen = false;
+    if (this.multiple) {
+      if (!Array.isArray(this.selectedValue)) {
+        this.selectedValue = [];
+      }
+      const idx = this.selectedValue.indexOf(val);
+      if (idx > -1) {
+        this.selectedValue = this.selectedValue.filter((v: any) => v !== val);
+      } else {
+        this.selectedValue = [...this.selectedValue, val];
+      }
+      this.updateSelectedOption();
+      this.onChange(this.selectedValue);
+      this.selectionChange.emit(this.selectedValue);
+    } else {
+      this.selectedValue = val;
+      this.selectedOption = option;
+      this.onChange(val);
+      this.selectionChange.emit(val);
+      this.isOpen = false;
+    }
   }
 
   get filteredOptions(): any[] {
@@ -146,6 +166,17 @@ export class CustomSelectComponent implements ControlValueAccessor {
   }
 
   get displayLabel(): string {
+    if (this.multiple) {
+      if (!Array.isArray(this.selectedValue) || this.selectedValue.length === 0) {
+        return this.placeholder;
+      }
+      const labels = this.selectedValue.map(val => {
+        const found = this.options?.find(opt => this.getOptionValue(opt) === val);
+        return found ? this.getOptionLabel(found) : '';
+      }).filter(Boolean);
+      return labels.length > 0 ? labels.join(', ') : this.placeholder;
+    }
+
     const found = this.options?.find(opt => this.getOptionValue(opt) === this.selectedValue);
     if (found) {
       this.selectedOption = found;
@@ -159,14 +190,25 @@ export class CustomSelectComponent implements ControlValueAccessor {
 
   isSelected(option: any): boolean {
     const val = this.getOptionValue(option);
+    if (this.multiple) {
+      return Array.isArray(this.selectedValue) && this.selectedValue.includes(val);
+    }
     return this.selectedValue === val || (this.selectedValue == val && val !== '');
   }
 
   private updateSelectedOption(): void {
-    if (this.options && this.options.length > 0) {
-      this.selectedOption = this.options.find(opt => this.getOptionValue(opt) === this.selectedValue) || null;
+    if (this.multiple) {
+      if (Array.isArray(this.selectedValue) && this.options) {
+        this.selectedOption = this.options.find(opt => this.selectedValue.includes(this.getOptionValue(opt))) || null;
+      } else {
+        this.selectedOption = null;
+      }
     } else {
-      this.selectedOption = null;
+      if (this.options && this.options.length > 0) {
+        this.selectedOption = this.options.find(opt => this.getOptionValue(opt) === this.selectedValue) || null;
+      } else {
+        this.selectedOption = null;
+      }
     }
   }
 

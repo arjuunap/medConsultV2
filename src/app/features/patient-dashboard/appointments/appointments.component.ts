@@ -17,7 +17,7 @@ import { environment } from '../../../../environments/environment';
 @Component({
   selector: 'app-appointments',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, TranslatePipe, TranslateObjPipe],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, TranslatePipe],
   templateUrl: './appointments.component.html',
   styleUrls: ['./appointments.component.css']
 })
@@ -88,7 +88,7 @@ export class AppointmentsComponent implements OnInit {
     if (!this.patientId) return;
 
     this.uiService.showLoading();
-    this.appointmentService.getAppointmentsByPatient(this.patientId, 0, 100).subscribe({
+    this.appointmentService.getMyAppointments(0, 100).subscribe({
       next: (page) => {
         const rawList = page.content || [];
 
@@ -304,8 +304,9 @@ export class AppointmentsComponent implements OnInit {
     this.uiService.showLoading();
     this.doctorService.getAvailableSlots(dcId, date).subscribe({
       next: (slots) => {
-        this.availableSlots = slots.filter(s => s.status === 'AVAILABLE');
-        this.selectedSlot = this.availableSlots.length > 0 ? this.availableSlots[0] : null;
+        this.availableSlots = slots || [];
+        const firstAvail = this.availableSlots.find(s => s.status === 'AVAILABLE');
+        this.selectedSlot = firstAvail || null;
         this.uiService.hideLoading();
       },
       error: () => {

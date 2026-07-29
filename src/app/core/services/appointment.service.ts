@@ -33,6 +33,11 @@ export class AppointmentService {
     return this.http.get<any>(`${environment.apiUrl}/api/medconsult/appointments/my/upcoming`);
   }
 
+  getMyAppointments(page = 0, size = 10): Observable<any> {
+    const params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    return this.http.get<any>(`${environment.apiUrl}/api/medconsult/appointments/my`, { params });
+  }
+
   getDoctorUpcomingAppointments(): Observable<any> {
     return this.http.get<any>(`${environment.apiUrl}/api/medconsult/appointments/doctor/upcoming`);
   }
@@ -51,4 +56,7 @@ export class AppointmentService {
     const params = new HttpParams().set('page', page.toString()).set('size', size.toString());
     return this.http.get<any>(`${environment.apiUrl}/api/medconsult/appointments/clinic/${clinicId}`, { params });
   }
+
+
+  
 }

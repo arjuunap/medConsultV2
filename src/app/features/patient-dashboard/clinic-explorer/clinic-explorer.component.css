@@ -887,6 +887,23 @@
   box-shadow: 0 4px 6px -1px rgba(5, 150, 105, 0.2);
 }
 
+.slot-time-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed !important;
+  pointer-events: none;
+  background-color: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+  color: #94a3b8 !important;
+}
+
+.slot-time-btn:disabled.booked {
+  text-decoration: line-through;
+}
+
+.slot-time-btn:disabled.blocked {
+  text-decoration: line-through;
+}
+
 /* Form structure */
 .booking-wizard-form {
   display: flex;
