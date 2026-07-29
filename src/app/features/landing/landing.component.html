@@ -51,7 +51,7 @@
       <!-- Real Search Box -->
       <div class="hero-search">
         <form [formGroup]="searchForm" (submit)="applyFilters(); $event.preventDefault()">
-          <div class="hs-row1">
+          <div class="hs-row1" style="margin-bottom: 0;">
             <div class="hs-input-wrap">
               <span class="hs-icon">🔍</span>
               <input class="hs-input" formControlName="query" (input)="applyFilters()" type="text"
@@ -64,17 +64,6 @@
               </app-custom-select>
             </div>
             <button class="hs-search-btn" type="submit">{{ 'Search clinics' | translate }}</button>
-          </div>
-
-          <div class="hs-row2">
-            <span class="hs-label">{{ 'Specialty:' | translate }}</span>
-            <div class="hs-chip" [class.on]="activeSpecialtyIds.length === 0" (click)="clearSpecialtyFilter()">{{ 'All' | translate }}
-            </div>
-            <div *ngFor="let spec of (specialties | slice:0:6)" class="hs-chip"
-              [class.on]="activeSpecialtyIds.includes(spec.specialtyId)"
-              (click)="setSpecialtyFilter(spec.specialtyId, spec.nameEn)">
-              {{ spec | translateObj:'name' | translate }}
-            </div>
           </div>
         </form>
       </div>
@@ -111,46 +100,60 @@
     </div>
   </div>
 
-  <div class="results-layout">
 
-    <!-- ── Sidebar Filters ── -->
-    <div class="filters-sidebar">
-      <div class="fs-title">
-        <span>{{ 'Filters & Refinements' | translate }}</span>
-        <span class="fs-clear" (click)="clearFilters()">{{ 'Clear all' | translate }}</span>
-      </div>
-
-      <div class="fs-group">
-        <div class="fs-group-title">{{ 'Doctor Availability' | translate }}</div>
-        <div class="fs-option" (click)="toggleTodayOnly()">
-          <div class="fs-cb" [class.on]="filterTodayOnly">{{ filterTodayOnly ? '✓' : '' }}</div>{{ 'Available Today
-          Only' | translate }}
-        </div>
-      </div>
-
-
-
-      <div class="fs-group">
-        <div class="fs-group-title">{{ 'Minimum Rating' | translate }}</div>
-        <div class="d-flex gap-2">
-          <button class="btn btn-sm" [class.btn-primary]="selectedRating === 4"
-            [class.btn-outline]="selectedRating !== 4" (click)="setRatingFilter(4)">4.0+ ⭐</button>
-          <button class="btn btn-sm" [class.btn-primary]="selectedRating === 4.8"
-            [class.btn-outline]="selectedRating !== 4.8" (click)="setRatingFilter(4.8)">4.8+ ⭐</button>
-        </div>
-      </div>
-
-      <div class="fs-group" *ngIf="insuranceProviders.length > 0">
-        <div class="fs-group-title">{{ 'Accepted Insurance' | translate }}</div>
-        <div *ngFor="let ins of (insuranceProviders | slice:0:5)" class="fs-option"
-          (click)="setInsuranceFilter(ins.providerId)">
-          <div class="fs-cb" [class.on]="selectedInsIds.includes(ins.providerId)">{{ selectedInsIds.includes(ins.providerId) ? '✓' :
-            '' }}</div>
-          {{ ins | translateObj:'name' }}
-        </div>
-      </div>
+  <!-- ── Horizontal Filter Bar ── -->
+  <div class="horizontal-filter-bar">
+    <!-- Doctor Availability Chip -->
+    <div class="filter-item">
+      <button type="button" class="filter-chip" [class.active]="filterTodayOnly" (click)="toggleTodayOnly()">
+        ⚡ {{ 'Available Today' | translate }}
+      </button>
     </div>
 
+    <!-- Specialty Dropdown -->
+    <div class="filter-item" style="min-width: 220px;" *ngIf="specialties.length > 0">
+      <app-custom-select 
+        [options]="specialtySelectOptions" 
+        [ngModel]="activeSpecialtyIds" 
+        (selectionChange)="onSpecialtySelectChange($event)" 
+        [placeholder]="'🩺 Medical Specialty' | translate"
+        [multiple]="true"
+        [searchable]="true"
+        size="sm">
+      </app-custom-select>
+    </div>
+
+    <!-- Minimum Rating Select Dropdown -->
+    <div class="filter-item" style="width: 170px;">
+      <app-custom-select 
+        [options]="ratingOptions" 
+        [ngModel]="selectedRating" 
+        (selectionChange)="setRatingFilter($event)" 
+        [placeholder]="'⭐ Min Rating' | translate"
+        size="sm">
+      </app-custom-select>
+    </div>
+
+    <!-- Accepted Insurance Select Dropdown -->
+    <div class="filter-item" style="min-width: 230px;" *ngIf="insuranceProviders.length > 0">
+      <app-custom-select 
+        [options]="insuranceOptions" 
+        [ngModel]="selectedInsIds" 
+        (selectionChange)="onInsuranceSelectChange($event)" 
+        [placeholder]="'🏥 Accepted Insurance' | translate"
+        [multiple]="true"
+        [searchable]="true"
+        size="sm">
+      </app-custom-select>
+    </div>
+
+    <!-- Clear Filters Button -->
+    <button type="button" class="btn-clear-filters" *ngIf="hasActiveFilters()" (click)="clearFilters()">
+      ✕ {{ 'Clear all' | translate }}
+    </button>
+  </div>
+
+  <div class="results-layout">
     <!-- ── Clinic Results Grid ── -->
     <div>
       <div *ngFor="let clinic of filteredClinics" class="clinic-card">

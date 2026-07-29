@@ -121,6 +121,28 @@ export class LandingComponent implements OnInit {
     ];
   }
 
+  get ratingOptions() {
+    return [
+      { label: this.languageService.translate('All Ratings', 'جميع التقييمات'), value: 0 },
+      { label: '4.0+ ⭐', value: 4 },
+      { label: '4.8+ ⭐', value: 4.8 }
+    ];
+  }
+
+  get insuranceOptions() {
+    return this.insuranceProviders.map(ins => ({
+      label: this.languageService.translate(ins.nameEn, ins.nameAr),
+      value: ins.providerId
+    }));
+  }
+
+  get specialtySelectOptions() {
+    return this.specialties.map(spec => ({
+      label: this.languageService.translate(spec.nameEn, spec.nameAr),
+      value: spec.specialtyId
+    }));
+  }
+
   get citySelectOptions(): { label: string; value: string }[] {
     const opts = [{ label: this.languageService.translate('📍 All Cities / Areas', '📍 جميع المدن / المناطق'), value: '' }];
     if (this.cities && this.cities.length) {
@@ -372,6 +394,15 @@ export class LandingComponent implements OnInit {
     this.applyFilters();
   }
 
+  onSpecialtySelectChange(val: string[]): void {
+    this.activeSpecialtyIds = val || [];
+    this.activeSpecialtyNames = this.activeSpecialtyIds.map(id => {
+      const specObj = this.specialties.find(s => s.specialtyId === id);
+      return specObj ? (specObj.nameEn || '') : '';
+    }).filter(Boolean);
+    this.applyFilters();
+  }
+
   setCityFilter(cityId: string): void {
     const idx = this.selectedCityIds.indexOf(cityId);
     if (idx > -1) {
@@ -422,9 +453,22 @@ export class LandingComponent implements OnInit {
     this.applyFilters();
   }
 
-  setRatingFilter(rating: number): void {
-    this.selectedRating = this.selectedRating === rating ? 0 : rating;
+  setRatingFilter(rating: any): void {
+    this.selectedRating = Number(rating) || 0;
     this.applyFilters();
+  }
+
+  onInsuranceSelectChange(val: string[]): void {
+    this.selectedInsIds = val || [];
+    this.applyFilters();
+  }
+
+  hasActiveFilters(): boolean {
+    return this.activeSpecialtyIds.length > 0 ||
+      this.selectedCityIds.length > 0 ||
+      this.selectedInsIds.length > 0 ||
+      this.selectedRating > 0 ||
+      this.filterTodayOnly;
   }
 
   toggleTodayOnly(): void {
