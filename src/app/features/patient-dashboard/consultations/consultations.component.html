@@ -79,7 +79,7 @@
       </div>
       <div class="chat-input-bar d-flex justify-between align-center bg-light p-3" *ngIf="selectedConsultation.status === 'CLOSED'">
         <span class="text-muted fs-sm">This consultation has been closed.</span>
-        <button class="btn btn-teal btn-sm" *ngIf="selectedConsultation.appointmentId" (click)="openReviewModal(selectedConsultation)" style="background-color: var(--teal); color: white; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+        <button class="btn btn-teal btn-sm" (click)="openReviewModal(selectedConsultation)" style="background-color: var(--teal); color: white; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
           ⭐ Rate Consultation
         </button>
       </div>

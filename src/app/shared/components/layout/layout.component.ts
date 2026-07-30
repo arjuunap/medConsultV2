@@ -54,6 +54,7 @@ export class LayoutComponent {
       case UserRole.PATIENT:
         return [
           { label: 'Home Dashboard', route: '/patient/home', icon: '📊' },
+          { label: 'Browse Doctors', route: '/patient/doctors', icon: '👨‍⚕️' },
           { label: 'Clinics & Branches', route: '/patient/clinics', icon: '🏥' },
           { label: 'My Appointments', route: '/patient/appointments', icon: '🗓️' },
           { label: 'Medical Records (EMR)', route: '/patient/emr', icon: '📁' },

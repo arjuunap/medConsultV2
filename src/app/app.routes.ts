@@ -71,6 +71,10 @@ export const routes: Routes = [
       {
         path: 'consultations',
         loadComponent: () => import('./features/patient-dashboard/consultations/consultations.component').then(m => m.ConsultationsComponent)
+      },
+      {
+        path: 'doctors',
+        loadComponent: () => import('./features/patient-dashboard/doctors/doctors.component').then(m => m.DoctorsComponent)
       }
     ]
   },
