@@ -66,6 +66,7 @@ export class LayoutComponent {
         return [
           { label: 'Professional Profile', route: '/doctor/profile', icon: '👨‍⚕️' },
           { label: 'Consultation Schedule', route: '/doctor/schedule', icon: '📅' },
+          { label: 'Appointments History', route: '/doctor/appointments-history', icon: '📜' },
           { label: 'My Consultations', route: '/doctor/consultations', icon: '🩺' },
           { label: 'Case Rooms', route: '/doctor/caserooms', icon: '🔬' },
           { label: 'Patient EMR Records', route: '/doctor/patients', icon: '📋' },

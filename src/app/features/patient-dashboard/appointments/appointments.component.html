@@ -1,7 +1,6 @@
 <div class="appointments-container">
-
   <!-- Header Banner -->
-  <div class="page-header-banner">
+  <div class="page-header-banner d-flex justify-between align-center flex-wrap gap-3">
     <div>
       <span class="eyebrow-badge">🗓️ {{ 'Appointment Center' | translate }}</span>
       <h1 class="page-title">{{ 'My Appointments' | translate }}</h1>
@@ -16,187 +15,268 @@
     </div>
   </div>
 
-  <!-- Tabs Navigation -->
-  <div class="tabs-navigation-strip">
-    <button 
-      class="tab-btn" 
-      [class.active]="activeTab === 'upcoming'"
-      (click)="switchTab('upcoming')"
-    >
-      📅 {{ 'Upcoming Consultations' | translate }}
-    </button>
-    <button 
-      class="tab-btn" 
-      [class.active]="activeTab === 'history'"
-      (click)="switchTab('history')"
-    >
-      ⏳ {{ 'Consultation History' | translate }}
-    </button>
-    <button 
-      class="tab-btn" 
-      [class.active]="activeTab === 'all'"
-      (click)="switchTab('all')"
-    >
-      📋 {{ 'All Records' | translate }}
-    </button>
-  </div>
+  <!-- Filters Section -->
+  <div class="filters-card card shadow-sm p-4 mb-4">
+    <div class="filters-grid">
+      <div class="filter-item">
+        <label class="filter-label">{{ 'Status' | translate }}</label>
+        <app-custom-select 
+          [options]="statusOptions" 
+          [ngModel]="selectedStatus" 
+          (selectionChange)="selectedStatus = $event; applyFilters()" 
+          [placeholder]="'Select Status' | translate"
+          size="sm">
+        </app-custom-select>
+      </div>
 
-  <!-- Appointments Roster -->
-  <div class="appointments-list-wrapper">
-    
-    <!-- Empty State -->
-    <div *ngIf="filteredAppointments.length === 0" class="empty-state-card">
-      <div class="empty-icon">🗓️</div>
-      <h3>{{ 'No appointments found' | translate }}</h3>
-      <p>{{ 'You do not have any consultations listed in this tab.' | translate }}</p>
-      <a routerLink="/patient/book-appointment" class="btn btn-accent btn-action-touch mt-3">
-        {{ 'Book a Consultation Now' | translate }}
-      </a>
+      <div class="filter-item">
+        <label class="filter-label">{{ 'Consultation Mode' | translate }}</label>
+        <app-custom-select 
+          [options]="sessionTypeOptions" 
+          [ngModel]="selectedSessionType" 
+          (selectionChange)="selectedSessionType = $event; applyFilters()" 
+          [placeholder]="'Select Mode' | translate"
+          size="sm">
+        </app-custom-select>
+      </div>
+
+      <div class="filter-item">
+        <label class="filter-label">{{ 'From Date' | translate }}</label>
+        <input type="date" [(ngModel)]="fromDate" (change)="applyFilters()" class="date-input">
+      </div>
+
+      <div class="filter-item">
+        <label class="filter-label">{{ 'To Date' | translate }}</label>
+        <input type="date" [(ngModel)]="toDate" (change)="applyFilters()" class="date-input">
+      </div>
+
+      <div class="filter-item">
+        <label class="filter-label">{{ 'Search Doctor' | translate }}</label>
+        <input type="text" [(ngModel)]="searchQuery" (input)="applyFilters()" [placeholder]="'Search by doctor/department...' | translate" class="date-input">
+      </div>
     </div>
 
-    <!-- Roster Grid -->
-    <div class="appointments-grid" *ngIf="filteredAppointments.length > 0">
-      <div *ngFor="let app of filteredAppointments" class="appointment-card">
-        
-        <!-- Top Status Banner -->
-        <div class="card-status-strip">
-          <span class="status-badge" [class]="app.status.toLowerCase()">
-            {{ app.status | translate }}
-          </span>
-          <span class="session-type-badge" [class]="app.sessionType.toLowerCase()">
-            {{ app.sessionType === 'IN_CLINIC' ? ('In-Clinic' | translate) : ('Telehealth' | translate) }}
-          </span>
-        </div>
-
-        <!-- Doctor details row -->
-        <div class="card-doctor-profile">
-          <div 
-            class="doctor-avatar-circle"
-            [style.backgroundColor]="getAvatarBg(app.doctorName)"
-            [style.color]="getAvatarColor(app.doctorName)"
-          >
-            {{ getInitials(app.doctorName) }}
-          </div>
-          <div class="doctor-details">
-            <h4 class="doctor-name">Dr. {{ app.doctorName }}</h4>
-            <p class="doctor-department">🩺 {{ app.department }}</p>
-          </div>
-        </div>
-
-        <!-- Appointment info block -->
-        <div class="card-details-block">
-          <div class="detail-row">
-            <span class="icon">🗓️</span>
-            <div>
-              <p class="label">{{ 'Date & Time' | translate }}</p>
-              <p class="value">{{ app.scheduledDate | date:'fullDate' }} &#64; {{ app.startTime.substring(0, 5) }}</p>
-            </div>
-          </div>
-
-          <div class="detail-row">
-            <span class="icon">🏢</span>
-            <div>
-              <p class="label">{{ 'Clinic Location' | translate }}</p>
-              <p class="value">
-                {{ languageService.isArabic ? app.clinicNameAr : app.clinicNameEn }} · {{ languageService.isArabic ? app.branchNameAr : app.branchNameEn }}
-              </p>
-            </div>
-          </div>
-
-          <div class="detail-row">
-            <span class="icon">💰</span>
-            <div>
-              <p class="label">{{ 'Consultation Fee' | translate }}</p>
-              <p class="value">{{ app.consultationFeeSar }} SAR</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Action Strip -->
-        <div class="card-action-strip">
-          <button class="btn-card-action btn-view" (click)="openDetails(app)">
-            🔍 {{ 'View Details' | translate }}
-          </button>
-          
-          <ng-container *ngIf="app.status === 'SCHEDULED' || app.status === 'CONFIRMED'">
-            <button class="btn-card-action btn-reschedule" (click)="openReschedule(app)">
-              🔄 {{ 'Reschedule' | translate }}
-            </button>
-            <button class="btn-card-action btn-cancel" (click)="openCancel(app)">
-              ✕ {{ 'Cancel' | translate }}
-            </button>
-          </ng-container>
-        </div>
-
-      </div>
+    <div class="d-flex justify-end gap-2 mt-3">
+      <button class="btn btn-outline btn-sm" (click)="clearFilters()">
+        🧹 {{ 'Clear Filters' | translate }}
+      </button>
+      <button class="btn btn-primary btn-sm" (click)="loadAppointments()">
+        🔍 {{ 'Refresh' | translate }}
+      </button>
     </div>
   </div>
 
-</div>
+  <!-- Appointments Roster Grid / Table -->
+  <div class="appointments-list-wrapper card shadow-sm">
+    <!-- Desktop Table View -->
+    <div class="table-responsive d-none d-md-block">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>{{ 'Doctor' | translate }}</th>
+            <th>{{ 'Scheduled Slot' | translate }}</th>
+            <th>{{ 'Session Mode' | translate }}</th>
+            <th>{{ 'Clinic & Department' | translate }}</th>
+            <th>{{ 'Status' | translate }}</th>
+            <th class="text-end">{{ 'Actions' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let app of filteredAppointments" class="appointment-row">
+            <td>
+              <div class="d-flex align-center gap-3">
+                <div class="patient-avatar" [style.background]="getAvatarBg(app.doctorName)" [style.color]="getAvatarColor(app.doctorName)">
+                  {{ getInitials(app.doctorName) }}
+                </div>
+                <div>
+                  <div class="fw-bold text-dark">Dr. {{ app.doctorName }}</div>
+                  <div class="fs-xs text-muted">{{ app.department }}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="fw-bold">{{ app.scheduledDate | date:'mediumDate' }}</div>
+              <div class="fs-xs text-muted">⏰ {{ app.startTime.substring(0,5) }} ({{ app.durationMinutes }} {{ 'min' | translate }})</div>
+            </td>
+            <td>
+              <span class="mode-badge" [class.mode-clinic]="app.sessionType === 'IN_CLINIC'" [class.mode-video]="app.sessionType === 'VIDEO_CALL'">
+                {{ app.sessionType === 'IN_CLINIC' ? ('🏢 In-Clinic' | translate) : ('💻 Video Call' | translate) }}
+              </span>
+            </td>
+            <td>
+              <div class="fw-bold">{{ languageService.isArabic ? app.clinicNameAr : app.clinicNameEn }}</div>
+              <div class="fs-xs text-muted">{{ languageService.isArabic ? app.branchNameAr : app.branchNameEn }}</div>
+            </td>
+            <td>
+              <span class="status-badge" [class.status-completed]="app.status === 'COMPLETED'" 
+                [class.status-confirmed]="app.status === 'CONFIRMED'" 
+                [class.status-scheduled]="app.status === 'SCHEDULED'" 
+                [class.status-cancelled]="app.status === 'CANCELLED' || app.status === 'NO_SHOW'">
+                {{ app.status | translate }}
+              </span>
+            </td>
+            <td class="text-end">
+              <button class="btn btn-outline btn-sm px-3" (click)="openDetails(app)">
+                👁️ {{ 'View Details' | translate }}
+              </button>
+            </td>
+          </tr>
 
-<!-- 1. DETAILS MODAL DIALOG -->
-<div class="modal-backdrop-overlay" *ngIf="showDetailsModal && selectedAppointment" (click)="closeDetails()">
-  <div class="modal-card" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h3>🔍 {{ 'Appointment Summary' | translate }}</h3>
-      <button class="btn-close-modal" (click)="closeDetails()">✕</button>
-    </div>
-    
-    <div class="modal-body">
-      <div class="summary-doc-header">
-        <div class="badge-icon">👨‍⚕️</div>
-        <div>
-          <h4>Dr. {{ selectedAppointment.doctorName }}</h4>
-          <p>{{ selectedAppointment.department }}</p>
-        </div>
-      </div>
-
-      <table class="details-table">
-        <tr>
-          <th>{{ 'Clinic Name' | translate }}</th>
-          <td>{{ languageService.isArabic ? selectedAppointment.clinicNameAr : selectedAppointment.clinicNameEn }}</td>
-        </tr>
-        <tr>
-          <th>{{ 'Branch Location' | translate }}</th>
-          <td>{{ languageService.isArabic ? selectedAppointment.branchNameAr : selectedAppointment.branchNameEn }}</td>
-        </tr>
-        <tr>
-          <th>{{ 'Date & Time' | translate }}</th>
-          <td>{{ selectedAppointment.scheduledDate | date:'fullDate' }} &#64; {{ selectedAppointment.startTime.substring(0, 5) }}</td>
-        </tr>
-        <tr>
-          <th>{{ 'Visit Type' | translate }}</th>
-          <td>{{ selectedAppointment.appointmentType.replace('_', ' ') }}</td>
-        </tr>
-        <tr>
-          <th>{{ 'Session Mode' | translate }}</th>
-          <td>{{ selectedAppointment.sessionType === 'IN_CLINIC' ? ('In-Clinic' | translate) : ('Telehealth' | translate) }}</td>
-        </tr>
-        <tr>
-          <th>{{ 'Consultation Fee' | translate }}</th>
-          <td>{{ selectedAppointment.consultationFeeSar }} SAR</td>
-        </tr>
-        <tr>
-          <th>{{ 'Current Status' | translate }}</th>
-          <td>
-            <span class="status-badge" [class]="selectedAppointment.status.toLowerCase()">
-              {{ selectedAppointment.status | translate }}
-            </span>
-          </td>
-        </tr>
-        <tr *ngIf="selectedAppointment.reason">
-          <th>{{ 'Reason for Visit' | translate }}</th>
-          <td>{{ selectedAppointment.reason }}</td>
-        </tr>
-        <tr *ngIf="selectedAppointment.status === 'CANCELLED' && selectedAppointment.cancelReason">
-          <th class="text-danger">{{ 'Cancellation Reason' | translate }}</th>
-          <td class="text-danger">{{ selectedAppointment.cancelReason }}</td>
-        </tr>
+          <tr *ngIf="filteredAppointments.length === 0">
+            <td colspan="6" class="text-center py-5 text-muted">
+              {{ 'No appointments history matches the current filters.' | translate }}
+            </td>
+          </tr>
+        </tbody>
       </table>
     </div>
 
-    <div class="modal-footer">
-      <button class="btn btn-outline" (click)="closeDetails()">{{ 'Close' | translate }}</button>
+    <!-- Mobile Card View -->
+    <div class="d-block d-md-none p-3">
+      <div *ngFor="let app of filteredAppointments" class="mobile-app-card p-3 mb-3 border rounded">
+        <div class="d-flex justify-between align-center mb-2">
+          <div class="d-flex align-center gap-2">
+            <div class="patient-avatar-sm" [style.background]="getAvatarBg(app.doctorName)" [style.color]="getAvatarColor(app.doctorName)">
+              {{ getInitials(app.doctorName) }}
+            </div>
+            <div class="fw-bold text-dark">Dr. {{ app.doctorName }}</div>
+          </div>
+          <span class="status-badge-sm" [class.status-completed]="app.status === 'COMPLETED'" 
+            [class.status-confirmed]="app.status === 'CONFIRMED'" 
+            [class.status-scheduled]="app.status === 'SCHEDULED'" 
+            [class.status-cancelled]="app.status === 'CANCELLED' || app.status === 'NO_SHOW'">
+            {{ app.status | translate }}
+          </span>
+        </div>
+        <div class="fs-sm mb-1">
+          <strong>🗓️ {{ app.scheduledDate | date:'mediumDate' }}</strong> &#64; ⏰ {{ app.startTime.substring(0,5) }}
+        </div>
+        <div class="fs-xs text-muted mb-2">
+          🏢 {{ languageService.isArabic ? app.clinicNameAr : app.clinicNameEn }} ({{ app.sessionType === 'IN_CLINIC' ? ('In-Clinic' | translate) : ('Video Call' | translate) }})
+        </div>
+        <div class="text-end">
+          <button class="btn btn-outline btn-sm w-100" (click)="openDetails(app)">
+            👁️ {{ 'View Details' | translate }}
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="filteredAppointments.length === 0" class="text-center py-4 text-muted">
+        {{ 'No appointments history matches the current filters.' | translate }}
+      </div>
+    </div>
+
+    <!-- Pagination Footer -->
+    <div class="pagination-footer d-flex justify-between align-center p-3 border-top flex-wrap gap-2">
+      <span class="fs-sm text-muted">
+        {{ 'Showing page' | translate }} {{ page + 1 }} {{ 'of' | translate }} {{ totalPages }} ({{ totalElements }} {{ 'total records' | translate }})
+      </span>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline btn-sm" [disabled]="page === 0" (click)="prevPage()">
+          ◀ {{ 'Previous' | translate }}
+        </button>
+        <button class="btn btn-outline btn-sm" [disabled]="page >= totalPages - 1" (click)="nextPage()">
+          {{ 'Next' | translate }} ▶
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAILS DIALOG MODAL -->
+<div class="modal-overlay" *ngIf="showDetailsModal && selectedAppointment" (click)="closeDetails()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div class="modal-header d-flex justify-between align-center p-3">
+      <h3 class="m-0 fw-bold">🗓️ {{ 'Appointment Specification Details' | translate }}</h3>
+      <button class="btn-close-modal" (click)="closeDetails()">✕</button>
+    </div>
+
+    <div class="modal-body p-4">
+      <div class="details-grid" [class.no-sidebar]="!hasActions(selectedAppointment)">
+        <!-- Main details -->
+        <div class="details-main">
+          <div class="d-flex align-center gap-3 mb-4">
+            <div class="patient-avatar-lg" [style.background]="getAvatarBg(selectedAppointment.doctorName)" [style.color]="getAvatarColor(selectedAppointment.doctorName)">
+              {{ getInitials(selectedAppointment.doctorName) }}
+            </div>
+            <div>
+              <h4 class="m-0 text-dark fw-bold" style="font-size:1.2rem;">Dr. {{ selectedAppointment.doctorName }}</h4>
+              <div class="fs-sm text-muted">{{ selectedAppointment.department }}</div>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-label">📅 {{ 'Scheduled Date & Time' | translate }}</div>
+            <div class="info-value">{{ selectedAppointment.scheduledDate | date:'fullDate' }} &#64; {{ selectedAppointment.startTime.substring(0,5) }} ({{ selectedAppointment.durationMinutes }} {{ 'minutes duration' | translate }})</div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-label">🏢 {{ 'Clinical Assignment' | translate }}</div>
+            <div class="info-value">
+              <strong>{{ languageService.isArabic ? selectedAppointment.clinicNameAr : selectedAppointment.clinicNameEn }}</strong>
+              <div class="fs-xs text-muted">{{ languageService.isArabic ? selectedAppointment.branchNameAr : selectedAppointment.branchNameEn }}</div>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-label">🩺 {{ 'Consultation Details' | translate }}</div>
+            <div class="info-value">
+              <span class="mode-badge" [class.mode-clinic]="selectedAppointment.sessionType === 'IN_CLINIC'" [class.mode-video]="selectedAppointment.sessionType === 'VIDEO_CALL'">
+                {{ selectedAppointment.sessionType === 'IN_CLINIC' ? ('🏢 In-Clinic Visit' | translate) : ('💻 Video Call Session' | translate) }}
+              </span>
+              <span class="type-badge ms-2">{{ selectedAppointment.appointmentType?.replace('_', ' ') }}</span>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-label">💰 {{ 'Consultation Fee' | translate }}</div>
+            <div class="info-value">{{ selectedAppointment.consultationFeeSar }} SAR</div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-label">📝 {{ 'Reason for Consultation' | translate }}</div>
+            <div class="info-value reason-box">{{ selectedAppointment.reason || ('No specific reasons provided by the patient.' | translate) }}</div>
+          </div>
+
+          <div class="info-row" *ngIf="selectedAppointment.status === 'CANCELLED'">
+            <div class="info-label text-danger">⚠️ {{ 'Cancellation Information' | translate }}</div>
+            <div class="info-value reason-box text-danger border-danger-l">
+              <strong>{{ 'Status:' | translate }}</strong> {{ selectedAppointment.status }}
+              <div class="mt-1"><strong>{{ 'Reason' | translate }}:</strong> {{ selectedAppointment.cancelReason || ('No reason provided' | translate) }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shortcuts / Quick Actions -->
+        <div class="details-sidebar" *ngIf="hasActions(selectedAppointment)">
+          <h5 class="fw-bold mb-3">{{ 'Quick Shortcuts' | translate }}</h5>
+          <div class="shortcut-buttons d-flex flex-column gap-2">
+            <!-- Review -->
+            <button class="btn btn-teal btn-sm w-100" *ngIf="selectedAppointment.status === 'COMPLETED'" (click)="openReviewModal(selectedAppointment)">
+              ⭐ {{ 'Write Review' | translate }}
+            </button>
+            
+            <!-- Reschedule / Cancel -->
+            <ng-container *ngIf="selectedAppointment.status === 'SCHEDULED' || selectedAppointment.status === 'CONFIRMED'">
+              <button class="btn btn-teal btn-sm w-100" (click)="openReschedule(selectedAppointment)">
+                🔄 {{ 'Reschedule Visit' | translate }}
+              </button>
+              <button class="btn btn-outline btn-danger btn-sm w-100" (click)="openCancel(selectedAppointment)">
+                ✕ {{ 'Cancel Appointment' | translate }}
+              </button>
+            </ng-container>
+
+            <!-- Go to Chat -->
+            <button class="btn btn-primary btn-sm w-100" *ngIf="selectedAppointment.consultationId && (selectedAppointment.status === 'CONFIRMED' || selectedAppointment.status === 'COMPLETED')" (click)="goToChat(selectedAppointment.consultationId)">
+              💬 {{ 'Go to Chat Session' | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer p-3 d-flex justify-end">
+      <button class="btn btn-outline" (click)="closeDetails()">{{ 'Close Details' | translate }}</button>
     </div>
   </div>
 </div>
@@ -322,6 +402,116 @@
       >
         <span *ngIf="isSubmittingReschedule">⏳ {{ 'Processing...' | translate }}</span>
         <span *ngIf="!isSubmittingReschedule">🚀 {{ 'Confirm Reschedule' | translate }}</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 4. REVIEW SUBMISSION MODAL DIALOG -->
+<div class="modal-backdrop-overlay" *ngIf="showReviewModal && selectedAppointment" (click)="closeReviewModal()">
+  <div class="modal-card" (click)="$event.stopPropagation()" style="max-width: 550px;">
+    <div class="modal-header" style="background: var(--teal); color: white;">
+      <h3>⭐ {{ 'Rate Your Consultation' | translate }}</h3>
+      <button class="btn-close-modal" (click)="closeReviewModal()" style="color: white; background: transparent; border: none; font-size: 1.25rem; cursor: pointer;">✕</button>
+    </div>
+
+    <div class="modal-body" style="max-height: 65vh; overflow-y: auto; padding: 20px;">
+      <form [formGroup]="reviewForm">
+        <!-- Doctor Review section -->
+        <div class="review-section" style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #E5E7EB;">
+          <h4 style="color: var(--teal); font-weight: 700; margin-bottom: 12px; font-size: 1.1rem;">👨‍⚕️ {{ 'Doctor Review' | translate }}: Dr. {{ selectedAppointment.doctorName }}</h4>
+          
+          <div class="form-group mb-3">
+            <label class="form-label" style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 6px;">{{ 'Overall Doctor Rating (1-5) *' | translate }}</label>
+            <select formControlName="doctorRating" class="form-control" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #D1D5DB;">
+              <option [value]="5">⭐⭐⭐⭐⭐ (5/5)</option>
+              <option [value]="4">⭐⭐⭐⭐ (4/5)</option>
+              <option [value]="3">⭐⭐⭐ (3/5)</option>
+              <option [value]="2">⭐⭐ (2/5)</option>
+              <option [value]="1">⭐ (1/5)</option>
+            </select>
+          </div>
+
+          <div class="sub-ratings-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px;">
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.8rem; color: #6B7280; display: block; margin-bottom: 4px;">{{ 'Bedside *' | translate }}</label>
+              <select formControlName="ratingBedside" class="form-control" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #D1D5DB; font-size: 0.85rem;">
+                <option *ngFor="let num of [5,4,3,2,1]" [value]="num">{{ num }}</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.8rem; color: #6B7280; display: block; margin-bottom: 4px;">{{ 'Knowledge *' | translate }}</label>
+              <select formControlName="ratingKnowledge" class="form-control" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #D1D5DB; font-size: 0.85rem;">
+                <option *ngFor="let num of [5,4,3,2,1]" [value]="num">{{ num }}</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.8rem; color: #6B7280; display: block; margin-bottom: 4px;">{{ 'Wait Time *' | translate }}</label>
+              <select formControlName="ratingWait" class="form-control" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #D1D5DB; font-size: 0.85rem;">
+                <option *ngFor="let num of [5,4,3,2,1]" [value]="num">{{ num }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Clinic Review section -->
+        <div class="review-section" style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #E5E7EB;">
+          <h4 style="color: var(--teal); font-weight: 700; margin-bottom: 12px; font-size: 1.1rem;">🏥 {{ 'Clinic Review' | translate }}: {{ languageService.isArabic ? selectedAppointment.clinicNameAr : selectedAppointment.clinicNameEn }}</h4>
+          
+          <div class="form-group mb-3">
+            <label class="form-label" style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 6px;">{{ 'Overall Clinic Rating (1-5) *' | translate }}</label>
+            <select formControlName="clinicRating" class="form-control" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #D1D5DB;">
+              <option [value]="5">⭐⭐⭐⭐⭐ (5/5)</option>
+              <option [value]="4">⭐⭐⭐⭐ (4/5)</option>
+              <option [value]="3">⭐⭐⭐ (3/5)</option>
+              <option [value]="2">⭐⭐ (2/5)</option>
+              <option [value]="1">⭐ (1/5)</option>
+            </select>
+          </div>
+
+          <div class="sub-ratings-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px;">
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.8rem; color: #6B7280; display: block; margin-bottom: 4px;">{{ 'Cleanliness *' | translate }}</label>
+              <select formControlName="ratingCleanliness" class="form-control" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #D1D5DB; font-size: 0.85rem;">
+                <option *ngFor="let num of [5,4,3,2,1]" [value]="num">{{ num }}</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.8rem; color: #6B7280; display: block; margin-bottom: 4px;">{{ 'Staff *' | translate }}</label>
+              <select formControlName="ratingStaff" class="form-control" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #D1D5DB; font-size: 0.85rem;">
+                <option *ngFor="let num of [5,4,3,2,1]" [value]="num">{{ num }}</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.8rem; color: #6B7280; display: block; margin-bottom: 4px;">{{ 'Wait Time *' | translate }}</label>
+              <select formControlName="clinicRatingWait" class="form-control" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #D1D5DB; font-size: 0.85rem;">
+                <option *ngFor="let num of [5,4,3,2,1]" [value]="num">{{ num }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comments -->
+        <div class="form-group mb-3">
+          <label class="form-label" style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 6px;">{{ 'Written Feedback (Optional)' | translate }}</label>
+          <textarea formControlName="reviewText" class="form-control" rows="3" [placeholder]="'Share details of your experience...' | translate" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #D1D5DB; font-family: inherit; resize: vertical;"></textarea>
+          <div style="font-size: 0.75rem; color: #9CA3AF; text-align: right; margin-top: 4px;">
+            {{ 'Max 2000 characters' | translate }}
+          </div>
+        </div>
+
+        <!-- Anonymous -->
+        <div class="form-group d-flex align-center gap-2 mb-2" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+          <input type="checkbox" formControlName="isAnonymous" id="isAnonymousInput" style="width: 16px; height: 16px; cursor: pointer;">
+          <label for="isAnonymousInput" style="font-size: 0.9rem; color: #374151; cursor: pointer; user-select: none;">{{ 'Submit this review anonymously' | translate }}</label>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-footer" style="padding: 16px 20px; border-top: 1px solid #F3F4F6; display: flex; justify-content: flex-end; gap: 12px; background: #F9FAFB; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+      <button class="btn btn-outline" (click)="closeReviewModal()" style="padding: 10px 20px; font-weight: 600;">{{ 'Cancel' | translate }}</button>
+      <button class="btn btn-primary" [disabled]="reviewForm.invalid" (click)="submitReview()" style="padding: 10px 24px; font-weight: 600;">
+        ⭐ {{ 'Submit Feedback' | translate }}
       </button>
     </div>
   </div>

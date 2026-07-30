@@ -12,12 +12,15 @@ import { AuthService } from '../../../core/services/auth.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { TranslatePipe, TranslateObjPipe } from '../../../shared/pipes/translate.pipe';
 import { AppointmentStatus, AppointmentType, SessionType } from '../../../core/models/appointment.model';
+import { FormsModule } from '@angular/forms';
+import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
 import { environment } from '../../../../environments/environment';
+import { ReviewService } from '../../../core/services/review.service';
 
 @Component({
   selector: 'app-appointments',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterLink, CustomSelectComponent, TranslatePipe],
   templateUrl: './appointments.component.html',
   styleUrls: ['./appointments.component.css']
 })
@@ -30,12 +33,44 @@ export class AppointmentsComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
   public languageService = inject(LanguageService);
+  private reviewService = inject(ReviewService);
 
   public apiUrl = environment.apiUrl;
   public patientId = '';
   public appointments: any[] = [];
   public filteredAppointments: any[] = [];
-  public activeTab: 'upcoming' | 'history' | 'all' = 'upcoming';
+  
+  // Filters
+  public selectedStatus = '';
+  public selectedSessionType = '';
+  public fromDate = '';
+  public toDate = '';
+  public searchQuery = '';
+
+  // Pagination
+  public page = 0;
+  public size = 10;
+  public totalPages = 1;
+  public totalElements = 0;
+
+  get statusOptions() {
+    return [
+      { label: this.languageService.translate('All Statuses', 'جميع الحالات'), value: '' },
+      { label: this.languageService.translate('Scheduled', 'مجدول'), value: 'SCHEDULED' },
+      { label: this.languageService.translate('Confirmed', 'مؤكد'), value: 'CONFIRMED' },
+      { label: this.languageService.translate('Completed', 'مكتمل'), value: 'COMPLETED' },
+      { label: this.languageService.translate('Cancelled', 'ملغي'), value: 'CANCELLED' },
+      { label: this.languageService.translate('No Show', 'عدم حضور'), value: 'NO_SHOW' }
+    ];
+  }
+
+  get sessionTypeOptions() {
+    return [
+      { label: this.languageService.translate('All Modes', 'جميع الطرق'), value: '' },
+      { label: this.languageService.translate('In-Clinic Visit', 'زيارة العيادة'), value: 'IN_CLINIC' },
+      { label: this.languageService.translate('Video Call', 'مكالمة فيديو'), value: 'VIDEO_CALL' }
+    ];
+  }
 
   // Details Modal State
   public selectedAppointment: any | null = null;
@@ -54,6 +89,21 @@ export class AppointmentsComponent implements OnInit {
   public availableSlots: any[] = [];
   public selectedSlot: any | null = null;
   public isSubmittingReschedule = false;
+
+  // Review Modal State
+  public showReviewModal = false;
+  public reviewForm: FormGroup = this.fb.group({
+    doctorRating: [5, [Validators.required, Validators.min(1), Validators.max(5)]],
+    ratingBedside: [5, [Validators.required, Validators.min(1), Validators.max(5)]],
+    ratingKnowledge: [5, [Validators.required, Validators.min(1), Validators.max(5)]],
+    ratingWait: [5, [Validators.required, Validators.min(1), Validators.max(5)]],
+    clinicRating: [5, [Validators.required, Validators.min(1), Validators.max(5)]],
+    ratingCleanliness: [5, [Validators.required, Validators.min(1), Validators.max(5)]],
+    ratingStaff: [5, [Validators.required, Validators.min(1), Validators.max(5)]],
+    clinicRatingWait: [5, [Validators.required, Validators.min(1), Validators.max(5)]],
+    reviewText: ['', [Validators.maxLength(2000)]],
+    isAnonymous: [false]
+  });
 
   // Cache doctor clinic relations for displaying clinic names
   private doctorClinicsCache: { [doctorId: string]: any[] } = {};
@@ -139,6 +189,7 @@ export class AppointmentsComponent implements OnInit {
       const link = clinics.find(c => c.dcId === app.dcId);
       return {
         ...app,
+        clinicId: link?.clinicId,
         clinicNameEn: link?.clinicNameEn || 'Private Clinic',
         clinicNameAr: link?.clinicNameAr || 'عيادة خاصة',
         branchNameEn: link?.branchNameEn || 'Main Branch',
@@ -160,22 +211,77 @@ export class AppointmentsComponent implements OnInit {
   }
 
   filterAppointments(): void {
-    if (this.activeTab === 'upcoming') {
-      this.filteredAppointments = this.appointments.filter(
-        app => app.status === AppointmentStatus.SCHEDULED || app.status === AppointmentStatus.CONFIRMED
+    let list = [...this.appointments];
+
+    if (this.selectedStatus) {
+      list = list.filter(app => app.status === this.selectedStatus);
+    }
+
+    if (this.selectedSessionType) {
+      list = list.filter(app => app.sessionType === this.selectedSessionType);
+    }
+
+    if (this.fromDate) {
+      list = list.filter(app => app.scheduledDate >= this.fromDate);
+    }
+
+    if (this.toDate) {
+      list = list.filter(app => app.scheduledDate <= this.toDate);
+    }
+
+    if (this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase().trim();
+      list = list.filter(app => 
+        app.doctorName?.toLowerCase().includes(q) || 
+        app.department?.toLowerCase().includes(q)
       );
-    } else if (this.activeTab === 'history') {
-      this.filteredAppointments = this.appointments.filter(
-        app => app.status === AppointmentStatus.COMPLETED || app.status === AppointmentStatus.CANCELLED || app.status === AppointmentStatus.NO_SHOW
-      );
-    } else {
-      this.filteredAppointments = [...this.appointments];
+    }
+
+    this.totalElements = list.length;
+    this.totalPages = Math.ceil(list.length / this.size) || 1;
+
+    // Client-side pagination
+    const startIdx = this.page * this.size;
+    this.filteredAppointments = list.slice(startIdx, startIdx + this.size);
+  }
+
+  applyFilters(): void {
+    this.page = 0;
+    this.filterAppointments();
+  }
+
+  clearFilters(): void {
+    this.selectedStatus = '';
+    this.selectedSessionType = '';
+    this.fromDate = '';
+    this.toDate = '';
+    this.searchQuery = '';
+    this.page = 0;
+    this.filterAppointments();
+  }
+
+  nextPage(): void {
+    if (this.page < this.totalPages - 1) {
+      this.page++;
+      this.filterAppointments();
     }
   }
 
-  switchTab(tab: 'upcoming' | 'history' | 'all'): void {
-    this.activeTab = tab;
-    this.filterAppointments();
+  prevPage(): void {
+    if (this.page > 0) {
+      this.page--;
+      this.filterAppointments();
+    }
+  }
+
+  goToChat(consultationId: string): void {
+    this.closeDetails();
+    this.router.navigate(['/patient/consultations'], { queryParams: { id: consultationId } });
+  }
+
+  hasActions(app: any): boolean {
+    if (!app) return false;
+    return app.status === 'COMPLETED' || app.status === 'SCHEDULED' || app.status === 'CONFIRMED';
   }
 
   // Details Modal
@@ -386,5 +492,74 @@ export class AppointmentsComponent implements OnInit {
     const textColors = ['#085041', '#1E40AF', '#5B21B6', '#92400E', '#166534'];
     const idx = name ? name.charCodeAt(0) : 0;
     return textColors[idx % textColors.length];
+  }
+
+  openReviewModal(app: any): void {
+    this.selectedAppointment = app;
+    this.reviewForm.reset({
+      doctorRating: 5,
+      ratingBedside: 5,
+      ratingKnowledge: 5,
+      ratingWait: 5,
+      clinicRating: 5,
+      ratingCleanliness: 5,
+      ratingStaff: 5,
+      clinicRatingWait: 5,
+      reviewText: '',
+      isAnonymous: false
+    });
+    this.showReviewModal = true;
+  }
+
+  closeReviewModal(): void {
+    this.showReviewModal = false;
+  }
+
+  submitReview(): void {
+    if (this.reviewForm.invalid || !this.selectedAppointment) return;
+
+    const values = this.reviewForm.value;
+    this.uiService.showLoading();
+
+    const doctorReviewReq = {
+      doctorId: this.selectedAppointment.doctorId,
+      appointmentId: this.selectedAppointment.appointmentId,
+      rating: values.doctorRating,
+      ratingBedside: values.ratingBedside,
+      ratingKnowledge: values.ratingKnowledge,
+      ratingWait: values.ratingWait,
+      reviewText: values.reviewText,
+      isAnonymous: values.isAnonymous
+    };
+
+    const clinicReviewReq = {
+      clinicId: this.selectedAppointment.clinicId || '',
+      appointmentId: this.selectedAppointment.appointmentId,
+      rating: values.clinicRating,
+      ratingCleanliness: values.ratingCleanliness,
+      ratingStaff: values.ratingStaff,
+      ratingWait: values.clinicRatingWait,
+      reviewText: values.reviewText,
+      isAnonymous: values.isAnonymous
+    };
+
+    const reqs = [];
+    reqs.push(this.reviewService.submitDoctorReview(doctorReviewReq));
+    if (this.selectedAppointment.clinicId) {
+      reqs.push(this.reviewService.submitClinicReview(clinicReviewReq));
+    }
+
+    forkJoin(reqs).subscribe({
+      next: () => {
+        this.uiService.hideLoading();
+        this.uiService.showSuccess('Thank you! Your reviews have been submitted successfully.');
+        this.closeReviewModal();
+        this.loadAppointments();
+      },
+      error: (err) => {
+        this.uiService.hideLoading();
+        this.uiService.showError(err.error?.message || 'Failed to submit reviews. Please try again.');
+      }
+    });
   }
 }

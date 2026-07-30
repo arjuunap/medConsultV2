@@ -1,0 +1,252 @@
+<div class="history-container">
+  <!-- Header Card -->
+  <div class="history-header d-flex justify-between align-center flex-wrap gap-3">
+    <div>
+      <h2 class="fs-xl text-primary m-0 fw-bold">📜 {{ 'Patient Appointments History' | translate }}</h2>
+      <p class="text-muted fs-sm mt-1 m-0">{{ 'Search, filter, and review details of all patient clinical appointments' | translate }}</p>
+    </div>
+    <span class="badge badge-teal fs-xs">{{ 'Total Records' | translate }}: {{ totalElements }}</span>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-card card shadow-sm p-4 mb-4">
+    <div class="filters-grid">
+      <div class="filter-item">
+        <label class="filter-label">{{ 'Status' | translate }}</label>
+        <app-custom-select 
+          [options]="statusOptions" 
+          [ngModel]="selectedStatus" 
+          (selectionChange)="selectedStatus = $event; applyFilters()" 
+          [placeholder]="'Select Status' | translate"
+          size="sm">
+        </app-custom-select>
+      </div>
+
+      <div class="filter-item">
+        <label class="filter-label">{{ 'Consultation Mode' | translate }}</label>
+        <app-custom-select 
+          [options]="sessionTypeOptions" 
+          [ngModel]="selectedSessionType" 
+          (selectionChange)="selectedSessionType = $event; applyFilters()" 
+          [placeholder]="'Select Mode' | translate"
+          size="sm">
+        </app-custom-select>
+      </div>
+
+      <div class="filter-item">
+        <label class="filter-label">{{ 'From Date' | translate }}</label>
+        <input type="date" [(ngModel)]="fromDate" (change)="applyFilters()" class="date-input">
+      </div>
+
+      <div class="filter-item">
+        <label class="filter-label">{{ 'To Date' | translate }}</label>
+        <input type="date" [(ngModel)]="toDate" (change)="applyFilters()" class="date-input">
+      </div>
+    </div>
+
+    <div class="d-flex justify-end gap-2 mt-3">
+      <button class="btn btn-outline btn-sm" (click)="clearFilters()">
+        🧹 {{ 'Clear Filters' | translate }}
+      </button>
+      <button class="btn btn-primary btn-sm" (click)="loadAppointments()">
+        🔍 {{ 'Refresh' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Appointments Grid / Table -->
+  <div class="appointments-list-wrapper card shadow-sm">
+    <!-- Desktop Table View -->
+    <div class="table-responsive d-none d-md-block">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>{{ 'Patient' | translate }}</th>
+            <th>{{ 'Scheduled Slot' | translate }}</th>
+            <th>{{ 'Session Mode' | translate }}</th>
+            <th>{{ 'Clinic & Department' | translate }}</th>
+            <th>{{ 'Status' | translate }}</th>
+            <th class="text-end">{{ 'Actions' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let app of appointments" class="appointment-row">
+            <td>
+              <div class="d-flex align-center gap-3">
+                <div class="patient-avatar" [style.background]="getAvatarBg(app.patientName)" [style.color]="getAvatarColor(app.patientName)">
+                  {{ getPatientInitials(app.patientName) }}
+                </div>
+                <div>
+                  <div class="fw-bold text-dark">{{ app.patientName }}</div>
+                  <div class="fs-xs text-muted">{{ 'ID' | translate }}: {{ app.patientId.substring(0,8) }}...</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="fw-bold">{{ app.scheduledDate | date:'mediumDate' }}</div>
+              <div class="fs-xs text-muted">⏰ {{ app.startTime.substring(0,5) }} ({{ app.durationMinutes }} {{ 'min' | translate }})</div>
+            </td>
+            <td>
+              <span class="mode-badge" [class.mode-clinic]="app.sessionType === 'IN_CLINIC'" [class.mode-video]="app.sessionType === 'VIDEO_CALL'">
+                {{ app.sessionType === 'IN_CLINIC' ? ('🏢 In-Clinic' | translate) : ('💻 Video Call' | translate) }}
+              </span>
+            </td>
+            <td>
+              <div class="fw-bold">{{ languageService.isArabic ? app.clinicNameAr : app.clinicNameEn }}</div>
+              <div class="fs-xs text-muted">{{ app.department }} - {{ languageService.isArabic ? app.branchNameAr : app.branchNameEn }}</div>
+            </td>
+            <td>
+              <span class="status-badge" [class.status-completed]="app.status === 'COMPLETED'" 
+                [class.status-confirmed]="app.status === 'CONFIRMED'" 
+                [class.status-scheduled]="app.status === 'SCHEDULED'" 
+                [class.status-cancelled]="app.status === 'CANCELLED' || app.status === 'NO_SHOW'">
+                {{ app.status | translate }}
+              </span>
+            </td>
+            <td class="text-end">
+              <button class="btn btn-outline btn-sm px-3" (click)="openDetails(app)">
+                👁️ {{ 'View Details' | translate }}
+              </button>
+            </td>
+          </tr>
+
+          <tr *ngIf="appointments.length === 0">
+            <td colspan="6" class="text-center py-5 text-muted">
+              {{ 'No appointments history matches the current filters.' | translate }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Mobile Card View -->
+    <div class="d-block d-md-none p-3">
+      <div *ngFor="let app of appointments" class="mobile-app-card p-3 mb-3 border rounded">
+        <div class="d-flex justify-between align-center mb-2">
+          <div class="d-flex align-center gap-2">
+            <div class="patient-avatar-sm" [style.background]="getAvatarBg(app.patientName)" [style.color]="getAvatarColor(app.patientName)">
+              {{ getPatientInitials(app.patientName) }}
+            </div>
+            <div class="fw-bold text-dark">{{ app.patientName }}</div>
+          </div>
+          <span class="status-badge-sm" [class.status-completed]="app.status === 'COMPLETED'" 
+            [class.status-confirmed]="app.status === 'CONFIRMED'" 
+            [class.status-scheduled]="app.status === 'SCHEDULED'" 
+            [class.status-cancelled]="app.status === 'CANCELLED' || app.status === 'NO_SHOW'">
+            {{ app.status | translate }}
+          </span>
+        </div>
+        <div class="fs-sm mb-1">
+          <strong>🗓️ {{ app.scheduledDate | date:'mediumDate' }}</strong> &#64; ⏰ {{ app.startTime.substring(0,5) }}
+        </div>
+        <div class="fs-xs text-muted mb-2">
+          🏢 {{ languageService.isArabic ? app.clinicNameAr : app.clinicNameEn }} ({{ app.sessionType === 'IN_CLINIC' ? ('In-Clinic' | translate) : ('Video Call' | translate) }})
+        </div>
+        <div class="text-end">
+          <button class="btn btn-outline btn-sm w-100" (click)="openDetails(app)">
+            👁️ {{ 'View Details' | translate }}
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="appointments.length === 0" class="text-center py-4 text-muted">
+        {{ 'No appointments history matches the current filters.' | translate }}
+      </div>
+    </div>
+
+    <!-- Pagination Footer -->
+    <div class="pagination-footer d-flex justify-between align-center p-3 border-top flex-wrap gap-2">
+      <span class="fs-sm text-muted">
+        {{ 'Showing page' | translate }} {{ page + 1 }} {{ 'of' | translate }} {{ totalPages }}
+      </span>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline btn-sm" [disabled]="page === 0" (click)="prevPage()">
+          ◀ {{ 'Previous' | translate }}
+        </button>
+        <button class="btn btn-outline btn-sm" [disabled]="page >= totalPages - 1" (click)="nextPage()">
+          {{ 'Next' | translate }} ▶
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAILS DIALOG MODAL -->
+<div class="modal-overlay" *ngIf="showDetailsModal && selectedAppointment" (click)="closeDetails()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div class="modal-header d-flex justify-between align-center p-3">
+      <h3 class="m-0 fw-bold">🗓️ {{ 'Appointment Specification Details' | translate }}</h3>
+      <button class="btn-close-modal" (click)="closeDetails()">✕</button>
+    </div>
+
+    <div class="modal-body p-4">
+      <div class="details-grid">
+        <!-- Main details -->
+        <div class="details-main">
+          <div class="d-flex align-center gap-3 mb-4">
+            <div class="patient-avatar-lg" [style.background]="getAvatarBg(selectedAppointment.patientName)" [style.color]="getAvatarColor(selectedAppointment.patientName)">
+              {{ getPatientInitials(selectedAppointment.patientName) }}
+            </div>
+            <div>
+              <h4 class="m-0 text-dark fw-bold" style="font-size:1.2rem;">{{ selectedAppointment.patientName }}</h4>
+              <div class="fs-sm text-muted">{{ 'Patient Account ID' | translate }}: {{ selectedAppointment.patientId }}</div>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-label">📅 {{ 'Scheduled Date & Time' | translate }}</div>
+            <div class="info-value">{{ selectedAppointment.scheduledDate | date:'fullDate' }} &#64; {{ selectedAppointment.startTime.substring(0,5) }} ({{ selectedAppointment.durationMinutes }} {{ 'minutes duration' | translate }})</div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-label">🏢 {{ 'Clinical Assignment' | translate }}</div>
+            <div class="info-value">
+              <strong>{{ languageService.isArabic ? selectedAppointment.clinicNameAr : selectedAppointment.clinicNameEn }}</strong>
+              <div class="fs-xs text-muted">{{ selectedAppointment.department }} · {{ languageService.isArabic ? selectedAppointment.branchNameAr : selectedAppointment.branchNameEn }}</div>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-label">🩺 {{ 'Consultation Details' | translate }}</div>
+            <div class="info-value">
+              <span class="mode-badge" [class.mode-clinic]="selectedAppointment.sessionType === 'IN_CLINIC'" [class.mode-video]="selectedAppointment.sessionType === 'VIDEO_CALL'">
+                {{ selectedAppointment.sessionType === 'IN_CLINIC' ? ('🏢 In-Clinic Visit' | translate) : ('💻 Video Call Session' | translate) }}
+              </span>
+              <span class="type-badge ms-2">{{ selectedAppointment.appointmentType?.replace('_', ' ') }}</span>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-label">📝 {{ 'Reason for Consultation' | translate }}</div>
+            <div class="info-value reason-box">{{ selectedAppointment.reason || ('No specific reasons provided by the patient.' | translate) }}</div>
+          </div>
+
+          <div class="info-row" *ngIf="selectedAppointment.status === 'CANCELLED'">
+            <div class="info-label text-danger">⚠️ {{ 'Cancellation Information' | translate }}</div>
+            <div class="info-value reason-box text-danger border-danger-l">
+              <strong>{{ 'Cancelled By ID' | translate }}:</strong> {{ selectedAppointment.cancelledById }}
+              <div class="mt-1"><strong>{{ 'Reason' | translate }}:</strong> {{ selectedAppointment.cancelReason || ('No reason provided' | translate) }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shortcuts / Quick Actions -->
+        <div class="details-sidebar">
+          <h5 class="fw-bold mb-3">{{ 'Quick Shortcuts' | translate }}</h5>
+          <div class="shortcut-buttons d-flex flex-column gap-2">
+            <button class="btn btn-teal btn-sm w-100" (click)="goToEMR(selectedAppointment.patientId)">
+              📋 {{ 'View Patient EMR Chart' | translate }}
+            </button>
+            <button class="btn btn-primary btn-sm w-100" *ngIf="selectedAppointment.consultationId" (click)="goToChat(selectedAppointment.consultationId)">
+              💬 {{ 'Go to Consultation Chat' | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer p-3 d-flex justify-end">
+      <button class="btn btn-outline" (click)="closeDetails()">{{ 'Close Details' | translate }}</button>
+    </div>
+  </div>
+</div>

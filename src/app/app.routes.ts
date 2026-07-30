@@ -118,6 +118,10 @@ export const routes: Routes = [
       {
         path: 'caserooms',
         loadComponent: () => import('./features/doctor-dashboard/caserooms/case-rooms/case-rooms.component').then(m => m.CaseRoomsComponent)
+      },
+      {
+        path: 'appointments-history',
+        loadComponent: () => import('./features/doctor-dashboard/appointments-history/appointments-history.component').then(m => m.AppointmentsHistoryComponent)
       }
     ]
   },
