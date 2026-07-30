@@ -495,6 +495,7 @@ export class AppointmentsComponent implements OnInit {
   }
 
   openReviewModal(app: any): void {
+    this.closeDetails();
     this.selectedAppointment = app;
     this.reviewForm.reset({
       doctorRating: 5,

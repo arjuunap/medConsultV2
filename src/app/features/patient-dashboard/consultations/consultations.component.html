@@ -77,8 +77,11 @@
           <button type="submit" class="btn btn-primary" [disabled]="messageForm.invalid">Send</button>
         </form>
       </div>
-      <div class="chat-input-bar text-center text-muted fs-sm bg-light" *ngIf="selectedConsultation.status === 'CLOSED'">
-        This consultation has been closed.
+      <div class="chat-input-bar d-flex justify-between align-center bg-light p-3" *ngIf="selectedConsultation.status === 'CLOSED'">
+        <span class="text-muted fs-sm">This consultation has been closed.</span>
+        <button class="btn btn-teal btn-sm" *ngIf="selectedConsultation.appointmentId" (click)="openReviewModal(selectedConsultation)" style="background-color: var(--teal); color: white; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+          ⭐ Rate Consultation
+        </button>
       </div>
     </div>
     
@@ -130,6 +133,81 @@
     <div class="modal-footer">
       <button type="button" class="btn btn-outline" (click)="closeBookModal()">Cancel</button>
       <button type="button" class="btn btn-primary" (click)="submitBookConsultation()" [disabled]="bookForm.invalid">Book Consultation</button>
+    </div>
+  </div>
+</div>
+
+<!-- REVIEW SUBMISSION MODAL DIALOG -->
+<div class="modal-backdrop-overlay" *ngIf="showReviewModal && selectedConsultation" (click)="closeReviewModal()">
+  <div class="modal-card" (click)="$event.stopPropagation()" style="max-width: 550px;">
+    <div class="modal-header" style="background: var(--teal); color: white; display: flex; justify-content: space-between; align-items: center; padding: 16px 20px;">
+      <h3 style="margin: 0; font-size: 1.2rem; color: white;">⭐ Rate Your Consultation</h3>
+      <button class="btn-close-modal" (click)="closeReviewModal()" style="background: none; border: none; font-size: 1.5rem; color: white; cursor: pointer;">✕</button>
+    </div>
+
+    <div class="modal-body" style="max-height: 65vh; overflow-y: auto; padding: 20px;">
+      <form [formGroup]="reviewForm">
+        <!-- Doctor Review section -->
+        <div class="review-section" style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #E5E7EB;">
+          <h4 style="color: var(--teal); font-weight: 700; margin-bottom: 12px; font-size: 1.1rem;">👨‍⚕️ Doctor Review: Dr. {{ selectedConsultation.doctorName }}</h4>
+          
+          <div class="form-group mb-3">
+            <label class="form-label" style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 6px;">Overall Doctor Rating (1-5) *</label>
+            <select formControlName="doctorRating" class="form-control" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #D1D5DB;">
+              <option [value]="5">⭐⭐⭐⭐⭐ (5/5)</option>
+              <option [value]="4">⭐⭐⭐⭐ (4/5)</option>
+              <option [value]="3">⭐⭐⭐ (3/5)</option>
+              <option [value]="2">⭐⭐ (2/5)</option>
+              <option [value]="1">⭐ (1/5)</option>
+            </select>
+          </div>
+
+          <div class="sub-ratings-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px;">
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.8rem; color: #6B7280; display: block; margin-bottom: 4px;">Bedside *</label>
+              <select formControlName="ratingBedside" class="form-control" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #D1D5DB; font-size: 0.85rem;">
+                <option *ngFor="let num of [5,4,3,2,1]" [value]="num">{{ num }}</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.8rem; color: #6B7280; display: block; margin-bottom: 4px;">Knowledge *</label>
+              <select formControlName="ratingKnowledge" class="form-control" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #D1D5DB; font-size: 0.85rem;">
+                <option *ngFor="let num of [5,4,3,2,1]" [value]="num">{{ num }}</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.8rem; color: #6B7280; display: block; margin-bottom: 4px;">Wait Time *</label>
+              <select formControlName="ratingWait" class="form-control" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #D1D5DB; font-size: 0.85rem;">
+                <option *ngFor="let num of [5,4,3,2,1]" [value]="num">{{ num }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+
+
+        <!-- Comments -->
+        <div class="form-group mb-3">
+          <label class="form-label" style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 6px;">Written Feedback (Optional)</label>
+          <textarea formControlName="reviewText" class="form-control" rows="3" placeholder="Share details of your experience..." style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #D1D5DB; font-family: inherit; resize: vertical;"></textarea>
+          <div style="font-size: 0.75rem; color: #9CA3AF; text-align: right; margin-top: 4px;">
+            Max 2000 characters
+          </div>
+        </div>
+
+        <!-- Anonymous -->
+        <div class="form-group d-flex align-center gap-2 mb-2" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+          <input type="checkbox" formControlName="isAnonymous" id="isAnonymousInput" style="width: 16px; height: 16px; cursor: pointer;">
+          <label for="isAnonymousInput" style="font-size: 0.9rem; color: #374151; cursor: pointer; user-select: none;">Submit this review anonymously</label>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-footer" style="padding: 16px 20px; border-top: 1px solid #F3F4F6; display: flex; justify-content: flex-end; gap: 12px; background: #F9FAFB; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+      <button class="btn btn-outline" (click)="closeReviewModal()" style="padding: 10px 20px; font-weight: 600;">Cancel</button>
+      <button class="btn btn-primary" [disabled]="reviewForm.invalid" (click)="submitReview()" style="padding: 10px 24px; font-weight: 600;">
+        ⭐ Submit Feedback
+      </button>
     </div>
   </div>
 </div>

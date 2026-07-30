@@ -33,7 +33,7 @@
             <span class="stat-lbl">{{ 'Experience' | translate }}</span>
           </div>
           <div class="stat-cell">
-            <span class="stat-val">⭐ {{ doctorDetail.doctor.overallRating || '5.0' }}</span>
+            <span class="stat-val">⭐ {{ doctorDetail.doctor.overallRating || 0 }}</span>
             <span class="stat-lbl">{{ doctorDetail.doctor.reviewCount || 0 }} {{ 'reviews' | translate }}</span>
           </div>
           <div class="stat-cell">

@@ -53,8 +53,8 @@
                 <h3 class="clinic-name">{{ clinic | translateObj:'name' }}</h3>
                 <div class="rating-reviews-line">
                   <span class="stars-gold">★</span>
-                  <span class="rating-val">{{ clinic.overallRating || 4.9 }}</span>
-                  <span class="reviews-count">({{ clinic.reviewCount || 12 }} {{ 'reviews' | translate }})</span>
+                  <span class="rating-val">{{ clinic.overallRating || 0 }}</span>
+                  <span class="reviews-count">({{ clinic.reviewCount || 0 }} {{ 'reviews' | translate }})</span>
                 </div>
                 <div class="meta-row">
                   <span class="meta-item">📞 {{ clinic.phonePrimary }}</span>
@@ -194,8 +194,8 @@
 
                   <div class="rating-reviews-line">
                     <span class="stars-gold">★</span>
-                    <span class="rating-val">{{ item.doctor.overallRating || 5.0 }}</span>
-                    <span class="reviews-count">({{ item.doctor.reviewCount || 15 }} {{ 'reviews' | translate }})</span>
+                    <span class="rating-val">{{ item.doctor.overallRating || 0 }}</span>
+                    <span class="reviews-count">({{ item.doctor.reviewCount || 0 }} {{ 'reviews' | translate }})</span>
                   </div>
                 </div>
               </div>

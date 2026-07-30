@@ -124,8 +124,12 @@ export class LandingComponent implements OnInit {
   get ratingOptions() {
     return [
       { label: this.languageService.translate('All Ratings', 'جميع التقييمات'), value: 0 },
+      { label: '5.0 ⭐', value: 5 },
+      { label: '4.5+ ⭐', value: 4.5 },
       { label: '4.0+ ⭐', value: 4 },
-      { label: '4.8+ ⭐', value: 4.8 }
+      { label: '3.0+ ⭐', value: 3 },
+      { label: '2.0+ ⭐', value: 2 },
+      { label: '1.0+ ⭐', value: 1 }
     ];
   }
 
@@ -342,8 +346,8 @@ export class LandingComponent implements OnInit {
             name: `${docTitle}. ${doc.fullName}`,
             title: doc.title || 'Dr',
             spec: specName,
-            rating: doc.overallRating || 5.0,
-            reviews: doc.reviewCount || 10,
+            rating: doc.overallRating || 0,
+            reviews: doc.reviewCount || 0,
             exp: doc.experienceYears || 5,
             avail: dIdx % 2 === 0 ? 'today' : 'tomorrow',
             nextSlot: nextSlot,
@@ -360,8 +364,8 @@ export class LandingComponent implements OnInit {
 
     return {
       ...c,
-      overallRating: c.overallRating || 4.9,
-      reviewCount: c.reviewCount || 10,
+      overallRating: c.overallRating || 0,
+      reviewCount: c.reviewCount || 0,
       area,
       cityName,
       cityId,
@@ -745,8 +749,8 @@ export class LandingComponent implements OnInit {
       mohLicenseNumber: clinic.mohLicenseNumber || 'MOH-SA-10023',
       mohVerified: clinic.mohVerified ?? true,
       isActive: clinic.isActive ?? true,
-      overallRating: clinic.overallRating || 4.9,
-      reviewCount: clinic.reviewCount || 10,
+      overallRating: clinic.overallRating || 0,
+      reviewCount: clinic.reviewCount || 0,
       createdAt: '',
       updatedAt: '',
       branches: [

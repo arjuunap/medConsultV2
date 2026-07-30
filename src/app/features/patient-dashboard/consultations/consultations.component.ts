@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 import { ConsultationService } from '../../../core/services/consultation.service';
 import { DoctorService } from '../../../core/services/doctor.service';
 import { PatientService } from '../../../core/services/patient.service';
@@ -8,6 +9,7 @@ import { UiService } from '../../../core/services/ui.service';
 import { ConsultationResponseDto, ConsultationMessageResponseDto, MessageType } from '../../../core/models/consultation.model';
 import { AuthService } from '../../../core/services/auth.service';
 import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
+import { ReviewService } from '../../../core/services/review.service';
 
 @Component({
   selector: 'app-consultations',
@@ -23,6 +25,18 @@ export class ConsultationsComponent implements OnInit, OnDestroy {
   private uiService = inject(UiService);
   private fb = inject(FormBuilder);
   public authService = inject(AuthService);
+  private reviewService = inject(ReviewService);
+
+  // Review Modal State
+  public showReviewModal = false;
+  public reviewForm: FormGroup = this.fb.group({
+    doctorRating: [5, [Validators.required, Validators.min(1), Validators.max(5)]],
+    ratingBedside: [5, [Validators.required, Validators.min(1), Validators.max(5)]],
+    ratingKnowledge: [5, [Validators.required, Validators.min(1), Validators.max(5)]],
+    ratingWait: [5, [Validators.required, Validators.min(1), Validators.max(5)]],
+    reviewText: ['', [Validators.maxLength(2000)]],
+    isAnonymous: [false]
+  });
 
   public consultations: ConsultationResponseDto[] = [];
   public selectedConsultation: ConsultationResponseDto | null = null;
@@ -198,5 +212,58 @@ export class ConsultationsComponent implements OnInit, OnDestroy {
         container.scrollTop = container.scrollHeight;
       }
     }, 100);
+  }
+
+  openReviewModal(c: ConsultationResponseDto): void {
+    this.selectedConsultation = c;
+    
+    this.reviewForm.reset({
+      doctorRating: 5,
+      ratingBedside: 5,
+      ratingKnowledge: 5,
+      ratingWait: 5,
+      reviewText: '',
+      isAnonymous: false
+    });
+    this.showReviewModal = true;
+  }
+
+  closeReviewModal(): void {
+    this.showReviewModal = false;
+  }
+
+  submitReview(): void {
+    if (this.reviewForm.invalid || !this.selectedConsultation) {
+      this.reviewForm.markAllAsTouched();
+      return;
+    }
+
+    const values = this.reviewForm.value;
+    this.uiService.showLoading();
+
+    const appOrConsId = this.selectedConsultation.appointmentId || this.selectedConsultation.consultationId;
+
+    const doctorReviewReq = {
+      doctorId: this.selectedConsultation.doctorId,
+      appointmentId: appOrConsId,
+      rating: values.doctorRating,
+      ratingBedside: values.ratingBedside,
+      ratingKnowledge: values.ratingKnowledge,
+      ratingWait: values.ratingWait,
+      reviewText: values.reviewText,
+      isAnonymous: values.isAnonymous
+    };
+
+    this.reviewService.submitDoctorReview(doctorReviewReq).subscribe({
+      next: () => {
+        this.uiService.hideLoading();
+        this.uiService.showSuccess('Thank you! Your feedback has been submitted successfully.');
+        this.closeReviewModal();
+      },
+      error: (err) => {
+        this.uiService.hideLoading();
+        this.uiService.showError(err.error?.message || 'Failed to submit feedback. Please try again.');
+      }
+    });
   }
 }
