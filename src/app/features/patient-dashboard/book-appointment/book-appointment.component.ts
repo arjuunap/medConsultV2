@@ -92,19 +92,41 @@ export class BookAppointmentComponent implements OnInit {
     this.nextDays = days;
   }
 
+  public activeBookedDoctorIds: string[] = [];
+
   checkProfileAndLoad(): void {
     this.uiService.showLoading();
     this.patientService.getMyProfile().subscribe({
       next: (patient) => {
         this.patientId = patient.patientId;
         this.needProfileInit = false;
-        this.loadDoctors();
+        this.loadExistingAppointments();
       },
       error: (err) => {
         this.uiService.hideLoading();
         if (err.status === 404) {
           this.needProfileInit = true;
         }
+      }
+    });
+  }
+
+  loadExistingAppointments(): void {
+    this.appointmentService.getMyAppointments(0, 100).pipe(
+      catchError(() => of({ content: [] }))
+    ).subscribe({
+      next: (res) => {
+        const list = res?.content || [];
+        // Extract doctorId from all appointments where status !== 'CANCELLED'
+        this.activeBookedDoctorIds = list
+          .filter((appt: any) => appt.status !== 'CANCELLED')
+          .map((appt: any) => appt.doctorId)
+          .filter(Boolean);
+          
+        this.loadDoctors();
+      },
+      error: () => {
+        this.loadDoctors();
       }
     });
   }
@@ -118,9 +140,16 @@ export class BookAppointmentComponent implements OnInit {
         this.route.queryParams.subscribe(params => {
           const docId = params['doctorId'];
           if (docId && this.doctors.some(d => d.doctorId === docId)) {
-            this.wizardForm.patchValue({ doctorId: docId });
-            this.onDoctorChange();
-            this.currentStep = 2; // Auto advance to step 2 directly
+            // Early prevent pre-selected duplicate active booking
+            if (this.activeBookedDoctorIds.includes(docId)) {
+              this.uiService.showError('You already have an active appointment with this doctor.');
+              this.wizardForm.patchValue({ doctorId: '' });
+              this.currentStep = 1;
+            } else {
+              this.wizardForm.patchValue({ doctorId: docId });
+              this.onDoctorChange();
+              this.currentStep = 2; // Auto advance to step 2 directly
+            }
           }
         });
 

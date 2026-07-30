@@ -189,6 +189,19 @@
   background: #E1F5EE;
 }
 
+.doctor-selection-card.already-booked {
+  opacity: 0.7;
+  background-color: #F9FAFB;
+  border-color: #E5E7EB;
+  cursor: not-allowed;
+}
+
+.doctor-selection-card.already-booked:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: #E5E7EB;
+}
+
 .doctor-avatar-circle {
   width: 52px;
   height: 52px;

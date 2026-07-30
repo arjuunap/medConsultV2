@@ -59,17 +59,23 @@
         <div class="doctor-selection-card" 
              *ngFor="let doc of filteredDoctors" 
              [class.selected]="wizardForm.get('doctorId')?.value === doc.doctorId" 
-             (click)="selectDoctor(doc.doctorId)">
-          <div class="doctor-avatar-circle" [style.background-color]="getAvatarBg(doc.fullName)" [style.color]="getAvatarColor(doc.fullName)">
+             [class.already-booked]="activeBookedDoctorIds.includes(doc.doctorId)"
+             (click)="!activeBookedDoctorIds.includes(doc.doctorId) && selectDoctor(doc.doctorId)">
+          <div class="doctor-avatar-circle" [style.background-color]="activeBookedDoctorIds.includes(doc.doctorId) ? '#F3F4F6' : getAvatarBg(doc.fullName)" [style.color]="activeBookedDoctorIds.includes(doc.doctorId) ? '#9CA3AF' : getAvatarColor(doc.fullName)">
             {{ getInitials(doc.fullName) }}
           </div>
           <div class="doctor-summary-info">
             <h4 class="name">{{ getDoctorDisplayName(doc) }}</h4>
-            <div class="meta-row mt-1">
+            
+            <div *ngIf="activeBookedDoctorIds.includes(doc.doctorId)" class="already-booked-warning mt-1" style="color: #DC2626; font-size: 0.75rem; font-weight: 700;">
+              ⚠️ {{ 'Active booking exists with this doctor' | translate }}
+            </div>
+
+            <div class="meta-row mt-1" *ngIf="!activeBookedDoctorIds.includes(doc.doctorId)">
               <span class="badge badge-blue">💼 {{ doc.experienceYears }} {{ 'Yrs Exp' | translate }}</span>
               <span class="badge badge-green">💰 SAR {{ doc.consultationFeeSar || 150 }}</span>
             </div>
-            <div class="ratings mt-1">
+            <div class="ratings mt-1" *ngIf="!activeBookedDoctorIds.includes(doc.doctorId)">
               ⭐ <span class="val">{{ doc.overallRating || 0 }}</span>
               <span class="count">({{ doc.reviewCount || 0 }} {{ 'reviews' | translate }})</span>
             </div>
