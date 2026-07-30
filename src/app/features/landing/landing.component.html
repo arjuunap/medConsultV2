@@ -170,8 +170,8 @@
             <div class="clinic-meta">
               <div class="clinic-rating">
                 <span class="stars">★★★★★</span>
-                <span>{{ clinic.overallRating || 4.9 }}</span>
-                <span class="clinic-reviews">({{ clinic.reviewCount || 10 }} {{ 'reviews' | translate }})</span>
+                <span>{{ clinic.overallRating }}</span>
+                <span class="clinic-reviews">({{ clinic.reviewCount }} {{ 'reviews' | translate }})</span>
               </div>
               <span class="clinic-badge cb-verified" *ngIf="clinic.mohVerified">{{ '✅ MOH Verified' | translate
                 }}</span>

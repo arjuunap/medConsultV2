@@ -360,6 +360,8 @@ export class LandingComponent implements OnInit {
 
     return {
       ...c,
+      overallRating: c.overallRating || 4.9,
+      reviewCount: c.reviewCount || 10,
       area,
       cityName,
       cityId,
