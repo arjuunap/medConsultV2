@@ -55,28 +55,6 @@
       <p class="hero-sub">{{ 'Search verified private clinics across Saudi Arabia. Browse doctors, filter by specialty,
         city, language, and availability — and book real appointments online.' | translate }}</p>
 
-      <!-- Real Search Box -->
-      <div class="hero-search">
-        <form [formGroup]="searchForm" (submit)="applyFilters(); $event.preventDefault()">
-          <div class="hs-row1" style="margin-bottom: 0;">
-            <div class="hs-input-wrap">
-              <span class="hs-icon d-inline-flex align-center justify-center" style="top:50%; transform:translateY(-50%);">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--t3);"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
-              </span>
-              <input class="hs-input" formControlName="query" (input)="applyFilters()" type="text"
-                [placeholder]="'Search Placeholder' | translate">
-            </div>
-            <div class="hs-city-select">
-              <app-custom-select formControlName="location" [options]="citySelectOptions" [searchable]="true"
-                [placeholder]="'All Cities / Areas' | translate" (selectionChange)="onLocationChange()"
-                [multiple]="true">
-              </app-custom-select>
-            </div>
-            <button class="hs-search-btn" type="submit">{{ 'Search clinics' | translate }}</button>
-          </div>
-        </form>
-      </div>
-
       <div class="hero-trust">
         <div class="hero-trust-item">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal); margin-inline-end: 4px; vertical-align: middle;"><path d="M20 6 9 17l-5-5"></path></svg>
@@ -98,6 +76,30 @@
     </div>
   </div>
 </header>
+
+<!-- Sticky Search Bar Wrapper -->
+<div class="sticky-search-wrapper">
+  <div class="hero-search">
+    <form [formGroup]="searchForm" (submit)="applyFilters(); $event.preventDefault()">
+      <div class="hs-row1" style="margin-bottom: 0;">
+        <div class="hs-input-wrap">
+          <span class="hs-icon d-inline-flex align-center justify-center" style="top:50%; transform:translateY(-50%);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--t3);"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+          </span>
+          <input class="hs-input" formControlName="query" (input)="applyFilters()" type="text"
+            [placeholder]="'Search Placeholder' | translate">
+        </div>
+        <div class="hs-city-select">
+          <app-custom-select formControlName="location" [options]="citySelectOptions" [searchable]="true"
+            [placeholder]="'All Cities / Areas' | translate" (selectionChange)="onLocationChange()"
+            [multiple]="true">
+          </app-custom-select>
+        </div>
+        <button class="hs-search-btn" type="submit">{{ 'Search clinics' | translate }}</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 
 <!-- ═══════════════════════════
