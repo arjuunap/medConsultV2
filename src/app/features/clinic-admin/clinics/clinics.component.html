@@ -3,31 +3,31 @@
   <!-- Header Banner -->
   <div class="page-header-banner">
     <div>
-      <h2 class="fs-xl text-primary m-0 fw-bold">🏥 Clinic &amp; Facility Management</h2>
-      <p class="text-muted fs-sm mt-1 m-0">Configure clinic locations, operating hours, medical specialties, and insurance networks</p>
+      <h2 class="fs-lg text-primary m-0 fw-bold">🏥 Clinic Facility Roster</h2>
+      <p class="text-muted fs-xs mt-1 m-0">Configure clinic locations, operating hours, medical specialties, and insurance networks</p>
     </div>
 
     <button class="btn btn-primary" (click)="openModal('addClinic')">
-      + Add New Clinic
+      + Add Clinic
     </button>
   </div>
 
   <div class="clinic-admin-layout">
     
     <!-- Left Sidebar: Managed Clinics List -->
-    <div class="clinics-sidebar">
+    <div class="clinics-sidebar" [class.mobile-hidden]="selectedClinic !== null">
       <div class="d-flex justify-between align-center mb-3 pb-2 border-bottom">
-        <h3 class="fs-md text-primary m-0 fw-bold">My Clinics</h3>
-        <span class="badge badge-info">{{ filteredClinics.length }} Listed</span>
+        <h3 class="fs-sm text-primary m-0 fw-semibold">My Clinics</h3>
+        <span class="badge badge-teal fs-xs">{{ filteredClinics.length }} Listed</span>
       </div>
 
-      <!-- Filters/search bar above lists using standard input style -->
+      <!-- Filters/search bar above lists -->
       <div class="search-bar-box">
         <input 
           type="text" 
           [(ngModel)]="searchTerm" 
           class="form-control" 
-          placeholder="🔍 Search clinics by name or license..."
+          placeholder="Search by name or license..."
         >
       </div>
 
@@ -56,11 +56,11 @@
           </div>
         </div>
 
-        <!-- Consistent Empty State: Icon + short message via --t4 text -->
+        <!-- Consistent Empty State -->
         <div *ngIf="filteredClinics.length === 0" class="empty-state-card mt-2">
           <div class="empty-state-icon">🏥</div>
           <p class="empty-state-text">No matching clinics found.</p>
-          <small class="text-muted d-block mt-1">Try adjusting your search terms or click "+ Add New Clinic".</small>
+          <small class="text-muted d-block mt-1">Try adjusting your search terms or click "+ Add Clinic".</small>
         </div>
       </div>
     </div>
@@ -68,23 +68,28 @@
     <!-- Main Right Content Area: Clinic Operations -->
     <div class="main-content-panel" *ngIf="selectedClinic">
       
+      <!-- Back button for mobile view -->
+      <button class="btn btn-outline btn-sm mobile-back-btn" (click)="selectedClinic = null">
+        ← Back to Clinics List
+      </button>
+
       <!-- Clinic Overview Header Card -->
-      <div class="card p-5 border-0 mb-4 shadow-sm" style="border-top: 5px solid var(--teal);">
+      <div class="card mb-4">
         <div class="d-flex justify-between align-start flex-wrap gap-3">
-          <div class="d-flex align-center gap-4">
-            <div style="width: 72px; height: 72px; border-radius: 12px; overflow: hidden; background: #fff;" class="border shadow-sm d-flex align-center justify-center p-1">
+          <div class="d-flex align-center gap-3 flex-wrap">
+            <div style="width: 64px; height: 64px; border-radius: 6px; overflow: hidden; background: #fff;" class="border d-flex align-center justify-center p-1">
               <img *ngIf="selectedClinic.logoUrl" [src]="getLogoUrl(selectedClinic.logoUrl)" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" (error)="selectedClinic.logoUrl = ''">
-              <span *ngIf="!selectedClinic.logoUrl" style="font-size: 2.2rem;">🏥</span>
+              <span *ngIf="!selectedClinic.logoUrl" style="font-size: 1.8rem;">🏥</span>
             </div>
             <div>
-              <div class="d-flex align-center gap-2">
-                <h2 class="fs-xl text-primary m-0 fw-bold">{{ selectedClinic.nameEn }}</h2>
-                <span class="fs-sm text-muted">({{ selectedClinic.nameAr }})</span>
+              <div class="d-flex align-center gap-2 flex-wrap">
+                <h2 class="fs-md text-primary m-0 fw-bold">{{ selectedClinic.nameEn }}</h2>
+                <span class="fs-xs text-muted">({{ selectedClinic.nameAr }})</span>
               </div>
-              <p class="text-muted fs-sm mt-1 mb-2">{{ selectedClinic.descriptionEn || 'No overview description provided.' }}</p>
+              <p class="text-muted fs-xs mt-1 mb-2">{{ selectedClinic.descriptionEn || 'No overview description provided.' }}</p>
               
-              <div class="d-flex align-center gap-3 fs-xs flex-wrap mt-2">
-                <span class="badge badge-primary">MOH License: {{ selectedClinic.mohLicenseNumber }}</span>
+              <div class="d-flex align-center gap-2 fs-xs flex-wrap mt-2">
+                <span class="badge badge-teal">MOH: {{ selectedClinic.mohLicenseNumber }}</span>
                 <span class="badge badge-info" *ngIf="selectedClinic.vatNumber">VAT: {{ selectedClinic.vatNumber }}</span>
                 <span class="text-dark">📞 <strong>{{ selectedClinic.phonePrimary }}</strong></span>
                 <span class="text-dark" *ngIf="selectedClinic.email">✉️ <strong>{{ selectedClinic.email }}</strong></span>
@@ -99,36 +104,32 @@
       </div>
 
       <!-- Sub-tabs Card -->
-      <div class="card p-4 border-0 shadow-sm overflow-hidden">
+      <div class="card">
         <div class="sub-tabs-bar">
           <button 
             class="btn sub-tab-btn" 
             [class.btn-primary]="activeSubTab === 'branches'" 
-            [class.btn-outline]="activeSubTab !== 'branches'" 
             (click)="switchSubTab('branches')"
           >
-            🏢 Facility Branches ({{ branches.length }})
+            🏢 Branches ({{ branches.length }})
           </button>
           <button 
             class="btn sub-tab-btn" 
             [class.btn-primary]="activeSubTab === 'specialties'" 
-            [class.btn-outline]="activeSubTab !== 'specialties'" 
             (click)="switchSubTab('specialties')"
           >
-            🎓 Specialties ({{ clinicSpecialties.length }})
+            🩺 Specialties ({{ clinicSpecialties.length }})
           </button>
           <button 
             class="btn sub-tab-btn" 
             [class.btn-primary]="activeSubTab === 'insurances'" 
-            [class.btn-outline]="activeSubTab !== 'insurances'" 
             (click)="switchSubTab('insurances')"
           >
-            🛡️ Insurance Networks ({{ clinicInsurances.length }})
+            🛡️ Insurance ({{ clinicInsurances.length }})
           </button>
           <button 
             class="btn sub-tab-btn" 
             [class.btn-primary]="activeSubTab === 'languages'" 
-            [class.btn-outline]="activeSubTab !== 'languages'" 
             (click)="switchSubTab('languages')"
           >
             🗣️ Languages ({{ clinicLanguages.length }})
@@ -137,8 +138,8 @@
 
         <!-- Sub-tab 1: Branches -->
         <div *ngIf="activeSubTab === 'branches'">
-          <div class="d-flex justify-between align-center mb-4">
-            <h3 class="fs-md text-primary m-0 fw-bold">Facility Branch Locations</h3>
+          <div class="d-flex justify-between align-center mb-4 flex-wrap gap-2">
+            <h3 class="fs-sm text-primary m-0 fw-semibold">Facility Branch Locations</h3>
             <button class="btn btn-accent btn-sm" (click)="openModal('addBranch')">+ Add Branch</button>
           </div>
 
@@ -149,7 +150,7 @@
                   <th>Branch Name</th>
                   <th>Address</th>
                   <th>Contact Phone</th>
-                  <th>Primary</th>
+                  <th>Type</th>
                   <th class="text-end">Actions</th>
                 </tr>
               </thead>
@@ -158,8 +159,8 @@
                   <td class="fw-bold text-primary">
                     📍 {{ b.branchNameEn }}
                   </td>
-                  <td class="fs-sm">{{ b.addressLine1 }}{{ b.addressLine2 ? ', ' + b.addressLine2 : '' }}</td>
-                  <td class="fs-sm">{{ b.phone || 'N/A' }}</td>
+                  <td class="fs-xs text-muted">{{ b.addressLine1 }}{{ b.addressLine2 ? ', ' + b.addressLine2 : '' }}</td>
+                  <td class="fs-xs">{{ b.phone || 'N/A' }}</td>
                   <td>
                     <span class="badge" [class.badge-success]="b.isPrimary" [class.badge-secondary]="!b.isPrimary">
                       {{ b.isPrimary ? 'Primary' : 'Branch' }}
@@ -180,7 +181,7 @@
                   <td colspan="5">
                     <div class="empty-state-card my-2">
                       <div class="empty-state-icon">🏢</div>
-                      <p class="empty-state-text">No branch locations added for this clinic yet.</p>
+                      <p class="empty-state-text">No branch locations added yet.</p>
                     </div>
                   </td>
                 </tr>
@@ -191,16 +192,16 @@
 
         <!-- Sub-tab 2: Specialties -->
         <div *ngIf="activeSubTab === 'specialties'">
-          <div class="d-flex justify-between align-center mb-4">
-            <h3 class="fs-md text-primary m-0 fw-bold">Offered Medical Specialties</h3>
+          <div class="d-flex justify-between align-center mb-4 flex-wrap gap-2">
+            <h3 class="fs-sm text-primary m-0 fw-semibold">Offered Medical Specialties</h3>
             <button class="btn btn-accent btn-sm" (click)="openModal('addSpecialty')">+ Link Specialty</button>
           </div>
 
-          <div class="d-grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));" *ngIf="clinicSpecialties.length > 0">
-            <div *ngFor="let s of clinicSpecialties" class="card p-3 border-0 bg-light d-flex justify-between align-center shadow-sm">
+          <div class="d-grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));" *ngIf="clinicSpecialties.length > 0">
+            <div *ngFor="let s of clinicSpecialties" class="card p-3 border d-flex justify-between align-center">
               <div class="d-flex align-center gap-2">
                 <span class="fs-lg">🩺</span>
-                <strong class="text-dark fs-sm">{{ getSpecialtyName(s.specialtyId) }}</strong>
+                <strong class="text-dark fs-xs">{{ getSpecialtyName(s.specialtyId) }}</strong>
               </div>
               <button class="btn btn-outline btn-danger btn-sm" (click)="deleteSpecialty(s.specialtyId)">Unlink</button>
             </div>
@@ -214,8 +215,8 @@
 
         <!-- Sub-tab 3: Insurances -->
         <div *ngIf="activeSubTab === 'insurances'">
-          <div class="d-flex justify-between align-center mb-4">
-            <h3 class="fs-md text-primary m-0 fw-bold">Accepted Insurance Networks</h3>
+          <div class="d-flex justify-between align-center mb-4 flex-wrap gap-2">
+            <h3 class="fs-sm text-primary m-0 fw-semibold">Accepted Insurance Networks</h3>
             <button class="btn btn-accent btn-sm" (click)="openModal('addInsurance')">+ Link Provider</button>
           </div>
 
@@ -234,7 +235,7 @@
                   <td class="fw-bold text-primary">
                     🛡️ {{ getInsuranceName(ins.providerId) }}
                   </td>
-                  <td><span class="badge badge-info">{{ ins.networkClass || 'General' }}</span></td>
+                  <td><span class="badge badge-info fs-xs">{{ ins.networkClass || 'General' }}</span></td>
                   <td>
                     <span class="badge" [class.badge-success]="ins.isActive" [class.badge-danger]="!ins.isActive">
                       {{ ins.isActive ? 'Active' : 'Suspended' }}
@@ -261,16 +262,16 @@
 
         <!-- Sub-tab 4: Languages -->
         <div *ngIf="activeSubTab === 'languages'">
-          <div class="d-flex justify-between align-center mb-4">
-            <h3 class="fs-md text-primary m-0 fw-bold">Supported Languages</h3>
+          <div class="d-flex justify-between align-center mb-4 flex-wrap gap-2">
+            <h3 class="fs-sm text-primary m-0 fw-semibold">Supported Languages</h3>
             <button class="btn btn-accent btn-sm" (click)="openModal('addLanguage')">+ Link Language</button>
           </div>
 
-          <div class="d-grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));" *ngIf="clinicLanguages.length > 0">
-            <div *ngFor="let lang of clinicLanguages" class="card p-3 border-0 bg-light d-flex justify-between align-center shadow-sm">
+          <div class="d-grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));" *ngIf="clinicLanguages.length > 0">
+            <div *ngFor="let lang of clinicLanguages" class="card p-3 border d-flex justify-between align-center">
               <div class="d-flex align-center gap-2">
                 <span class="fs-lg">🗣️</span>
-                <strong class="text-dark fs-sm">{{ getLanguageName(lang.languageId) }}</strong>
+                <strong class="text-dark fs-xs">{{ getLanguageName(lang.languageId) }}</strong>
               </div>
               <button class="btn btn-outline btn-danger btn-sm" (click)="deleteLanguage(lang.languageId)">Unlink</button>
             </div>
@@ -288,21 +289,21 @@
 </div>
 
 <!-- Modal 1: Add / Edit Clinic -->
-<div *ngIf="activeModal === 'addClinic' || activeModal === 'editClinic'" class="modal-backdrop">
-  <div class="modal-content" style="max-width: 620px;">
+<div *ngIf="activeModal === 'addClinic' || activeModal === 'editClinic'" class="modal-backdrop" (click)="closeModal()">
+  <div class="modal-content admin-modal-card" style="max-width: 600px;" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h3 class="fs-xl text-primary m-0">{{ activeModal === 'addClinic' ? 'Add New Clinic' : 'Edit Clinic Profile' }}</h3>
+      <h3 class="fs-md text-primary m-0 fw-bold">{{ activeModal === 'addClinic' ? 'Add New Clinic' : 'Edit Clinic Profile' }}</h3>
       <button class="btn-close" (click)="closeModal()">&times;</button>
     </div>
 
     <form [formGroup]="clinicForm" (ngSubmit)="activeModal === 'addClinic' ? submitClinic() : submitClinicUpdate()">
       <div class="modal-body">
-        <div class="form-row">
-          <div class="form-group mb-3">
+        <div class="form-row mb-3">
+          <div class="form-group flex-1">
             <label class="form-label">Name (EN) *</label>
             <input type="text" formControlName="nameEn" class="form-control" placeholder="E.g. Al Noor Medical Center">
           </div>
-          <div class="form-group mb-3">
+          <div class="form-group flex-1">
             <label class="form-label">Name (AR) *</label>
             <input type="text" formControlName="nameAr" class="form-control" placeholder="مركز النور الطبي">
           </div>
@@ -321,23 +322,23 @@
           <textarea formControlName="descriptionEn" class="form-control" rows="2" placeholder="Brief clinic description"></textarea>
         </div>
 
-        <div class="form-row">
-          <div class="form-group mb-3">
+        <div class="form-row mb-3">
+          <div class="form-group flex-1">
             <label class="form-label">Primary Phone *</label>
             <input type="text" formControlName="phonePrimary" class="form-control" placeholder="+966 11 000 0000">
           </div>
-          <div class="form-group mb-3">
+          <div class="form-group flex-1">
             <label class="form-label">Email</label>
             <input type="email" formControlName="email" class="form-control" placeholder="info@clinic.com">
           </div>
         </div>
 
         <div class="form-row">
-          <div class="form-group m-0">
+          <div class="form-group flex-1 m-0">
             <label class="form-label">MOH License Number *</label>
             <input type="text" formControlName="mohLicenseNumber" class="form-control" placeholder="MOH-123456">
           </div>
-          <div class="form-group m-0">
+          <div class="form-group flex-1 m-0">
             <label class="form-label">VAT Registration Number</label>
             <input type="text" formControlName="vatNumber" class="form-control" placeholder="300000000000003">
           </div>
@@ -355,28 +356,28 @@
 </div>
 
 <!-- Modal 2: Add Branch -->
-<div *ngIf="activeModal === 'addBranch'" class="modal-backdrop">
-  <div class="modal-content" style="max-width: 580px;">
+<div *ngIf="activeModal === 'addBranch'" class="modal-backdrop" (click)="closeModal()">
+  <div class="modal-content admin-modal-card" style="max-width: 540px;" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h3 class="fs-xl text-primary m-0">Add Clinic Branch Location</h3>
+      <h3 class="fs-md text-primary m-0 fw-bold">Add Clinic Branch Location</h3>
       <button class="btn-close" (click)="closeModal()">&times;</button>
     </div>
 
     <form [formGroup]="branchForm" (ngSubmit)="submitBranch()">
       <div class="modal-body">
-        <div class="form-row">
-          <div class="form-group mb-3">
+        <div class="form-row mb-3">
+          <div class="form-group flex-1">
             <label class="form-label">Branch Name (EN) *</label>
             <input type="text" formControlName="branchNameEn" class="form-control" placeholder="Main Branch - Olaya">
           </div>
-          <div class="form-group mb-3">
+          <div class="form-group flex-1">
             <label class="form-label">Branch Name (AR) *</label>
             <input type="text" formControlName="branchNameAr" class="form-control" placeholder="الفرع الرئيسي - العليا">
           </div>
         </div>
         
-        <div class="form-row">
-          <div class="form-group mb-3">
+        <div class="form-row mb-3">
+          <div class="form-group flex-1">
             <label class="form-label">City *</label>
             <app-custom-select 
               formControlName="cityId" 
@@ -388,7 +389,7 @@
               (selectionChange)="onCitySelectChange($event)">
             </app-custom-select>
           </div>
-          <div class="form-group mb-3">
+          <div class="form-group flex-1">
             <label class="form-label">Locality / District *</label>
             <app-custom-select 
               formControlName="localityId" 
@@ -411,8 +412,8 @@
         </div>
 
         <div class="form-group m-0 d-flex align-center gap-2">
-          <input type="checkbox" id="branchIsPrimary" formControlName="isPrimary">
-          <label for="branchIsPrimary" class="form-label m-0 cursor-pointer">Set as Primary Branch Location</label>
+          <input type="checkbox" id="branchIsPrimary" formControlName="isPrimary" class="form-check-input">
+          <label for="branchIsPrimary" class="form-label m-0 cursor-pointer fw-semibold">Set as Primary Branch</label>
         </div>
       </div>
 
@@ -425,10 +426,10 @@
 </div>
 
 <!-- Modal 3: Link Specialty -->
-<div *ngIf="activeModal === 'addSpecialty'" class="modal-backdrop">
-  <div class="modal-content" style="max-width: 440px;">
+<div *ngIf="activeModal === 'addSpecialty'" class="modal-backdrop" (click)="closeModal()">
+  <div class="modal-content admin-modal-card" style="max-width: 440px;" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h3 class="fs-xl text-primary m-0">Link Medical Specialty</h3>
+      <h3 class="fs-md text-primary m-0 fw-bold">Link Medical Specialty</h3>
       <button class="btn-close" (click)="closeModal()">&times;</button>
     </div>
 
@@ -456,10 +457,10 @@
 </div>
 
 <!-- Modal 4: Link Insurance -->
-<div *ngIf="activeModal === 'addInsurance'" class="modal-backdrop">
-  <div class="modal-content" style="max-width: 480px;">
+<div *ngIf="activeModal === 'addInsurance'" class="modal-backdrop" (click)="closeModal()">
+  <div class="modal-content admin-modal-card" style="max-width: 460px;" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h3 class="fs-xl text-primary m-0">Associate Insurance Provider</h3>
+      <h3 class="fs-md text-primary m-0 fw-bold">Associate Insurance Provider</h3>
       <button class="btn-close" (click)="closeModal()">&times;</button>
     </div>
 
@@ -491,10 +492,10 @@
 </div>
 
 <!-- Modal 5: Link Language -->
-<div *ngIf="activeModal === 'addLanguage'" class="modal-backdrop">
-  <div class="modal-content" style="max-width: 440px;">
+<div *ngIf="activeModal === 'addLanguage'" class="modal-backdrop" (click)="closeModal()">
+  <div class="modal-content admin-modal-card" style="max-width: 440px;" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h3 class="fs-xl text-primary m-0">Link Supported Language</h3>
+      <h3 class="fs-md text-primary m-0 fw-bold">Link Supported Language</h3>
       <button class="btn-close" (click)="closeModal()">&times;</button>
     </div>
 
@@ -522,11 +523,11 @@
 </div>
 
 <!-- Modal 6: Edit Branch Operating Hours -->
-<div *ngIf="activeModal === 'editBranchHours'" class="modal-backdrop">
-  <div class="modal-content" style="max-width: 760px;">
+<div *ngIf="activeModal === 'editBranchHours'" class="modal-backdrop" (click)="closeModal()">
+  <div class="modal-content admin-modal-card" style="max-width: 720px;" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <div>
-        <h3 class="fs-xl text-primary m-0">Edit Branch Operating Hours</h3>
+        <h3 class="fs-md text-primary m-0 fw-bold">Edit Branch Operating Hours</h3>
         <p class="text-muted fs-xs m-0 mt-1" *ngIf="selectedBranchForHours">
           Branch: <strong>{{ selectedBranchForHours.branchNameEn }}</strong>
         </p>

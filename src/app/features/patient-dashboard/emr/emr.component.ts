@@ -125,6 +125,13 @@ export class EmrComponent implements OnInit {
     });
   }
 
+  getAdherenceLogForToday(itemId: string): any {
+    const logs = this.adherenceLogs[itemId];
+    if (!logs || logs.length === 0) return null;
+    const todayStr = new Date().toISOString().split('T')[0];
+    return logs.find(log => log.logDate === todayStr);
+  }
+
   logAdherence(itemId: string, taken: boolean, skippedReason?: string): void {
     const todayStr = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
     const payload = {

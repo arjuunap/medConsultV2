@@ -3,13 +3,12 @@
   <!-- Header Banner -->
   <div class="page-header-banner">
     <div>
-      <h2 class="fs-xl text-primary m-0 fw-bold">👨‍⚕️ Doctor Roster &amp; Branch Assignments</h2>
-      <p class="text-muted fs-sm mt-1 m-0">Manage doctor roster placements across facility branches, departments, and
-        fee structures</p>
+      <h2 class="fs-lg text-primary m-0 fw-bold">👨‍⚕️ Doctor Roster Placement</h2>
+      <p class="text-muted fs-xs mt-1 m-0">Manage doctor roster placements across facility branches, departments, and fee structures</p>
     </div>
 
     <button (click)="openAddModal()" class="btn btn-primary">
-      + Assign Doctor to Branch
+      + Assign Doctor
     </button>
   </div>
 
@@ -21,7 +20,7 @@
         <div class="d-flex align-center gap-3 flex-1" style="max-width: 700px;">
           <!-- Clinic Select -->
           <form [formGroup]="linkForm" class="d-flex align-center gap-2 m-0" style="min-width: 250px;">
-            <label class="form-label text-nowrap m-0 fw-semibold fs-sm">Clinic Facility:</label>
+            <label class="form-label text-nowrap m-0 fw-semibold fs-xs">Facility:</label>
             <div class="flex-1">
               <app-custom-select formControlName="clinicId" [options]="clinicSelectOptions" bindLabel="label"
                 bindValue="value" placeholder="-- Select Clinic --" (selectionChange)="onClinicChange()">
@@ -32,11 +31,11 @@
           <!-- Roster Search Filter Bar -->
           <div class="flex-1">
             <input type="text" [(ngModel)]="searchTerm" class="form-control m-0"
-              placeholder="🔍 Search doctor by name, specialty, or branch...">
+              placeholder="Search by name, specialty, or branch...">
           </div>
         </div>
 
-        <span class="badge badge-info fs-xs p-2">
+        <span class="badge badge-teal fs-xs">
           {{ filteredDoctorClinics.length }} Active Doctor(s)
         </span>
       </div>
@@ -48,15 +47,15 @@
         <div>
           <div class="d-flex justify-between align-start mb-3">
             <div class="d-flex align-center gap-3">
-              <!-- Avatar circle -->
+              <!-- Avatar square -->
               <div class="doctor-avatar-circle">👨‍⚕️</div>
               <div>
-                <span class="badge badge-teal mb-1">{{ dc.department || 'General Practice' }}</span>
-                <h3 class="fs-md text-primary m-0 fw-bold">{{ getDoctorName(dc.doctorId) }}</h3>
+                <span class="badge badge-teal mb-1 fs-2xs">{{ dc.department || 'General Practice' }}</span>
+                <h3 class="fs-sm text-primary m-0 fw-bold">{{ getDoctorName(dc.doctorId) }}</h3>
               </div>
             </div>
 
-            <!-- Availability Status Dot (--success / --warning / --t4 dot) -->
+            <!-- Availability Status Dot -->
             <div class="d-flex align-center" title="Availability Status">
               <span class="status-dot-lg" [class.dot-success]="dc.isActive" [class.dot-disabled]="!dc.isActive"></span>
               <span class="fs-xs fw-semibold" [class.text-success]="dc.isActive" [class.text-muted]="!dc.isActive">
@@ -65,7 +64,7 @@
             </div>
           </div>
 
-          <div class="fs-sm text-dark d-flex flex-col gap-2 mb-3 bg-light p-3 rounded-md border">
+          <div class="fs-xs text-dark d-flex flex-col gap-2 mb-3 bg-light p-3 rounded border">
             <div class="d-flex justify-between">
               <span class="text-muted">Branch Location:</span>
               <strong class="text-primary">{{ getBranchName(dc.branchId) }}</strong>
@@ -97,7 +96,7 @@
             📅 Schedule
           </button>
 
-          <!-- View Leaves Action (Clinic can approve/reject) -->
+          <!-- View Leaves Action -->
           <button class="btn btn-outline btn-sm leave-btn d-flex align-center justify-center gap-1" (click)="openLeaveModal(dc)">
             🏖️ Leaves
           </button>
@@ -109,19 +108,18 @@
       </div>
     </div>
 
-    <!-- Consistent Empty State: Icon + short message via --t4 text -->
+    <!-- Consistent Empty State -->
     <div *ngIf="filteredDoctorClinics.length === 0" class="empty-state-card mt-2">
       <div class="empty-state-icon">👨‍⚕️</div>
       <p class="empty-state-text">No doctors currently assigned to this roster.</p>
-      <small class="text-muted d-block mt-1">Try selecting another clinic branch or click "+ Assign Doctor to
-        Branch".</small>
+      <small class="text-muted d-block mt-1">Try adjusting filters or click "+ Assign Doctor".</small>
     </div>
 
     <!-- Add Placement Modal -->
-    <div *ngIf="isAddModalOpen" class="modal-backdrop">
-      <div class="modal-content" style="max-width: 500px;">
+    <div *ngIf="isAddModalOpen" class="modal-backdrop" (click)="closeAddModal()">
+      <div class="modal-content admin-modal-card" style="max-width: 480px;" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h3 class="fs-xl text-primary m-0">Assign Doctor to Branch</h3>
+          <h3 class="fs-md text-primary m-0 fw-bold">Assign Doctor to Branch</h3>
           <button class="btn-close" (click)="closeAddModal()">&times;</button>
         </div>
 
@@ -141,25 +139,25 @@
               </app-custom-select>
             </div>
 
-            <div class="form-row">
-              <div class="form-group mb-3">
+            <div class="form-row mb-3">
+              <div class="form-group flex-1">
                 <label class="form-label">Department *</label>
                 <input type="text" formControlName="department" class="form-control" placeholder="E.g. Cardiology">
               </div>
-              <div class="form-group mb-3">
+              <div class="form-group flex-1">
                 <label class="form-label">Consultation Fee (SAR) *</label>
                 <input type="number" formControlName="consultationFeeSar" class="form-control" placeholder="150">
               </div>
             </div>
 
             <div class="form-row">
-              <div class="form-group mb-3">
+              <div class="form-group flex-1 m-0">
                 <label class="form-label">Start Date *</label>
                 <input type="date" formControlName="startDate" class="form-control">
               </div>
-              <div class="form-group d-flex align-center gap-2 mt-4 mb-3">
-                <input type="checkbox" id="isPrimary" formControlName="isPrimary">
-                <label for="isPrimary" class="form-label m-0 cursor-pointer">Set as Primary Doctor</label>
+              <div class="form-group flex-1 d-flex align-center gap-2 mt-4 m-0">
+                <input type="checkbox" id="isPrimary" formControlName="isPrimary" class="form-check-input">
+                <label for="isPrimary" class="form-label m-0 cursor-pointer fw-semibold">Primary Doctor</label>
               </div>
             </div>
           </div>
@@ -173,13 +171,13 @@
     </div>
 
     <!-- Dedicated Doctor Consultation Schedule Modal -->
-    <div *ngIf="isScheduleModalOpen && selectedDcForSchedule" class="modal-backdrop">
-      <div class="modal-content" style="max-width: 680px; max-height: 90vh;">
+    <div *ngIf="isScheduleModalOpen && selectedDcForSchedule" class="modal-backdrop" (click)="closeScheduleModal()">
+      <div class="modal-content admin-modal-card" style="max-width: 640px;" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <div>
             <span class="badge badge-teal mb-1">Branch: {{ getBranchName(selectedDcForSchedule.branchId) }}</span>
-            <h3 class="fs-xl text-primary m-0 fw-bold">
-              📅 Consultation Schedule — {{ getDoctorName(selectedDcForSchedule.doctorId) }}
+            <h3 class="fs-md text-primary m-0 fw-bold">
+              📅 Working Schedule — {{ getDoctorName(selectedDcForSchedule.doctorId) }}
             </h3>
           </div>
           <button class="btn-close" (click)="closeScheduleModal()">&times;</button>
@@ -187,23 +185,21 @@
 
         <div class="modal-body">
           <!-- Placement Details Info Box -->
-          <div class="bg-light p-3 rounded-md border mb-4 d-flex justify-between flex-wrap gap-2 fs-sm">
+          <div class="bg-light p-3 rounded border mb-4 d-flex justify-between flex-wrap gap-2 fs-xs">
             <div><strong>Department:</strong> {{ selectedDcForSchedule.department || 'General Practice' }}</div>
-            <div><strong>Fee:</strong> <span class="text-success fw-bold">SAR {{
-                selectedDcForSchedule.consultationFeeSar }}</span></div>
-            <div><strong>Placement Role:</strong> {{ selectedDcForSchedule.isPrimary ? 'Primary Specialist' :
-              'Consultant' }}</div>
+            <div><strong>Fee:</strong> <span class="text-success fw-bold">SAR {{ selectedDcForSchedule.consultationFeeSar }}</span></div>
+            <div><strong>Placement Role:</strong> {{ selectedDcForSchedule.isPrimary ? 'Primary Specialist' : 'Consultant' }}</div>
           </div>
 
           <!-- Existing Active Schedules List -->
           <div class="mb-4">
-            <h4 class="fs-sm text-primary fw-bold mb-2">📋 Configured Working Schedules</h4>
+            <h4 class="fs-xs text-primary fw-bold mb-2">📋 Configured Working Schedules</h4>
 
             <div *ngIf="doctorSchedules.length > 0" class="d-flex flex-col gap-2">
               <div *ngFor="let s of doctorSchedules"
-                class="p-3 bg-white border rounded d-flex justify-between align-center flex-wrap gap-2 fs-sm">
+                class="p-3 bg-white border rounded d-flex justify-between align-center flex-wrap gap-2 fs-xs">
                 <div>
-                  <div class="fw-bold text-dark fs-md">
+                  <div class="fw-bold text-dark fs-sm">
                     🗓️ {{ getDayName(s.dayOfWeek) }}
                     <span class="badge badge-teal ms-2 fs-xs">{{ s.sessionType.replace('_', ' ') }}</span>
                     <span class="badge ms-1 fs-xs" [class.badge-success]="s.isActive"
@@ -212,8 +208,7 @@
                     </span>
                   </div>
                   <div class="text-muted fs-xs mt-1">
-                    ⏰ {{ s.startTime }} – {{ s.endTime }} | ⏱️ Duration: {{ s.slotDurationMin }} mins | 👥 Max Patients:
-                    {{ s.maxPatients }}
+                    ⏰ {{ s.startTime }} – {{ s.endTime }} | ⏱️ Duration: {{ s.slotDurationMin }} mins | 👥 Max Patients: {{ s.maxPatients }}
                   </div>
                 </div>
 
@@ -225,25 +220,25 @@
             </div>
 
             <div *ngIf="doctorSchedules.length === 0" class="empty-state-card py-3">
-              <div class="empty-state-icon" style="font-size: 1.8rem;">📅</div>
-              <p class="empty-state-text fs-sm">No working schedule rules configured for this doctor placement yet.</p>
+              <div class="empty-state-icon" style="font-size: 1.6rem;">📅</div>
+              <p class="empty-state-text fs-xs">No working schedule rules configured for this doctor placement yet.</p>
               <small class="text-muted">Use the form below to add weekly working hours.</small>
             </div>
           </div>
 
           <!-- Add Schedule Rule Form -->
           <form [formGroup]="doctorScheduleForm" (ngSubmit)="submitDoctorSchedule()" class="pt-3 border-top">
-            <h4 class="fs-sm text-primary fw-bold mb-3">+ Configure New Working Schedule Rule</h4>
+            <h4 class="fs-xs text-primary fw-bold mb-3">+ Configure New Working Schedule Rule</h4>
 
-            <div class="form-row">
-              <div class="form-group mb-3">
+            <div class="form-row mb-2">
+              <div class="form-group flex-1">
                 <label class="form-label fs-xs">Day of Week *</label>
                 <app-custom-select formControlName="dayOfWeek" [options]="scheduleDayOptions" bindLabel="label"
                   bindValue="value" size="sm" placeholder="Select Day">
                 </app-custom-select>
               </div>
 
-              <div class="form-group mb-3">
+              <div class="form-group flex-1">
                 <label class="form-label fs-xs">Session Mode *</label>
                 <app-custom-select formControlName="sessionType" [options]="scheduleSessionTypeOptions"
                   bindLabel="label" bindValue="value" size="sm" placeholder="Select Mode">
@@ -251,26 +246,26 @@
               </div>
             </div>
 
-            <div class="form-row">
-              <div class="form-group mb-3">
+            <div class="form-row mb-2">
+              <div class="form-group flex-1">
                 <label class="form-label fs-xs">Start Time *</label>
                 <input type="time" formControlName="startTime" class="form-control form-control-sm">
               </div>
 
-              <div class="form-group mb-3">
+              <div class="form-group flex-1">
                 <label class="form-label fs-xs">End Time *</label>
                 <input type="time" formControlName="endTime" class="form-control form-control-sm">
               </div>
             </div>
 
-            <div class="form-row">
-              <div class="form-group mb-3">
+            <div class="form-row mb-3">
+              <div class="form-group flex-1">
                 <label class="form-label fs-xs">Slot Duration (Mins) *</label>
                 <input type="number" formControlName="slotDurationMin" class="form-control form-control-sm"
                   placeholder="30">
               </div>
 
-              <div class="form-group mb-3">
+              <div class="form-group flex-1">
                 <label class="form-label fs-xs">Max Patients *</label>
                 <input type="number" formControlName="maxPatients" class="form-control form-control-sm"
                   placeholder="16">
@@ -278,8 +273,8 @@
             </div>
 
             <div class="d-flex justify-between align-center mt-2">
-              <label class="fs-xs cursor-pointer d-flex align-center gap-1">
-                <input type="checkbox" formControlName="isActive"> Active Rule
+              <label class="fs-xs cursor-pointer d-flex align-center gap-1 fw-semibold">
+                <input type="checkbox" formControlName="isActive" class="form-check-input"> Active Rule
               </label>
               <button type="submit" [disabled]="doctorScheduleForm.invalid" class="btn btn-primary btn-sm py-2 px-4">
                 Add Schedule Rule
@@ -295,12 +290,12 @@
     </div>
 
     <!-- Doctor Leave Management Modal (Clinic Side: Approve / Reject) -->
-    <div *ngIf="isLeaveModalOpen && selectedDcForLeave" class="modal-backdrop">
-      <div class="modal-content" style="max-width: 700px; max-height: 90vh;">
+    <div *ngIf="isLeaveModalOpen && selectedDcForLeave" class="modal-backdrop" (click)="closeLeaveModal()">
+      <div class="modal-content admin-modal-card" style="max-width: 640px;" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <div>
             <span class="badge badge-teal mb-1">Branch: {{ getBranchName(selectedDcForLeave.branchId) }}</span>
-            <h3 class="fs-xl text-primary m-0 fw-bold">
+            <h3 class="fs-md text-primary m-0 fw-bold">
               🏖️ Leave Requests — {{ getDoctorName(selectedDcForLeave.doctorId) }}
             </h3>
           </div>
@@ -337,7 +332,7 @@
                     <span class="leave-type-badge">{{ leave.leaveType.replace('_', ' ') }}</span>
                     <span class="leave-status-badge" [class.status-approved]="leave.isApproved === true"
                       [class.status-pending]="leave.isApproved === false || leave.isApproved === null">
-                      {{ leave.isApproved ? '✅ Approved' : '⏳ Pending' }}
+                      {{ leave.isApproved ? 'Approved' : 'Pending' }}
                     </span>
                   </div>
 
@@ -351,7 +346,7 @@
                     <span class="text-muted fs-xs">📝 {{ leave.notes }}</span>
                   </div>
 
-                  <div class="fs-xs text-muted mt-1">
+                  <div class="fs-xs text-muted mt-2">
                     Submitted: {{ leave.createdAt | date:'medium' }}
                   </div>
                 </div>
@@ -360,17 +355,17 @@
                 <div class="leave-actions d-flex flex-col gap-2">
                   <button *ngIf="leave.isApproved !== true" class="btn btn-success btn-sm leave-action-btn"
                     (click)="approveLeave(leave)" title="Approve this leave request">
-                    ✅ Approve
+                    Approve
                   </button>
 
                   <button *ngIf="leave.isApproved === true" class="btn btn-outline btn-sm leave-action-btn"
                     (click)="rejectLeave(leave)" title="Revoke approval for this leave">
-                    ↩️ Revoke
+                    Revoke
                   </button>
 
                   <button *ngIf="leave.isApproved !== true" class="btn btn-outline btn-danger btn-sm leave-action-btn"
                     (click)="rejectLeave(leave)" title="Reject this leave request">
-                    ❌ Reject
+                    Reject
                   </button>
                 </div>
               </div>
@@ -378,7 +373,7 @@
           </div>
 
           <!-- Empty State -->
-          <div *ngIf="doctorLeaves.length === 0" class="empty-state-card py-5">
+          <div *ngIf="doctorLeaves.length === 0" class="empty-state-card py-4">
             <div class="empty-state-icon">🏖️</div>
             <p class="empty-state-text">No leave requests found for this doctor.</p>
             <small class="text-muted d-block mt-1">Leave requests submitted by the doctor will appear here.</small>

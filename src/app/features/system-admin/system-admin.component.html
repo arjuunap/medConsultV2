@@ -1,6 +1,6 @@
 <div class="system-admin-container">
   
-  <!-- KPI Summary Cards Grid (Stripe / Linear style data-forward header) -->
+  <!-- KPI Summary Cards Grid -->
   <div class="kpi-summary-grid">
     <div class="kpi-card">
       <div class="kpi-label">Registered Patients</div>
@@ -35,22 +35,22 @@
     </div>
   </div>
 
-  <!-- Data Table Panel Card -->
+  <!-- Data Panel Card -->
   <div class="data-table-card">
     
-    <!-- Table Header Toolbar -->
+    <!-- Header Toolbar -->
     <div class="table-header-toolbar">
       <div>
         <h2 class="fs-lg text-primary m-0 fw-bold">Platform Reference Registries</h2>
-        <p class="text-muted fs-xs m-0 mt-1">Stripe-style data management for core system parameters</p>
+        <p class="text-muted fs-xs m-0 mt-1">Manage system configurations, regional coverage, specialties, and doctor roster registries</p>
       </div>
 
-      <button class="btn btn-primary" (click)="handleAddClick()">
+      <button class="btn btn-primary shadow-sm" (click)="handleAddClick()">
         + Add Entry
       </button>
     </div>
 
-    <!-- Stripe / Linear style Tab Bar -->
+    <!-- Admin Navigation Tab Bar -->
     <div class="admin-tab-bar px-4 pt-3 mb-0">
       <button class="admin-tab-btn" [class.active]="activeTab==='cities'" (click)="switchTab('cities')">🇸🇦 Cities &amp; Regions</button>
       <button class="admin-tab-btn" [class.active]="activeTab==='specialties'" (click)="switchTab('specialties')">🩺 Medical Specialties</button>
@@ -61,262 +61,239 @@
 
     <!-- ==================== CITIES & LOCALITIES ==================== -->
     <div *ngIf="activeTab === 'cities'">
-      <!-- View: List of Cities -->
-      <div *ngIf="!selectedCityForLocalities" class="table-wrapper">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>City Name (EN) ↕</th>
-              <th>City Name (AR) ↕</th>
-              <th>Country Code ↕</th>
-              <th>Sort Index ↕</th>
-              <th class="text-end">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let c of cities" class="data-row">
-              <td class="fw-bold text-primary">{{ c.nameEn }}</td>
-              <td>{{ c.nameAr }}</td>
-              <td><code>{{ c.countryCode }}</code></td>
-              <td><span class="badge badge-info">#{{ c.sortOrder }}</span></td>
-              <td>
-                <div class="row-actions-group">
-                  <button class="icon-action-btn" title="View Localities" (click)="viewLocalities(c)">📍</button>
-                  <button class="icon-action-btn" title="Edit City" (click)="openEditModal('city', c)">✏️</button>
-                  <button class="icon-action-btn delete-btn" title="Delete City" (click)="deleteItem(c.cityId)">🗑️</button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <!-- View: Cities Grid -->
+      <div *ngIf="!selectedCityForLocalities" class="admin-grid-layout">
+        <div *ngFor="let c of cities" class="ref-card">
+          <div class="ref-card-header">
+            <div>
+              <span class="badge badge-teal fs-xs mb-2">#{{ c.sortOrder }}</span>
+              <h3 class="ref-card-title">{{ c.nameEn }}</h3>
+              <div class="ref-card-subtitle">{{ c.nameAr }}</div>
+            </div>
+            <code class="text-muted font-bold fs-xs bg-light px-2 py-1 rounded">{{ c.countryCode }}</code>
+          </div>
+          <div class="ref-card-body">
+            <span class="text-muted fs-xs">Saudi Arabia Coverage</span>
+          </div>
+          <div class="ref-card-footer">
+            <button class="btn btn-outline btn-sm shadow-sm" (click)="viewLocalities(c)">📍 Manage Localities</button>
+            <div class="row-actions-group">
+              <button class="icon-action-btn" title="Edit City" (click)="openEditModal('city', c)">✏️</button>
+              <button class="icon-action-btn delete-btn" title="Delete City" (click)="deleteItem(c.cityId)">🗑️</button>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="cities.length === 0" class="admin-empty-state">
+          No cities found in system database.
+        </div>
       </div>
 
-      <!-- View: List of Localities for a City -->
-      <div *ngIf="selectedCityForLocalities" class="table-wrapper">
-        <div class="p-3 bg-light border-bottom d-flex align-center gap-2">
-          <button class="btn btn-outline btn-sm" (click)="backToCities()">← Back to Cities</button>
-          <span class="fw-bold text-primary fs-sm">Localities in {{ selectedCityForLocalities.nameEn }}</span>
+      <!-- View: Localities in a City -->
+      <div *ngIf="selectedCityForLocalities">
+        <div class="drilldown-header">
+          <button class="btn btn-outline btn-sm shadow-sm" (click)="backToCities()">← Back to Cities</button>
+          <span class="drilldown-title">📍 Localities in {{ selectedCityForLocalities.nameEn }}</span>
         </div>
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Locality Name (EN) ↕</th>
-              <th>Locality Name (AR) ↕</th>
-              <th>Postal Code ↕</th>
-              <th class="text-end">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let loc of localities" class="data-row">
-              <td class="fw-bold text-primary">{{ loc.nameEn }}</td>
-              <td>{{ loc.nameAr }}</td>
-              <td><code>{{ loc.postalCode || 'N/A' }}</code></td>
-              <td>
-                <div class="row-actions-group">
-                  <button class="icon-action-btn" title="Edit Locality" (click)="openEditModal('locality', loc)">✏️</button>
-                  <button class="icon-action-btn delete-btn" title="Delete Locality" (click)="deleteItem(loc.localityId)">🗑️</button>
-                </div>
-              </td>
-            </tr>
-            <tr *ngIf="localities.length === 0">
-              <td colspan="4" class="text-center p-4 text-muted">No localities found for this city.</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="admin-grid-layout">
+          <div *ngFor="let loc of localities" class="ref-card">
+            <div class="ref-card-header">
+              <div>
+                <h3 class="ref-card-title">{{ loc.nameEn }}</h3>
+                <div class="ref-card-subtitle">{{ loc.nameAr }}</div>
+              </div>
+            </div>
+            <div class="ref-card-body">
+              <span class="text-muted fs-xs">Postal Code: <code>{{ loc.postalCode || 'N/A' }}</code></span>
+            </div>
+            <div class="ref-card-footer justify-end">
+              <div class="row-actions-group">
+                <button class="icon-action-btn" title="Edit Locality" (click)="openEditModal('locality', loc)">✏️</button>
+                <button class="icon-action-btn delete-btn" title="Delete Locality" (click)="deleteItem(loc.localityId)">🗑️</button>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="localities.length === 0" class="admin-empty-state">
+            No localities found for this city.
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- ==================== SPECIALTIES & SUBSPECIALTIES ==================== -->
     <div *ngIf="activeTab === 'specialties'">
-      <div *ngIf="!selectedSpecialtyForSub" class="table-wrapper">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Code ↕</th>
-              <th>Specialty (EN) ↕</th>
-              <th>Category ↕</th>
-              <th class="text-end">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let s of specialties" class="data-row">
-              <td><code>{{ s.code }}</code></td>
-              <td class="fw-bold text-primary">{{ s.nameEn }}</td>
-              <td><span class="badge badge-teal">{{ s.category }}</span></td>
-              <td>
-                <div class="row-actions-group">
-                  <button class="icon-action-btn" title="View SubSpecialties" (click)="viewSubSpecialties(s)">🎓</button>
-                  <button class="icon-action-btn" title="Edit Specialty" (click)="openEditModal('specialty', s)">✏️</button>
-                  <button class="icon-action-btn delete-btn" title="Delete Specialty" (click)="deleteItem(s.specialtyId)">🗑️</button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <!-- View: Specialties Grid -->
+      <div *ngIf="!selectedSpecialtyForSub" class="admin-grid-layout">
+        <div *ngFor="let s of specialties" class="ref-card">
+          <div class="ref-card-header">
+            <div>
+              <span class="specialty-cat-badge mb-2">{{ s.category }}</span>
+              <h3 class="ref-card-title">{{ s.nameEn }}</h3>
+            </div>
+            <code class="text-muted font-bold fs-xs bg-light px-2 py-1 rounded">{{ s.code }}</code>
+          </div>
+          <div class="ref-card-body">
+            <span class="text-muted fs-xs">Medical specialty registry</span>
+          </div>
+          <div class="ref-card-footer">
+            <button class="btn btn-outline btn-sm shadow-sm" (click)="viewSubSpecialties(s)">🎓 Manage SubSpecialties</button>
+            <div class="row-actions-group">
+              <button class="icon-action-btn" title="Edit Specialty" (click)="openEditModal('specialty', s)">✏️</button>
+              <button class="icon-action-btn delete-btn" title="Delete Specialty" (click)="deleteItem(s.specialtyId)">🗑️</button>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="specialties.length === 0" class="admin-empty-state">
+          No specialties found.
+        </div>
       </div>
 
-      <div *ngIf="selectedSpecialtyForSub" class="table-wrapper">
-        <div class="p-3 bg-light border-bottom d-flex align-center gap-2">
-          <button class="btn btn-outline btn-sm" (click)="backToSpecialties()">← Back to Specialties</button>
-          <span class="fw-bold text-primary fs-sm">SubSpecialties in {{ selectedSpecialtyForSub.nameEn }}</span>
+      <!-- View: SubSpecialties -->
+      <div *ngIf="selectedSpecialtyForSub">
+        <div class="drilldown-header">
+          <button class="btn btn-outline btn-sm shadow-sm" (click)="backToSpecialties()">← Back to Specialties</button>
+          <span class="drilldown-title">🎓 SubSpecialties in {{ selectedSpecialtyForSub.nameEn }}</span>
         </div>
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>SubSpecialty Name (EN) ↕</th>
-              <th>SubSpecialty Name (AR) ↕</th>
-              <th>Status ↕</th>
-              <th class="text-end">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let sub of subSpecialties" class="data-row">
-              <td class="fw-bold text-primary">{{ sub.nameEn }}</td>
-              <td>{{ sub.nameAr }}</td>
-              <td>
-                <span [class.status-badge-active]="sub.isActive" [class.status-badge-inactive]="!sub.isActive">
-                  {{ sub.isActive ? 'Active' : 'Inactive' }}
-                </span>
-              </td>
-              <td>
-                <div class="row-actions-group">
-                  <button class="icon-action-btn" title="Edit SubSpecialty" (click)="openEditModal('subSpecialty', sub)">✏️</button>
-                  <button class="icon-action-btn delete-btn" title="Delete SubSpecialty" (click)="deleteItem(sub.subSpecialtyId)">🗑️</button>
-                </div>
-              </td>
-            </tr>
-            <tr *ngIf="subSpecialties.length === 0">
-              <td colspan="4" class="text-center p-4 text-muted">No sub-specialties found.</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="admin-grid-layout">
+          <div *ngFor="let sub of subSpecialties" class="ref-card">
+            <div class="ref-card-header">
+              <div>
+                <h3 class="ref-card-title">{{ sub.nameEn }}</h3>
+                <div class="ref-card-subtitle">{{ sub.nameAr }}</div>
+              </div>
+              <span [class.status-badge-active]="sub.isActive" [class.status-badge-inactive]="!sub.isActive">
+                {{ sub.isActive ? 'Active' : 'Inactive' }}
+              </span>
+            </div>
+            <div class="ref-card-body">
+              <span class="text-muted fs-xs">Medical sub-specialty branch</span>
+            </div>
+            <div class="ref-card-footer justify-end">
+              <div class="row-actions-group">
+                <button class="icon-action-btn" title="Edit SubSpecialty" (click)="openEditModal('subSpecialty', sub)">✏️</button>
+                <button class="icon-action-btn delete-btn" title="Delete SubSpecialty" (click)="deleteItem(sub.subSpecialtyId)">🗑️</button>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="subSpecialties.length === 0" class="admin-empty-state">
+            No sub-specialties found.
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- ==================== LANGUAGES ==================== -->
-    <div *ngIf="activeTab === 'languages'" class="table-wrapper">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Language Name (EN) ↕</th>
-            <th>Language Name (AR) ↕</th>
-            <th>ISO Code ↕</th>
-            <th class="text-end">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let l of languages" class="data-row">
-            <td class="fw-bold text-primary">{{ l.nameEn }}</td>
-            <td>{{ l.nameAr }}</td>
-            <td><code>{{ l.code }}</code></td>
-            <td>
-              <div class="row-actions-group">
-                <button class="icon-action-btn" title="Edit Language" (click)="openEditModal('language', l)">✏️</button>
-                <button class="icon-action-btn delete-btn" title="Delete Language" (click)="deleteItem(l.languageId)">🗑️</button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div *ngIf="activeTab === 'languages'" class="admin-grid-layout">
+      <div *ngFor="let l of languages" class="lang-badge-card">
+        <div class="lang-info">
+          <span class="lang-name-en">{{ l.nameEn }}</span>
+          <span class="lang-name-ar">{{ l.nameAr }}</span>
+        </div>
+        <div class="d-flex align-center gap-3">
+          <span class="lang-iso-code">{{ l.code }}</span>
+          <div class="row-actions-group">
+            <button class="icon-action-btn" title="Edit Language" (click)="openEditModal('language', l)">✏️</button>
+            <button class="icon-action-btn delete-btn" title="Delete Language" (click)="deleteItem(l.languageId)">🗑️</button>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="languages.length === 0" class="admin-empty-state">
+        No languages configured.
+      </div>
     </div>
 
     <!-- ==================== INSURANCES ==================== -->
-    <div *ngIf="activeTab === 'insurances'" class="table-wrapper">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Provider Name (EN) ↕</th>
-            <th>Provider Name (AR) ↕</th>
-            <th>Logo Attachment</th>
-            <th>Status ↕</th>
-            <th class="text-end">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let ins of insurances" class="data-row">
-            <td class="fw-bold text-primary">{{ ins.nameEn }}</td>
-            <td>{{ ins.nameAr }}</td>
-            <td>
-              <div *ngIf="ins.logoUrl; else noLogo" class="d-flex align-center gap-2">
-                <div class="d-flex align-center justify-center bg-light border rounded p-1" style="width: 44px; height: 32px; overflow: hidden;">
-                  <img 
-                    [src]="ins.logoUrl | apiUrl" 
-                    alt="{{ ins.nameEn }} logo" 
-                    style="max-height: 100%; max-width: 100%; object-fit: contain;"
-                    (error)="$any($event.target).style.display='none'; $any($event.target).nextElementSibling.style.display='inline-block'">
-                  <span style="display: none; font-size: 14px;">🛡️</span>
-                </div>
-              </div>
-              <ng-template #noLogo>
-                <span class="text-muted fs-xs">No Logo</span>
-              </ng-template>
-            </td>
-            <td>
-              <span [class.status-badge-active]="ins.isActive" [class.status-badge-inactive]="!ins.isActive">
-                {{ ins.isActive ? 'Active' : 'Inactive' }}
-              </span>
-            </td>
-            <td>
-              <div class="row-actions-group">
-                <button class="icon-action-btn" title="Edit Insurance" (click)="openEditModal('insurance', ins)">✏️</button>
-                <button class="icon-action-btn delete-btn" title="Delete Insurance" (click)="deleteItem(ins.providerId)">🗑️</button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div *ngIf="activeTab === 'insurances'" class="admin-grid-layout">
+      <div *ngFor="let ins of insurances" class="insurance-card">
+        <div class="insurance-card-header-block">
+          <div class="insurance-logo-container">
+            <img 
+              *ngIf="ins.logoUrl"
+              [src]="ins.logoUrl | apiUrl" 
+              alt="{{ ins.nameEn }} logo" 
+              class="insurance-logo-img"
+              (error)="$any($event.target).style.display='none'; $any($event.target).nextElementSibling.style.display='inline-block'">
+            <span style="display: none;" class="insurance-fallback-logo">🛡️</span>
+            <span *ngIf="!ins.logoUrl" class="insurance-fallback-logo">🛡️</span>
+          </div>
+          <div class="insurance-info-block">
+            <div class="insurance-title">{{ ins.nameEn }}</div>
+            <div class="insurance-title-ar">{{ ins.nameAr }}</div>
+          </div>
+        </div>
+
+        <div class="insurance-meta-row">
+          <span [class.status-badge-active]="ins.isActive" [class.status-badge-inactive]="!ins.isActive">
+            {{ ins.isActive ? 'Active' : 'Inactive' }}
+          </span>
+          <div class="row-actions-group">
+            <button class="icon-action-btn" title="Edit Insurance" (click)="openEditModal('insurance', ins)">✏️</button>
+            <button class="icon-action-btn delete-btn" title="Delete Insurance" (click)="deleteItem(ins.providerId)">🗑️</button>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="insurances.length === 0" class="admin-empty-state">
+        No insurance panels registered.
+      </div>
     </div>
 
     <!-- ==================== DOCTORS ==================== -->
-    <div *ngIf="activeTab === 'doctors'" class="table-wrapper">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Doctor Name ↕</th>
-            <th>Title ↕</th>
-            <th>MOH Reg # ↕</th>
-            <th>Experience ↕</th>
-            <th>Consultation Fee ↕</th>
-            <th>Rating ↕</th>
-            <th>Status ↕</th>
-            <th class="text-end">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let doc of doctors" class="data-row">
-            <td class="fw-bold text-primary">{{ doc.title || 'Dr' }}. {{ doc.fullName }}</td>
-            <td><span class="badge badge-info">{{ doc.title || 'DR' }}</span></td>
-            <td><code>{{ doc.mohRegistrationNumber || 'N/A' }}</code></td>
-            <td>{{ doc.experienceYears || 0 }} yrs</td>
-            <td class="fw-bold text-success">SAR {{ doc.consultationFeeSar || 0 }}</td>
-            <td>⭐ {{ doc.overallRating || 0 }} ({{ doc.reviewCount || 0 }})</td>
-            <td>
-              <span [class.status-badge-active]="doc.isActive" [class.status-badge-inactive]="!doc.isActive">
-                {{ doc.isActive ? 'Active' : 'Inactive' }}
-              </span>
-            </td>
-            <td>
-              <div class="row-actions-group">
-                <button class="icon-action-btn" title="Edit Doctor" (click)="openEditModal('doctor', doc)">✏️</button>
-                <button 
-                  class="btn btn-xs" 
-                  [class.btn-outline]="doc.isActive" 
-                  [class.btn-success]="!doc.isActive" 
-                  (click)="toggleDoctorStatus(doc)">
-                  {{ doc.isActive ? '🚫 Deactivate' : '✅ Activate' }}
-                </button>
-                <button class="icon-action-btn delete-btn" title="Delete Doctor" (click)="deleteItem(doc.doctorId)">🗑️</button>
+    <div *ngIf="activeTab === 'doctors'" class="doctor-roster-grid">
+      <div *ngFor="let doc of doctors" class="doctor-profile-card">
+        <div>
+          <div class="doctor-profile-head">
+            <div class="doctor-avatar">
+              {{ (doc.fullName.substring(0, 2) || 'DR').toUpperCase() }}
+            </div>
+            <div class="doctor-head-info">
+              <div class="doctor-name">{{ doc.title || 'Dr.' }} {{ doc.fullName }}</div>
+              <span class="doctor-title-tag">{{ doc.title || 'DR' }}</span>
+              <div class="doctor-rating-row">
+                ⭐ <span class="text-dark">{{ doc.overallRating || 0 }}</span> <span class="text-muted fw-normal">({{ doc.reviewCount || 0 }} reviews)</span>
               </div>
-            </td>
-          </tr>
-          <tr *ngIf="doctors.length === 0">
-            <td colspan="8" class="text-center p-4 text-muted">No doctors found in system database.</td>
-          </tr>
-        </tbody>
-      </table>
+            </div>
+          </div>
+
+          <div class="doctor-details-grid">
+            <div class="doctor-detail-cell">
+              <span class="doctor-detail-label">MOH ID</span>
+              <span class="doctor-detail-value font-mono"><code>{{ doc.mohRegistrationNumber || 'N/A' }}</code></span>
+            </div>
+            <div class="doctor-detail-cell">
+              <span class="doctor-detail-label">Experience</span>
+              <span class="doctor-detail-value">{{ doc.experienceYears || 0 }} Years</span>
+            </div>
+            <div class="doctor-detail-cell">
+              <span class="doctor-detail-label">Fee</span>
+              <span class="doctor-detail-value fee">SAR {{ doc.consultationFeeSar || 150 }}</span>
+            </div>
+            <div class="doctor-detail-cell">
+              <span class="doctor-detail-label">Verified status</span>
+              <span class="status-badge-active fs-xs py-0 d-inline-block text-center" style="max-width: max-content;">Verified</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="doctor-actions-row">
+          <button 
+            class="btn-toggle-status" 
+            [class.active]="doc.isActive" 
+            [class.inactive]="!doc.isActive"
+            (click)="toggleDoctorStatus(doc)">
+            {{ doc.isActive ? '🚫 Deactivate' : '✅ Activate' }}
+          </button>
+          
+          <div class="row-actions-group">
+            <button class="icon-action-btn" title="Edit Doctor" (click)="openEditModal('doctor', doc)">✏️</button>
+            <button class="icon-action-btn delete-btn" title="Delete Doctor" (click)="deleteItem(doc.doctorId)">🗑️</button>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="doctors.length === 0" class="admin-empty-state">
+        No doctors found in system database.
+      </div>
     </div>
 
-    <!-- Table Footer Pagination Bar -->
+    <!-- Footer Toolbar -->
     <div class="table-footer-pagination">
       <span>Showing active items on record</span>
       <span class="badge badge-teal">Stripe/Linear Admin Spec</span>
@@ -328,8 +305,8 @@
 <!-- ==================== MODALS (Using --shadow-lg, --radius-md) ==================== -->
 
 <!-- City Modal -->
-<div *ngIf="activeModal === 'city'" class="modal-backdrop">
-  <div class="modal-content admin-modal-card">
+<div *ngIf="activeModal === 'city'" class="modal-backdrop" (click)="closeModal()">
+  <div class="modal-content admin-modal-card" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h3 class="fs-xl text-primary m-0 fw-bold">
         {{ isEdit ? 'Edit City' : 'Add City' }}
@@ -364,8 +341,8 @@
 </div>
 
 <!-- Locality Modal -->
-<div *ngIf="activeModal === 'locality'" class="modal-backdrop">
-  <div class="modal-content admin-modal-card">
+<div *ngIf="activeModal === 'locality'" class="modal-backdrop" (click)="closeModal()">
+  <div class="modal-content admin-modal-card" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h3 class="fs-xl text-primary m-0 fw-bold">
         {{ isEdit ? 'Edit Locality' : 'Add Locality' }}
@@ -396,8 +373,8 @@
 </div>
 
 <!-- Specialty Modal -->
-<div *ngIf="activeModal === 'specialty'" class="modal-backdrop">
-  <div class="modal-content admin-modal-card">
+<div *ngIf="activeModal === 'specialty'" class="modal-backdrop" (click)="closeModal()">
+  <div class="modal-content admin-modal-card" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h3 class="fs-xl text-primary m-0 fw-bold">{{ isEdit ? 'Edit Specialty' : 'Add Specialty' }}</h3>
       <button class="btn-close" (click)="closeModal()">&times;</button>
@@ -440,8 +417,8 @@
 </div>
 
 <!-- SubSpecialty Modal -->
-<div *ngIf="activeModal === 'subSpecialty'" class="modal-backdrop">
-  <div class="modal-content admin-modal-card">
+<div *ngIf="activeModal === 'subSpecialty'" class="modal-backdrop" (click)="closeModal()">
+  <div class="modal-content admin-modal-card" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h3 class="fs-xl text-primary m-0 fw-bold">{{ isEdit ? 'Edit SubSpecialty' : 'Add SubSpecialty' }}</h3>
       <button class="btn-close" (click)="closeModal()">&times;</button>
@@ -466,8 +443,8 @@
 </div>
 
 <!-- Language Modal -->
-<div *ngIf="activeModal === 'language'" class="modal-backdrop">
-  <div class="modal-content admin-modal-card">
+<div *ngIf="activeModal === 'language'" class="modal-backdrop" (click)="closeModal()">
+  <div class="modal-content admin-modal-card" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h3 class="fs-xl text-primary m-0 fw-bold">{{ isEdit ? 'Edit Language' : 'Add Language' }}</h3>
       <button class="btn-close" (click)="closeModal()">&times;</button>
@@ -496,8 +473,8 @@
 </div>
 
 <!-- Insurance Modal -->
-<div *ngIf="activeModal === 'insurance'" class="modal-backdrop">
-  <div class="modal-content admin-modal-card">
+<div *ngIf="activeModal === 'insurance'" class="modal-backdrop" (click)="closeModal()">
+  <div class="modal-content admin-modal-card" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h3 class="fs-xl text-primary m-0 fw-bold">{{ isEdit ? 'Edit Insurance Panel' : 'Add Insurance Panel' }}</h3>
       <button class="btn-close" (click)="closeModal()">&times;</button>
@@ -531,8 +508,8 @@
 </div>
 
 <!-- Modal 7: Add/Edit Doctor -->
-<div *ngIf="activeModal === 'doctor'" class="modal-backdrop">
-  <div class="modal-content" style="max-width: 520px;">
+<div *ngIf="activeModal === 'doctor'" class="modal-backdrop" (click)="closeModal()">
+  <div class="modal-content" style="max-width: 520px;" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h3 class="fs-xl text-primary m-0 fw-bold">{{ isEdit ? 'Edit Doctor Record' : 'Register New Doctor' }}</h3>
       <button class="btn-close" (click)="closeModal()">&times;</button>

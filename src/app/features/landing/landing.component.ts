@@ -35,6 +35,16 @@ export interface DoctorCardDisplay {
   avatarColor: string;
   consultationFeeSar?: number;
   branchName?: string;
+  branchId?: string;
+}
+
+export interface BranchCardDisplay {
+  branchId: string;
+  branchNameEn: string;
+  branchNameAr: string;
+  addressLine1?: string;
+  isPrimary?: boolean;
+  doctors: DoctorCardDisplay[];
 }
 
 export interface ClinicCardDisplay extends ClinicResponseDto {
@@ -49,6 +59,7 @@ export interface ClinicCardDisplay extends ClinicResponseDto {
   insuranceProviderIds?: string[];
   languageIds?: string[];
   doctors?: DoctorCardDisplay[];
+  branchesWithDocs?: BranchCardDisplay[];
   expanded?: boolean;
 }
 
@@ -57,7 +68,15 @@ import { CustomSelectComponent } from '../../shared/components/custom-select/cus
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterLink, CustomSelectComponent, TranslatePipe, TranslateObjPipe],
+  imports: [
+    CommonModule, 
+    ReactiveFormsModule, 
+    FormsModule, 
+    RouterLink, 
+    CustomSelectComponent, 
+    TranslatePipe, 
+    TranslateObjPipe
+  ],
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.css']
 })
@@ -356,10 +375,62 @@ export class LandingComponent implements OnInit {
             avatarBg: bgColors[dIdx % bgColors.length],
             avatarColor: textColors[dIdx % textColors.length],
             consultationFeeSar: link.consultationFeeSar || doc.consultationFeeSar || 150,
-            branchName: branchName || this.languageService.translate('Main Branch', 'الفرع الرئيسي')
+            branchName: branchName || this.languageService.translate('Main Branch', 'الفرع الرئيسي'),
+            branchId: link.branchId
           });
         });
       });
+    }
+
+    const branchesWithDocs: BranchCardDisplay[] = [];
+
+    if (detail?.branches && detail.branches.length > 0) {
+      detail.branches.forEach(branch => {
+        const doctorsInBranch = matchedDoctors.filter(d => d.branchId === branch.branchId);
+        if (doctorsInBranch.length > 0) {
+          branchesWithDocs.push({
+            branchId: branch.branchId,
+            branchNameEn: branch.branchNameEn,
+            branchNameAr: branch.branchNameAr,
+            addressLine1: branch.addressLine1,
+            isPrimary: branch.isPrimary,
+            doctors: doctorsInBranch
+          });
+        }
+      });
+
+      // Just in case there are matched doctors that didn't map to any of the branches (e.g. branchId mismatch),
+      // we can add them to the primary branch or the first branch.
+      const mappedBranchIds = detail.branches.map(b => b.branchId);
+      const orphanDoctors = matchedDoctors.filter(d => !d.branchId || !mappedBranchIds.includes(d.branchId));
+      if (orphanDoctors.length > 0) {
+        const primaryBranchObj = branchesWithDocs.find(b => b.isPrimary) || branchesWithDocs[0];
+        if (primaryBranchObj) {
+          primaryBranchObj.doctors.push(...orphanDoctors);
+        } else {
+          // If no branches exist in branchesWithDocs (meaning no branch had doctors yet), create one for the primary branch
+          const primaryBranch = detail.branches.find(b => b.isPrimary) || detail.branches[0];
+          branchesWithDocs.push({
+            branchId: primaryBranch.branchId,
+            branchNameEn: primaryBranch.branchNameEn,
+            branchNameAr: primaryBranch.branchNameAr,
+            addressLine1: primaryBranch.addressLine1,
+            isPrimary: primaryBranch.isPrimary,
+            doctors: orphanDoctors
+          });
+        }
+      }
+    } else {
+      // Fallback if no branches at all
+      if (matchedDoctors.length > 0) {
+        branchesWithDocs.push({
+          branchId: 'fallback',
+          branchNameEn: 'Main Branch',
+          branchNameAr: 'الفرع الرئيسي',
+          isPrimary: true,
+          doctors: matchedDoctors
+        });
+      }
     }
 
     return {
@@ -377,8 +448,19 @@ export class LandingComponent implements OnInit {
       languageIds,
       specialtyIds,
       doctors: matchedDoctors,
+      branchesWithDocs,
       expanded: false
     };
+  }
+
+  isDoctorVisible(clinic: ClinicCardDisplay, doc: DoctorCardDisplay): boolean {
+    if (!clinic.doctors) return false;
+    const index = clinic.doctors.findIndex(d => d.doctorId === doc.doctorId && d.dcId === doc.dcId);
+    return index >= 0 && index < 3;
+  }
+
+  hasVisibleDoctors(clinic: ClinicCardDisplay, branch: BranchCardDisplay): boolean {
+    return branch.doctors.some(doc => this.isDoctorVisible(clinic, doc));
   }
 
   // ── Filter Engine ────────────────────────────────────────────────

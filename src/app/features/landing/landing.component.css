@@ -4,18 +4,80 @@
 
 /* ── NAV ── */
 .nav {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 var(--px); height: 68px; position: relative; z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--px);
+  height: 68px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(10, 31, 21, 0.85); /* Glassmorphic blurry header */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-sizing: border-box;
 }
 .nav-logo { display: flex; align-items: center; gap: 9px; font-size: 19px; font-weight: 700; color: var(--white); }
 .logo-icon { width: 34px; height: 34px; background: var(--teal); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
 .nav-links { display: flex; align-items: center; gap: 28px; font-size: 14px; color: rgba(255,255,255,.75); font-weight: 500; }
 .nav-links a { color: rgba(255,255,255,.75); transition: color .15s; }
 .nav-links a:hover { color: var(--white); }
-.nav-actions { display: flex; align-items: center; gap: 10px; }
+.nav-actions {
+  display: flex !important;
+  align-items: center !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  gap: 8px !important;
+}
+
+.lang-landing-btn {
+  background-color: transparent !important;
+  background: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  color: var(--white) !important;
+  height: 32px !important;
+  line-height: 1 !important;
+  padding: 0 10px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  white-space: nowrap !important;
+}
+
+.lang-landing-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.nav-actions .btn {
+  height: 32px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 12px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+  line-height: 1 !important;
+}
 
 /* ── HERO ── */
-.hero { background: linear-gradient(135deg,#0A1F15 0%,#0F3024 45%,#0D4535 100%); position: relative; overflow: hidden; }
+.hero {
+  background: linear-gradient(135deg,#0A1F15 0%,#0F3024 45%,#0D4535 100%);
+  position: relative;
+  overflow: hidden;
+  padding-top: 68px; /* Offset for fixed nav header */
+}
 .hero-inner { position: relative; z-index: 2; padding: clamp(36px,6vw,68px) var(--px) clamp(48px,7vw,80px); }
 .hero-text { max-width: 680px; margin: 0 auto; text-align: center; }
 .hero-eyebrow { margin-bottom: 18px; }
@@ -358,4 +420,145 @@
 
 .btn-disabled.blocked {
   text-decoration: line-through;
+}
+
+/* ==========================================================================
+   MINIMALISTIC RESPONSIVE OVERRIDES (MOBILE & TABLET FRIENDLY UX)
+   ========================================================================== */
+
+.mobile-only {
+  display: none !important;
+}
+
+@media (max-width: 992px) {
+  .nav-links {
+    display: none !important; /* Remove static links on mobile to prevent clutter */
+  }
+}
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+  .mobile-only {
+    display: inline !important;
+  }
+
+  .nav {
+    height: 60px;
+    padding: 0 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap !important;
+  }
+  
+  .nav-logo {
+    font-size: 16px;
+    gap: 6px;
+  }
+  
+  .logo-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+    border-radius: 6px;
+  }
+  
+  .nav-actions {
+    width: auto !important;
+    justify-content: flex-end !important;
+    gap: 6px !important;
+  }
+  
+  /* Hide register buttons from mobile nav header to prevent crowding */
+  .nav-register-btn {
+    display: none !important;
+  }
+
+  /* Horizontal Filter Bar: Swipeable Scrollbar Row */
+  .horizontal-filter-bar {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 8px;
+    padding: 8px 12px;
+    margin-bottom: 16px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .horizontal-filter-bar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .filter-item {
+    flex-shrink: 0;
+  }
+
+  /* Clinic card structure for mobile */
+  .clinic-card-head {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .clinic-logo {
+    width: 48px;
+    height: 48px;
+    font-size: 1.2rem;
+  }
+
+  .clinic-actions {
+    align-items: center;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+    margin-top: 4px;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .clinic-dist {
+    text-align: left;
+  }
+
+  .clinic-actions .btn {
+    width: auto;
+    padding: 8px 16px;
+  }
+
+  /* Doctors Mini Roster list on Mobile */
+  .docs-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+  }
+
+  .doc-mini {
+    padding: 12px;
+  }
+
+  /* Hero adjustments */
+  .hero-search {
+    padding: 12px;
+    border-radius: var(--radius-md);
+  }
+}
+
+@media (max-width: 576px) {
+  .modern-modal {
+    max-width: 100% !important;
+    max-height: 92vh !important;
+    border-radius: var(--radius-md);
+    overflow-y: auto;
+  }
+  
+  .modal-backdrop-blur {
+    padding: 12px;
+  }
 }

@@ -53,35 +53,35 @@ export class LayoutComponent {
     switch (user.role) {
       case UserRole.PATIENT:
         return [
-          { label: 'Home Dashboard', route: '/patient/home', icon: '📊' },
-          { label: 'Browse Doctors', route: '/patient/doctors', icon: '👨‍⚕️' },
-          { label: 'Clinics & Branches', route: '/patient/clinics', icon: '🏥' },
-          { label: 'My Appointments', route: '/patient/appointments', icon: '🗓️' },
-          { label: 'Medical Records (EMR)', route: '/patient/emr', icon: '📁' },
-          { label: 'Book Appointment', route: '/patient/book-appointment', icon: '📅' },
-          { label: 'Tele-Consultations', route: '/patient/consultations', icon: '💬' },
-          { label: 'My General Profile', route: '/patient/profile', icon: '👤' },
-          { label: 'Personal Health Metrics', route: '/patient/health-profile', icon: '❤️' }
+          { label: 'Home Dashboard', route: '/patient/home', icon: 'dashboard' },
+          { label: 'Browse Doctors', route: '/patient/doctors', icon: 'doctor' },
+          { label: 'Clinics & Branches', route: '/patient/clinics', icon: 'clinic' },
+          { label: 'Book Appointment', route: '/patient/book-appointment', icon: 'book' },
+          { label: 'My Appointments', route: '/patient/appointments', icon: 'appointments' },
+          { label: 'Tele-Consultations', route: '/patient/consultations', icon: 'consultations' },
+          { label: 'Medical Records (EMR)', route: '/patient/emr', icon: 'records' },
+          { label: 'Personal Health Metrics', route: '/patient/health-profile', icon: 'health' },
+          { label: 'My General Profile', route: '/patient/profile', icon: 'profile' }
         ];
       case UserRole.DOCTOR:
         return [
-          { label: 'Professional Profile', route: '/doctor/profile', icon: '👨‍⚕️' },
-          { label: 'Consultation Schedule', route: '/doctor/schedule', icon: '📅' },
-          { label: 'Appointments History', route: '/doctor/appointments-history', icon: '📜' },
-          { label: 'My Consultations', route: '/doctor/consultations', icon: '🩺' },
-          { label: 'Case Rooms', route: '/doctor/caserooms', icon: '🔬' },
-          { label: 'Patient EMR Records', route: '/doctor/patients', icon: '📋' },
-          { label: 'Availability & Slots', route: '/doctor/availability', icon: '⏰' }
+          { label: 'Professional Profile', route: '/doctor/profile', icon: 'doctor' },
+          { label: 'Consultation Schedule', route: '/doctor/schedule', icon: 'book' },
+          { label: 'Appointments History', route: '/doctor/appointments-history', icon: 'records' },
+          { label: 'My Consultations', route: '/doctor/consultations', icon: 'consultations' },
+          { label: 'Case Rooms', route: '/doctor/caserooms', icon: 'consultations' },
+          { label: 'Patient EMR Records', route: '/doctor/patients', icon: 'records' },
+          { label: 'Availability & Slots', route: '/doctor/availability', icon: 'health' }
         ];
       case UserRole.CLINIC_ADMIN:
         return [
-          { label: 'Dashboard', route: '/clinic-admin/dashboard', icon: '📊' },
-          { label: 'My Clinics', route: '/clinic-admin/clinics', icon: '🏥' },
-          { label: 'Doctors Roster', route: '/clinic-admin/doctors', icon: '👨‍⚕️' }
+          { label: 'Dashboard', route: '/clinic-admin/dashboard', icon: 'dashboard' },
+          { label: 'My Clinics', route: '/clinic-admin/clinics', icon: 'clinic' },
+          { label: 'Doctors Roster', route: '/clinic-admin/doctors', icon: 'doctor' }
         ];
       case UserRole.SYSTEM_ADMIN:
         return [
-          { label: 'Global Configurations', route: '/system-admin', icon: '⚙️' }
+          { label: 'Global Configurations', route: '/system-admin', icon: 'settings' }
         ];
       default:
         return [];

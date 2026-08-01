@@ -1,276 +1,117 @@
+/* Doctor Roster Portal Container */
 .doctors-roster-container {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  animation: fadeIn 0.2s ease-out;
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Header Banner - Stripe Style */
 .page-header-banner {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
   gap: 16px;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border);
   padding-bottom: 20px;
+  margin-bottom: 8px;
+}
+
+/* Filter & Search Bar Card - Minimalist */
+.filter-bar-card {
+  background-color: var(--white);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  padding: 16px 20px;
+  box-shadow: var(--shadow-sm);
   margin-bottom: 20px;
 }
 
-.filter-bar-card {
-  background-color: var(--white);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
-  padding: 20px;
-  box-shadow: var(--shadow-sm);
-  margin-bottom: 24px;
-}
-
+/* Doctors Placement Card Grid */
 .doctors-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: 16px;
 }
 
-@media (max-width: 768px) {
-  .doctors-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .filter-bar-card {
-    padding: 16px;
-  }
-
-  .doctor-card-item {
-    padding: 16px;
-  }
-}
-
+/* Minimal Doctor Placement Card */
 .doctor-card-item {
   background-color: var(--white);
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-  border-left: 5px solid var(--teal);
-  padding: 20px;
+  border: 1px solid var(--border);
+  padding: 18px;
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  transition: var(--transition);
+  transition: all 0.15s ease;
+  min-height: 220px;
 }
 
 .doctor-card-item:hover {
-  box-shadow: var(--shadow-md);
+  border-color: var(--teal-m);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
 }
 
 .doctor-avatar-circle {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
   background-color: var(--teal-l);
-  color: var(--teal);
+  color: var(--teal-d);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.4rem;
+  font-size: 1.1rem;
   font-weight: 700;
   flex-shrink: 0;
+  border: 1px solid var(--teal);
 }
 
-/* Availability Status Dots */
+/* Status Indicator Dots */
 .status-dot-lg {
-  width: 12px;
-  height: 12px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   display: inline-block;
   margin-right: 6px;
 }
 
 .dot-success {
-  background-color: var(--success);
-  box-shadow: 0 0 6px rgba(34, 197, 94, 0.4);
-}
-
-.dot-warning {
-  background-color: var(--warning);
-  box-shadow: 0 0 6px rgba(234, 179, 8, 0.4);
+  background-color: var(--green);
 }
 
 .dot-disabled {
   background-color: var(--t4);
 }
 
-/* Empty State Container */
+/* Empty States */
 .empty-state-card {
   text-align: center;
-  padding: 44px 20px;
+  padding: 40px 20px;
   background-color: var(--off);
   border-radius: var(--radius-md);
-  border: 1.5px dashed var(--border-color);
-  color: var(--t4);
+  border: 1px dashed var(--border);
+  color: var(--t3);
+  font-size: 0.88rem;
 }
 
 .empty-state-icon {
-  font-size: 2.8rem;
-  margin-bottom: 8px;
-  opacity: 0.6;
+  font-size: 2.2rem;
+  margin-bottom: 6px;
+  opacity: 0.7;
 }
 
 .empty-state-text {
-  color: var(--t4);
-  font-size: 0.95rem;
+  color: var(--t2);
+  font-weight: 600;
   margin: 0;
-}
-
-@media (max-width: 768px) {
-  .doctors-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ── Leave Button ─────────────────────────────────────── */
-.leave-btn {
-  border-color: var(--warning, #f59e0b);
-  color: var(--warning, #f59e0b);
-}
-
-.leave-btn:hover {
-  background-color: #fffbeb;
-  border-color: var(--warning, #f59e0b);
-  color: var(--warning, #f59e0b);
-}
-
-/* ── Leave Summary Banner ─────────────────────────────── */
-.leave-summary-banner {
-  display: flex;
-  gap: 16px;
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  border: 1px solid #bae6fd;
-  border-radius: var(--radius-md);
-  padding: 16px 20px;
-  flex-wrap: wrap;
-}
-
-.leave-stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-  min-width: 80px;
-}
-
-.leave-stat-num {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--primary, #0ea5e9);
-  line-height: 1;
-}
-
-.leave-stat-label {
-  font-size: 0.72rem;
-  font-weight: 500;
-  color: var(--t4, #94a3b8);
-  margin-top: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-/* ── Leave Request Card ───────────────────────────────── */
-.leave-request-card {
-  background: var(--white, #fff);
-  border: 1.5px solid var(--border-color, #e2e8f0);
-  border-radius: var(--radius-md);
-  padding: 16px;
-  transition: var(--transition);
-}
-
-.leave-approved {
-  border-left: 4px solid var(--success, #22c55e);
-  background: #f0fdf4;
-}
-
-.leave-pending {
-  border-left: 4px solid var(--warning, #f59e0b);
-  background: #fffdf7;
-}
-
-.leave-request-card:hover {
-  box-shadow: var(--shadow-sm);
-}
-
-/* ── Leave Type Badge ─────────────────────────────────── */
-.leave-type-badge {
-  display: inline-block;
-  background: #e0f2fe;
-  color: #0369a1;
-  border-radius: 20px;
-  padding: 2px 10px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-/* ── Leave Status Badge ───────────────────────────────── */
-.leave-status-badge {
-  display: inline-block;
-  border-radius: 20px;
-  padding: 2px 10px;
-  font-size: 0.7rem;
-  font-weight: 600;
-}
-
-.status-approved {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.status-pending {
-  background: #fef9c3;
-  color: #854d0e;
-}
-
-/* ── Leave Date Range ─────────────────────────────────── */
-.leave-date-range {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-dark, #1e293b);
-}
-
-.leave-date-arrow {
-  color: var(--t4, #94a3b8);
-}
-
-/* ── Leave Notes ──────────────────────────────────────── */
-.leave-notes {
-  background: #f8fafc;
-  border-radius: var(--radius-sm);
-  padding: 6px 10px;
-  border-left: 3px solid var(--border-color, #e2e8f0);
-}
-
-/* ── Leave Action Buttons ─────────────────────────────── */
-.leave-actions {
-  flex-shrink: 0;
-}
-
-.leave-action-btn {
-  min-width: 90px;
-  text-align: center;
-  font-size: 0.75rem;
-  padding: 6px 12px;
-}
-
-.btn-success {
-  background-color: var(--success, #22c55e);
-  color: #fff;
-  border: none;
-}
-
-.btn-success:hover {
-  background-color: #16a34a;
-  color: #fff;
 }
 
 /* Doctor card actions grid layout */
@@ -282,12 +123,238 @@
 }
 
 .doctor-card-actions-grid .btn {
-  font-size: 0.82rem;
-  padding: 8px 6px;
+  font-size: 0.78rem;
+  padding: 6px 4px;
   font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-sm);
+  border-radius: 4px;
   width: 100%;
+}
+
+/* Leaves buttons */
+.leave-btn {
+  border-color: var(--warning, #f59e0b) !important;
+  color: var(--warning, #f59e0b) !important;
+}
+
+.leave-btn:hover {
+  background-color: #fffbeb !important;
+}
+
+/* Leaves summary stats */
+.leave-summary-banner {
+  display: flex;
+  gap: 12px;
+  background-color: var(--off);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.leave-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  min-width: 70px;
+}
+
+.leave-stat-num {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--teal);
+  line-height: 1.1;
+}
+
+.leave-stat-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--t3);
+  margin-top: 2px;
+  text-transform: uppercase;
+}
+
+/* Leave request cards */
+.leave-request-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  transition: all 0.15s ease;
+}
+
+.leave-approved {
+  border-left: 3px solid var(--green);
+  background: var(--green-l);
+}
+
+.leave-pending {
+  border-left: 3px solid var(--warning);
+  background: #fffdf7;
+}
+
+.leave-type-badge {
+  display: inline-block;
+  background: var(--blue-l);
+  color: var(--blue-d);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.leave-status-badge {
+  display: inline-block;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+.status-approved {
+  background: var(--green-l);
+  color: var(--green-d);
+}
+
+.status-pending {
+  background: #fef9c3;
+  color: #854d0e;
+}
+
+.leave-date-range {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-top: 4px;
+}
+
+.leave-notes {
+  background: var(--white);
+  border-radius: 4px;
+  padding: 6px 10px;
+  border-left: 2px solid var(--border);
+  margin-top: 6px;
+  font-size: 0.78rem;
+}
+
+.leave-action-btn {
+  font-size: 0.72rem;
+  padding: 4px 8px;
+}
+
+/* Modals Backdrops and Cards */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.modal-content {
+  background: var(--white);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  width: 100%;
+  animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes modalPop {
+  from { opacity: 0; transform: translateY(8px) scale(0.99); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--border);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--white);
+}
+
+.modal-header h3 {
+  color: var(--text);
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.btn-close {
+  background: transparent;
+  border: none;
+  color: var(--t3);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-close:hover {
+  background-color: var(--off2);
+  color: var(--text);
+}
+
+.modal-body {
+  padding: 20px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.modal-footer {
+  padding: 12px 20px;
+  background-color: var(--off);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Responsive configurations */
+@media (max-width: 768px) {
+  .doctors-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-bar-card {
+    padding: 14px;
+  }
+
+  .filter-bar-card .d-flex {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+
+  .filter-bar-card form {
+    min-width: 100% !important;
+  }
+
+  .filter-bar-card .d-flex.align-center.gap-3 {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
 }
