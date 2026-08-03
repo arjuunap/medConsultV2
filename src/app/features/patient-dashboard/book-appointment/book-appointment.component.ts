@@ -302,14 +302,14 @@ export class BookAppointmentComponent implements OnInit {
 
   getDoctorDisplayName(d: any): string {
     if (!d) return '';
-    const title = d.title || 'Dr';
-    const name = d.fullName || '';
-    const nameLower = name.toLowerCase().trim();
-    if (nameLower.startsWith('dr') || nameLower.startsWith('prof') || nameLower.startsWith('consultant')) {
+    const name = (d.fullName || '').trim();
+    const nameLower = name.toLowerCase();
+    if (nameLower.startsWith('dr') || nameLower.startsWith('doctor') || nameLower.startsWith('prof') || nameLower.startsWith('consultant') || nameLower.startsWith('specialist') || nameLower.startsWith('د.')) {
       return name;
     }
-    const translatedTitle = this.langService.translate(title, title === 'DR' ? 'د.' : 'طبيب');
-    return `${translatedTitle ? translatedTitle + '. ' : ''}${name}`;
+    const isAr = this.langService.isArabic;
+    const prefix = isAr ? 'د.' : 'Dr.';
+    return `${prefix} ${name}`;
   }
 
   getInitials(name: string): string {

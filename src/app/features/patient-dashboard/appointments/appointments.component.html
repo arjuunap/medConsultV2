@@ -89,7 +89,7 @@
                   {{ getInitials(app.doctorName) }}
                 </div>
                 <div>
-                  <div class="fw-bold text-dark">Dr. {{ app.doctorName }}</div>
+                  <div class="fw-bold text-dark">{{ getDoctorDisplayName(app.doctorName) }}</div>
                   <div class="fs-xs text-muted">{{ app.department }}</div>
                 </div>
               </div>
@@ -139,7 +139,7 @@
             <div class="patient-avatar-sm" [style.background]="getAvatarBg(app.doctorName)" [style.color]="getAvatarColor(app.doctorName)">
               {{ getInitials(app.doctorName) }}
             </div>
-            <div class="fw-bold text-dark">Dr. {{ app.doctorName }}</div>
+            <div class="fw-bold text-dark">{{ getDoctorDisplayName(app.doctorName) }}</div>
           </div>
           <span class="status-badge-sm" [class.status-completed]="app.status === 'COMPLETED'" 
             [class.status-confirmed]="app.status === 'CONFIRMED'" 
@@ -185,89 +185,139 @@
 
 <!-- DETAILS DIALOG MODAL -->
 <div class="modal-overlay" *ngIf="showDetailsModal && selectedAppointment" (click)="closeDetails()">
-  <div class="modal-box" (click)="$event.stopPropagation()">
-    <div class="modal-header d-flex justify-between align-center p-3">
-      <h3 class="m-0 fw-bold">🗓️ {{ 'Appointment Specification Details' | translate }}</h3>
-      <button class="btn-close-modal" (click)="closeDetails()">✕</button>
+  <div class="modal-box spec-details-modal" (click)="$event.stopPropagation()">
+    <!-- Hero Header Banner -->
+    <div class="spec-modal-header d-flex justify-between align-center p-4">
+      <div class="d-flex align-center gap-3">
+        <div class="spec-icon-badge">🗓️</div>
+        <div>
+          <h3 class="m-0 fw-bold text-white fs-5">{{ 'Appointment Specification Details' | translate }}</h3>
+          <p class="m-0 text-white-80 fs-xs mt-1">ID: #{{ selectedAppointment.appointmentId ? selectedAppointment.appointmentId.substring(0, 8) : 'APT-REF' }}</p>
+        </div>
+      </div>
+      <div class="d-flex align-center gap-2">
+        <span class="status-badge header-status" [class.status-completed]="selectedAppointment.status === 'COMPLETED'" 
+          [class.status-confirmed]="selectedAppointment.status === 'CONFIRMED'" 
+          [class.status-scheduled]="selectedAppointment.status === 'SCHEDULED'" 
+          [class.status-cancelled]="selectedAppointment.status === 'CANCELLED' || selectedAppointment.status === 'NO_SHOW'">
+          {{ selectedAppointment.status | translate }}
+        </span>
+        <button class="btn-close-modal-white" (click)="closeDetails()">✕</button>
+      </div>
     </div>
 
     <div class="modal-body p-4">
-      <div class="details-grid" [class.no-sidebar]="!hasActions(selectedAppointment)">
-        <!-- Main details -->
-        <div class="details-main">
-          <div class="d-flex align-center gap-3 mb-4">
-            <div class="patient-avatar-lg" [style.background]="getAvatarBg(selectedAppointment.doctorName)" [style.color]="getAvatarColor(selectedAppointment.doctorName)">
-              {{ getInitials(selectedAppointment.doctorName) }}
+      <!-- Doctor Profile Hero Card -->
+      <div class="doctor-spec-card p-3 mb-4 d-flex align-center justify-between flex-wrap gap-3">
+        <div class="d-flex align-center gap-3">
+          <div class="patient-avatar-lg spec-avatar" [style.background]="getAvatarBg(selectedAppointment.doctorName)" [style.color]="getAvatarColor(selectedAppointment.doctorName)">
+            {{ getInitials(selectedAppointment.doctorName) }}
+          </div>
+          <div>
+            <div class="d-flex align-center gap-2">
+              <h4 class="m-0 text-dark fw-bold spec-doctor-name">{{ getDoctorDisplayName(selectedAppointment.doctorName) }}</h4>
+              <span class="moh-badge-mini" title="MOH Verified">✓ MOH</span>
             </div>
-            <div>
-              <h4 class="m-0 text-dark fw-bold" style="font-size:1.2rem;">Dr. {{ selectedAppointment.doctorName }}</h4>
-              <div class="fs-sm text-muted">{{ selectedAppointment.department }}</div>
-            </div>
-          </div>
-
-          <div class="info-row">
-            <div class="info-label">📅 {{ 'Scheduled Date & Time' | translate }}</div>
-            <div class="info-value">{{ selectedAppointment.scheduledDate | date:'fullDate' }} &#64; {{ selectedAppointment.startTime.substring(0,5) }} ({{ selectedAppointment.durationMinutes }} {{ 'minutes duration' | translate }})</div>
-          </div>
-
-          <div class="info-row">
-            <div class="info-label">🏢 {{ 'Clinical Assignment' | translate }}</div>
-            <div class="info-value">
-              <strong>{{ languageService.isArabic ? selectedAppointment.clinicNameAr : selectedAppointment.clinicNameEn }}</strong>
-              <div class="fs-xs text-muted">{{ languageService.isArabic ? selectedAppointment.branchNameAr : selectedAppointment.branchNameEn }}</div>
-            </div>
-          </div>
-
-          <div class="info-row">
-            <div class="info-label">🩺 {{ 'Consultation Details' | translate }}</div>
-            <div class="info-value">
-              <span class="mode-badge" [class.mode-clinic]="selectedAppointment.sessionType === 'IN_CLINIC'" [class.mode-video]="selectedAppointment.sessionType === 'VIDEO_CALL'">
-                {{ selectedAppointment.sessionType === 'IN_CLINIC' ? ('🏢 In-Clinic Visit' | translate) : ('💻 Video Call Session' | translate) }}
-              </span>
-              <span class="type-badge ms-2">{{ selectedAppointment.appointmentType?.replace('_', ' ') }}</span>
-            </div>
-          </div>
-
-          <div class="info-row">
-            <div class="info-label">💰 {{ 'Consultation Fee' | translate }}</div>
-            <div class="info-value">{{ selectedAppointment.consultationFeeSar }} SAR</div>
-          </div>
-
-          <div class="info-row">
-            <div class="info-label">📝 {{ 'Reason for Consultation' | translate }}</div>
-            <div class="info-value reason-box">{{ selectedAppointment.reason || ('No specific reasons provided by the patient.' | translate) }}</div>
-          </div>
-
-          <div class="info-row" *ngIf="selectedAppointment.status === 'CANCELLED'">
-            <div class="info-label text-danger">⚠️ {{ 'Cancellation Information' | translate }}</div>
-            <div class="info-value reason-box text-danger border-danger-l">
-              <strong>{{ 'Status:' | translate }}</strong> {{ selectedAppointment.status }}
-              <div class="mt-1"><strong>{{ 'Reason' | translate }}:</strong> {{ selectedAppointment.cancelReason || ('No reason provided' | translate) }}</div>
-            </div>
+            <div class="fs-sm text-teal fw-medium mt-1">🩺 {{ selectedAppointment.department || ('General Specialist' | translate) }}</div>
           </div>
         </div>
+        <div class="fee-pill-card">
+          <span class="fee-label">{{ 'Consultation Fee' | translate }}</span>
+          <span class="fee-amount">{{ selectedAppointment.consultationFeeSar || 150 }} <small>SAR</small></span>
+        </div>
+      </div>
 
-        <!-- Shortcuts / Quick Actions -->
-        <div class="details-sidebar" *ngIf="hasActions(selectedAppointment)">
-          <h5 class="fw-bold mb-3">{{ 'Quick Shortcuts' | translate }}</h5>
+      <div class="details-grid" [class.no-sidebar]="!hasActions(selectedAppointment)">
+        <!-- Main Details Section -->
+        <div class="details-main">
+          
+          <div class="spec-cards-grid">
+            <!-- Scheduled Date & Time Card -->
+            <div class="spec-info-card">
+              <div class="card-icon-wrapper teal-icon">📅</div>
+              <div class="card-content">
+                <div class="info-label">{{ 'Scheduled Date & Time' | translate }}</div>
+                <div class="info-value-main">{{ selectedAppointment.scheduledDate | date:'fullDate' }}</div>
+                <div class="info-value-sub">
+                  ⏰ <strong>{{ selectedAppointment.startTime.substring(0,5) }}</strong> 
+                  <span class="duration-badge">⏱️ {{ selectedAppointment.durationMinutes }} {{ 'min' | translate }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Clinical Assignment Card -->
+            <div class="spec-info-card">
+              <div class="card-icon-wrapper blue-icon">🏢</div>
+              <div class="card-content">
+                <div class="info-label">{{ 'Clinical Assignment' | translate }}</div>
+                <div class="info-value-main">{{ languageService.isArabic ? selectedAppointment.clinicNameAr : selectedAppointment.clinicNameEn }}</div>
+                <div class="info-value-sub text-muted">📍 {{ languageService.isArabic ? selectedAppointment.branchNameAr : selectedAppointment.branchNameEn }}</div>
+              </div>
+            </div>
+
+            <!-- Consultation Details Card -->
+            <div class="spec-info-card">
+              <div class="card-icon-wrapper purple-icon">🩺</div>
+              <div class="card-content">
+                <div class="info-label">{{ 'Consultation Details' | translate }}</div>
+                <div class="d-flex align-center gap-2 flex-wrap mt-1">
+                  <span class="mode-badge" [class.mode-clinic]="selectedAppointment.sessionType === 'IN_CLINIC'" [class.mode-video]="selectedAppointment.sessionType === 'VIDEO_CALL'">
+                    {{ selectedAppointment.sessionType === 'IN_CLINIC' ? ('🏢 In-Clinic Visit' | translate) : ('💻 Video Call Session' | translate) }}
+                  </span>
+                  <span class="type-badge">{{ selectedAppointment.appointmentType?.replace('_', ' ') | translate }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reason for Consultation Box -->
+          <div class="spec-reason-card mt-3">
+            <div class="reason-card-header d-flex align-center gap-2">
+              <span>📝</span>
+              <span class="info-label m-0">{{ 'Reason for Consultation' | translate }}</span>
+            </div>
+            <div class="reason-card-body">
+              "{{ selectedAppointment.reason || ('No specific reasons provided by the patient.' | translate) }}"
+            </div>
+          </div>
+
+          <!-- Cancellation Information Alert Card (if cancelled) -->
+          <div class="cancellation-alert-card mt-3" *ngIf="selectedAppointment.status === 'CANCELLED' || selectedAppointment.status === 'NO_SHOW'">
+            <div class="cancellation-alert-header d-flex align-center gap-2 text-danger">
+              <span>⚠️</span>
+              <strong class="m-0">{{ 'Cancellation Information' | translate }}</strong>
+            </div>
+            <div class="cancellation-alert-body mt-2">
+              <div class="fs-sm"><strong>{{ 'Status:' | translate }}</strong> <span class="text-danger fw-bold">{{ selectedAppointment.status | translate }}</span></div>
+              <div class="fs-sm mt-1"><strong>{{ 'Reason' | translate }}:</strong> {{ selectedAppointment.cancelReason || ('No reason provided' | translate) }}</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Shortcuts / Quick Actions Sidebar -->
+        <div class="details-sidebar spec-sidebar" *ngIf="hasActions(selectedAppointment)">
+          <h5 class="fw-bold mb-3 d-flex align-center gap-2">
+            <span>⚡</span> {{ 'Quick Shortcuts' | translate }}
+          </h5>
           <div class="shortcut-buttons d-flex flex-column gap-2">
             <!-- Review -->
-            <button class="btn btn-teal btn-sm w-100" *ngIf="selectedAppointment.status === 'COMPLETED'" (click)="openReviewModal(selectedAppointment)">
+            <button class="btn btn-teal btn-sm w-100 shadow-sm" *ngIf="selectedAppointment.status === 'COMPLETED'" (click)="openReviewModal(selectedAppointment)">
               ⭐ {{ 'Write Review' | translate }}
             </button>
             
             <!-- Reschedule / Cancel -->
             <ng-container *ngIf="selectedAppointment.status === 'SCHEDULED' || selectedAppointment.status === 'CONFIRMED'">
-              <button class="btn btn-teal btn-sm w-100" (click)="openReschedule(selectedAppointment)">
+              <button class="btn btn-teal btn-sm w-100 shadow-sm" (click)="openReschedule(selectedAppointment)">
                 🔄 {{ 'Reschedule Visit' | translate }}
               </button>
-              <button class="btn btn-outline btn-danger btn-sm w-100" (click)="openCancel(selectedAppointment)">
+              <button class="btn btn-outline-danger btn-sm w-100" (click)="openCancel(selectedAppointment)">
                 ✕ {{ 'Cancel Appointment' | translate }}
               </button>
             </ng-container>
 
             <!-- Go to Chat -->
-            <button class="btn btn-primary btn-sm w-100" *ngIf="selectedAppointment.consultationId && (selectedAppointment.status === 'CONFIRMED' || selectedAppointment.status === 'COMPLETED')" (click)="goToChat(selectedAppointment.consultationId)">
+            <button class="btn btn-primary btn-sm w-100 shadow-sm" *ngIf="selectedAppointment.consultationId && (selectedAppointment.status === 'CONFIRMED' || selectedAppointment.status === 'COMPLETED')" (click)="goToChat(selectedAppointment.consultationId)">
               💬 {{ 'Go to Chat Session' | translate }}
             </button>
           </div>
@@ -275,8 +325,8 @@
       </div>
     </div>
 
-    <div class="modal-footer p-3 d-flex justify-end">
-      <button class="btn btn-outline" (click)="closeDetails()">{{ 'Close Details' | translate }}</button>
+    <div class="modal-footer p-3 d-flex justify-end bg-light">
+      <button class="btn btn-outline btn-sm px-4" (click)="closeDetails()">{{ 'Close Details' | translate }}</button>
     </div>
   </div>
 </div>
@@ -292,7 +342,7 @@
     <div class="modal-body">
       <p class="warning-alert-text">
         {{ 'Are you sure you want to cancel your consultation with' | translate }}
-        <strong>Dr. {{ selectedAppointment.doctorName }}</strong>?
+        <strong>{{ getDoctorDisplayName(selectedAppointment.doctorName) }}</strong>?
         {{ 'This action cannot be undone once confirmed.' | translate }}
       </p>
 
@@ -333,7 +383,7 @@
       <div class="reschedule-context-strip">
         <span class="icon">👨‍⚕️</span>
         <div>
-          <h4>Dr. {{ selectedAppointment.doctorName }}</h4>
+          <h4>{{ getDoctorDisplayName(selectedAppointment.doctorName) }}</h4>
           <p>{{ languageService.isArabic ? selectedAppointment.clinicNameAr : selectedAppointment.clinicNameEn }}</p>
         </div>
       </div>
@@ -419,7 +469,7 @@
       <form [formGroup]="reviewForm">
         <!-- Doctor Review section -->
         <div class="review-section" style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #E5E7EB;">
-          <h4 style="color: var(--teal); font-weight: 700; margin-bottom: 12px; font-size: 1.1rem;">👨‍⚕️ {{ 'Doctor Review' | translate }}: Dr. {{ selectedAppointment.doctorName }}</h4>
+          <h4 style="color: var(--teal); font-weight: 700; margin-bottom: 12px; font-size: 1.1rem;">👨‍⚕️ {{ 'Doctor Review' | translate }}: {{ getDoctorDisplayName(selectedAppointment.doctorName) }}</h4>
           
           <div class="form-group mb-3">
             <label class="form-label" style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 6px;">{{ 'Overall Doctor Rating (1-5) *' | translate }}</label>

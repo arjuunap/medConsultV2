@@ -424,4 +424,16 @@ export class ClinicExplorerComponent implements OnInit {
       }
     });
   }
+
+  getDoctorDisplayName(d: DoctorResponseDto | null | undefined): string {
+    if (!d) return '';
+    const name = (d.fullName || '').trim();
+    const nameLower = name.toLowerCase();
+    if (nameLower.startsWith('dr') || nameLower.startsWith('doctor') || nameLower.startsWith('prof') || nameLower.startsWith('consultant') || nameLower.startsWith('specialist') || nameLower.startsWith('د.')) {
+      return name;
+    }
+    const isAr = this.languageService.isArabic;
+    const prefix = isAr ? 'د.' : 'Dr.';
+    return `${prefix} ${name}`;
+  }
 }

@@ -282,32 +282,40 @@
   padding: 1.25rem;
 }
 
-.modal-backdrop-overlay {
+.modal-backdrop-overlay,
+.modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1200;
   padding: 1.25rem;
+  box-sizing: border-box;
 }
 
+.modal-card,
 .modal-box {
   background: white;
   border-radius: 16px;
   width: 100%;
-  max-width: 750px;
+  max-width: 580px;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   animation: modalEnter 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
+  position: relative;
+}
+
+.modal-box {
+  max-width: 750px;
 }
 
 @keyframes modalEnter {
@@ -871,4 +879,225 @@
     flex-direction: column;
     gap: 0.25rem;
   }
+}
+
+/* Spec Modal Enhancements */
+.spec-details-modal {
+  max-width: 780px !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(229, 231, 235, 0.8);
+}
+
+.spec-modal-header {
+  background: linear-gradient(135deg, #063C31 0%, #0F766E 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.spec-icon-badge {
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  backdrop-filter: blur(4px);
+}
+
+.text-white-80 {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.btn-close-modal-white {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-close-modal-white:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+.header-status {
+  padding: 0.35rem 0.85rem !important;
+  font-size: 0.8rem !important;
+  border-radius: 20px !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Doctor Spec Card */
+.doctor-spec-card {
+  background: linear-gradient(135deg, #F0FDF4 0%, #E6F4F1 100%);
+  border: 1px solid #CCFBF1;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(15, 118, 110, 0.06);
+}
+
+.spec-avatar {
+  width: 56px !important;
+  height: 56px !important;
+  font-size: 1.3rem !important;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  border: 2px solid white;
+}
+
+.spec-doctor-name {
+  font-size: 1.15rem;
+}
+
+.moh-badge-mini {
+  background: #059669;
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+
+.fee-pill-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  background: white;
+  padding: 0.45rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid #D1D5DB;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+}
+
+.fee-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #6B7280;
+  text-transform: uppercase;
+}
+
+.fee-amount {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0F766E;
+}
+
+/* Spec Info Cards Grid */
+.spec-cards-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.spec-info-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.spec-info-card:hover {
+  border-color: #CBD5E1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  background: #FFFFFF;
+}
+
+.card-icon-wrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.teal-icon { background: #E6F4F1; color: #0F766E; }
+.blue-icon { background: #EFF6FF; color: #1D4ED8; }
+.purple-icon { background: #F3E8FF; color: #7E22CE; }
+
+.card-content {
+  flex: 1;
+}
+
+.info-value-main {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1F2937;
+  margin-top: 0.15rem;
+}
+
+.info-value-sub {
+  font-size: 0.82rem;
+  color: #4B5563;
+  margin-top: 0.25rem;
+}
+
+.duration-badge {
+  background: #E5E7EB;
+  color: #374151;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-left: 0.4rem;
+}
+
+/* Reason Card */
+.spec-reason-card {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-left: 4px solid #0F766E;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.reason-card-body {
+  font-size: 0.92rem;
+  color: #334155;
+  font-style: italic;
+  line-height: 1.5;
+  margin-top: 0.4rem;
+}
+
+/* Cancellation Alert Card */
+.cancellation-alert-card {
+  background: #FEF2F2;
+  border: 1px solid #FEE2E2;
+  border-left: 4px solid #DC2626;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+/* Sidebar Spec Styling */
+.spec-sidebar {
+  background: #F8FAFC !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 14px !important;
+  padding: 1.25rem !important;
+}
+
+.btn-outline-danger {
+  background: transparent;
+  color: #DC2626;
+  border: 1px solid #FCA5A5;
+}
+
+.btn-outline-danger:hover {
+  background: #FEF2F2;
+  border-color: #DC2626;
 }

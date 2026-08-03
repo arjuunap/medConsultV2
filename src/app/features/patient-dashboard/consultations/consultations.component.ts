@@ -10,11 +10,13 @@ import { ConsultationResponseDto, ConsultationMessageResponseDto, MessageType } 
 import { AuthService } from '../../../core/services/auth.service';
 import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
 import { ReviewService } from '../../../core/services/review.service';
+import { LanguageService } from '../../../core/services/language.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-consultations',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, CustomSelectComponent],
+  imports: [CommonModule, ReactiveFormsModule, CustomSelectComponent, TranslatePipe],
   templateUrl: './consultations.component.html',
   styleUrls: ['./consultations.component.css']
 })
@@ -26,6 +28,7 @@ export class ConsultationsComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   public authService = inject(AuthService);
   private reviewService = inject(ReviewService);
+  public languageService = inject(LanguageService);
 
   // Review Modal State
   public showReviewModal = false;
@@ -47,9 +50,21 @@ export class ConsultationsComponent implements OnInit, OnDestroy {
 
   get doctorSelectOptions() {
     return this.doctors.map(d => ({
-      label: `Dr. ${d.fullName} (${d.specialtyName || 'Specialist'})`,
+      label: `${this.getDoctorDisplayName(d.fullName)} (${d.specialtyName || (this.languageService.isArabic ? 'طبيب أخصائي' : 'Specialist')})`,
       value: d.doctorId
     }));
+  }
+
+  getDoctorDisplayName(name: string | null | undefined): string {
+    if (!name) return '';
+    const trimmed = name.trim();
+    const nameLower = trimmed.toLowerCase();
+    if (nameLower.startsWith('dr') || nameLower.startsWith('doctor') || nameLower.startsWith('prof') || nameLower.startsWith('consultant') || nameLower.startsWith('specialist') || nameLower.startsWith('د.')) {
+      return trimmed;
+    }
+    const isAr = this.languageService.isArabic;
+    const prefix = isAr ? 'د.' : 'Dr.';
+    return `${prefix} ${trimmed}`;
   }
 
   // Forms

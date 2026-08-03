@@ -1,19 +1,19 @@
 <div class="consultations-container">
   <div class="page-header-row">
-    <h2 class="page-title">💬 Tele-Consultations</h2>
-    <button class="btn btn-primary" (click)="openBookModal()">+ Book New Consultation</button>
+    <h2 class="page-title">💬 {{ 'Tele-Consultations' | translate }}</h2>
+    <button class="btn btn-primary" (click)="openBookModal()">+ {{ 'Book New Consultation' | translate }}</button>
   </div>
 
   <div class="consultations-layout">
     <!-- Consultations List Card (Item cards, not dense tables!) -->
     <div class="consultations-sidebar-card">
       <div class="card-header-bar">
-        <h3>My Consultations ({{ consultations.length }})</h3>
+        <h3>{{ 'My Consultations' | translate }} ({{ consultations.length }})</h3>
       </div>
       
       <div class="consultations-list">
         <div *ngIf="consultations.length === 0" class="p-4 text-center text-muted fs-sm">
-          No consultation records found.
+          {{ 'No consultation records found.' | translate }}
         </div>
         
         <div *ngFor="let c of consultations" 
@@ -21,15 +21,15 @@
              [class.active]="selectedConsultation?.consultationId === c.consultationId"
              (click)="selectConsultation(c)">
           <div class="d-flex justify-between align-center mb-1">
-            <strong class="doc-name-title">Dr. {{ c.doctorName }}</strong>
+            <strong class="doc-name-title">{{ getDoctorDisplayName(c.doctorName) }}</strong>
             <span [ngClass]="{
               'status-badge-open': c.status === 'OPEN',
               'status-badge-progress': c.status === 'IN_PROGRESS',
               'status-badge-closed': c.status === 'CLOSED'
-            }">{{ c.status }}</span>
+            }">{{ c.status | translate }}</span>
           </div>
           <div class="consultation-subject">{{ c.subject }}</div>
-          <div class="fs-xs text-muted mt-2">Opened: {{ c.openedAt | date:'mediumDate' }}</div>
+          <div class="fs-xs text-muted mt-2">{{ 'Opened:' | translate }} {{ c.openedAt | date:'mediumDate' }}</div>
         </div>
       </div>
     </div>
@@ -39,14 +39,14 @@
       <div class="card-header d-flex justify-between align-center border-bottom p-4">
         <div>
           <h3 class="fs-lg text-primary m-0">{{ selectedConsultation.subject }}</h3>
-          <div class="fs-sm text-muted mt-1">Consulting with Dr. {{ selectedConsultation.doctorName }}</div>
+          <div class="fs-sm text-muted mt-1">{{ 'Consulting with' | translate }} {{ getDoctorDisplayName(selectedConsultation.doctorName) }}</div>
         </div>
-        <span class="badge badge-danger" *ngIf="selectedConsultation.isUrgent">Urgent</span>
+        <span class="badge badge-danger" *ngIf="selectedConsultation.isUrgent">{{ 'Urgent' | translate }}</span>
       </div>
       
       <div id="messages-container" class="chat-messages-viewport">
         <div *ngIf="messages.length === 0" class="text-center text-muted py-5">
-          No messages yet. Send a message below to start the conversation.
+          {{ 'No messages yet. Send a message below to start the conversation.' | translate }}
         </div>
         
         <div *ngFor="let msg of messages" 
@@ -73,20 +73,20 @@
 
       <div class="chat-input-bar" *ngIf="selectedConsultation.status !== 'CLOSED'">
         <form [formGroup]="messageForm" (ngSubmit)="sendMessage()" class="d-flex gap-2 m-0">
-          <input type="text" formControlName="body" class="form-control m-0 flex-1" placeholder="Type your message here...">
-          <button type="submit" class="btn btn-primary" [disabled]="messageForm.invalid">Send</button>
+          <input type="text" formControlName="body" class="form-control m-0 flex-1" [placeholder]="'Type your message here...' | translate">
+          <button type="submit" class="btn btn-primary" [disabled]="messageForm.invalid">{{ 'Send' | translate }}</button>
         </form>
       </div>
       <div class="chat-input-bar d-flex justify-between align-center bg-light p-3" *ngIf="selectedConsultation.status === 'CLOSED'">
-        <span class="text-muted fs-sm">This consultation has been closed.</span>
+        <span class="text-muted fs-sm">{{ 'This consultation has been closed.' | translate }}</span>
         <button class="btn btn-teal btn-sm" (click)="openReviewModal(selectedConsultation)" style="background-color: var(--teal); color: white; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
-          ⭐ Rate Consultation
+          ⭐ {{ 'Rate Consultation' | translate }}
         </button>
       </div>
     </div>
     
     <div class="chat-main-card d-flex align-center justify-center text-muted" *ngIf="!selectedConsultation">
-      Select a consultation from the left list to view messages.
+      {{ 'Select a consultation from the left list to view messages.' | translate }}
     </div>
   </div>
 </div>
@@ -95,44 +95,44 @@
 <div class="modal-backdrop" *ngIf="showBookModal">
   <div class="modal-content">
     <div class="modal-header">
-      <h3 class="fs-xl text-primary m-0">Book a Tele-Consultation</h3>
+      <h3 class="fs-xl text-primary m-0">{{ 'Book a Tele-Consultation' | translate }}</h3>
       <button class="btn-close" (click)="closeBookModal()">&times;</button>
     </div>
     <div class="modal-body">
       <form [formGroup]="bookForm" (ngSubmit)="submitBookConsultation()">
         
         <div class="form-group mb-3">
-          <label class="form-label">Select Doctor</label>
+          <label class="form-label">{{ 'Select Doctor' | translate }}</label>
           <app-custom-select 
             formControlName="doctorId" 
             [options]="doctorSelectOptions" 
             bindLabel="label" 
             bindValue="value" 
             [searchable]="true" 
-            placeholder="-- Choose a Doctor --">
+            [placeholder]="'-- Choose a Doctor --' | translate">
           </app-custom-select>
           <div class="error-text" *ngIf="bookForm.get('doctorId')?.touched && bookForm.get('doctorId')?.invalid">
-            Doctor selection is required.
+            {{ 'Doctor selection is required.' | translate }}
           </div>
         </div>
 
         <div class="form-group mb-3">
-          <label class="form-label">Subject / Reason for Consultation</label>
-          <input type="text" class="form-control" formControlName="subject" placeholder="Briefly describe your health concern">
+          <label class="form-label">{{ 'Subject / Reason for Consultation' | translate }}</label>
+          <input type="text" class="form-control" formControlName="subject" [placeholder]="'Briefly describe your health concern' | translate">
           <div class="error-text" *ngIf="bookForm.get('subject')?.touched && bookForm.get('subject')?.invalid">
-            Subject is required.
+            {{ 'Subject is required.' | translate }}
           </div>
         </div>
 
         <div class="form-group d-flex align-center gap-2 m-0">
           <input type="checkbox" id="urgentCheck" formControlName="isUrgent" class="form-check-input">
-          <label class="form-label m-0" for="urgentCheck">Mark as Urgent</label>
+          <label class="form-label m-0" for="urgentCheck">{{ 'Mark as Urgent' | translate }}</label>
         </div>
       </form>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-outline" (click)="closeBookModal()">Cancel</button>
-      <button type="button" class="btn btn-primary" (click)="submitBookConsultation()" [disabled]="bookForm.invalid">Book Consultation</button>
+      <button type="button" class="btn btn-outline" (click)="closeBookModal()">{{ 'Cancel' | translate }}</button>
+      <button type="button" class="btn btn-primary" (click)="submitBookConsultation()" [disabled]="bookForm.invalid">{{ 'Book Consultation' | translate }}</button>
     </div>
   </div>
 </div>
@@ -141,7 +141,7 @@
 <div class="modal-backdrop-overlay" *ngIf="showReviewModal && selectedConsultation" (click)="closeReviewModal()">
   <div class="modal-card" (click)="$event.stopPropagation()" style="max-width: 550px;">
     <div class="modal-header" style="background: var(--teal); color: white; display: flex; justify-content: space-between; align-items: center; padding: 16px 20px;">
-      <h3 style="margin: 0; font-size: 1.2rem; color: white;">⭐ Rate Your Consultation</h3>
+      <h3 style="margin: 0; font-size: 1.2rem; color: white;">⭐ {{ 'Rate Your Consultation' | translate }}</h3>
       <button class="btn-close-modal" (click)="closeReviewModal()" style="background: none; border: none; font-size: 1.5rem; color: white; cursor: pointer;">✕</button>
     </div>
 
@@ -149,10 +149,10 @@
       <form [formGroup]="reviewForm">
         <!-- Doctor Review section -->
         <div class="review-section" style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #E5E7EB;">
-          <h4 style="color: var(--teal); font-weight: 700; margin-bottom: 12px; font-size: 1.1rem;">👨‍⚕️ Doctor Review: Dr. {{ selectedConsultation.doctorName }}</h4>
+          <h4 style="color: var(--teal); font-weight: 700; margin-bottom: 12px; font-size: 1.1rem;">👨‍⚕️ {{ 'Doctor Review' | translate }}: {{ getDoctorDisplayName(selectedConsultation.doctorName) }}</h4>
           
           <div class="form-group mb-3">
-            <label class="form-label" style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 6px;">Overall Doctor Rating (1-5) *</label>
+            <label class="form-label" style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 6px;">{{ 'Overall Doctor Rating (1-5) *' | translate }}</label>
             <select formControlName="doctorRating" class="form-control" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #D1D5DB;">
               <option [value]="5">⭐⭐⭐⭐⭐ (5/5)</option>
               <option [value]="4">⭐⭐⭐⭐ (4/5)</option>
@@ -164,19 +164,19 @@
 
           <div class="sub-ratings-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px;">
             <div class="form-group">
-              <label class="form-label" style="font-size: 0.8rem; color: #6B7280; display: block; margin-bottom: 4px;">Bedside *</label>
+              <label class="form-label" style="font-size: 0.8rem; color: #6B7280; display: block; margin-bottom: 4px;">{{ 'Bedside *' | translate }}</label>
               <select formControlName="ratingBedside" class="form-control" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #D1D5DB; font-size: 0.85rem;">
                 <option *ngFor="let num of [5,4,3,2,1]" [value]="num">{{ num }}</option>
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label" style="font-size: 0.8rem; color: #6B7280; display: block; margin-bottom: 4px;">Knowledge *</label>
+              <label class="form-label" style="font-size: 0.8rem; color: #6B7280; display: block; margin-bottom: 4px;">{{ 'Knowledge *' | translate }}</label>
               <select formControlName="ratingKnowledge" class="form-control" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #D1D5DB; font-size: 0.85rem;">
                 <option *ngFor="let num of [5,4,3,2,1]" [value]="num">{{ num }}</option>
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label" style="font-size: 0.8rem; color: #6B7280; display: block; margin-bottom: 4px;">Wait Time *</label>
+              <label class="form-label" style="font-size: 0.8rem; color: #6B7280; display: block; margin-bottom: 4px;">{{ 'Wait Time *' | translate }}</label>
               <select formControlName="ratingWait" class="form-control" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #D1D5DB; font-size: 0.85rem;">
                 <option *ngFor="let num of [5,4,3,2,1]" [value]="num">{{ num }}</option>
               </select>
@@ -184,29 +184,27 @@
           </div>
         </div>
 
-
-
         <!-- Comments -->
         <div class="form-group mb-3">
-          <label class="form-label" style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 6px;">Written Feedback (Optional)</label>
-          <textarea formControlName="reviewText" class="form-control" rows="3" placeholder="Share details of your experience..." style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #D1D5DB; font-family: inherit; resize: vertical;"></textarea>
+          <label class="form-label" style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 6px;">{{ 'Written Feedback (Optional)' | translate }}</label>
+          <textarea formControlName="reviewText" class="form-control" rows="3" [placeholder]="'Share details of your experience...' | translate" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #D1D5DB; font-family: inherit; resize: vertical;"></textarea>
           <div style="font-size: 0.75rem; color: #9CA3AF; text-align: right; margin-top: 4px;">
-            Max 2000 characters
+            {{ 'Max 2000 characters' | translate }}
           </div>
         </div>
 
         <!-- Anonymous -->
         <div class="form-group d-flex align-center gap-2 mb-2" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
           <input type="checkbox" formControlName="isAnonymous" id="isAnonymousInput" style="width: 16px; height: 16px; cursor: pointer;">
-          <label for="isAnonymousInput" style="font-size: 0.9rem; color: #374151; cursor: pointer; user-select: none;">Submit this review anonymously</label>
+          <label for="isAnonymousInput" style="font-size: 0.9rem; color: #374151; cursor: pointer; user-select: none;">{{ 'Submit this review anonymously' | translate }}</label>
         </div>
       </form>
     </div>
 
     <div class="modal-footer" style="padding: 16px 20px; border-top: 1px solid #F3F4F6; display: flex; justify-content: flex-end; gap: 12px; background: #F9FAFB; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
-      <button class="btn btn-outline" (click)="closeReviewModal()" style="padding: 10px 20px; font-weight: 600;">Cancel</button>
+      <button class="btn btn-outline" (click)="closeReviewModal()" style="padding: 10px 20px; font-weight: 600;">{{ 'Cancel' | translate }}</button>
       <button class="btn btn-primary" [disabled]="reviewForm.invalid" (click)="submitReview()" style="padding: 10px 24px; font-weight: 600;">
-        ⭐ Submit Feedback
+        ⭐ {{ 'Submit Feedback' | translate }}
       </button>
     </div>
   </div>

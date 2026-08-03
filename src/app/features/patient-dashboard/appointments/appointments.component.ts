@@ -563,4 +563,16 @@ export class AppointmentsComponent implements OnInit {
       }
     });
   }
+
+  getDoctorDisplayName(name: string | null | undefined): string {
+    if (!name) return '';
+    const trimmed = name.trim();
+    const nameLower = trimmed.toLowerCase();
+    if (nameLower.startsWith('dr') || nameLower.startsWith('doctor') || nameLower.startsWith('prof') || nameLower.startsWith('consultant') || nameLower.startsWith('specialist') || nameLower.startsWith('د.')) {
+      return trimmed;
+    }
+    const isAr = this.languageService.isArabic;
+    const prefix = isAr ? 'د.' : 'Dr.';
+    return `${prefix} ${trimmed}`;
+  }
 }
