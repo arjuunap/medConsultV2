@@ -6,7 +6,13 @@
   <nav class="nav">
     <div class="nav-logo">
       <div class="logo-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--white);"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          style="color: var(--white);">
+          <path
+            d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z">
+          </path>
+        </svg>
       </div>
       <span>MedConsult</span>
     </div>
@@ -20,27 +26,51 @@
     <div class="nav-actions d-flex align-center gap-2">
       <!-- Language Switcher on Landing Page -->
       <button class="btn btn-outline btn-sm lang-landing-btn" (click)="languageService.toggleLanguage()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="desktop-icon-margin"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="desktop-icon-margin">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+          <path d="M2 12h20"></path>
+        </svg>
         <span class="desktop-only">{{ languageService.currentLang() === 'en' ? 'العربية' : 'English' }}</span>
       </button>
 
       <ng-container *ngIf="authService.isLoggedIn(); else guestActions">
         <a [routerLink]="getPortalDashboardRoute()" class="btn btn-white btn-sm fw-bold">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"></rect><rect width="7" height="5" x="14" y="3" rx="1"></rect><rect width="7" height="9" x="14" y="12" rx="1"></rect><rect width="7" height="5" x="3" y="16" rx="1"></rect></svg>
-          <span class="desktop-only" style="margin-inline-start: 6px;">{{ 'Go to Portal Dashboard →' | translate }}</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="7" height="9" x="3" y="3" rx="1"></rect>
+            <rect width="7" height="5" x="14" y="3" rx="1"></rect>
+            <rect width="7" height="9" x="14" y="12" rx="1"></rect>
+            <rect width="7" height="5" x="3" y="16" rx="1"></rect>
+          </svg>
+          <span class="desktop-only" style="margin-inline-start: 6px;">{{ 'Go to Portal Dashboard →' | translate
+            }}</span>
         </a>
         <button (click)="handleLogout()" class="btn btn-outline btn-sm text-white"
           style="border-color:rgba(255,255,255,0.35);">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" x2="9" y1="12" y2="12"></line></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" x2="9" y1="12" y2="12"></line>
+          </svg>
           <span class="desktop-only" style="margin-inline-start: 6px;">{{ 'Logout' | translate }}</span>
         </button>
       </ng-container>
       <ng-template #guestActions>
         <a routerLink="/login" class="btn btn-outline btn-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3L22 7l-3-3"></path></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="7.5" cy="15.5" r="5.5"></circle>
+            <path d="m21 2-9.6 9.6"></path>
+            <path d="m15.5 7.5 3 3L22 7l-3-3"></path>
+          </svg>
           <span class="desktop-only" style="margin-inline-start: 6px;">{{ 'Sign in' | translate }}</span>
         </a>
-        <a routerLink="/register" class="btn btn-white btn-sm fw-bold nav-register-btn">{{ 'Sign up / List Clinic' | translate }}</a>
+        <a routerLink="/register" class="btn btn-white btn-sm fw-bold nav-register-btn">{{ 'Sign up / List Clinic' |
+          translate }}</a>
       </ng-template>
     </div>
   </nav>
@@ -57,19 +87,35 @@
 
       <div class="hero-trust">
         <div class="hero-trust-item">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal); margin-inline-end: 4px; vertical-align: middle;"><path d="M20 6 9 17l-5-5"></path></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+            style="color: var(--teal); margin-inline-end: 4px; vertical-align: middle;">
+            <path d="M20 6 9 17l-5-5"></path>
+          </svg>
           <span>{{ 'All clinics verified by MOH' | translate }}</span>
         </div>
         <div class="hero-trust-item">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal); margin-inline-end: 4px; vertical-align: middle;"><path d="M20 6 9 17l-5-5"></path></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+            style="color: var(--teal); margin-inline-end: 4px; vertical-align: middle;">
+            <path d="M20 6 9 17l-5-5"></path>
+          </svg>
           <span>{{ 'Real-time doctor schedules' | translate }}</span>
         </div>
         <div class="hero-trust-item">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal); margin-inline-end: 4px; vertical-align: middle;"><path d="M20 6 9 17l-5-5"></path></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+            style="color: var(--teal); margin-inline-end: 4px; vertical-align: middle;">
+            <path d="M20 6 9 17l-5-5"></path>
+          </svg>
           <span>{{ 'HIPAA-compliant system' | translate }}</span>
         </div>
         <div class="hero-trust-item">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal); margin-inline-end: 4px; vertical-align: middle;"><path d="M20 6 9 17l-5-5"></path></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+            style="color: var(--teal); margin-inline-end: 4px; vertical-align: middle;">
+            <path d="M20 6 9 17l-5-5"></path>
+          </svg>
           <span>{{ 'Arabic & English' | translate }}</span>
         </div>
       </div>
@@ -84,15 +130,19 @@
       <div class="hs-row1" style="margin-bottom: 0;">
         <div class="hs-input-wrap">
           <span class="hs-icon d-inline-flex align-center justify-center" style="top:50%; transform:translateY(-50%);">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--t3);"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+              style="color: var(--t3);">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.3-4.3"></path>
+            </svg>
           </span>
           <input class="hs-input" formControlName="query" (input)="applyFilters()" type="text"
             [placeholder]="'Search Placeholder' | translate">
         </div>
         <div class="hs-city-select">
           <app-custom-select formControlName="location" [options]="citySelectOptions" [searchable]="true"
-            [placeholder]="'All Cities / Areas' | translate" (selectionChange)="onLocationChange()"
-            [multiple]="true">
+            [placeholder]="'All Cities / Areas' | translate" (selectionChange)="onLocationChange()" [multiple]="true">
           </app-custom-select>
         </div>
         <button class="hs-search-btn" type="submit">{{ 'Search clinics' | translate }}</button>
@@ -135,38 +185,24 @@
 
     <!-- Specialty Dropdown -->
     <div class="filter-item" style="min-width: 220px;" *ngIf="specialties.length > 0">
-      <app-custom-select 
-        [options]="specialtySelectOptions" 
-        [ngModel]="activeSpecialtyIds" 
-        (selectionChange)="onSpecialtySelectChange($event)" 
-        [placeholder]="'🩺 Medical Specialty' | translate"
-        [multiple]="true"
-        [searchable]="true"
-        size="sm">
+      <app-custom-select [options]="specialtySelectOptions" [ngModel]="activeSpecialtyIds"
+        (selectionChange)="onSpecialtySelectChange($event)" [placeholder]="'🩺 Medical Specialty' | translate"
+        [multiple]="true" [searchable]="true" size="sm">
       </app-custom-select>
     </div>
 
     <!-- Minimum Rating Select Dropdown -->
     <div class="filter-item" style="width: 170px;">
-      <app-custom-select 
-        [options]="ratingOptions" 
-        [ngModel]="selectedRating" 
-        (selectionChange)="setRatingFilter($event)" 
-        [placeholder]="'⭐ Min Rating' | translate"
-        size="sm">
+      <app-custom-select [options]="ratingOptions" [ngModel]="selectedRating"
+        (selectionChange)="setRatingFilter($event)" [placeholder]="'⭐ Min Rating' | translate" size="sm">
       </app-custom-select>
     </div>
 
     <!-- Accepted Insurance Select Dropdown -->
     <div class="filter-item" style="min-width: 230px;" *ngIf="insuranceProviders.length > 0">
-      <app-custom-select 
-        [options]="insuranceOptions" 
-        [ngModel]="selectedInsIds" 
-        (selectionChange)="onInsuranceSelectChange($event)" 
-        [placeholder]="'🏥 Accepted Insurance' | translate"
-        [multiple]="true"
-        [searchable]="true"
-        size="sm">
+      <app-custom-select [options]="insuranceOptions" [ngModel]="selectedInsIds"
+        (selectionChange)="onInsuranceSelectChange($event)" [placeholder]="'🏥 Accepted Insurance' | translate"
+        [multiple]="true" [searchable]="true" size="sm">
       </app-custom-select>
     </div>
 
@@ -185,12 +221,25 @@
           <div class="clinic-logo" style="background:#E1F5EE">
             <img *ngIf="getLogoUrl(clinic.logoUrl)" [src]="getLogoUrl(clinic.logoUrl)" alt="Logo"
               style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
-            <svg *ngIf="!getLogoUrl(clinic.logoUrl)" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-d);"><path d="M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18"></path><path d="M16 22H8"></path><path d="M12 5v4"></path><path d="M10 7h4"></path><path d="M12 13v8"></path></svg>
+            <svg *ngIf="!getLogoUrl(clinic.logoUrl)" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" style="color: var(--teal-d);">
+              <path d="M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18"></path>
+              <path d="M16 22H8"></path>
+              <path d="M12 5v4"></path>
+              <path d="M10 7h4"></path>
+              <path d="M12 13v8"></path>
+            </svg>
           </div>
           <div class="clinic-info">
             <div class="clinic-name">{{ clinic | translateObj:'name' }}</div>
             <div class="clinic-addr">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--t3); margin-inline-end: 4px; vertical-align: middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                style="color: var(--t3); margin-inline-end: 4px; vertical-align: middle;">
+                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
               <span>{{ clinic.addressLine1 || clinic.cityName }}</span>
             </div>
             <div class="clinic-meta">
@@ -200,22 +249,39 @@
                 <span class="clinic-reviews">({{ clinic.reviewCount }} {{ 'reviews' | translate }})</span>
               </div>
               <span class="clinic-badge cb-verified" *ngIf="clinic.mohVerified">
-                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-inline-end: 4px; vertical-align: middle;"><path d="M20 6 9 17l-5-5"></path></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+                  style="margin-inline-end: 4px; vertical-align: middle;">
+                  <path d="M20 6 9 17l-5-5"></path>
+                </svg>
                 {{ 'MOH Verified' | translate }}
               </span>
               <span class="clinic-badge cb-open" *ngIf="clinic.isActive">
-                <span style="width: 6px; height: 6px; border-radius: 50%; background-color: var(--green-d); margin-inline-end: 4px; display: inline-block;"></span>
+                <span
+                  style="width: 6px; height: 6px; border-radius: 50%; background-color: var(--green-d); margin-inline-end: 4px; display: inline-block;"></span>
                 {{ 'Active Facility' | translate }}
               </span>
             </div>
             <div class="clinic-tags">
               <span *ngFor="let s of clinic.specs" class="tag tg-teal">{{ s }}</span>
               <span *ngFor="let l of clinic.languages" class="tag tg-gray d-inline-flex align-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+                  <path d="M2 12h20"></path>
+                </svg>
                 {{ l }}
               </span>
               <span *ngFor="let i of clinic.insurances" class="tag tg-gray d-inline-flex align-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18"></path><path d="M16 22H8"></path><path d="M12 5v4"></path><path d="M10 7h4"></path><path d="M12 13v8"></path></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18"></path>
+                  <path d="M16 22H8"></path>
+                  <path d="M12 5v4"></path>
+                  <path d="M10 7h4"></path>
+                  <path d="M12 13v8"></path>
+                </svg>
                 {{ i }}
               </span>
             </div>
@@ -231,21 +297,34 @@
         <div class="clinic-docs" *ngIf="clinic.doctors && clinic.doctors.length > 0">
           <div class="docs-header">
             <div class="docs-header-title d-inline-flex align-center gap-1">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-d);"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="10" r="3"></circle><path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"></path></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                style="color: var(--teal-d);">
+                <circle cx="12" cy="12" r="10"></circle>
+                <circle cx="12" cy="10" r="3"></circle>
+                <path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"></path>
+              </svg>
               {{ clinic.doctors.length }} {{ 'specialist doctor(s) at this facility' | translate }}
             </div>
           </div>
-          
+
           <div *ngFor="let branch of clinic.branchesWithDocs">
             <div *ngIf="clinic.expanded || hasVisibleDoctors(clinic, branch)" class="branch-group-container">
-              <div class="branch-group-header d-flex align-center gap-2 mt-3 mb-2" style="font-weight: 700; color: var(--teal-d); font-size: 13.5px; border-bottom: 1px dashed var(--border); padding-bottom: 4px;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-d);"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              <div class="branch-group-header d-flex align-center gap-2 mt-3 mb-2"
+                style="font-weight: 700; color: var(--teal-d); font-size: 13.5px; border-bottom: 1px dashed var(--border); padding-bottom: 4px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  style="color: var(--teal-d);">
+                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
                 <span>{{ branch | translateObj:'branchName' }}</span>
-                <span class="badge" style="background-color: var(--teal-l); color: var(--teal-d); font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600;">
+                <span class="badge"
+                  style="background-color: var(--teal-l); color: var(--teal-d); font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600;">
                   {{ branch.doctors.length }} {{ 'doctor(s)' | translate }}
                 </span>
               </div>
-              
+
               <div class="docs-grid">
                 <ng-container *ngFor="let doc of branch.doctors">
                   <div *ngIf="clinic.expanded || isDoctorVisible(clinic, doc)" class="doc-mini">
@@ -257,14 +336,22 @@
                         <div class="doc-mini-name">{{ doc.name }}</div>
                         <div class="doc-mini-spec">{{ doc.spec }}</div>
                         <div class="doc-mini-rating d-inline-flex align-center">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--amber); margin-inline-end: 2px; vertical-align: middle;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24"
+                            fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round"
+                            style="color:var(--amber); margin-inline-end: 2px; vertical-align: middle;">
+                            <polygon
+                              points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                            </polygon>
+                          </svg>
                           <span>{{ doc.rating }}</span>
                           <span class="doc-mini-exp">({{ doc.reviews }})</span>
                         </div>
                       </div>
                     </div>
-                    <div class="doc-mini-exp mb-2">{{ doc.exp }} {{ 'Years Exp' | translate }} · SAR {{ doc.consultationFeeSar }}</div>
-                    
+                    <div class="doc-mini-exp mb-2">{{ doc.exp }} {{ 'Years Exp' | translate }} · SAR {{
+                      doc.consultationFeeSar }}</div>
+
                     <div class="fs-xs text-muted mb-2">{{ 'Next Slot:' | translate }} <strong class="text-primary">{{
                         doc.nextSlot }}</strong></div>
                     <button class="doc-mini-book"
@@ -307,15 +394,29 @@
     <div class="how-step">
       <div class="how-num">1</div>
       <div class="how-icon d-flex align-center justify-center">
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal);"><path d="M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18"></path><path d="M16 22H8"></path><path d="M12 5v4"></path><path d="M10 7h4"></path><path d="M12 13v8"></path></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          style="color: var(--teal);">
+          <path d="M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18"></path>
+          <path d="M16 22H8"></path>
+          <path d="M12 5v4"></path>
+          <path d="M10 7h4"></path>
+          <path d="M12 13v8"></path>
+        </svg>
       </div>
       <div class="how-title">{{ 'Search for a clinic' | translate }}</div>
-      <div class="how-sub">{{ 'Search by clinic name, city location, specialty or doctor. Filter by ratings, language, and insurance.' | translate }}</div>
+      <div class="how-sub">{{ 'Search by clinic name, city location, specialty or doctor. Filter by ratings, language,
+        and insurance.' | translate }}</div>
     </div>
     <div class="how-step">
       <div class="how-num">2</div>
       <div class="how-icon d-flex align-center justify-center">
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal);"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          style="color: var(--teal);">
+          <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
       </div>
       <div class="how-title">{{ 'Choose your doctor' | translate }}</div>
       <div class="how-sub">{{ 'Review doctor credentials, experience, spoken languages, and live open slots.' |
@@ -324,7 +425,14 @@
     <div class="how-step">
       <div class="how-num">3</div>
       <div class="how-icon d-flex align-center justify-center">
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal);"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          style="color: var(--teal);">
+          <path d="M8 2v4"></path>
+          <path d="M16 2v4"></path>
+          <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+          <path d="M3 10h18"></path>
+        </svg>
       </div>
       <div class="how-title">{{ 'Book your appointment' | translate }}</div>
       <div class="how-sub">{{ 'Select your preferred date & time slot. Confirm directly into the clinic system.' |
@@ -347,7 +455,11 @@
   <div class="feat-grid">
     <div class="feat-card">
       <div class="feat-icon d-flex align-center justify-center">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-d);"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          style="color: var(--teal-d);">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
       </div>
       <div class="feat-title">{{ 'Secure Consultation Chat' | translate }}</div>
       <div class="feat-body">{{ 'Direct doctor-patient messaging with attachment support for medical records and
@@ -355,7 +467,14 @@
     </div>
     <div class="feat-card" style="border-color:var(--teal-l)">
       <div class="feat-icon d-flex align-center justify-center">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-d);"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          style="color: var(--teal-d);">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
       </div>
       <div class="feat-title">{{ 'Case Discussion Rooms' | translate }}</div>
       <div class="feat-body">{{ 'Multidisciplinary case rooms enabling doctors across clinics to collaborate on patient
@@ -363,7 +482,11 @@
     </div>
     <div class="feat-card">
       <div class="feat-icon d-flex align-center justify-center">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-d);"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          style="color: var(--teal-d);">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+        </svg>
       </div>
       <div class="feat-title">{{ 'Lab Results & Test Reports' | translate }}</div>
       <div class="feat-body">{{ 'Direct upload, preview, and download of clinical lab reports with reference range
@@ -371,21 +494,39 @@
     </div>
     <div class="feat-card">
       <div class="feat-icon d-flex align-center justify-center">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-d);"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"></path><path d="m8.5 8.5 7 7"></path></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          style="color: var(--teal-d);">
+          <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"></path>
+          <path d="m8.5 8.5 7 7"></path>
+        </svg>
       </div>
       <div class="feat-title">{{ 'Digital Prescriptions' | translate }}</div>
       <div class="feat-body">{{ 'Digital Prescriptions Body' | translate }}</div>
     </div>
     <div class="feat-card">
       <div class="feat-icon d-flex align-center justify-center">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-d);"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          style="color: var(--teal-d);">
+          <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
+          <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
+          <path d="M10 9H8"></path>
+          <path d="M16 13H8"></path>
+          <path d="M16 17H8"></path>
+        </svg>
       </div>
       <div class="feat-title">{{ 'Unified Health Record' | translate }}</div>
       <div class="feat-body">{{ 'Unified Health Record Body' | translate }}</div>
     </div>
     <div class="feat-card" style="border-color:var(--teal-l)">
       <div class="feat-icon d-flex align-center justify-center">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-d);"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          style="color: var(--teal-d);">
+          <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
       </div>
       <div class="feat-title">{{ 'Privacy & Security' | translate }}</div>
       <div class="feat-body">{{ 'Privacy & Security Body' | translate }}</div>
@@ -401,7 +542,10 @@
   <div class="sh">
     <div style="margin-bottom:12px">
       <span class="badge badge-teal d-inline-flex align-center gap-1">
-        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
         {{ 'Verified Experience' | translate }}
       </span>
     </div>
@@ -412,28 +556,53 @@
     <div class="trust-icons">
       <div class="ti">
         <div class="ti-icon d-flex align-center justify-center" style="height: 32px; margin-bottom: 4px;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal);"><path d="M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18"></path><path d="M16 22H8"></path><path d="M12 5v4"></path><path d="M10 7h4"></path><path d="M12 13v8"></path></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            style="color: var(--teal);">
+            <path d="M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18"></path>
+            <path d="M16 22H8"></path>
+            <path d="M12 5v4"></path>
+            <path d="M10 7h4"></path>
+            <path d="M12 13v8"></path>
+          </svg>
         </div>
         <div class="ti-name">{{ 'Saudi MOH' | translate }}</div>
         <div class="ti-sub">{{ 'Verified License' | translate }}</div>
       </div>
       <div class="ti">
         <div class="ti-icon d-flex align-center justify-center" style="height: 32px; margin-bottom: 4px;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal);"><path d="m18 8 4 4-4 4"></path><path d="M6 8l-4 4 4 4"></path><line x1="2" x2="22" y1="12" y2="12"></line></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            style="color: var(--teal);">
+            <path d="m18 8 4 4-4 4"></path>
+            <path d="M6 8l-4 4 4 4"></path>
+            <line x1="2" x2="22" y1="12" y2="12"></line>
+          </svg>
         </div>
         <div class="ti-name">{{ 'Naphies' | translate }}</div>
         <div class="ti-sub">{{ 'Interoperable' | translate }}</div>
       </div>
       <div class="ti">
         <div class="ti-icon d-flex align-center justify-center" style="height: 32px; margin-bottom: 4px;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal);"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            style="color: var(--teal);">
+            <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
         </div>
         <div class="ti-name">{{ 'HIPAA' | translate }}</div>
         <div class="ti-sub{{ 'Compliant' | translate }}"></div>
       </div>
       <div class="ti">
         <div class="ti-icon d-flex align-center justify-center" style="height: 32px; margin-bottom: 4px;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal);"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            style="color: var(--teal);">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+            <path d="M2 12h20"></path>
+          </svg>
         </div>
         <div class="ti-name">{{ 'Bilingual' | translate }}</div>
         <div class="ti-sub">{{ 'Bilingual' | translate }}</div>
@@ -451,7 +620,13 @@
   <div class="cta-inner">
     <div class="cta-center">
       <span class="badge badge-dark d-inline-flex align-center gap-1" style="margin-bottom:18px">
-        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);"><path d="m12 3-1.912 5.886H3.82l4.912 3.57L6.82 18.342 12 14.772l5.18 3.57-1.912-5.886 4.912-3.57h-6.268L12 3z"></path></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          style="color: var(--accent);">
+          <path
+            d="m12 3-1.912 5.886H3.82l4.912 3.57L6.82 18.342 12 14.772l5.18 3.57-1.912-5.886 4.912-3.57h-6.268L12 3z">
+          </path>
+        </svg>
         {{ 'For Clinics & Doctors' | translate }}
       </span>
       <h2 class="cta-h2">{{ 'List your clinic.' | translate }}<br><span>{{ 'Reach more patients.' | translate }}</span>
@@ -460,13 +635,25 @@
 
       <div class="cta-btns">
         <ng-container *ngIf="authService.isLoggedIn(); else guestCta">
-          <a [routerLink]="getPortalDashboardRoute()" class="btn btn-primary d-inline-flex align-center gap-2" style="font-size:15px;padding:14px 32px">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"></rect><rect width="7" height="5" x="14" y="3" rx="1"></rect><rect width="7" height="9" x="14" y="12" rx="1"></rect><rect width="7" height="5" x="3" y="16" rx="1"></rect></svg>
+          <a [routerLink]="getPortalDashboardRoute()" class="btn btn-primary d-inline-flex align-center gap-2"
+            style="font-size:15px;padding:14px 32px">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="7" height="9" x="3" y="3" rx="1"></rect>
+              <rect width="7" height="5" x="14" y="3" rx="1"></rect>
+              <rect width="7" height="9" x="14" y="12" rx="1"></rect>
+              <rect width="7" height="5" x="3" y="16" rx="1"></rect>
+            </svg>
             {{ 'Go to Portal Dashboard →' | translate }}
           </a>
           <button (click)="handleLogout()" class="btn btn-outline d-inline-flex align-center gap-2"
             style="font-size:15px;padding:14px 32px;color:white;border-color:white;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" x2="9" y1="12" y2="12"></line></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" x2="9" y1="12" y2="12"></line>
+            </svg>
             {{ 'Logout' | translate }}
           </button>
         </ng-container>
@@ -484,7 +671,13 @@
         <div>
           <div class="footer-logo">
             <div class="footer-logo-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--white);"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                style="color: var(--white);">
+                <path
+                  d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z">
+                </path>
+              </svg>
             </div>MedConsult
           </div>
           <div class="footer-desc">{{ 'Footer description' | translate }}</div>
@@ -534,24 +727,27 @@
       <!-- Date Picker with Chips -->
       <div class="form-group mb-4">
         <label class="form-label d-inline-flex align-center gap-1">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-d);"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            style="color: var(--teal-d);">
+            <path d="M8 2v4"></path>
+            <path d="M16 2v4"></path>
+            <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+            <path d="M3 10h18"></path>
+          </svg>
           {{ 'Select Appointment Date *' | translate }}
         </label>
 
         <!-- Date Chips Scroll Container -->
         <div class="date-chips-scroll-container">
-          <div 
-            *ngFor="let day of nextDays" 
-            class="date-chip" 
-            [class.selected]="selectedDate === day.date"
-            [class.has-slots]="day.hasSlots"
-            [class.no-slots]="!day.hasSlots"
-            (click)="selectDateChip(day.date)"
-          >
+          <div *ngFor="let day of nextDays" class="date-chip" [class.selected]="selectedDate === day.date"
+            [class.has-slots]="day.hasSlots" [class.no-slots]="!day.hasSlots" (click)="selectDateChip(day.date)">
             <span class="chip-day-name">{{ day.dayName }}</span>
             <span class="chip-date-label">{{ day.label }}</span>
-            <span class="slots-badge" *ngIf="day.hasSlots" style="width: 6px; height: 6px; border-radius: 50%; background-color: var(--green-d); display: inline-block; margin-top: 4px;"></span>
-            <span class="slots-badge" *ngIf="!day.hasSlots" style="width: 6px; height: 6px; border-radius: 50%; background-color: var(--red-d); display: inline-block; margin-top: 4px;"></span>
+            <span class="slots-badge" *ngIf="day.hasSlots"
+              style="width: 6px; height: 6px; border-radius: 50%; background-color: var(--green-d); display: inline-block; margin-top: 4px;"></span>
+            <span class="slots-badge" *ngIf="!day.hasSlots"
+              style="width: 6px; height: 6px; border-radius: 50%; background-color: var(--red-d); display: inline-block; margin-top: 4px;"></span>
           </div>
         </div>
 
@@ -570,16 +766,18 @@
           <button *ngFor="let slot of availableSlots" class="btn btn-sm"
             [class.btn-primary]="selectedSlot?.slotId === slot.slotId"
             [class.btn-outline]="selectedSlot?.slotId !== slot.slotId && slot.status === 'AVAILABLE'"
-            [class.btn-disabled]="slot.status !== 'AVAILABLE'"
-            [class.booked]="slot.status === 'BOOKED'"
-            [class.blocked]="slot.status === 'BLOCKED'"
-            [disabled]="slot.status !== 'AVAILABLE'"
+            [class.btn-disabled]="slot.status !== 'AVAILABLE'" [class.booked]="slot.status === 'BOOKED'"
+            [class.blocked]="slot.status === 'BLOCKED'" [disabled]="slot.status !== 'AVAILABLE'"
             (click)="selectedSlot = slot">
             {{ slot.startTime.substring(0, 5) }}
             <span class="slot-status-label" style="font-size: 10px; opacity: 0.85;" *ngIf="slot.status !== 'AVAILABLE'">
               ({{ slot.status === 'BOOKED' ? ('Booked' | translate) : ('Blocked' | translate) }})
             </span>
-            <svg *ngIf="selectedSlot?.slotId === slot.slotId" xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-inline-start: 4px; vertical-align: middle;"><path d="M20 6 9 17l-5-5"></path></svg>
+            <svg *ngIf="selectedSlot?.slotId === slot.slotId" xmlns="http://www.w3.org/2000/svg" width="10" height="10"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+              stroke-linejoin="round" style="margin-inline-start: 4px; vertical-align: middle;">
+              <path d="M20 6 9 17l-5-5"></path>
+            </svg>
           </button>
         </div>
 
@@ -610,8 +808,13 @@
           [placeholder]="'Symptoms placeholder' | translate">
       </div>
 
-      <div *ngIf="selectedSlot" class="bg-light p-3 rounded-md fs-xs text-primary mb-4 fw-semibold border d-flex align-center gap-1">
-        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal);"><path d="M20 6 9 17l-5-5"></path></svg>
+      <div *ngIf="selectedSlot"
+        class="bg-light p-3 rounded-md fs-xs text-primary mb-4 fw-semibold border d-flex align-center gap-1">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+          style="color: var(--teal);">
+          <path d="M20 6 9 17l-5-5"></path>
+        </svg>
         {{ 'Selected:' | translate }} {{ selectedDate }} at {{ selectedSlot.startTime.substring(0, 5) }} (SAR {{
         bookingDoctor?.consultationFeeSar || 150 }})
       </div>
@@ -637,7 +840,15 @@
           style="width:48px;height:48px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;">
           <img *ngIf="getLogoUrl(selectedClinicDetail.logoUrl)" [src]="getLogoUrl(selectedClinicDetail.logoUrl)"
             style="width:100%;height:100%;object-fit:cover;">
-          <svg *ngIf="!getLogoUrl(selectedClinicDetail.logoUrl)" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-d);"><path d="M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18"></path><path d="M16 22H8"></path><path d="M12 5v4"></path><path d="M10 7h4"></path><path d="M12 13v8"></path></svg>
+          <svg *ngIf="!getLogoUrl(selectedClinicDetail.logoUrl)" xmlns="http://www.w3.org/2000/svg" width="24"
+            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" style="color: var(--teal-d);">
+            <path d="M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18"></path>
+            <path d="M16 22H8"></path>
+            <path d="M12 5v4"></path>
+            <path d="M10 7h4"></path>
+            <path d="M12 13v8"></path>
+          </svg>
         </div>
         <div>
           <div style="font-size:18px;font-weight:700;">{{ selectedClinicDetail | translateObj:'name' }}</div>
@@ -659,26 +870,47 @@
         <div>
           <h4 class="fs-xs text-muted fw-bold mb-1">{{ 'Contact Information' | translate }}</h4>
           <div class="fs-xs text-dark d-flex align-center gap-1 mb-1">
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--t3);"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              style="color: var(--t3);">
+              <path
+                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+              </path>
+            </svg>
             {{ selectedClinicDetail.phonePrimary }}
           </div>
           <div class="fs-xs text-dark d-flex align-center gap-1 mb-1" *ngIf="selectedClinicDetail.email">
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--t3);"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              style="color: var(--t3);">
+              <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+            </svg>
             {{ selectedClinicDetail.email }}
           </div>
           <div class="fs-xs text-dark d-flex align-center gap-1 mb-1" *ngIf="selectedClinicDetail.website">
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--t3);"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              style="color: var(--t3);">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+              <path d="M2 12h20"></path>
+            </svg>
             {{ selectedClinicDetail.website }}
           </div>
         </div>
         <div>
           <h4 class="fs-xs text-muted fw-bold mb-1">{{ 'Facility Status' | translate }}</h4>
           <span class="badge badge-teal d-inline-flex align-center gap-1" *ngIf="selectedClinicDetail.mohVerified">
-            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 6 9 17l-5-5"></path>
+            </svg>
             {{ 'MOH Verified' | translate }}
           </span>
           <span class="badge badge-dark ms-1 d-inline-flex align-center" *ngIf="selectedClinicDetail.isActive">
-            <span style="width: 6px; height: 6px; border-radius: 50%; background-color: var(--green-d); margin-inline-end: 4px; display: inline-block;"></span>
+            <span
+              style="width: 6px; height: 6px; border-radius: 50%; background-color: var(--green-d); margin-inline-end: 4px; display: inline-block;"></span>
             {{ 'Active' | translate }}
           </span>
         </div>
@@ -688,16 +920,31 @@
         <h4 class="fs-sm text-primary fw-bold mb-2">{{ 'Branches & Locations' | translate }}</h4>
         <div *ngFor="let b of selectedClinicDetail.branches" class="p-3 bg-light rounded-md mb-2 border fs-xs">
           <div class="fw-bold text-dark d-flex align-center flex-wrap gap-1">
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--t3);"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              style="color: var(--t3);">
+              <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
             <span>{{ b | translateObj:'branchName' }}</span>
-            <span *ngIf="b.isPrimary" class="badge badge-teal ms-1 d-inline-flex align-center gap-1" style="font-size:9px">
-              <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+            <span *ngIf="b.isPrimary" class="badge badge-teal ms-1 d-inline-flex align-center gap-1"
+              style="font-size:9px">
+              <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 6 9 17l-5-5"></path>
+              </svg>
               {{ 'Primary Location' | translate }}
             </span>
           </div>
           <div class="text-muted mt-1">{{ b | translateObj:'addressLine1' }}</div>
           <div class="text-muted d-flex align-center gap-1 mt-1" *ngIf="b.phone">
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--t3);"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              style="color: var(--t3);">
+              <path
+                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+              </path>
+            </svg>
             {{ b.phone }}
           </div>
         </div>

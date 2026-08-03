@@ -325,12 +325,18 @@ export class LandingComponent implements OnInit {
       return found ? this.languageService.translate(found.nameEn, found.nameAr) : '';
     }).filter(Boolean) as string[] || [];
 
-    const insNames = detail?.insurances?.map(i => {
-      const found = this.insuranceProviders.find(x => x.providerId === i.providerId);
-      return found ? this.languageService.translate(found.nameEn, found.nameAr) : '';
-    }).filter(Boolean) as string[] || [];
+    const activeInsurances = detail?.insurances?.filter(i => i.isActive !== false) || [];
 
-    const insuranceProviderIds = detail?.insurances?.map(i => i.providerId) || [];
+    const insNames = Array.from(new Set(
+      activeInsurances.map(i => {
+        const found = this.insuranceProviders.find(x => x.providerId && i.providerId && x.providerId.toLowerCase() === i.providerId.toLowerCase());
+        return found ? this.languageService.translate(found.nameEn, found.nameAr) : '';
+      }).filter(Boolean) as string[]
+    ));
+
+    const insuranceProviderIds = Array.from(new Set(
+      activeInsurances.map(i => i.providerId).filter(Boolean)
+    ));
     const languageIds = detail?.languages?.map(l => l.languageId) || [];
 
     // Map real doctors assigned to this clinic's branches
@@ -443,7 +449,7 @@ export class LandingComponent implements OnInit {
       addressLine1: primaryBranch?.addressLine1 || area,
       specs: specNames.length > 0 ? specNames : [this.languageService.translate('General Practice', 'الطب العام'), this.languageService.translate('Internal Medicine', 'الطب الباطني')],
       languages: langNames.length > 0 ? langNames : [this.languageService.translate('Arabic', 'العربية'), this.languageService.translate('English', 'الإنجليزية')],
-      insurances: insNames.length > 0 ? insNames : [this.languageService.translate('Tawuniya', 'التعاونية'), this.languageService.translate('Bupa Arabia', 'بوبا العربية')],
+      insurances: insNames,
       insuranceProviderIds,
       languageIds,
       specialtyIds,
