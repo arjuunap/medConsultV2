@@ -2,7 +2,12 @@
   <!-- Header Title (Hidden on mobile detail view to maximize screen space) -->
   <div class="explorer-header-section" *ngIf="!showMobileDetail">
     <div class="header-content">
-      <span class="eyebrow-badge">🇸🇦 {{ 'SA MOH Verified Network' | translate }}</span>
+      <span class="eyebrow-badge">
+        <svg class="eyebrow-badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        {{ 'SA MOH Verified Network' | translate }}
+      </span>
       <h1 class="page-title">{{ 'Clinics & Branches' | translate }}</h1>
       <p class="page-subtitle">
         {{ 'Search verified private clinics across Saudi Arabia. Browse doctors, filter by specialty, city, language, and availability — and book real appointments online.' | translate }}
@@ -17,29 +22,37 @@
     <div class="grid-column clinic-column">
       <div class="column-card">
         <div class="card-header-sticky">
-          <h2 class="column-title">🏢 {{ 'Clinics List' | translate }}</h2>
+          <h2 class="column-title">
+            <svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18M16 22H8M12 5v4M10 7h4M12 13v8"></path>
+            </svg>
+            {{ 'Clinics List' | translate }}
+          </h2>
           <form [formGroup]="searchForm" (ngSubmit)="onSearch()" class="search-form-wrapper">
             <div class="input-wrapper">
-              <span class="search-icon">🔍</span>
+              <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
               <input type="text" formControlName="query" (input)="onSearch()"
-                [placeholder]="'Search clinics' | translate" class="search-input" />
+                [placeholder]="'Search clinics...' | translate" class="search-input" />
             </div>
           </form>
         </div>
 
         <div class="scroll-content">
           <div *ngIf="filteredClinics.length === 0" class="empty-state">
-            <span class="empty-icon">🏥</span>
+            <div class="empty-icon-wrapper">
+              <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18M16 22H8M12 5v4M10 7h4M12 13v8"></path>
+              </svg>
+            </div>
             <p>{{ 'No medical clinics found matching your current filter criteria.' | translate }}</p>
           </div>
 
           <div *ngFor="let clinic of filteredClinics" class="clinic-list-card"
             [class.active]="selectedClinic?.clinicId === clinic.clinicId" (click)="selectClinic(clinic)">
-            <div class="card-banner-status">
-              <span *ngIf="clinic.mohVerified" class="verified-tag">✓ MOH Verified</span>
-              <span *ngIf="clinic.isActive" class="active-tag">🟢 Active</span>
-            </div>
-
+            
             <div class="card-main-info">
               <div class="logo-placeholder-avatar">
                 <img *ngIf="clinic.logoUrl" [src]="apiUrl + '/' + clinic.logoUrl" [alt]="clinic | translateObj:'name'"
@@ -49,15 +62,35 @@
 
               <div class="info-text">
                 <h3 class="clinic-name">{{ clinic | translateObj:'name' }}</h3>
-                <div class="rating-reviews-line">
-                  <span class="stars-gold">★</span>
+                
+                <div class="rating-reviews-pill">
+                  <svg class="star-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                  </svg>
                   <span class="rating-val">{{ clinic.overallRating || 0 }}</span>
-                  <span class="reviews-count">({{ clinic.reviewCount || 0 }} {{ 'reviews' | translate }})</span>
+                  <span class="reviews-count">({{ clinic.reviewCount || 0 }})</span>
                 </div>
+
                 <div class="meta-row">
-                  <span class="meta-item">📞 {{ clinic.phonePrimary }}</span>
+                  <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                  </svg>
+                  <span class="meta-item">{{ clinic.phonePrimary }}</span>
                 </div>
               </div>
+            </div>
+
+            <div class="card-banner-status">
+              <span *ngIf="clinic.mohVerified" class="verified-tag">
+                <svg class="tag-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                MOH Verified
+              </span>
+              <span *ngIf="clinic.isActive" class="active-tag">
+                <span class="status-dot"></span>
+                Active
+              </span>
             </div>
           </div>
         </div>
@@ -70,19 +103,27 @@
       <!-- Placeholder View when no clinic selected -->
       <div class="column-card placeholder-card" *ngIf="!selectedClinic">
         <div class="centered-placeholder">
-          <span class="placeholder-icon pulse-animation">🏥</span>
-          <h3>{{ 'Select a Clinic' | translate }}</h3>
-          <p>{{ 'Choose a clinic from the list on the left to view its branches, operating hours, and specialist doctors roster.' | translate }}</p>
+          <div class="pulse-animation placeholder-icon-bg">
+            <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18M16 22H8M12 5v4M10 7h4M12 13v8"></path>
+            </svg>
+          </div>
+          <h3>{{ 'Select a Medical Clinic' | translate }}</h3>
+          <p>{{ 'Choose a clinic from the list on the left to view its active branches, operating schedules, and registered doctors roster.' | translate }}</p>
         </div>
       </div>
 
       <!-- Selected Clinic Viewport -->
-      <div class="column-card" *ngIf="selectedClinic">
+      <div class="column-card detail-active-card" *ngIf="selectedClinic">
         
         <!-- Mobile Navigation Back Bar -->
         <div class="mobile-back-bar">
           <button class="btn-back-to-list" (click)="goBackToList()">
-            <span>←</span> {{ 'Back to Clinics List' | translate }}
+            <svg class="back-arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            {{ 'Back to Clinics List' | translate }}
           </button>
         </div>
 
@@ -97,29 +138,66 @@
                 <span *ngIf="!selectedClinic.logoUrl">{{ (selectedClinic.nameEn || '').substring(0, 2).toUpperCase() }}</span>
               </div>
               <div class="title-meta-block">
-                <div class="badge-status-row">
-                  <span *ngIf="selectedClinic.mohVerified" class="verified-tag">✓ MOH Verified</span>
-                  <span class="license-number">📋 MOH License: {{ selectedClinic.mohLicenseNumber || 'MOH-SA-10023' }}</span>
-                </div>
                 <h2 class="detail-clinic-name">{{ selectedClinic | translateObj:'name' }}</h2>
+                <div class="badge-status-row">
+                  <span *ngIf="selectedClinic.mohVerified" class="verified-tag">
+                    <svg class="tag-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    MOH Verified
+                  </span>
+                  <span class="license-number">
+                    <svg class="license-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                      <line x1="16" y1="13" x2="8" y2="13"></line>
+                      <line x1="16" y1="17" x2="8" y2="17"></line>
+                      <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    MOH License: {{ selectedClinic.mohLicenseNumber || 'MOH-SA-10023' }}
+                  </span>
+                </div>
               </div>
             </div>
 
             <p class="detail-description">
-              {{ (selectedClinic | translateObj:'description') || ('Premier medical facility description' | translate) }}
+              {{ (selectedClinic | translateObj:'description') || ('Premier medical facility providing state of the art therapeutic and diagnostic healthcare solutions across the region.' | translate) }}
             </p>
 
             <div class="detail-contact-strip">
-              <span *ngIf="selectedClinic.website"><a [href]="selectedClinic.website" target="_blank"
-                  class="clinic-web-link">🌐 {{ selectedClinic.website }}</a></span>
-              <span *ngIf="selectedClinic.email">✉️ {{ selectedClinic.email }}</span>
-              <span>📞 {{ selectedClinic.phonePrimary }}</span>
+              <a *ngIf="selectedClinic.website" [href]="selectedClinic.website" target="_blank" class="contact-chip web-chip">
+                <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
+                <span>{{ selectedClinic.website }}</span>
+              </a>
+              <span *ngIf="selectedClinic.email" class="contact-chip email-chip">
+                <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                </svg>
+                <span>{{ selectedClinic.email }}</span>
+              </span>
+              <span class="contact-chip phone-chip">
+                <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+                <span>{{ selectedClinic.phonePrimary }}</span>
+              </span>
             </div>
           </div>
 
           <!-- Branches Selector Section -->
           <div class="branches-section-wrapper">
-            <h3 class="section-subtitle">📍 {{ 'Select a Branch Location' | translate }}</h3>
+            <h3 class="section-subtitle">
+              <svg class="subtitle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              {{ 'Select a Branch Location' | translate }}
+            </h3>
             
             <div *ngIf="!selectedClinic.branches || selectedClinic.branches.length === 0" class="empty-state">
               <p>{{ 'No active clinic branch locations assigned.' | translate }}</p>
@@ -132,10 +210,29 @@
                   <h4 class="branch-name">{{ branch | translateObj:'branchName' }}</h4>
                   <span *ngIf="branch.isPrimary" class="primary-badge">{{ 'Primary' | translate }}</span>
                 </div>
-                <p class="branch-address">📍 {{ branch.addressLine1 }} {{ branch.addressLine2 }}</p>
+                
+                <p class="branch-address">
+                  <svg class="branch-pin-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  <span>{{ branch.addressLine1 }} {{ branch.addressLine2 }}</span>
+                </p>
+                
                 <div class="branch-contact-line">
-                  <span *ngIf="branch.phone">📞 {{ branch.phone }}</span>
-                  <span *ngIf="branch.email">✉️ {{ branch.email }}</span>
+                  <span *ngIf="branch.phone" class="branch-contact-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+                    {{ branch.phone }}
+                  </span>
+                  <span *ngIf="branch.email" class="branch-contact-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                    </svg>
+                    {{ branch.email }}
+                  </span>
                 </div>
               </div>
             </div>
@@ -143,33 +240,78 @@
 
           <!-- Selected Branch Workspace (Hours & Doctors) -->
           <div class="branch-workspace-wrapper" *ngIf="selectedBranch">
-            <div class="branch-workspace-grid">
-              
-              <!-- Sub-column A: Operating Hours -->
-              <div class="branch-hours-panel">
-                <div class="operating-hours-box">
-                  <h4 class="box-title">⏰ {{ 'Availability & Hours' | translate }}</h4>
-                  <p class="hours-branch-title">🏢 {{ selectedBranch | translateObj:'branchName' }}</p>
-                  
-                  <div class="hours-rows-container">
-                    <div *ngFor="let hr of branchOperatingHours" class="hours-row" [class.closed]="hr.isClosed">
-                      <span class="day-label">{{ getDaysOfWeekName(hr.dayOfWeek) }}</span>
-                      <span class="time-label" *ngIf="!hr.isClosed">⏰ {{ hr.openTime }} - {{ hr.closeTime }}</span>
-                      <span class="time-label closed-text" *ngIf="hr.isClosed">🔴 {{ 'Closed' | translate }}</span>
-                    </div>
-                    <div *ngIf="branchOperatingHours.length === 0" class="no-hours-text">
-                      {{ 'No schedules listed for this branch.' | translate }}
-                    </div>
+
+            <!-- Availability & Hours — Full width card above doctors -->
+            <div class="operating-hours-card">
+              <!-- Card Header -->
+              <div class="hours-card-header">
+                <div class="hours-header-left">
+                  <div class="hours-header-icon-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="hours-card-title">{{ 'Availability & Hours' | translate }}</h4>
+                    <p class="hours-card-branch">{{ selectedBranch | translateObj:'branchName' }}</p>
                   </div>
                 </div>
               </div>
 
-              <!-- Sub-column B: Doctors Roster -->
-              <div class="branch-doctors-panel">
-                <h3 class="section-subtitle">👨‍⚕️ {{ 'Doctors Roster' | translate }}</h3>
+              <!-- Days Grid -->
+              <div class="hours-days-grid" *ngIf="branchOperatingHours.length > 0">
+                <div *ngFor="let hr of branchOperatingHours"
+                  class="hours-day-cell"
+                  [class.is-closed]="hr.isClosed"
+                  [class.is-open]="!hr.isClosed">
+                  <span class="day-label">{{ getDaysOfWeekName(hr.dayOfWeek) }}</span>
+                  <ng-container *ngIf="!hr.isClosed">
+                    <span class="time-range-pill">
+                      <svg class="pill-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                      </svg>
+                      {{ hr.openTime ? hr.openTime.substring(0, 5) : '--' }}&nbsp;–&nbsp;{{ hr.closeTime ? hr.closeTime.substring(0, 5) : '--' }}
+                    </span>
+                  </ng-container>
+                  <ng-container *ngIf="hr.isClosed">
+                    <span class="closed-pill">
+                      <span class="closed-dot"></span>
+                      {{ 'Closed' | translate }}
+                    </span>
+                  </ng-container>
+                </div>
+              </div>
+
+              <!-- Empty State -->
+              <div class="hours-empty-state" *ngIf="branchOperatingHours.length === 0">
+                <svg class="hours-empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <p>{{ 'No schedules listed for this branch.' | translate }}</p>
+              </div>
+            </div>
+
+            <!-- Doctors Roster — Full width below hours -->
+            <div class="branch-doctors-panel">
+                <h3 class="section-subtitle">
+                  <svg class="subtitle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                  {{ 'Doctors Roster' | translate }}
+                </h3>
 
                 <div *ngIf="branchDoctors.length === 0" class="empty-state">
-                  <span class="empty-icon">🩺</span>
+                  <div class="empty-icon-wrapper">
+                    <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <path d="M4.8 2.3A10 10 0 1 0 21.7 15.2M20 9A8 8 0 1 1 4 9"></path>
+                      <path d="M12 5v8M9 9h6"></path>
+                    </svg>
+                  </div>
                   <p>{{ 'No active specialist doctors assigned to this branch location.' | translate }}</p>
                 </div>
 
@@ -183,17 +325,35 @@
                       </div>
                       <div class="doctor-primary-details">
                         <h4 class="doctor-name">
-                          {{ item.doctor.title === 'DR' ? ('Dr. ' | translate) : '' }}{{ item.doctor.fullName }}
+                          {{ (item.doctor.title === 'DR' && !item.doctor.fullName.startsWith('Dr') && !item.doctor.fullName.startsWith('Doctor')) ? ('Dr. ' | translate) : '' }}{{ item.doctor.fullName }}
                         </h4>
-                        <p class="doctor-department">🩺 {{ item.dcLink.department }}</p>
+                        <p class="doctor-department">
+                          <svg class="dept-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                          </svg>
+                          {{ item.dcLink.department }}
+                        </p>
 
                         <div class="doctor-badge-row">
-                          <span class="exp-badge">🏆 {{ item.doctor.experienceYears }} {{ 'Years Exp' | translate }}</span>
-                          <span class="fee-badge">💰 {{ item.dcLink.consultationFeeSar }} SAR</span>
+                          <span class="exp-badge">
+                            <svg class="badge-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                              <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34M12 2a4.7 4.7 0 0 0-4.5 4.8C7.5 9.5 12 14 12 14s4.5-4.5 4.5-7.2A4.7 4.7 0 0 0 12 2Z"></path>
+                            </svg>
+                            {{ item.doctor.experienceYears }} {{ 'Years Exp' | translate }}
+                          </span>
+                          <span class="fee-badge">
+                            <svg class="badge-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                              <line x1="12" y1="1" x2="12" y2="23"></line>
+                              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                            </svg>
+                            {{ item.dcLink.consultationFeeSar }} SAR
+                          </span>
                         </div>
 
-                        <div class="rating-reviews-line">
-                          <span class="stars-gold">★</span>
+                        <div class="rating-reviews-pill doctor-rating">
+                          <svg class="star-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                          </svg>
                           <span class="rating-val">{{ item.doctor.overallRating || 0 }}</span>
                           <span class="reviews-count">({{ item.doctor.reviewCount || 0 }} {{ 'reviews' | translate }})</span>
                         </div>
@@ -202,23 +362,39 @@
 
                     <!-- Doctor Card Body -->
                     <div class="doctor-card-body">
-                      <h5 class="body-sub-title">{{ 'Professional Biography' | translate }}</h5>
-                      <p class="doctor-bio">{{ (item.doctor | translateObj:'bio') || ('No bio notes provided.' | translate) }}</p>
+                      <div class="bio-section">
+                        <h5 class="body-sub-title">{{ 'Professional Biography' | translate }}</h5>
+                        <p class="doctor-bio">{{ (item.doctor | translateObj:'bio') || ('No bio notes provided.' | translate) }}</p>
+                      </div>
 
                       <!-- Spoken languages -->
                       <div class="languages-line" *ngIf="item.languages && item.languages.length > 0">
-                        <strong>💬 {{ 'Spoken Languages' | translate }}:</strong>
-                        <span *ngFor="let lang of item.languages" class="lang-pill">
-                          {{ getLanguageName(lang.languageId) }}
-                        </span>
+                        <strong class="lang-title-label">
+                          <svg class="lang-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                          </svg>
+                          {{ 'Languages' | translate }}:
+                        </strong>
+                        <div class="lang-pills-container">
+                          <span *ngFor="let lang of item.languages" class="lang-pill">
+                            {{ getLanguageName(lang.languageId) }}
+                          </span>
+                        </div>
                       </div>
 
                       <!-- Academic Qualifications -->
                       <div class="qualifications-list" *ngIf="item.qualifications && item.qualifications.length > 0">
-                        <h5 class="body-sub-title">🎓 {{ 'Academic Qualifications' | translate }}</h5>
-                        <div *ngFor="let qual of item.qualifications" class="qual-item">
-                          <span class="qual-degree">🎓 {{ qual.degree }}</span>
-                          <span class="qual-inst">- {{ qual.institution }}, {{ qual.country }} ({{ qual.yearObtained }})</span>
+                        <h5 class="body-sub-title">
+                          <svg class="qual-icon-title" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0zM6 18.8v-4L3.06 13.5M18 13.5V19a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2v-5.5"></path>
+                          </svg>
+                          {{ 'Academic Qualifications' | translate }}
+                        </h5>
+                        <div class="qual-items-wrapper">
+                          <div *ngFor="let qual of item.qualifications" class="qual-item">
+                            <span class="qual-degree">{{ qual.degree }}</span>
+                            <span class="qual-inst">from {{ qual.institution }}, {{ qual.country }} ({{ qual.yearObtained }})</span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -226,22 +402,31 @@
                     <!-- Book Button -->
                     <div class="doctor-card-action">
                       <button class="btn-book-now" (click)="openBooking(item.doctor, item.dcLink)">
-                        📅 {{ 'Book appointment' | translate }}
+                        <svg class="book-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                          <line x1="16" y1="2" x2="16" y2="6"></line>
+                          <line x1="8" y1="2" x2="8" y2="6"></line>
+                          <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        {{ 'Book appointment' | translate }}
                       </button>
                     </div>
                   </div>
                 </div>
-
-              </div>
 
             </div>
           </div>
 
           <!-- Empty state when branch is not selected -->
           <div class="select-branch-placeholder-card" *ngIf="!selectedBranch">
-            <span class="placeholder-icon-small">📍</span>
+            <div class="placeholder-icon-small-bg">
+              <svg class="placeholder-icon-small" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+            </div>
             <h4>{{ 'Select a Branch Location above' | translate }}</h4>
-            <p>{{ 'Choose one of the branch locations above to view its operating hours and list of available specialist doctors.' | translate }}</p>
+            <p>{{ 'Choose one of the active branch locations above to view its daily operating hours and list of available specialist doctors.' | translate }}</p>
           </div>
 
         </div>
@@ -256,8 +441,21 @@
 
       <!-- Modal Header -->
       <div class="modal-header">
-        <h3 class="modal-title">📅 {{ 'Schedule Your Consultation' | translate }}</h3>
-        <button class="btn-close-modal" (click)="closeBooking()">✕</button>
+        <h3 class="modal-title">
+          <svg class="modal-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          {{ 'Schedule Your Consultation' | translate }}
+        </h3>
+        <button class="btn-close-modal" (click)="closeBooking()" aria-label="Close modal">
+          <svg class="close-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
       </div>
 
       <!-- Modal Body -->
@@ -265,22 +463,36 @@
         <!-- Selected Context -->
         <div class="selected-details-summary" *ngIf="bookingDoctor && bookingDcLink">
           <div class="summary-doctor-profile">
-            <span class="doctor-icon">👨‍⚕️</span>
-            <div>
+            <div class="modal-doctor-avatar" [style.backgroundColor]="getAvatarBg(bookingDoctor.fullName)"
+              [style.color]="getAvatarColor(bookingDoctor.fullName)">
+              {{ getInitials(bookingDoctor.fullName) }}
+            </div>
+            <div class="summary-doctor-text">
               <h4 class="summary-doc-name">
-                {{ bookingDoctor.title === 'DR' ? ('Dr. ' | translate) : '' }}{{ bookingDoctor.fullName }}
+                {{ (bookingDoctor.title === 'DR' && !bookingDoctor.fullName.startsWith('Dr') && !bookingDoctor.fullName.startsWith('Doctor')) ? ('Dr. ' | translate) : '' }}{{ bookingDoctor.fullName }}
               </h4>
               <p class="summary-doc-subtitle">
-                {{ bookingDcLink.department }} · {{ selectedClinic | translateObj:'name' }} - {{ selectedBranch | translateObj:'branchName' }}
+                {{ bookingDcLink.department }} &middot; {{ selectedClinic | translateObj:'name' }} - {{ selectedBranch | translateObj:'branchName' }}
               </p>
-              <p class="summary-fee-line">💰 {{ 'Standard Fee:' | translate }} <strong>{{ bookingDcLink.consultationFeeSar }} SAR</strong></p>
+              <div class="summary-fee-line">
+                <span class="fee-label">{{ 'Consultation Fee:' | translate }}</span>
+                <span class="fee-amount">{{ bookingDcLink.consultationFeeSar }} SAR</span>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Date & Available Slots Picker -->
         <div class="modal-form-section">
-          <label class="section-label">📅 {{ 'Select Appointment Date *' | translate }}</label>
+          <label class="section-label">
+            <svg class="label-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            {{ 'Select Appointment Date *' | translate }}
+          </label>
 
           <!-- Date Chips Scroll Container -->
           <div class="date-chips-scroll-container">
@@ -294,24 +506,36 @@
             >
               <span class="chip-day-name">{{ day.dayName }}</span>
               <span class="chip-date-label">{{ day.label }}</span>
-              <span class="slots-badge" *ngIf="day.hasSlots">🟢</span>
-              <span class="slots-badge" *ngIf="!day.hasSlots">🔴</span>
+              <span class="slots-badge" [class.badge-active]="day.hasSlots"></span>
             </div>
           </div>
 
           <!-- Calendar Picker for Custom Dates -->
           <div class="custom-date-picker-row">
             <label class="section-label-sub">{{ 'Or choose another date:' | translate }}</label>
-            <input type="date" [value]="bookingDate" (change)="onDateChange($event)" class="modal-date-picker-input"
-              [min]="bookingDate" />
+            <div class="date-input-wrapper">
+              <input type="date" [value]="bookingDate" (change)="onDateChange($event)" class="modal-date-picker-input"
+                [min]="bookingDate" />
+            </div>
           </div>
 
           <!-- Slots lists -->
           <div class="available-slots-container">
-            <label class="section-label">⏰ {{ 'Available Slots for' | translate }} {{ bookingDate }}</label>
+            <label class="section-label">
+              <svg class="label-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              {{ 'Available Slots for' | translate }} {{ bookingDate }}
+            </label>
 
             <div *ngIf="availableSlots.length === 0" class="no-slots-warning-card">
-              ⚠️ {{ 'No open slots warning' | translate }}
+              <svg class="warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <span>{{ 'No open slots available for this doctor on the selected date.' | translate }}</span>
             </div>
 
             <div class="slots-grid-wrapper" *ngIf="availableSlots.length > 0">
@@ -321,9 +545,9 @@
                 [class.blocked]="slot.status === 'BLOCKED'"
                 [disabled]="slot.status !== 'AVAILABLE'"
                 (click)="selectSlot(slot)">
-                {{ slot.startTime.substring(0, 5) }}
-                <span class="slot-status-label" style="font-size: 10px; opacity: 0.85;" *ngIf="slot.status !== 'AVAILABLE'">
-                  ({{ slot.status === 'BOOKED' ? ('Booked' | translate) : ('Blocked' | translate) }})
+                <span class="slot-time">{{ slot.startTime.substring(0, 5) }}</span>
+                <span class="slot-status-label" *ngIf="slot.status !== 'AVAILABLE'">
+                  {{ slot.status === 'BOOKED' ? ('Booked' | translate) : ('Blocked' | translate) }}
                 </span>
               </button>
             </div>
@@ -355,7 +579,7 @@
           <div class="form-control-wrapper">
             <label class="section-label">{{ 'Reason for Visit / Symptoms (Optional)' | translate }}</label>
             <textarea formControlName="reason" class="modal-textarea-input"
-              [placeholder]="'Symptoms placeholder' | translate"></textarea>
+              [placeholder]="'Briefly describe your symptoms, medical concerns, or target goals for this visit...' | translate"></textarea>
             <span class="char-counter" *ngIf="bookingForm.value.reason">
               {{ bookingForm.value.reason.length }}/255
             </span>
@@ -371,11 +595,22 @@
         </button>
         <button class="btn-modal-action btn-confirm-booking" [disabled]="isSubmittingBooking || !selectedSlot"
           (click)="confirmBooking()">
-          <span *ngIf="isSubmittingBooking">⏳ {{ 'Processing Booking...' | translate }}</span>
-          <span *ngIf="!isSubmittingBooking">🚀 {{ 'Confirm & Book Appointment' | translate }}</span>
+          <span *ngIf="isSubmittingBooking" class="submitting-state">
+            <svg class="spinner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+              <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
+              <path d="M4 12a8 8 0 0 1 8-8"></path>
+            </svg>
+            {{ 'Processing Booking...' | translate }}
+          </span>
+          <span *ngIf="!isSubmittingBooking" class="normal-state">
+            <svg class="send-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            {{ 'Confirm & Book Appointment' | translate }}
+          </span>
         </button>
       </div>
 
     </div>
   </div>
-</div>
+</div>
