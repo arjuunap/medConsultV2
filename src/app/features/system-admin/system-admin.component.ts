@@ -10,10 +10,13 @@ import { ApiUrlPipe } from '../../shared/pipes/api-url.pipe';
 import { environment } from '../../../environments/environment';
 import { CustomSelectComponent } from '../../shared/components/custom-select/custom-select.component';
 
+import { LanguageService } from '../../core/services/language.service';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+
 @Component({
   selector: 'app-system-admin',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ApiUrlPipe, CustomSelectComponent],
+  imports: [CommonModule, ReactiveFormsModule, ApiUrlPipe, CustomSelectComponent, TranslatePipe],
   templateUrl: './system-admin.component.html',
   styleUrls: ['./system-admin.component.css']
 })
@@ -22,9 +25,18 @@ export class SystemAdminComponent implements OnInit {
   private doctorService = inject(DoctorService);
   private uiService = inject(UiService);
   private fb = inject(FormBuilder);
+  public languageService = inject(LanguageService);
 
   public activeTab: 'cities' | 'specialties' | 'languages' | 'insurances' | 'doctors' = 'cities';
   public SPECIALTY_CATEGORIES = ['GENERAL', 'MEDICAL', 'SURGICAL', 'DENTAL', 'PEDIATRICS', 'OBGYN', 'PSYCHIATRY', 'OTHER'];
+
+  getDoctorDisplayName(doc: DoctorResponseDto): string {
+    if (!doc) return '';
+    const fullName = doc.fullName || '';
+    const title = doc.title || 'Dr.';
+    const hasTitlePrefix = /^(Dr|Doctor|Prof|Professor|Consultant|Specialist)\.?\s+/i.test(fullName);
+    return hasTitlePrefix ? fullName : `${title} ${fullName}`;
+  }
 
   get specialtyCategoryOptions() {
     return this.SPECIALTY_CATEGORIES.map(cat => ({ label: cat, value: cat }));

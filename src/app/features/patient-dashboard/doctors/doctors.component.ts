@@ -302,14 +302,16 @@ export class DoctorsComponent implements OnInit {
 
   // Helpers
   getDoctorDisplayName(d: any): string {
-    const title = d.title || 'Dr';
+    if (!d) return '';
     const name = d.fullName || '';
-    const nameLower = name.toLowerCase().trim();
-    if (nameLower.startsWith('dr') || nameLower.startsWith('prof') || nameLower.startsWith('consultant')) {
-      return name;
+    const nameTrimmed = name.trim();
+    const nameLower = nameTrimmed.toLowerCase();
+    if (nameLower.startsWith('dr') || nameLower.startsWith('doctor') || nameLower.startsWith('prof') || nameLower.startsWith('consultant') || nameLower.startsWith('specialist') || nameLower.startsWith('د.')) {
+      return nameTrimmed;
     }
-    const translatedTitle = this.languageService.translate(title, title === 'DR' ? 'د.' : 'طبيب');
-    return `${translatedTitle ? translatedTitle + '. ' : ''}${name}`;
+    const isAr = this.languageService.isArabic;
+    const prefix = isAr ? 'د.' : 'Dr.';
+    return `${prefix} ${nameTrimmed}`;
   }
 
   getSpecialtyName(specialtyId: string): string {
