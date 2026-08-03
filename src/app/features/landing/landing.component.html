@@ -262,28 +262,48 @@
                 {{ 'Active Facility' | translate }}
               </span>
             </div>
-            <div class="clinic-tags">
-              <span *ngFor="let s of clinic.specs" class="tag tg-teal">{{ s }}</span>
-              <span *ngFor="let l of clinic.languages" class="tag tg-gray d-inline-flex align-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
-                  <path d="M2 12h20"></path>
-                </svg>
-                {{ l }}
-              </span>
-              <span *ngFor="let i of clinic.insurances" class="tag tg-gray d-inline-flex align-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18"></path>
-                  <path d="M16 22H8"></path>
-                  <path d="M12 5v4"></path>
-                  <path d="M10 7h4"></path>
-                  <path d="M12 13v8"></path>
-                </svg>
-                {{ i }}
-              </span>
+            <!-- Categorized Metadata Groups -->
+            <div class="clinic-meta-groups">
+              
+              <!-- Medical Specialties Group -->
+              <div class="meta-group-row" *ngIf="clinic.specs && clinic.specs.length > 0">
+                <span class="meta-group-label">{{ 'Specialties:' | translate }}</span>
+                <div class="meta-group-tags">
+                  <span *ngFor="let s of clinic.specs" class="tag tag-spec">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                    {{ s }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Accepted Insurance Group -->
+              <div class="meta-group-row">
+                <span class="meta-group-label">{{ 'Accepted Insurance:' | translate }}</span>
+                <div class="meta-group-tags" *ngIf="clinic.insurances && clinic.insurances.length > 0">
+                  <span *ngFor="let i of clinic.insurances" class="tag tag-insurance" [title]="'Accepted Insurance Provider' | translate">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    {{ i }}
+                  </span>
+                </div>
+                <div class="meta-group-tags" *ngIf="!clinic.insurances || clinic.insurances.length === 0">
+                  <span class="tag tag-selfpay">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                    {{ 'Self-Pay / Direct' | translate }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Spoken Languages Group -->
+              <div class="meta-group-row" *ngIf="clinic.languages && clinic.languages.length > 0">
+                <span class="meta-group-label">{{ 'Languages:' | translate }}</span>
+                <div class="meta-group-tags">
+                  <span *ngFor="let l of clinic.languages" class="tag tag-lang">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                    {{ l }}
+                  </span>
+                </div>
+              </div>
+
             </div>
           </div>
           <div class="clinic-actions">
