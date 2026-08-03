@@ -1,10 +1,10 @@
 <div class="schedule-container">
   <div class="schedule-header-card d-flex justify-between align-center flex-wrap gap-3">
     <div>
-      <h2 class="fs-xl text-primary m-0 fw-bold">🗓️ Doctor Consultation Schedule</h2>
-      <p class="text-muted fs-sm mt-1 m-0">Clinical timeline of patient appointments for today</p>
+      <h2 class="fs-xl text-primary m-0 fw-bold">🗓️ {{ 'Doctor Consultation Schedule' | translate }}</h2>
+      <p class="text-muted fs-sm mt-1 m-0">{{ 'Clinical timeline of patient appointments for today' | translate }}</p>
     </div>
-    <span class="badge badge-teal fs-xs">Total Scheduled: {{ upcomingAppointments.length }}</span>
+    <span class="badge badge-teal fs-xs">{{ 'Total Scheduled:' | translate }} {{ upcomingAppointments.length }}</span>
   </div>
 
   <!-- Timeline List -->
@@ -25,7 +25,7 @@
         <div>
           <div class="patient-name-title">{{ app.patientName }}</div>
           <div class="fs-xs text-muted">
-            Date: {{ app.scheduledDate | date:'mediumDate' }} | Mode: <strong>{{ app.sessionType.replace('_', ' ') }}</strong>
+            {{ 'Date:' | translate }} {{ app.scheduledDate | date:'mediumDate' }} | {{ 'Mode:' | translate }} <strong>{{ app.sessionType | translate }}</strong>
           </div>
         </div>
       </div>
@@ -33,7 +33,7 @@
       <!-- Status & Action Buttons -->
       <div class="d-flex align-center gap-3 flex-wrap">
         <span class="badge" [class.badge-success]="app.status==='CONFIRMED' || app.status==='COMPLETED'" [class.badge-warning]="app.status==='SCHEDULED'" [class.badge-danger]="app.status==='CANCELLED' || app.status==='NO_SHOW'">
-          {{ app.status }}
+          {{ app.status | translate }}
         </span>
 
         <!-- Primary Start Consultation Button for active slot -->
@@ -42,7 +42,7 @@
           class="btn btn-primary btn-sm btn-start-consult"
           (click)="changeStatus(app.appointmentId, 'CONFIRMED')"
         >
-          ▶ Start Consultation
+          ▶ {{ 'Start Consultation' | translate }}
         </button>
 
         <button 
@@ -50,7 +50,7 @@
           class="btn btn-accent btn-sm"
           (click)="changeStatus(app.appointmentId, 'COMPLETED')"
         >
-          ✓ Mark Complete
+          ✓ {{ 'Mark Complete' | translate }}
         </button>
 
         <button 
@@ -58,14 +58,14 @@
           class="btn btn-outline btn-danger btn-sm"
           (click)="changeStatus(app.appointmentId, 'NO_SHOW')"
         >
-          No Show
+          {{ 'No Show' | translate }}
         </button>
       </div>
     </div>
 
     <!-- Empty State -->
     <div *ngIf="upcomingAppointments.length === 0" class="text-center p-5 text-muted bg-white rounded-lg border shadow-sm">
-      No patient consultations scheduled for today.
+      {{ 'No patient consultations scheduled for today.' | translate }}
     </div>
   </div>
 </div>

@@ -96,34 +96,34 @@
               [options]="titles" 
               bindLabel="label" 
               bindValue="value" 
-              placeholder="Select Title">
+              [placeholder]="'Select Title' | translate">
             </app-custom-select>
           </div>
           <div class="form-group mb-3">
             <label class="form-label">{{ 'MOH Registration Number' | translate }} *</label>
-            <input type="text" formControlName="mohRegistrationNumber" class="form-control" placeholder="MOH-123456">
+            <input type="text" formControlName="mohRegistrationNumber" class="form-control" [placeholder]="'MOH-123456' | translate">
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group mb-3">
             <label class="form-label">{{ 'Years of Experience' | translate }} *</label>
-            <input type="number" formControlName="experienceYears" class="form-control" placeholder="10">
+            <input type="number" formControlName="experienceYears" class="form-control" [placeholder]="'10' | translate">
           </div>
           <div class="form-group mb-3">
             <label class="form-label">{{ 'Base Consultation Fee (SAR)' | translate }} *</label>
-            <input type="number" formControlName="consultationFeeSar" class="form-control" placeholder="150">
+            <input type="number" formControlName="consultationFeeSar" class="form-control" [placeholder]="'150' | translate">
           </div>
         </div>
 
         <div class="form-group mb-3">
           <label class="form-label">{{ 'English Biography / Summary' | translate }}</label>
-          <textarea formControlName="bioEn" class="form-control" rows="3" placeholder="Describe your medical background, expertise, and patient care philosophy in English..."></textarea>
+          <textarea formControlName="bioEn" class="form-control" rows="3" [placeholder]="'Describe your medical background, expertise, and patient care philosophy in English...' | translate"></textarea>
         </div>
 
         <div class="form-group mb-3">
           <label class="form-label">{{ 'Arabic Biography / Summary' | translate }}</label>
-          <textarea formControlName="bioAr" class="form-control" rows="3" placeholder="نبذة عن خبراتك الطبية وتخصصك باللغة العربية..."></textarea>
+          <textarea formControlName="bioAr" class="form-control" rows="3" [placeholder]="'نبذة عن خبراتك الطبية وتخصصك باللغة العربية...' | translate"></textarea>
         </div>
 
         <div class="d-flex justify-end pt-3 border-top">
@@ -147,7 +147,7 @@
               bindLabel="label" 
               bindValue="value" 
               [searchable]="true" 
-              placeholder="-- Choose Specialty --"
+              [placeholder]="'-- Choose Specialty --' | translate"
               (selectionChange)="onSpecialtyChange()">
             </app-custom-select>
           </div>
@@ -158,7 +158,7 @@
               [options]="subSpecialtySelectOptions" 
               bindLabel="label" 
               bindValue="value" 
-              placeholder="-- None --">
+              [placeholder]="'-- None --' | translate">
             </app-custom-select>
           </div>
           <div class="form-group d-flex align-center gap-2 mt-4 mb-3">
@@ -217,7 +217,7 @@
               bindLabel="label" 
               bindValue="value" 
               [searchable]="true" 
-              placeholder="-- Choose Language --">
+              [placeholder]="'-- Choose Language --' | translate">
             </app-custom-select>
           </div>
           <div class="form-group flex-1 mb-3">
@@ -227,7 +227,7 @@
               [options]="proficiencies" 
               bindLabel="label" 
               bindValue="value" 
-              placeholder="Select proficiency">
+              [placeholder]="'Select proficiency' | translate">
             </app-custom-select>
           </div>
           <div class="form-group d-flex align-end mb-3">
@@ -272,22 +272,22 @@
         <div class="form-row">
           <div class="form-group mb-3">
             <label class="form-label">{{ 'Degree *' | translate }}</label>
-            <input type="text" formControlName="degree" class="form-control" placeholder="E.g. MBBS, MD, Board Certification">
+            <input type="text" formControlName="degree" class="form-control" [placeholder]="'E.g. MBBS, MD, Board Certification' | translate">
           </div>
           <div class="form-group mb-3">
             <label class="form-label">{{ 'Institution / University *' | translate }}</label>
-            <input type="text" formControlName="institution" class="form-control" placeholder="University Name">
+            <input type="text" formControlName="institution" class="form-control" [placeholder]="'University Name' | translate">
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group mb-3">
             <label class="form-label">{{ 'Country *' | translate }}</label>
-            <input type="text" formControlName="country" class="form-control" placeholder="Saudi Arabia">
+            <input type="text" formControlName="country" class="form-control" [placeholder]="'Saudi Arabia' | translate">
           </div>
           <div class="form-group mb-3">
             <label class="form-label">{{ 'Year Obtained *' | translate }}</label>
-            <input type="number" formControlName="yearObtained" class="form-control" placeholder="2018">
+            <input type="number" formControlName="yearObtained" class="form-control" [placeholder]="'2018' | translate">
           </div>
           <div class="form-group d-flex align-end mb-3">
             <button type="submit" [disabled]="qualificationForm.invalid" class="btn btn-primary w-100">

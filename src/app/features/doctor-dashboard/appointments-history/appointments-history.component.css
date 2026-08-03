@@ -223,8 +223,8 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(4px);
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -232,23 +232,24 @@
   padding: 1.25rem;
 }
 
-.modal-box {
-  background: white;
-  border-radius: 16px;
+.spec-modal-box {
+  background: #FFFFFF;
+  border-radius: 20px;
   width: 100%;
-  max-width: 750px;
+  max-width: 780px;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   animation: modalEnter 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 @keyframes modalEnter {
   from {
     opacity: 0;
-    transform: scale(0.95) translateY(10px);
+    transform: scale(0.95) translateY(12px);
   }
   to {
     opacity: 1;
@@ -256,36 +257,40 @@
   }
 }
 
-.modal-header {
-  border-bottom: 1px solid #E5E7EB;
-  background-color: #F9FAFB;
+.spec-modal-header {
+  background: linear-gradient(135deg, #085041 0%, #0F766E 100%);
+  color: white;
+  position: relative;
 }
 
-.modal-header h3 {
-  color: #1F2937;
+.btn-close-modal-glass {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   font-size: 1.25rem;
-}
-
-.btn-close-modal {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  color: #9CA3AF;
+  color: white;
   cursor: pointer;
-  padding: 0.25rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.15s;
+  transition: all 0.2s ease;
 }
 
-.btn-close-modal:hover {
-  color: #4B5563;
+.btn-close-modal-glass:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(1.05);
 }
+
+.text-white-75 { color: rgba(255, 255, 255, 0.85); }
+.bg-white-20 { background: rgba(255, 255, 255, 0.2); }
+.fs-lg { font-size: 1.2rem; }
+.fs-md { font-size: 1rem; }
 
 .modal-body {
   overflow-y: auto;
-  max-height: calc(90vh - 130px);
+  max-height: calc(90vh - 140px);
 }
 
 .details-grid {
@@ -303,49 +308,80 @@
 .details-main {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1rem;
 }
 
-.info-row {
+.spec-card {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.spec-card:hover {
+  border-color: #CBD5E1;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.spec-card-header {
+  background: #F1F5F9;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid #E2E8F0;
   display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.info-label {
-  font-size: 0.825rem;
+.spec-icon {
+  font-size: 0.95rem;
+}
+
+.spec-title {
+  font-size: 0.8rem;
   font-weight: 700;
   text-transform: uppercase;
-  color: #4B5563;
-  letter-spacing: 0.025em;
+  letter-spacing: 0.04em;
+  color: #475569;
 }
 
-.info-value {
-  font-size: 1rem;
-  color: #111827;
+.spec-card-body {
+  padding: 1rem;
 }
 
-.reason-box {
+.reason-quote-box {
+  background: white;
   padding: 0.85rem 1rem;
-  background-color: #F9FAFB;
   border-radius: 8px;
   border-left: 4px solid #085041;
   font-style: italic;
-  font-size: 0.95rem;
-  color: #374151;
-  line-height: 1.45;
+  font-size: 0.925rem;
+  color: #334155;
+  line-height: 1.5;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
-.border-danger-l {
-  border-left: 4px solid #DC2626 !important;
+.border-danger-card {
+  border-color: #FECDD3 !important;
+  background: #FFF1F2 !important;
+}
+
+.border-danger-card .spec-card-header {
+  background: #FFE4E6 !important;
+  border-color: #FECDD3 !important;
 }
 
 .details-sidebar {
-  background-color: #F9FAFB;
+  background: #F8FAFC;
   padding: 1.25rem;
-  border-radius: 12px;
-  border: 1px solid #E5E7EB;
+  border-radius: 14px;
+  border: 1px solid #E2E8F0;
   height: fit-content;
+}
+
+.btn-md {
+  padding: 0.65rem 1rem;
+  font-size: 0.875rem;
 }
 
 .details-sidebar h5 {

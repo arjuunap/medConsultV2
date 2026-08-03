@@ -171,73 +171,121 @@
   </div>
 </div>
 
-<!-- DETAILS DIALOG MODAL -->
+<!-- DETAILS DIALOG MODAL (Enhanced Premium UI & UX) -->
 <div class="modal-overlay" *ngIf="showDetailsModal && selectedAppointment" (click)="closeDetails()">
-  <div class="modal-box" (click)="$event.stopPropagation()">
-    <div class="modal-header d-flex justify-between align-center p-3">
-      <h3 class="m-0 fw-bold">🗓️ {{ 'Appointment Specification Details' | translate }}</h3>
-      <button class="btn-close-modal" (click)="closeDetails()">✕</button>
+  <div class="modal-box spec-modal-box" (click)="$event.stopPropagation()">
+    <!-- Modal Header Banner -->
+    <div class="spec-modal-header d-flex justify-between align-center p-4">
+      <div class="d-flex align-center gap-3">
+        <div class="patient-avatar-lg shadow-sm" [style.background]="getAvatarBg(selectedAppointment.patientName)" [style.color]="getAvatarColor(selectedAppointment.patientName)">
+          {{ getPatientInitials(selectedAppointment.patientName) }}
+        </div>
+        <div>
+          <div class="d-flex align-center gap-2 flex-wrap">
+            <h3 class="m-0 text-white fw-bold fs-lg">{{ selectedAppointment.patientName }}</h3>
+            <span class="status-badge" [class.status-completed]="selectedAppointment.status === 'COMPLETED'" 
+              [class.status-confirmed]="selectedAppointment.status === 'CONFIRMED'" 
+              [class.status-scheduled]="selectedAppointment.status === 'SCHEDULED'" 
+              [class.status-cancelled]="selectedAppointment.status === 'CANCELLED' || selectedAppointment.status === 'NO_SHOW'">
+              {{ selectedAppointment.status | translate }}
+            </span>
+          </div>
+          <p class="text-white-75 fs-xs m-0 mt-1">
+            {{ 'Patient Account ID' | translate }}: <code class="bg-white-20 px-1 rounded">{{ selectedAppointment.patientId }}</code>
+          </p>
+        </div>
+      </div>
+      <button class="btn-close-modal-glass" (click)="closeDetails()" aria-label="Close dialog">✕</button>
     </div>
 
     <div class="modal-body p-4">
       <div class="details-grid">
-        <!-- Main details -->
+        <!-- Main Details Column -->
         <div class="details-main">
-          <div class="d-flex align-center gap-3 mb-4">
-            <div class="patient-avatar-lg" [style.background]="getAvatarBg(selectedAppointment.patientName)" [style.color]="getAvatarColor(selectedAppointment.patientName)">
-              {{ getPatientInitials(selectedAppointment.patientName) }}
+          <!-- Card 1: Schedule & Session Info -->
+          <div class="spec-card">
+            <div class="spec-card-header">
+              <span class="spec-icon">📅</span>
+              <span class="spec-title">{{ 'Scheduled Date & Time' | translate }}</span>
             </div>
-            <div>
-              <h4 class="m-0 text-dark fw-bold" style="font-size:1.2rem;">{{ selectedAppointment.patientName }}</h4>
-              <div class="fs-sm text-muted">{{ 'Patient Account ID' | translate }}: {{ selectedAppointment.patientId }}</div>
-            </div>
-          </div>
-
-          <div class="info-row">
-            <div class="info-label">📅 {{ 'Scheduled Date & Time' | translate }}</div>
-            <div class="info-value">{{ selectedAppointment.scheduledDate | date:'fullDate' }} &#64; {{ selectedAppointment.startTime.substring(0,5) }} ({{ selectedAppointment.durationMinutes }} {{ 'minutes duration' | translate }})</div>
-          </div>
-
-          <div class="info-row">
-            <div class="info-label">🏢 {{ 'Clinical Assignment' | translate }}</div>
-            <div class="info-value">
-              <strong>{{ languageService.isArabic ? selectedAppointment.clinicNameAr : selectedAppointment.clinicNameEn }}</strong>
-              <div class="fs-xs text-muted">{{ selectedAppointment.department }} · {{ languageService.isArabic ? selectedAppointment.branchNameAr : selectedAppointment.branchNameEn }}</div>
-            </div>
-          </div>
-
-          <div class="info-row">
-            <div class="info-label">🩺 {{ 'Consultation Details' | translate }}</div>
-            <div class="info-value">
-              <span class="mode-badge" [class.mode-clinic]="selectedAppointment.sessionType === 'IN_CLINIC'" [class.mode-video]="selectedAppointment.sessionType === 'VIDEO_CALL'">
-                {{ selectedAppointment.sessionType === 'IN_CLINIC' ? ('🏢 In-Clinic Visit' | translate) : ('💻 Video Call Session' | translate) }}
-              </span>
-              <span class="type-badge ms-2">{{ selectedAppointment.appointmentType?.replace('_', ' ') }}</span>
+            <div class="spec-card-body">
+              <div class="d-flex align-center justify-between flex-wrap gap-2 mb-2">
+                <span class="fs-md fw-bold text-dark">
+                  🗓️ {{ selectedAppointment.scheduledDate | date:'fullDate' }}
+                </span>
+                <span class="badge badge-teal fs-xs">
+                  ⏰ {{ selectedAppointment.startTime.substring(0,5) }} ({{ selectedAppointment.durationMinutes }} {{ 'minutes duration' | translate }})
+                </span>
+              </div>
+              <div class="d-flex align-center gap-2 mt-2 flex-wrap">
+                <span class="mode-badge" [class.mode-clinic]="selectedAppointment.sessionType === 'IN_CLINIC'" [class.mode-video]="selectedAppointment.sessionType === 'VIDEO_CALL'">
+                  {{ selectedAppointment.sessionType === 'IN_CLINIC' ? ('🏢 In-Clinic Visit' | translate) : ('💻 Video Call Session' | translate) }}
+                </span>
+                <span class="type-badge">
+                  {{ (selectedAppointment.appointmentType | translate) || selectedAppointment.appointmentType }}
+                </span>
+              </div>
             </div>
           </div>
 
-          <div class="info-row">
-            <div class="info-label">📝 {{ 'Reason for Consultation' | translate }}</div>
-            <div class="info-value reason-box">{{ selectedAppointment.reason || ('No specific reasons provided by the patient.' | translate) }}</div>
+          <!-- Card 2: Clinical Facility & Department -->
+          <div class="spec-card">
+            <div class="spec-card-header">
+              <span class="spec-icon">🏥</span>
+              <span class="spec-title">{{ 'Clinical Assignment' | translate }}</span>
+            </div>
+            <div class="spec-card-body">
+              <h4 class="m-0 text-primary fw-bold fs-md">
+                {{ languageService.isArabic ? selectedAppointment.clinicNameAr : selectedAppointment.clinicNameEn }}
+              </h4>
+              <div class="d-flex align-center gap-2 text-muted fs-xs mt-1">
+                <span>🩺 {{ selectedAppointment.department }}</span>
+                <span>•</span>
+                <span>📍 {{ languageService.isArabic ? selectedAppointment.branchNameAr : selectedAppointment.branchNameEn }}</span>
+              </div>
+            </div>
           </div>
 
-          <div class="info-row" *ngIf="selectedAppointment.status === 'CANCELLED'">
-            <div class="info-label text-danger">⚠️ {{ 'Cancellation Information' | translate }}</div>
-            <div class="info-value reason-box text-danger border-danger-l">
-              <strong>{{ 'Cancelled By ID' | translate }}:</strong> {{ selectedAppointment.cancelledById }}
-              <div class="mt-1"><strong>{{ 'Reason' | translate }}:</strong> {{ selectedAppointment.cancelReason || ('No reason provided' | translate) }}</div>
+          <!-- Card 3: Consultation Reason -->
+          <div class="spec-card">
+            <div class="spec-card-header">
+              <span class="spec-icon">📝</span>
+              <span class="spec-title">{{ 'Reason for Consultation' | translate }}</span>
+            </div>
+            <div class="spec-card-body">
+              <div class="reason-quote-box">
+                {{ selectedAppointment.reason || ('No specific reasons provided by the patient.' | translate) }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 4: Cancellation Alert (If Cancelled) -->
+          <div class="spec-card border-danger-card" *ngIf="selectedAppointment.status === 'CANCELLED' || selectedAppointment.status === 'NO_SHOW'">
+            <div class="spec-card-header text-danger">
+              <span class="spec-icon">⚠️</span>
+              <span class="spec-title text-danger">{{ 'Cancellation Information' | translate }}</span>
+            </div>
+            <div class="spec-card-body text-danger">
+              <p class="m-0 fs-xs mb-1">
+                <strong>{{ 'Cancelled By ID' | translate }}:</strong> {{ selectedAppointment.cancelledById || 'System' }}
+              </p>
+              <p class="m-0 fs-sm">
+                <strong>{{ 'Reason' | translate }}:</strong> {{ selectedAppointment.cancelReason || ('No reason provided' | translate) }}
+              </p>
             </div>
           </div>
         </div>
 
-        <!-- Shortcuts / Quick Actions -->
+        <!-- Sidebar Shortcuts Column -->
         <div class="details-sidebar">
-          <h5 class="fw-bold mb-3">{{ 'Quick Shortcuts' | translate }}</h5>
+          <h5 class="fw-bold mb-3 d-flex align-center gap-2">
+            🚀 <span>{{ 'Quick Shortcuts' | translate }}</span>
+          </h5>
           <div class="shortcut-buttons d-flex flex-column gap-2">
-            <button class="btn btn-teal btn-sm w-100" (click)="goToEMR(selectedAppointment.patientId)">
+            <button class="btn btn-teal btn-md w-100 shadow-sm" (click)="goToEMR(selectedAppointment.patientId)">
               📋 {{ 'View Patient EMR Chart' | translate }}
             </button>
-            <button class="btn btn-primary btn-sm w-100" *ngIf="selectedAppointment.consultationId" (click)="goToChat(selectedAppointment.consultationId)">
+            <button class="btn btn-primary btn-md w-100 shadow-sm" *ngIf="selectedAppointment.consultationId" (click)="goToChat(selectedAppointment.consultationId)">
               💬 {{ 'Go to Consultation Chat' | translate }}
             </button>
           </div>
@@ -245,8 +293,11 @@
       </div>
     </div>
 
-    <div class="modal-footer p-3 d-flex justify-end">
-      <button class="btn btn-outline" (click)="closeDetails()">{{ 'Close Details' | translate }}</button>
+    <!-- Modal Footer Bar -->
+    <div class="modal-footer p-3 d-flex justify-end bg-light">
+      <button class="btn btn-outline" (click)="closeDetails()">
+        {{ 'Close Details' | translate }}
+      </button>
     </div>
   </div>
 </div>

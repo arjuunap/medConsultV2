@@ -1144,6 +1144,21 @@ const translations: { [lang in Lang]: { [key: string]: string } } = {
     'No Slots Available for Selected Date': 'No Slots Available for Selected Date',
     'Click below to generate slots automatically from your weekly schedule rules.': 'Click below to generate slots automatically from your weekly schedule rules.',
     'Auto-Generate Now': 'Auto-Generate Now',
+    // Doctor Appointments History
+    'Patient Appointments History': 'Patient Appointments History',
+    'Search, filter, and review details of all patient clinical appointments': 'Search, filter, and review details of all patient clinical appointments',
+    'Total Records': 'Total Records',
+    'Select Status': 'Select Status',
+    'Refresh': 'Refresh',
+    'In-Clinic': 'In-Clinic',
+    'Video Call': 'Video Call',
+    'Patient Account ID': 'Patient Account ID',
+    'Cancelled By ID': 'Cancelled By ID',
+    'View Patient EMR Chart': 'View Patient EMR Chart',
+    'Go to Consultation Chat': 'Go to Consultation Chat',
+    'All Statuses': 'All Statuses',
+    'All Modes': 'All Modes',
+    'In-Clinic Visit': 'In-Clinic Visit',
     'CHATTING': 'Chatting'
   },
   ar: {
@@ -2243,6 +2258,21 @@ const translations: { [lang in Lang]: { [key: string]: string } } = {
     'No Slots Available for Selected Date': 'لا تتوفر فترات متاحة للتاريخ المحدد',
     'Click below to generate slots automatically from your weekly schedule rules.': 'انقر أدناه لتوليد الفترات المتاحة تلقائياً بناءً على قواعد جدولك الأسبوعي.',
     'Auto-Generate Now': 'توليد تلقائي الآن',
+    // Doctor Appointments History
+    'Patient Appointments History': 'سجل مواعيد المرضى',
+    'Search, filter, and review details of all patient clinical appointments': 'البحث والفلترة ومراجعة تفاصيل جميع مواعيد المرضى السريرية',
+    'Total Records': 'إجمالي السجلات',
+    'Select Status': 'اختر الحالة',
+    'Refresh': 'تحديث',
+    'In-Clinic': 'في العيادة',
+    'Video Call': 'مكالمة فيديو',
+    'Patient Account ID': 'معرف حساب المريض',
+    'Cancelled By ID': 'معرف المُلغي',
+    'View Patient EMR Chart': 'عرض سجل المريض EMR',
+    'Go to Consultation Chat': 'الانتقال إلى محادثة الاستشارة',
+    'All Statuses': 'جميع الحالات',
+    'All Modes': 'جميع الطرق',
+    'In-Clinic Visit': 'زيارة العيادة',
     'CHATTING': 'محادثة كتابية'
   }
 };

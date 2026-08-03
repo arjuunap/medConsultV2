@@ -2,18 +2,21 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AppointmentService } from '../../../core/services/appointment.service';
 import { UiService } from '../../../core/services/ui.service';
+import { LanguageService } from '../../../core/services/language.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { AppointmentResponseDto, AppointmentStatus } from '../../../core/models/appointment.model';
 
 @Component({
   selector: 'app-schedule',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './schedule.component.html',
   styleUrls: ['./schedule.component.css']
 })
 export class ScheduleComponent implements OnInit {
   private appointmentService = inject(AppointmentService);
   private uiService = inject(UiService);
+  public languageService = inject(LanguageService);
 
   public upcomingAppointments: AppointmentResponseDto[] = [];
   public statusList = Object.values(AppointmentStatus).filter(
