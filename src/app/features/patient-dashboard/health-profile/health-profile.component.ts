@@ -9,11 +9,13 @@ import {
   PatientHealthProfileResponseDto, PatientAllergyResponseDto, PatientChronicConditionResponseDto
 } from '../../../core/models/patient.model';
 import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
+import { LanguageService } from '../../../core/services/language.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-health-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, CustomSelectComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, CustomSelectComponent, TranslatePipe],
   templateUrl: './health-profile.component.html',
   styleUrls: ['./health-profile.component.css']
 })
@@ -21,6 +23,7 @@ export class HealthProfileComponent implements OnInit {
   private patientService = inject(PatientService);
   private uiService = inject(UiService);
   private fb = inject(FormBuilder);
+  public languageService = inject(LanguageService);
 
   public patientId = '';
   public needProfileInit = false;
@@ -33,23 +36,84 @@ export class HealthProfileComponent implements OnInit {
   public alcoholStatuses = Object.values(AlcoholStatus);
 
   get smokingStatusOptions() {
-    return this.smokingStatuses.map(s => ({ label: s, value: s }));
+    return this.smokingStatuses.map(s => ({
+      label: this.languageService.translate(s, this.getSmokingStatusAr(s)),
+      value: s
+    }));
   }
 
   get alcoholStatusOptions() {
-    return this.alcoholStatuses.map(a => ({ label: a, value: a }));
+    return this.alcoholStatuses.map(a => ({
+      label: this.languageService.translate(a, this.getAlcoholStatusAr(a)),
+      value: a
+    }));
   }
 
   get allergyTypeOptions() {
-    return this.allergyTypes.map(t => ({ label: t, value: t }));
+    return this.allergyTypes.map(t => ({
+      label: this.languageService.translate(t, this.getAllergyTypeAr(t)),
+      value: t
+    }));
   }
 
   get severityOptions() {
-    return this.severities.map(s => ({ label: s, value: s }));
+    return this.severities.map(s => ({
+      label: this.languageService.translate(s, this.getSeverityAr(s)),
+      value: s
+    }));
   }
 
   get conditionStatusOptions() {
-    return this.conditionStatuses.map(s => ({ label: s, value: s }));
+    return this.conditionStatuses.map(s => ({
+      label: this.languageService.translate(s, this.getConditionStatusAr(s)),
+      value: s
+    }));
+  }
+
+  private getSmokingStatusAr(s: string): string {
+    switch (s) {
+      case SmokingStatus.NEVER: return 'أبداً (غير تدخين)';
+      case SmokingStatus.FORMER: return 'مدخن سابق';
+      case SmokingStatus.CURRENT: return 'مدخن حالياً';
+      default: return s;
+    }
+  }
+
+  private getAlcoholStatusAr(a: string): string {
+    switch (a) {
+      case AlcoholStatus.NONE: return 'لا يوجد';
+      case AlcoholStatus.OCCASIONAL: return 'أحياناً';
+      case AlcoholStatus.REGULAR: return 'منتظم';
+      default: return a;
+    }
+  }
+
+  private getAllergyTypeAr(t: string): string {
+    switch (t) {
+      case AllergyType.DRUG: return 'أدوية وعقاقير';
+      case AllergyType.FOOD: return 'أطعمة ومأكولات';
+      case AllergyType.ENVIRONMENTAL: return 'بيئية / موسمية';
+      case AllergyType.OTHER: return 'أخرى';
+      default: return t;
+    }
+  }
+
+  private getSeverityAr(s: string): string {
+    switch (s) {
+      case Severity.MILD: return 'طفيف';
+      case Severity.MODERATE: return 'متوسط';
+      case Severity.SEVERE: return 'حرج / شديد';
+      default: return s;
+    }
+  }
+
+  private getConditionStatusAr(c: string): string {
+    switch (c) {
+      case ConditionStatus.ACTIVE: return 'نشط';
+      case ConditionStatus.IN_REMISSION: return 'في مرحلة هدوء';
+      case ConditionStatus.RESOLVED: return 'تم التعافي';
+      default: return c;
+    }
   }
 
   public healthForm: FormGroup = this.fb.group({

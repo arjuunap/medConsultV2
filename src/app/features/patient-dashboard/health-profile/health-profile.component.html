@@ -1,7 +1,7 @@
 <div *ngIf="needProfileInit" class="card p-6 text-center mb-5 border-0 shadow-sm" style="border-left: 5px solid var(--warning); background-color: #fffbeb;">
-  <h3 class="mb-2" style="color: #b45309;">Registration Required</h3>
-  <p class="mb-4" style="color: #78350f;">Please initialize your General Patient Profile before entering your medical metrics.</p>
-  <a routerLink="/patient/profile" class="btn btn-primary mx-auto">Setup Profile</a>
+  <h3 class="mb-2" style="color: #b45309;">{{ 'Registration Required' | translate }}</h3>
+  <p class="mb-4" style="color: #78350f;">{{ 'Please initialize your General Patient Profile before entering your medical metrics.' | translate }}</p>
+  <a routerLink="/patient/profile" class="btn btn-primary mx-auto">{{ 'Setup Profile' | translate }}</a>
 </div>
 
 <div *ngIf="!needProfileInit" class="health-profile-container">
@@ -10,22 +10,22 @@
     <!-- Left Panel: General Health Profile Metrics Card -->
     <div class="health-metrics-card">
       <div class="group-card-header">
-        <h3 class="group-card-title">🩺 Health Metrics &amp; Medical History</h3>
-        <button *ngIf="!isProfileEdit" class="btn btn-primary btn-sm" (click)="enableProfileEdit()">Edit Metrics</button>
+        <h3 class="group-card-title">🩺 {{ 'Health Metrics & Medical History' | translate }}</h3>
+        <button *ngIf="!isProfileEdit" class="btn btn-primary btn-sm" (click)="enableProfileEdit()">{{ 'Edit Metrics' | translate }}</button>
       </div>
 
       <form [formGroup]="healthForm" (ngSubmit)="submitHealthProfile()">
         <div class="form-row">
           <div class="form-group mb-3">
-            <label class="form-label" for="heightCm">Height (cm)</label>
+            <label class="form-label" for="heightCm">{{ 'Height (cm)' | translate }}</label>
             <input type="number" id="heightCm" formControlName="heightCm" class="form-control">
           </div>
           <div class="form-group mb-3">
-            <label class="form-label" for="weightKg">Weight (kg)</label>
+            <label class="form-label" for="weightKg">{{ 'Weight (kg)' | translate }}</label>
             <input type="number" id="weightKg" formControlName="weightKg" class="form-control">
           </div>
           <div class="form-group mb-3" *ngIf="healthProfile">
-            <label class="form-label">Calculated BMI</label>
+            <label class="form-label">{{ 'Calculated BMI' | translate }}</label>
             <div class="form-control fw-bold bg-light">
               {{ healthProfile.bmi | number:'1.1-2' }}
             </div>
@@ -34,7 +34,7 @@
 
         <div class="form-row">
           <div class="form-group mb-3">
-            <label class="form-label" for="smokingStatus">Smoking Status</label>
+            <label class="form-label" for="smokingStatus">{{ 'Smoking Status' | translate }}</label>
             <app-custom-select 
               formControlName="smokingStatus" 
               [options]="smokingStatusOptions" 
@@ -43,7 +43,7 @@
             </app-custom-select>
           </div>
           <div class="form-group mb-3">
-            <label class="form-label" for="alcoholStatus">Alcohol Intake</label>
+            <label class="form-label" for="alcoholStatus">{{ 'Alcohol Intake' | translate }}</label>
             <app-custom-select 
               formControlName="alcoholStatus" 
               [options]="alcoholStatusOptions" 
@@ -54,23 +54,23 @@
         </div>
 
         <div class="form-group mb-3">
-          <label class="form-label" for="surgicalHistory">Surgical History</label>
-          <textarea id="surgicalHistory" formControlName="surgicalHistory" class="form-control" rows="2" placeholder="List any past surgeries..."></textarea>
+          <label class="form-label" for="surgicalHistory">{{ 'Surgical History' | translate }}</label>
+          <textarea id="surgicalHistory" formControlName="surgicalHistory" class="form-control" rows="2" [placeholder]="'List any past surgeries...' | translate"></textarea>
         </div>
 
         <div class="form-group mb-3">
-          <label class="form-label" for="familyHistory">Family Medical History</label>
-          <textarea id="familyHistory" formControlName="familyHistory" class="form-control" rows="2" placeholder="List hereditary conditions in your family..."></textarea>
+          <label class="form-label" for="familyHistory">{{ 'Family Medical History' | translate }}</label>
+          <textarea id="familyHistory" formControlName="familyHistory" class="form-control" rows="2" [placeholder]="'List hereditary conditions in your family...' | translate"></textarea>
         </div>
 
         <div class="form-group m-0">
-          <label class="form-label" for="additionalNotes">Additional Notes</label>
-          <textarea id="additionalNotes" formControlName="additionalNotes" class="form-control" rows="2" placeholder="Other medical notes..."></textarea>
+          <label class="form-label" for="additionalNotes">{{ 'Additional Notes' | translate }}</label>
+          <textarea id="additionalNotes" formControlName="additionalNotes" class="form-control" rows="2" [placeholder]="'Other medical notes...' | translate"></textarea>
         </div>
 
         <div *ngIf="isProfileEdit" class="d-flex justify-end gap-3 mt-4 pt-3 border-top">
-          <button *ngIf="profileExists" type="button" class="btn btn-outline" (click)="cancelProfileEdit()">Cancel</button>
-          <button type="submit" class="btn btn-accent" [disabled]="healthForm.invalid">Save Changes</button>
+          <button *ngIf="profileExists" type="button" class="btn btn-outline" (click)="cancelProfileEdit()">{{ 'Cancel' | translate }}</button>
+          <button type="submit" class="btn btn-accent" [disabled]="healthForm.invalid">{{ 'Save Changes' | translate }}</button>
         </div>
       </form>
     </div>
@@ -81,8 +81,8 @@
       <!-- Known Allergies Card Group -->
       <div class="group-card">
         <div class="group-card-header">
-          <h3 class="group-card-title">⚠️ Known Allergies</h3>
-          <button class="btn btn-accent btn-sm" (click)="openAllergyModal()">+ Add Allergy</button>
+          <h3 class="group-card-title">⚠️ {{ 'Known Allergies' | translate }}</h3>
+          <button class="btn btn-accent btn-sm" (click)="openAllergyModal()">+ {{ 'Add Allergy' | translate }}</button>
         </div>
 
         <div class="d-flex flex-col">
@@ -90,15 +90,15 @@
             <div>
               <div class="fw-bold text-dark mb-1">{{ al.allergen }}</div>
               <span class="badge" [class.badge-danger]="al.severity==='SEVERE'" [class.badge-warning]="al.severity==='MODERATE'" [class.badge-success]="al.severity==='MILD'">
-                {{ al.severity }} | {{ al.allergyType }}
+                {{ al.severity | translate }} | {{ al.allergyType | translate }}
               </span>
-              <div class="fs-sm text-muted mt-1">Reaction: {{ al.reaction }}</div>
+              <div class="fs-sm text-muted mt-1">{{ 'Reaction:' | translate }} {{ al.reaction }}</div>
             </div>
             <button class="btn btn-outline btn-danger btn-sm" (click)="deleteAllergy(al.allergyId)">&times;</button>
           </div>
 
           <div *ngIf="allergies.length === 0" class="text-center text-muted py-3 fs-sm">
-            No allergies listed on record.
+            {{ 'No allergies listed on record.' | translate }}
           </div>
         </div>
       </div>
@@ -106,22 +106,22 @@
       <!-- Chronic Conditions Card Group -->
       <div class="group-card">
         <div class="group-card-header">
-          <h3 class="group-card-title">📋 Chronic Conditions</h3>
-          <button class="btn btn-accent btn-sm" (click)="openConditionModal()">+ Add Condition</button>
+          <h3 class="group-card-title">📋 {{ 'Chronic Conditions' | translate }}</h3>
+          <button class="btn btn-accent btn-sm" (click)="openConditionModal()">+ {{ 'Add Condition' | translate }}</button>
         </div>
 
         <div class="d-flex flex-col">
           <div *ngFor="let cc of chronicConditions" class="item-list-card">
             <div>
               <div class="fw-bold text-dark mb-1">{{ cc.conditionName }}</div>
-              <div class="fs-sm text-muted mb-1">ICD-10 Code: {{ cc.icd10Code }} | Diagnosed: {{ cc.diagnosisDate | date }}</div>
-              <span class="badge badge-success">{{ cc.status }}</span>
+              <div class="fs-sm text-muted mb-1">{{ 'ICD-10 Code:' | translate }} {{ cc.icd10Code }} | {{ 'Diagnosed:' | translate }} {{ cc.diagnosisDate | date }}</div>
+              <span class="badge badge-success">{{ cc.status | translate }}</span>
             </div>
             <button class="btn btn-outline btn-danger btn-sm" (click)="deleteCondition(cc.conditionId)">&times;</button>
           </div>
 
           <div *ngIf="chronicConditions.length === 0" class="text-center text-muted py-3 fs-sm">
-            No chronic conditions listed.
+            {{ 'No chronic conditions listed.' | translate }}
           </div>
         </div>
       </div>
@@ -134,20 +134,20 @@
 <div *ngIf="isAllergyModalOpen" class="modal-backdrop">
   <div class="modal-content">
     <div class="modal-header">
-      <h3 class="fs-xl text-primary m-0">Add Known Allergy</h3>
+      <h3 class="fs-xl text-primary m-0">{{ 'Add Known Allergy' | translate }}</h3>
       <button class="btn-close" (click)="closeAllergyModal()">&times;</button>
     </div>
     
     <div class="modal-body">
       <form [formGroup]="allergyForm" (ngSubmit)="submitAllergy()">
         <div class="form-group mb-3">
-          <label class="form-label" for="allergen">Allergen Name</label>
-          <input type="text" id="allergen" formControlName="allergen" class="form-control" placeholder="E.g. Penicillin, Peanuts">
+          <label class="form-label" for="allergen">{{ 'Allergen Name' | translate }}</label>
+          <input type="text" id="allergen" formControlName="allergen" class="form-control" [placeholder]="'E.g. Penicillin, Peanuts' | translate">
         </div>
 
         <div class="form-row">
           <div class="form-group mb-3">
-            <label class="form-label" for="allergyType">Allergy Type</label>
+            <label class="form-label" for="allergyType">{{ 'Allergy Type' | translate }}</label>
             <app-custom-select 
               formControlName="allergyType" 
               [options]="allergyTypeOptions" 
@@ -156,7 +156,7 @@
             </app-custom-select>
           </div>
           <div class="form-group mb-3">
-            <label class="form-label" for="severity">Severity</label>
+            <label class="form-label" for="severity">{{ 'Severity' | translate }}</label>
             <app-custom-select 
               formControlName="severity" 
               [options]="severityOptions" 
@@ -167,15 +167,15 @@
         </div>
 
         <div class="form-group m-0">
-          <label class="form-label" for="reaction">Allergic Reaction Details</label>
-          <input type="text" id="reaction" formControlName="reaction" class="form-control" placeholder="E.g. Skin rashes, Anaphylaxis">
+          <label class="form-label" for="reaction">{{ 'Allergic Reaction Details' | translate }}</label>
+          <input type="text" id="reaction" formControlName="reaction" class="form-control" [placeholder]="'E.g. Skin rashes, Anaphylaxis' | translate">
         </div>
       </form>
     </div>
 
     <div class="modal-footer">
-      <button type="button" class="btn btn-outline" (click)="closeAllergyModal()">Cancel</button>
-      <button type="button" class="btn btn-accent" (click)="submitAllergy()" [disabled]="allergyForm.invalid">Add Allergy</button>
+      <button type="button" class="btn btn-outline" (click)="closeAllergyModal()">{{ 'Cancel' | translate }}</button>
+      <button type="button" class="btn btn-accent" (click)="submitAllergy()" [disabled]="allergyForm.invalid">{{ 'Add Allergy' | translate }}</button>
     </div>
   </div>
 </div>
@@ -184,33 +184,33 @@
 <div *ngIf="isConditionModalOpen" class="modal-backdrop">
   <div class="modal-content">
     <div class="modal-header">
-      <h3 class="fs-xl text-primary m-0">Register Chronic Condition</h3>
+      <h3 class="fs-xl text-primary m-0">{{ 'Register Chronic Condition' | translate }}</h3>
       <button class="btn-close" (click)="closeConditionModal()">&times;</button>
     </div>
     
     <div class="modal-body">
       <form [formGroup]="conditionForm" (ngSubmit)="submitCondition()">
         <div class="form-group mb-3">
-          <label class="form-label" for="conditionName">Condition Name</label>
-          <input type="text" id="conditionName" formControlName="conditionName" class="form-control" placeholder="E.g. Diabetes Mellitus Type II">
+          <label class="form-label" for="conditionName">{{ 'Condition Name' | translate }}</label>
+          <input type="text" id="conditionName" formControlName="conditionName" class="form-control" [placeholder]="'E.g. Diabetes Mellitus Type II' | translate">
         </div>
 
         <div class="form-row">
           <div class="form-group mb-3">
-            <label class="form-label" for="icd10Code">ICD-10 Code</label>
-            <input type="text" id="icd10Code" formControlName="icd10Code" class="form-control" placeholder="E.g. E11.9">
+            <label class="form-label" for="icd10Code">{{ 'ICD-10 Code' | translate }}</label>
+            <input type="text" id="icd10Code" formControlName="icd10Code" class="form-control" [placeholder]="'E.g. E11.9' | translate">
             <div *ngIf="conditionForm.get('icd10Code')?.touched && conditionForm.get('icd10Code')?.invalid" class="error-text">
-              Must be a valid ICD-10 format.
+              {{ 'Must be a valid ICD-10 format.' | translate }}
             </div>
           </div>
           <div class="form-group mb-3">
-            <label class="form-label" for="diagnosisDate">Diagnosis Date</label>
+            <label class="form-label" for="diagnosisDate">{{ 'Diagnosis Date' | translate }}</label>
             <input type="date" id="diagnosisDate" formControlName="diagnosisDate" class="form-control">
           </div>
         </div>
 
         <div class="form-group mb-3">
-          <label class="form-label" for="status">Condition Status</label>
+          <label class="form-label" for="status">{{ 'Condition Status' | translate }}</label>
           <app-custom-select 
             formControlName="status" 
             [options]="conditionStatusOptions" 
@@ -220,15 +220,15 @@
         </div>
 
         <div class="form-group m-0">
-          <label class="form-label" for="condNotes">Notes</label>
-          <textarea id="condNotes" formControlName="notes" class="form-control" rows="2" placeholder="Relevant comments..."></textarea>
+          <label class="form-label" for="condNotes">{{ 'Notes' | translate }}</label>
+          <textarea id="condNotes" formControlName="notes" class="form-control" rows="2" [placeholder]="'Relevant comments...' | translate"></textarea>
         </div>
       </form>
     </div>
 
     <div class="modal-footer">
-      <button type="button" class="btn btn-outline" (click)="closeConditionModal()">Cancel</button>
-      <button type="button" class="btn btn-accent" (click)="submitCondition()" [disabled]="conditionForm.invalid">Add Condition</button>
+      <button type="button" class="btn btn-outline" (click)="closeConditionModal()">{{ 'Cancel' | translate }}</button>
+      <button type="button" class="btn btn-accent" (click)="submitCondition()" [disabled]="conditionForm.invalid">{{ 'Add Condition' | translate }}</button>
     </div>
   </div>
 </div>
