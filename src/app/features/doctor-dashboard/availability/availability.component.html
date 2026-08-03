@@ -1,19 +1,19 @@
 <div class="availability-container">
   <div class="page-header mb-4">
-    <h2 class="page-title fs-xl text-primary m-0 fw-bold">🗓️ My Availability &amp; Schedule</h2>
-    <p class="page-subtitle text-muted fs-sm mt-1 m-0">Manage clinic schedules, time off, and booking slots efficiently.</p>
+    <h2 class="page-title fs-xl text-primary m-0 fw-bold">🗓️ {{ 'My Availability & Schedule' | translate }}</h2>
+    <p class="page-subtitle text-muted fs-sm mt-1 m-0">{{ 'Manage clinic schedules, time off, and booking slots efficiently.' | translate }}</p>
   </div>
 
   <!-- Clinic Selection -->
   <div class="card mb-4 border-0 shadow-sm p-4">
     <form [formGroup]="clinicSelectForm" class="d-flex flex-col gap-2 m-0">
-      <label class="form-label fw-bold">Select Clinic/Branch to Manage</label>
+      <label class="form-label fw-bold">{{ 'Select Clinic/Branch to Manage' | translate }}</label>
       <app-custom-select 
         formControlName="dcId" 
         [options]="clinicSelectOptions" 
         bindLabel="label" 
         bindValue="value" 
-        placeholder="-- Choose a Clinic/Branch --"
+        [placeholder]="'-- Choose a Clinic/Branch --' | translate"
         (selectionChange)="onClinicChange()">
       </app-custom-select>
     </form>
@@ -27,11 +27,11 @@
         <div class="d-flex align-center gap-2 flex-wrap mb-1">
           <h3 class="placement-clinic-name m-0">{{ selectedClinic.clinicNameEn || 'Clinic' }}</h3>
           <span class="placement-role-badge" [class.badge-primary]="selectedClinic.isPrimary" [class.badge-secondary]="!selectedClinic.isPrimary">
-            {{ selectedClinic.isPrimary ? '⭐ Primary Specialist' : '👤 Consultant' }}
+            {{ selectedClinic.isPrimary ? ('⭐ Primary Specialist' | translate) : ('👤 Consultant' | translate) }}
           </span>
           <span class="placement-status-badge" [class.active-badge]="selectedClinic.isActive" [class.inactive-badge]="!selectedClinic.isActive">
             <span class="status-dot" [class.dot-on]="selectedClinic.isActive" [class.dot-off]="!selectedClinic.isActive"></span>
-            {{ selectedClinic.isActive ? 'Active' : 'Inactive' }}
+            {{ (selectedClinic.isActive ? 'Active' : 'Inactive') | translate }}
           </span>
         </div>
         <div class="placement-branch-line">
@@ -43,20 +43,20 @@
 
     <div class="placement-info-grid mt-3">
       <div class="placement-stat-item">
-        <span class="placement-stat-label">Consultation Fee</span>
+        <span class="placement-stat-label">{{ 'Consultation Fee' | translate }}</span>
         <span class="placement-stat-value text-success">SAR {{ selectedClinic.consultationFeeSar || '—' }}</span>
       </div>
       <div class="placement-stat-item">
-        <span class="placement-stat-label">Joined Since</span>
+        <span class="placement-stat-label">{{ 'Joined Since' | translate }}</span>
         <span class="placement-stat-value">{{ selectedClinic.startDate | date:'mediumDate' }}</span>
       </div>
       <div class="placement-stat-item" *ngIf="selectedClinic.endDate">
-        <span class="placement-stat-label">Contract Until</span>
+        <span class="placement-stat-label">{{ 'Contract Until' | translate }}</span>
         <span class="placement-stat-value text-warning">{{ selectedClinic.endDate | date:'mediumDate' }}</span>
       </div>
       <div class="placement-stat-item">
-        <span class="placement-stat-label">Total Placements</span>
-        <span class="placement-stat-value">{{ doctorClinics.length }} Clinic(s)</span>
+        <span class="placement-stat-label">{{ 'Total Placements' | translate }}</span>
+        <span class="placement-stat-value">{{ doctorClinics.length }} {{ 'Clinic(s)' | translate }}</span>
       </div>
     </div>
   </div>
@@ -67,17 +67,17 @@
       <button (click)="switchTab('schedule')" 
               [ngClass]="activeTab === 'schedule' ? 'btn btn-primary' : 'btn btn-outline'" 
               class="flex-1">
-        🗓️ Weekly Schedule Rules
+        🗓️ {{ 'Weekly Schedule Rules' | translate }}
       </button>
       <button (click)="switchTab('leaves')" 
               [ngClass]="activeTab === 'leaves' ? 'btn btn-primary' : 'btn btn-outline'" 
               class="flex-1">
-        🏖️ Time Off / Leaves
+        🏖️ {{ 'Time Off / Leaves' | translate }}
       </button>
       <button (click)="switchTab('slots')" 
               [ngClass]="activeTab === 'slots' ? 'btn btn-primary' : 'btn btn-outline'" 
               class="flex-1">
-        ⚡ Slots Generator
+        ⚡ {{ 'Slots Generator' | translate }}
       </button>
     </div>
 
@@ -87,46 +87,46 @@
         <div class="bg-light p-3 rounded mb-4 border d-flex align-center gap-3">
           <div class="fs-xl text-primary">ℹ️</div>
           <div>
-            <h3 class="fs-sm fw-bold text-primary m-0">About Schedule Rules</h3>
-            <p class="text-muted fs-xs m-0 mt-1">Add weekly recurring schedules. The system uses these rules to automatically generate your bookable slots for future dates.</p>
+            <h3 class="fs-sm fw-bold text-primary m-0">{{ 'About Schedule Rules' | translate }}</h3>
+            <p class="text-muted fs-xs m-0 mt-1">{{ 'Add weekly recurring schedules. The system uses these rules to automatically generate your bookable slots for future dates.' | translate }}</p>
           </div>
         </div>
 
         <form [formGroup]="scheduleForm" (ngSubmit)="submitSchedule()" class="d-flex flex-wrap gap-3 mb-5 align-end bg-white p-4 border rounded-md shadow-sm">
           <div class="flex-1">
-            <label class="form-label">Day of Week *</label>
+            <label class="form-label">{{ 'Day of Week *' | translate }}</label>
             <app-custom-select 
               formControlName="dayOfWeek" 
               [options]="dayOfWeekSelectOptions" 
               bindLabel="label" 
               bindValue="value" 
-              placeholder="Select Day">
+              [placeholder]="'Select Day' | translate">
             </app-custom-select>
           </div>
           <div class="flex-1">
-            <label class="form-label">Start Time *</label>
+            <label class="form-label">{{ 'Start Time *' | translate }}</label>
             <input type="time" formControlName="startTime" class="form-control">
           </div>
           <div class="flex-1">
-            <label class="form-label">End Time *</label>
+            <label class="form-label">{{ 'End Time *' | translate }}</label>
             <input type="time" formControlName="endTime" class="form-control">
           </div>
           <div class="flex-1">
-            <label class="form-label">Slot (min) *</label>
+            <label class="form-label">{{ 'Slot (min) *' | translate }}</label>
             <input type="number" formControlName="slotDurationMin" class="form-control">
           </div>
           <div class="flex-1">
-            <label class="form-label">Type *</label>
+            <label class="form-label">{{ 'Type *' | translate }}</label>
             <app-custom-select 
               formControlName="sessionType" 
               [options]="sessionTypeSelectOptions" 
               bindLabel="label" 
               bindValue="value" 
-              placeholder="Select Type">
+              [placeholder]="'Select Type' | translate">
             </app-custom-select>
           </div>
           <div>
-            <button type="submit" [disabled]="scheduleForm.invalid" class="btn btn-primary w-100">+ Add Rule</button>
+            <button type="submit" [disabled]="scheduleForm.invalid" class="btn btn-primary w-100">+ {{ 'Add Rule' | translate }}</button>
           </div>
         </form>
 
@@ -134,28 +134,28 @@
           <table class="table">
             <thead>
               <tr>
-                <th>Day</th>
-                <th>Time Range</th>
-                <th>Duration</th>
-                <th>Type</th>
-                <th class="text-end">Actions</th>
+                <th>{{ 'Day' | translate }}</th>
+                <th>{{ 'Time Range' | translate }}</th>
+                <th>{{ 'Duration' | translate }}</th>
+                <th>{{ 'Type' | translate }}</th>
+                <th class="text-end">{{ 'Actions' | translate }}</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let s of schedules">
                 <td class="fw-bold">{{ getDayName(s.dayOfWeek) }}</td>
                 <td>{{ s.startTime }} - {{ s.endTime }}</td>
-                <td><span class="badge badge-secondary">⏱️ {{ s.slotDurationMin }} min</span></td>
-                <td><span class="badge badge-primary">{{ s.sessionType }}</span></td>
+                <td><span class="badge badge-secondary">⏱️ {{ s.slotDurationMin }} {{ 'min' | translate }}</span></td>
+                <td><span class="badge badge-primary">{{ s.sessionType | translate }}</span></td>
                 <td class="text-end">
                   <button (click)="removeSchedule(s.scheduleId)" class="btn btn-outline btn-danger btn-sm" title="Delete Rule">
-                    &times; Delete
+                    &times; {{ 'Delete' | translate }}
                   </button>
                 </td>
               </tr>
               <tr *ngIf="schedules.length === 0">
                 <td colspan="5" class="text-center p-5 text-muted">
-                  No schedule rules defined yet.
+                  {{ 'No schedule rules defined yet.' | translate }}
                 </td>
               </tr>
             </tbody>
@@ -167,29 +167,29 @@
       <div *ngIf="activeTab === 'leaves'">
         <form [formGroup]="leaveForm" (ngSubmit)="submitLeave()" class="d-flex flex-wrap gap-3 mb-5 align-end bg-white p-4 border rounded-md shadow-sm">
           <div class="flex-1">
-            <label class="form-label">Leave Type *</label>
+            <label class="form-label">{{ 'Leave Type *' | translate }}</label>
             <app-custom-select 
               formControlName="leaveType" 
               [options]="leaveTypeSelectOptions" 
               bindLabel="label" 
               bindValue="value" 
-              placeholder="Select Leave Type">
+              [placeholder]="'Select Leave Type' | translate">
             </app-custom-select>
           </div>
           <div class="flex-1">
-            <label class="form-label">Start Date *</label>
+            <label class="form-label">{{ 'Start Date *' | translate }}</label>
             <input type="date" formControlName="startDate" class="form-control">
           </div>
           <div class="flex-1">
-            <label class="form-label">End Date *</label>
+            <label class="form-label">{{ 'End Date *' | translate }}</label>
             <input type="date" formControlName="endDate" class="form-control">
           </div>
           <div class="flex-2">
-            <label class="form-label">Notes</label>
-            <input type="text" formControlName="notes" class="form-control" placeholder="Optional">
+            <label class="form-label">{{ 'Notes' | translate }}</label>
+            <input type="text" formControlName="notes" class="form-control" [placeholder]="'Optional' | translate">
           </div>
           <div>
-            <button type="submit" [disabled]="leaveForm.invalid" class="btn btn-accent w-100">Request Leave</button>
+            <button type="submit" [disabled]="leaveForm.invalid" class="btn btn-accent w-100">{{ 'Request Leave' | translate }}</button>
           </div>
         </form>
 
@@ -197,31 +197,31 @@
           <table class="table">
             <thead>
               <tr>
-                <th>Type</th>
-                <th>Duration</th>
-                <th>Status</th>
-                <th>Notes</th>
-                <th class="text-end">Actions</th>
+                <th>{{ 'Type' | translate }}</th>
+                <th>{{ 'Duration' | translate }}</th>
+                <th>{{ 'Status' | translate }}</th>
+                <th>{{ 'Notes' | translate }}</th>
+                <th class="text-end">{{ 'Actions' | translate }}</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let l of leaves">
-                <td class="fw-bold">{{ l.leaveType }}</td>
-                <td>{{ l.startDate }} to {{ l.endDate }}</td>
+                <td class="fw-bold">{{ l.leaveType | translate }}</td>
+                <td>{{ l.startDate }} {{ 'to' | translate }} {{ l.endDate }}</td>
                 <td>
-                  <span *ngIf="l.isApproved" class="badge badge-success">✓ Approved</span>
-                  <span *ngIf="!l.isApproved" class="badge badge-warning">⏳ Pending</span>
+                  <span *ngIf="l.isApproved" class="badge badge-success">✓ {{ 'Approved' | translate }}</span>
+                  <span *ngIf="!l.isApproved" class="badge badge-warning">⏳ {{ 'Pending' | translate }}</span>
                 </td>
                 <td class="text-muted">{{ l.notes || '-' }}</td>
                 <td class="text-end">
                   <button (click)="removeLeave(l.leaveId)" class="btn btn-outline btn-danger btn-sm" title="Delete Leave">
-                    &times; Delete
+                    &times; {{ 'Delete' | translate }}
                   </button>
                 </td>
               </tr>
               <tr *ngIf="leaves.length === 0">
                 <td colspan="5" class="text-center p-5 text-muted">
-                  No leave requests found.
+                  {{ 'No leave requests found.' | translate }}
                 </td>
               </tr>
             </tbody>
@@ -229,49 +229,49 @@
         </div>
       </div>
 
-      <!-- SLOTS TAB (Weekly Grid with --accent-light for available and --gray-200 for blocked) -->
+      <!-- SLOTS TAB -->
       <div *ngIf="activeTab === 'slots'">
         <div class="d-flex flex-wrap justify-between align-end mb-4 gap-3 bg-light p-4 rounded border shadow-sm">
           <form [formGroup]="slotFilterForm" class="d-flex align-end gap-3 flex-1 flex-wrap">
             <div class="flex-1" style="max-width: 300px;">
-              <label class="form-label">Manage Slots For Date</label>
+              <label class="form-label">{{ 'Manage Slots For Date' | translate }}</label>
               <input type="date" formControlName="date" class="form-control">
             </div>
             <div>
-              <button type="button" (click)="loadSlots()" class="btn btn-outline mr-2">Load Slots</button>
-              <button type="button" (click)="generateSlotsForDate()" class="btn btn-primary">⚡ Auto-Generate</button>
+              <button type="button" (click)="loadSlots()" class="btn btn-outline mr-2">{{ 'Load Slots' | translate }}</button>
+              <button type="button" (click)="generateSlotsForDate()" class="btn btn-primary">⚡ {{ 'Auto-Generate' | translate }}</button>
             </div>
           </form>
         </div>
 
         <div class="bg-white p-4 rounded mb-4 border shadow-sm">
-          <h4 class="fs-md fw-bold mb-3 text-dark">+ Add Manual Single Slot</h4>
+          <h4 class="fs-md fw-bold mb-3 text-dark">+ {{ 'Add Manual Single Slot' | translate }}</h4>
           <form [formGroup]="slotForm" (ngSubmit)="submitSlot()" class="d-flex flex-wrap gap-3 align-end">
             <div class="flex-1">
-              <label class="form-label">Start Time *</label>
+              <label class="form-label">{{ 'Start Time *' | translate }}</label>
               <input type="time" formControlName="startTime" class="form-control">
             </div>
             <div class="flex-1">
-              <label class="form-label">End Time *</label>
+              <label class="form-label">{{ 'End Time *' | translate }}</label>
               <input type="time" formControlName="endTime" class="form-control">
             </div>
             <div class="flex-1">
-              <label class="form-label">Type *</label>
+              <label class="form-label">{{ 'Type *' | translate }}</label>
               <app-custom-select 
                 formControlName="sessionType" 
                 [options]="sessionTypeSelectOptions" 
                 bindLabel="label" 
                 bindValue="value" 
-                placeholder="Select Type">
+                [placeholder]="'Select Type' | translate">
               </app-custom-select>
             </div>
             <div>
-              <button type="submit" [disabled]="slotForm.invalid" class="btn btn-primary w-100">Add Single Slot</button>
+              <button type="submit" [disabled]="slotForm.invalid" class="btn btn-primary w-100">{{ 'Add Single Slot' | translate }}</button>
             </div>
           </form>
         </div>
 
-        <!-- Weekly Grid (Available slots: --accent-light, Blocked: --gray-200) -->
+        <!-- Weekly Grid -->
         <div class="slots-grid-view">
           <div *ngFor="let slot of slots" 
                class="slot-card-item" 
@@ -280,13 +280,13 @@
                [class.status-booked]="slot.status === 'BOOKED'">
             
             <div class="slot-time-text">{{ slot.startTime.substring(0,5) }}</div>
-            <div class="fs-xs text-muted mt-1">{{ slot.sessionType }}</div>
+            <div class="fs-xs text-muted mt-1">{{ slot.sessionType | translate }}</div>
             <div class="mt-2">
               <span class="badge" [ngClass]="{
                 'badge-success': slot.status === 'AVAILABLE',
                 'badge-info': slot.status === 'BOOKED',
                 'badge-danger': slot.status === 'BLOCKED' || slot.status === 'NO_SHOW'
-              }">{{ slot.status }}</span>
+              }">{{ slot.status | translate }}</span>
             </div>
             
             <button *ngIf="slot.status === 'AVAILABLE'" 
@@ -298,10 +298,10 @@
         </div>
 
         <div *ngIf="slots.length === 0" class="text-center p-5 border rounded bg-light mt-4">
-          <h4 class="fw-bold mb-2">No Slots Available for Selected Date</h4>
-          <p class="text-muted fs-sm mb-4">Click below to generate slots automatically from your weekly schedule rules.</p>
+          <h4 class="fw-bold mb-2">{{ 'No Slots Available for Selected Date' | translate }}</h4>
+          <p class="text-muted fs-sm mb-4">{{ 'Click below to generate slots automatically from your weekly schedule rules.' | translate }}</p>
           <button (click)="generateSlotsForDate()" class="btn btn-primary">
-            ⚡ Auto-Generate Now
+            ⚡ {{ 'Auto-Generate Now' | translate }}
           </button>
         </div>
       </div>

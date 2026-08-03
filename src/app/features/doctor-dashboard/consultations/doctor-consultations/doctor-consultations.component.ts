@@ -13,6 +13,8 @@ import {
   MessageType 
 } from '../../../../core/models/consultation.model';
 import { CustomSelectComponent } from '../../../../shared/components/custom-select/custom-select.component';
+import { LanguageService } from '../../../../core/services/language.service';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { PatientService } from '../../../../core/services/patient.service';
 import {
   LabResultResponseDto,
@@ -25,7 +27,7 @@ import {
 @Component({
   selector: 'app-doctor-consultations',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, CustomSelectComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, CustomSelectComponent, TranslatePipe],
   templateUrl: './doctor-consultations.component.html',
   styleUrls: ['./doctor-consultations.component.css']
 })
@@ -37,6 +39,7 @@ export class DoctorConsultationsComponent implements OnInit, OnDestroy {
   private patientService = inject(PatientService);
   private clinicalRecordService = inject(ClinicalRecordService);
   private fb = inject(FormBuilder);
+  public languageService = inject(LanguageService);
 
   public doctorId: string = '';
   public consultations: ConsultationResponseDto[] = [];
@@ -127,26 +130,40 @@ export class DoctorConsultationsComponent implements OnInit, OnDestroy {
     referenceHigh: [null]
   });
 
-  public routeOptions = [
-    { label: 'Oral', value: 'ORAL' },
-    { label: 'Intravenous (IV)', value: 'IV' },
-    { label: 'Intramuscular (IM)', value: 'IM' },
-    { label: 'Subcutaneous (SC)', value: 'SC' },
-    { label: 'Topical', value: 'TOPICAL' },
-    { label: 'Inhaled', value: 'INHALED' },
-    { label: 'Sublingual', value: 'SUBLINGUAL' },
-    { label: 'Rectal', value: 'RECTAL' },
-    { label: 'Ophthalmic', value: 'OPHTHALMIC' },
-    { label: 'Nasal', value: 'NASAL' }
-  ];
+  get routeOptions() {
+    return [
+      { label: this.languageService.translate('Oral', 'فموي'), value: 'ORAL' },
+      { label: this.languageService.translate('Intravenous (IV)', 'وريدي (IV)'), value: 'IV' },
+      { label: this.languageService.translate('Intramuscular (IM)', 'عضلي (IM)'), value: 'IM' },
+      { label: this.languageService.translate('Subcutaneous (SC)', 'تحت الجلد (SC)'), value: 'SC' },
+      { label: this.languageService.translate('Topical', 'موضعي'), value: 'TOPICAL' },
+      { label: this.languageService.translate('Inhaled', 'استنشاق'), value: 'INHALED' },
+      { label: this.languageService.translate('Sublingual', 'تحت اللسان'), value: 'SUBLINGUAL' },
+      { label: this.languageService.translate('Rectal', 'شرجي'), value: 'RECTAL' },
+      { label: this.languageService.translate('Ophthalmic', 'عيني'), value: 'OPHTHALMIC' },
+      { label: this.languageService.translate('Nasal', 'أنفي'), value: 'NASAL' }
+    ];
+  }
 
   public statusOptions = Object.values(ConsultationStatus);
 
   get statusSelectOptions() {
     return this.statusOptions.map(s => ({
-      label: s.replace(/_/g, ' '),
+      label: this.languageService.translate(s.replace(/_/g, ' '), this.getStatusAr(s)),
       value: s
     }));
+  }
+
+  getStatusAr(status: string): string {
+    const map: { [key: string]: string } = {
+      'OPEN': 'مفتوحة',
+      'IN_PROGRESS': 'قيد العلاج',
+      'WAITING_FOR_PATIENT': 'في انتظار المريض',
+      'RESOLVED': 'تم الحل',
+      'CLOSED': 'مغلقة',
+      'CANCELLED': 'ملغاة'
+    };
+    return map[status] || status;
   }
 
   private pollInterval: any;

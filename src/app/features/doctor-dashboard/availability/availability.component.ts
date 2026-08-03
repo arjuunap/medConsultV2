@@ -11,11 +11,13 @@ import {
 import { ClinicService } from '../../../core/services/clinic.service';
 import { forkJoin, map } from 'rxjs';
 import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
+import { LanguageService } from '../../../core/services/language.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-availability',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, CustomSelectComponent],
+  imports: [CommonModule, ReactiveFormsModule, CustomSelectComponent, TranslatePipe],
   templateUrl: './availability.component.html',
   styleUrls: ['./availability.component.css']
 })
@@ -25,6 +27,7 @@ export class AvailabilityComponent implements OnInit {
   private uiService = inject(UiService);
   private fb = inject(FormBuilder);
   private clinicService = inject(ClinicService);
+  public languageService = inject(LanguageService);
 
   public activeTab: 'schedule' | 'leaves' | 'slots' = 'schedule';
 
@@ -51,10 +54,15 @@ export class AvailabilityComponent implements OnInit {
   ];
 
   get clinicSelectOptions() {
-    return this.doctorClinics.map(c => ({
-      label: `🏥 ${c.clinicNameEn || 'Clinic'} - ${c.branchNameEn || 'Branch'} (${c.department || 'General'})`,
-      value: c.dcId
-    }));
+    return this.doctorClinics.map(c => {
+      const clinicName = this.languageService.translate(c.clinicNameEn || 'Clinic', c.clinicNameAr || 'عيادة');
+      const branchName = this.languageService.translate(c.branchNameEn || 'Branch', c.branchNameAr || 'فرع');
+      const dept = c.department || this.languageService.translate('General', 'عام');
+      return {
+        label: `🏥 ${clinicName} - ${branchName} (${dept})`,
+        value: c.dcId
+      };
+    });
   }
 
   get selectedClinic(): DoctorClinicResponseDto | null {
@@ -62,25 +70,56 @@ export class AvailabilityComponent implements OnInit {
     return this.doctorClinics.find(c => c.dcId === this.selectedDcId) || null;
   }
 
+  getDayName(dayNum: number): string {
+    const dayMapEn: { [key: number]: string } = {
+      1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6: 'Saturday', 7: 'Sunday'
+    };
+    const dayMapAr: { [key: number]: string } = {
+      1: 'الإثنين', 2: 'الثلاثاء', 3: 'الأربعاء', 4: 'الخميس', 5: 'الجمعة', 6: 'السبت', 7: 'الأحد'
+    };
+    return this.languageService.translate(dayMapEn[dayNum] || '', dayMapAr[dayNum] || '');
+  }
+
   get dayOfWeekSelectOptions() {
     return this.daysOfWeek.map(d => ({
-      label: d.label,
+      label: this.getDayName(d.value),
       value: d.value
     }));
   }
 
   get sessionTypeSelectOptions() {
     return this.sessionTypes.map(st => ({
-      label: st.replace(/_/g, ' '),
+      label: this.languageService.translate(st.replace(/_/g, ' '), this.getSessionTypeAr(st)),
       value: st
     }));
   }
 
+  getSessionTypeAr(st: string): string {
+    const map: { [key: string]: string } = {
+      'IN_CLINIC': 'في العيادة',
+      'VIDEO_CONSULTATION': 'استشارة مرئية',
+      'CHATTING': 'محادثة كتابية'
+    };
+    return map[st] || st;
+  }
+
   get leaveTypeSelectOptions() {
     return this.leaveTypes.map(lt => ({
-      label: lt.replace(/_/g, ' '),
+      label: this.languageService.translate(lt.replace(/_/g, ' '), this.getLeaveTypeAr(lt)),
       value: lt
     }));
+  }
+
+  getLeaveTypeAr(lt: string): string {
+    const map: { [key: string]: string } = {
+      'ANNUAL': 'إجازة سنوية',
+      'SICK': 'إجازة مرضية',
+      'EMERGENCY': 'إجازة طارئة',
+      'MATERNITY': 'إجازة أمومة',
+      'PATERNITY': 'إجازة أبوة',
+      'UNPAID': 'إجازة بدون راتب'
+    };
+    return map[lt] || lt;
   }
 
   // Forms
@@ -259,10 +298,6 @@ export class AvailabilityComponent implements OnInit {
     });
   }
 
-  getDayName(day: number): string {
-    const d = this.daysOfWeek.find(x => x.value === day);
-    return d ? d.label : day.toString();
-  }
 
   // ── LEAVES ─────────────────────────────────────────────────
   submitLeave(): void {

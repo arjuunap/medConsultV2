@@ -3,19 +3,19 @@
     <!-- Inbox List Sidebar -->
     <div class="inbox-sidebar">
       <div class="inbox-header">
-        <h3 class="inbox-title">Inbox</h3>
-        <span class="inbox-count-badge">{{ filteredConsultations.length }} active</span>
+        <h3 class="inbox-title">{{ 'Inbox' | translate }}</h3>
+        <span class="inbox-count-badge">{{ filteredConsultations.length }} {{ 'active' | translate }}</span>
       </div>
 
       <!-- Search Bar -->
       <div class="inbox-search-bar">
         <span class="search-icon">🔍</span>
-        <input type="text" [(ngModel)]="searchQuery" placeholder="Search consultations..." class="search-input">
+        <input type="text" [(ngModel)]="searchQuery" [placeholder]="'Search consultations...' | translate" class="search-input">
       </div>
 
       <div class="inbox-list">
         <div *ngIf="filteredConsultations.length === 0" class="no-conversations">
-          No consultations found.
+          {{ 'No consultations found.' | translate }}
         </div>
         
         <div *ngFor="let c of filteredConsultations" 
@@ -50,7 +50,7 @@
         <div class="active-user-info">
           <!-- Back button for mobile view -->
           <button class="btn-back-to-inbox" (click)="backToInbox()" title="Back to Inbox">
-            ⬅ Inbox
+            ⬅ {{ 'Inbox' | translate }}
           </button>
 
           <div class="avatar-circle header-avatar">
@@ -59,8 +59,8 @@
           <div>
             <h3 class="chat-subject-title">{{ selectedConsultation.subject }}</h3>
             <div class="chat-patient-subtitle">
-              Patient: <strong>{{ selectedConsultation.patientName }}</strong>
-              <span class="badge badge-urgent ms-2" *ngIf="selectedConsultation.isUrgent">⚠️ Urgent</span>
+              {{ 'Patient:' | translate }} <strong>{{ selectedConsultation.patientName }}</strong>
+              <span class="badge badge-urgent ms-2" *ngIf="selectedConsultation.isUrgent">⚠️ {{ 'Urgent' | translate }}</span>
             </div>
           </div>
         </div>
@@ -68,18 +68,18 @@
         <!-- Status Actions -->
         <div class="header-actions">
           <button type="button" class="btn btn-outline btn-sm btn-toggle-info" (click)="togglePatientInfo()" [class.active]="showPatientInfo">
-            ℹ️ Patient Info
+            ℹ️ {{ 'Patient Info' | translate }}
           </button>
 
           <!-- Prescription Button -->
           <button type="button" class="btn btn-rx btn-sm" (click)="togglePrescriptionPanel()" [class.active]="showPrescriptionPanel">
-            💊 Prescriptions
+            💊 {{ 'Prescriptions' | translate }}
             <span *ngIf="prescriptions.length > 0" class="rx-count-badge">{{ prescriptions.length }}</span>
           </button>
 
           <!-- Lab Results Button -->
           <button type="button" class="btn btn-lab btn-sm" (click)="toggleLabPanel()" [class.active]="showLabPanel">
-            🔬 Lab Results
+            🔬 {{ 'Lab Results' | translate }}
             <span *ngIf="labResults.length > 0" class="lab-count-badge">{{ labResults.length }}</span>
           </button>
           
@@ -91,11 +91,11 @@
                 bindLabel="label" 
                 bindValue="value" 
                 size="sm"
-                placeholder="Status">
+                [placeholder]="'Status' | translate">
               </app-custom-select>
             </div>
             <button class="btn btn-primary btn-sm btn-update-status" type="button" (click)="updateStatus()">
-              Update
+              {{ 'Update' | translate }}
             </button>
           </form>
         </div>
@@ -104,7 +104,7 @@
       <!-- Message Stream -->
       <div id="doctor-messages-container" class="message-stream">
         <div *ngIf="messages.length === 0" class="no-messages-prompt">
-          No messages yet. Send a message to start the consultation.
+          {{ 'No messages yet. Send a message to start the consultation.' | translate }}
         </div>
         
         <div *ngFor="let msg of messages" 
@@ -132,25 +132,25 @@
             type="text" 
             formControlName="body" 
             class="chat-text-input" 
-            placeholder="Type a professional response to the patient..."
+            [placeholder]="'Type a professional response to the patient...' | translate"
           >
           
           <button type="submit" class="btn-send-message" [disabled]="messageForm.invalid">
-            Send ➔
+            {{ 'Send' | translate }} ➔
           </button>
         </form>
       </div>
 
       <!-- Closed State Footer -->
       <div class="chat-footer-closed" *ngIf="selectedConsultation.status === 'CLOSED'">
-        🔒 This consultation has been marked as <strong>Closed</strong>. Reopen to send replies.
+        🔒 {{ 'This consultation has been marked as' | translate }} <strong>{{ 'Closed' | translate }}</strong>. {{ 'Reopen to send replies.' | translate }}
       </div>
     </div>
 
     <!-- Patient Info Sidebar Panel -->
     <div class="patient-info-sidebar" [class.open]="showPatientInfo" *ngIf="selectedConsultation">
       <div class="sidebar-sec-header">
-        <h4>Patient Case Info</h4>
+        <h4>{{ 'Patient Case Info' | translate }}</h4>
       </div>
       
       <div class="sidebar-sec-scrollable">
@@ -165,18 +165,18 @@
 
         <!-- Physical stats / Vitals -->
         <div class="sidebar-section-card" *ngIf="patientHealthProfile">
-          <h5 class="sidebar-section-title">Physical Stats</h5>
+          <h5 class="sidebar-section-title">{{ 'Physical Stats' | translate }}</h5>
           <div class="stats-grid">
             <div class="stat-box">
-              <span class="stat-label">Weight</span>
+              <span class="stat-label">{{ 'Weight' | translate }}</span>
               <strong class="stat-val">{{ patientHealthProfile.weightKg || '--' }} kg</strong>
             </div>
             <div class="stat-box">
-              <span class="stat-label">Height</span>
+              <span class="stat-label">{{ 'Height' | translate }}</span>
               <strong class="stat-val">{{ patientHealthProfile.heightCm || '--' }} cm</strong>
             </div>
             <div class="stat-box">
-              <span class="stat-label">BMI</span>
+              <span class="stat-label">{{ 'BMI' | translate }}</span>
               <strong class="stat-val">{{ patientHealthProfile.bmi || '--' }}</strong>
             </div>
           </div>
@@ -184,18 +184,18 @@
 
         <!-- Allergies Section -->
         <div class="sidebar-section-card">
-          <h5 class="sidebar-section-title">Allergies ({{ patientAllergies.length }})</h5>
+          <h5 class="sidebar-section-title">{{ 'Allergies' | translate }} ({{ patientAllergies.length }})</h5>
           <div class="allergy-list mt-2" *ngIf="patientAllergies.length > 0">
             <span *ngFor="let alg of patientAllergies" class="badge badge-danger-soft mr-2 mb-2">
               ⚠️ {{ alg.allergen }} <small *ngIf="alg.severity">({{ alg.severity }})</small>
             </span>
           </div>
-          <p class="text-muted fs-xs m-0 mt-1" *ngIf="patientAllergies.length === 0">No known allergies registered.</p>
+          <p class="text-muted fs-xs m-0 mt-1" *ngIf="patientAllergies.length === 0">{{ 'No known allergies registered.' | translate }}</p>
         </div>
 
         <!-- Chronic Conditions Section -->
         <div class="sidebar-section-card">
-          <h5 class="sidebar-section-title">Chronic Conditions ({{ patientChronicConditions.length }})</h5>
+          <h5 class="sidebar-section-title">{{ 'Chronic Conditions' | translate }} ({{ patientChronicConditions.length }})</h5>
           <div class="conditions-list mt-2" *ngIf="patientChronicConditions.length > 0">
             <div *ngFor="let cond of patientChronicConditions" class="condition-item mb-2 p-2 border rounded bg-light">
               <strong class="text-dark fs-sm">{{ cond.conditionName }}</strong>
@@ -205,25 +205,25 @@
               </div>
             </div>
           </div>
-          <p class="text-muted fs-xs m-0 mt-1" *ngIf="patientChronicConditions.length === 0">No chronic conditions registered.</p>
+          <p class="text-muted fs-xs m-0 mt-1" *ngIf="patientChronicConditions.length === 0">{{ 'No chronic conditions registered.' | translate }}</p>
         </div>
 
         <!-- Medical/Social History Section -->
         <div class="sidebar-section-card" *ngIf="patientHealthProfile && (patientHealthProfile.surgicalHistory || patientHealthProfile.familyHistory || patientHealthProfile.additionalNotes)">
-          <h5 class="sidebar-section-title">Medical History</h5>
+          <h5 class="sidebar-section-title">{{ 'Medical History' | translate }}</h5>
           
           <div class="history-item mb-3" *ngIf="patientHealthProfile.surgicalHistory">
-            <div class="history-label">Surgical History</div>
+            <div class="history-label">{{ 'Surgical History' | translate }}</div>
             <p class="history-content">{{ patientHealthProfile.surgicalHistory }}</p>
           </div>
           
           <div class="history-item mb-3" *ngIf="patientHealthProfile.familyHistory">
-            <div class="history-label">Family History</div>
+            <div class="history-label">{{ 'Family History' | translate }}</div>
             <p class="history-content">{{ patientHealthProfile.familyHistory }}</p>
           </div>
 
           <div class="history-item" *ngIf="patientHealthProfile.additionalNotes">
-            <div class="history-label">Notes / Observations</div>
+            <div class="history-label">{{ 'Notes / Observations' | translate }}</div>
             <p class="history-content">{{ patientHealthProfile.additionalNotes }}</p>
           </div>
         </div>
@@ -234,8 +234,8 @@
     <div class="no-selection-container" *ngIf="!selectedConsultation">
       <div class="no-selection-placeholder">
         <div class="icon-bubble">💬</div>
-        <h3>No Consultation Selected</h3>
-        <p>Choose a patient consultation from the inbox list to read messages and reply.</p>
+        <h3>{{ 'No Consultation Selected' | translate }}</h3>
+        <p>{{ 'Choose a patient consultation from the inbox list to read messages and reply.' | translate }}</p>
       </div>
     </div>
   </div>
@@ -246,14 +246,14 @@
     <!-- Panel Header -->
     <div class="rx-panel-header">
       <div>
-        <h3 class="rx-panel-title m-0">💊 Prescriptions</h3>
+        <h3 class="rx-panel-title m-0">💊 {{ 'Prescriptions' | translate }}</h3>
         <p class="rx-panel-subtitle m-0" *ngIf="selectedConsultation">
           {{ selectedConsultation.patientName }} · {{ selectedConsultation.subject }}
         </p>
       </div>
       <div class="d-flex gap-2">
         <button class="btn btn-primary btn-sm" (click)="startNewPrescription()" *ngIf="!isCreatingPrescription">
-          + New Prescription
+          + {{ 'New Prescription' | translate }}
         </button>
         <button class="btn-close-rx" (click)="closePrescriptionPanel()">&times;</button>
       </div>
@@ -263,29 +263,29 @@
 
       <!-- NEW PRESCRIPTION FORM -->
       <div *ngIf="isCreatingPrescription" class="rx-create-form">
-        <h4 class="rx-section-title">📋 New Prescription Details</h4>
+        <h4 class="rx-section-title">📋 {{ 'New Prescription Details' | translate }}</h4>
         <form [formGroup]="prescriptionForm" (ngSubmit)="submitPrescription()">
           <div class="rx-form-row">
             <div class="rx-form-group">
-              <label class="rx-label">Issued Date *</label>
+              <label class="rx-label">{{ 'Issued Date *' | translate }}</label>
               <input type="date" formControlName="issuedDate" class="form-control form-control-sm">
             </div>
             <div class="rx-form-group">
-              <label class="rx-label">Valid Until</label>
+              <label class="rx-label">{{ 'Valid Until' | translate }}</label>
               <input type="date" formControlName="validUntil" class="form-control form-control-sm">
             </div>
           </div>
           <div class="rx-form-group">
-            <label class="rx-label">Diagnosis Notes</label>
-            <textarea formControlName="diagnosisNotes" class="form-control form-control-sm" rows="2" placeholder="Primary diagnosis, ICD-10 code..."></textarea>
+            <label class="rx-label">{{ 'Diagnosis Notes' | translate }}</label>
+            <textarea formControlName="diagnosisNotes" class="form-control form-control-sm" rows="2" [placeholder]="'Primary diagnosis, ICD-10 code...' | translate"></textarea>
           </div>
           <div class="rx-form-group">
-            <label class="rx-label">Pharmacist Notes</label>
-            <textarea formControlName="pharmacistNotes" class="form-control form-control-sm" rows="2" placeholder="Instructions for the pharmacist..."></textarea>
+            <label class="rx-label">{{ 'Pharmacist Notes' | translate }}</label>
+            <textarea formControlName="pharmacistNotes" class="form-control form-control-sm" rows="2" [placeholder]="'Instructions for the pharmacist...' | translate"></textarea>
           </div>
           <div class="rx-form-actions">
-            <button type="button" class="btn btn-outline btn-sm" (click)="isCreatingPrescription = false">Cancel</button>
-            <button type="submit" [disabled]="prescriptionForm.invalid" class="btn btn-primary btn-sm">Create Prescription</button>
+            <button type="button" class="btn btn-outline btn-sm" (click)="isCreatingPrescription = false">{{ 'Cancel' | translate }}</button>
+            <button type="submit" [disabled]="prescriptionForm.invalid" class="btn btn-primary btn-sm">{{ 'Create Prescription' | translate }}</button>
           </div>
         </form>
       </div>
@@ -296,8 +296,8 @@
         <!-- Empty state -->
         <div *ngIf="prescriptions.length === 0" class="rx-empty-state">
           <div class="rx-empty-icon">💊</div>
-          <p class="rx-empty-text">No prescriptions yet for this consultation.</p>
-          <button class="btn btn-primary btn-sm" (click)="startNewPrescription()">+ Create First Prescription</button>
+          <p class="rx-empty-text">{{ 'No prescriptions yet for this consultation.' | translate }}</p>
+          <button class="btn btn-primary btn-sm" (click)="startNewPrescription()">+ {{ 'Create First Prescription' | translate }}</button>
         </div>
 
         <!-- Prescription selector tabs -->
@@ -317,7 +317,7 @@
           <div class="rx-detail-header">
             <div class="rx-detail-meta">
               <span class="rx-meta-chip">📅 {{ selectedPrescription.issuedDate | date:'mediumDate' }}</span>
-              <span *ngIf="selectedPrescription.validUntil" class="rx-meta-chip">⏳ Valid until {{ selectedPrescription.validUntil | date:'mediumDate' }}</span>
+              <span *ngIf="selectedPrescription.validUntil" class="rx-meta-chip">⏳ {{ 'Valid until' | translate }} {{ selectedPrescription.validUntil | date:'mediumDate' }}</span>
               <span class="rx-status-badge" [class.status-active]="selectedPrescription.status === 'ACTIVE'"
                 [class.status-dispensed]="selectedPrescription.status === 'DISPENSED'"
                 [class.status-expired]="selectedPrescription.status === 'EXPIRED' || selectedPrescription.status === 'CANCELLED'">
@@ -325,78 +325,78 @@
               </span>
             </div>
             <button class="btn btn-outline btn-danger btn-sm" (click)="deletePrescription(selectedPrescription.prescriptionId)">
-              🗑 Delete Rx
+              🗑 {{ 'Delete Rx' | translate }}
             </button>
           </div>
 
           <!-- Diagnosis notes -->
           <div *ngIf="selectedPrescription.diagnosisNotes" class="rx-diagnosis-notes">
-            <strong>📋 Diagnosis:</strong> {{ selectedPrescription.diagnosisNotes }}
+            <strong>📋 {{ 'Diagnosis:' | translate }}</strong> {{ selectedPrescription.diagnosisNotes }}
           </div>
 
           <!-- Medications List -->
           <div class="rx-meds-section">
             <div class="d-flex justify-between align-center mb-3">
-              <h5 class="rx-meds-title m-0">💊 Medications ({{ prescriptionItems.length }})</h5>
+              <h5 class="rx-meds-title m-0">💊 {{ 'Medications' | translate }} ({{ prescriptionItems.length }})</h5>
               <button class="btn btn-outline btn-sm rx-add-med-btn" (click)="startAddItem()" *ngIf="!isAddingItem">
-                + Add Medication
+                + {{ 'Add Medication' | translate }}
               </button>
             </div>
 
             <!-- Add Medication Form -->
             <div *ngIf="isAddingItem" class="rx-add-item-form">
-              <h6 class="rx-section-title mb-3">+ New Medication</h6>
+              <h6 class="rx-section-title mb-3">+ {{ 'New Medication' | translate }}</h6>
               <form [formGroup]="itemForm" (ngSubmit)="submitItem()">
                 <div class="rx-form-row">
                   <div class="rx-form-group flex-2">
-                    <label class="rx-label">Drug Name *</label>
-                    <input type="text" formControlName="drugName" class="form-control form-control-sm" placeholder="e.g. Amoxicillin">
+                    <label class="rx-label">{{ 'Drug Name *' | translate }}</label>
+                    <input type="text" formControlName="drugName" class="form-control form-control-sm" [placeholder]="'e.g. Amoxicillin' | translate">
                   </div>
                   <div class="rx-form-group">
-                    <label class="rx-label">Dosage *</label>
-                    <input type="text" formControlName="dosage" class="form-control form-control-sm" placeholder="e.g. 500mg">
+                    <label class="rx-label">{{ 'Dosage *' | translate }}</label>
+                    <input type="text" formControlName="dosage" class="form-control form-control-sm" [placeholder]="'e.g. 500mg' | translate">
                   </div>
                 </div>
                 <div class="rx-form-row">
                   <div class="rx-form-group">
-                    <label class="rx-label">Route</label>
+                    <label class="rx-label">{{ 'Route' | translate }}</label>
                     <select formControlName="route" class="form-control form-control-sm">
                       <option *ngFor="let r of routeOptions" [value]="r.value">{{ r.label }}</option>
                     </select>
                   </div>
                   <div class="rx-form-group flex-2">
-                    <label class="rx-label">Frequency *</label>
-                    <input type="text" formControlName="frequency" class="form-control form-control-sm" placeholder="e.g. Twice daily (BID)">
+                    <label class="rx-label">{{ 'Frequency *' | translate }}</label>
+                    <input type="text" formControlName="frequency" class="form-control form-control-sm" [placeholder]="'e.g. Twice daily (BID)' | translate">
                   </div>
                 </div>
                 <div class="rx-form-row">
                   <div class="rx-form-group">
-                    <label class="rx-label">Duration (days) *</label>
+                    <label class="rx-label">{{ 'Duration (days) *' | translate }}</label>
                     <input type="number" formControlName="durationDays" class="form-control form-control-sm" min="1">
                   </div>
                   <div class="rx-form-group">
-                    <label class="rx-label">Quantity *</label>
+                    <label class="rx-label">{{ 'Quantity *' | translate }}</label>
                     <input type="number" formControlName="quantity" class="form-control form-control-sm" min="1">
                   </div>
                   <div class="rx-form-group">
-                    <label class="rx-label">Refills Allowed</label>
+                    <label class="rx-label">{{ 'Refills Allowed' | translate }}</label>
                     <input type="number" formControlName="refillsAllowed" class="form-control form-control-sm" min="0">
                   </div>
                 </div>
                 <div class="rx-form-group">
-                  <label class="rx-label">Special Instructions</label>
-                  <input type="text" formControlName="specialInstructions" class="form-control form-control-sm" placeholder="e.g. Take with food">
+                  <label class="rx-label">{{ 'Special Instructions' | translate }}</label>
+                  <input type="text" formControlName="specialInstructions" class="form-control form-control-sm" [placeholder]="'e.g. Take with food' | translate">
                 </div>
                 <div class="rx-form-actions">
-                  <button type="button" class="btn btn-outline btn-sm" (click)="isAddingItem = false">Cancel</button>
-                  <button type="submit" [disabled]="itemForm.invalid" class="btn btn-primary btn-sm">Add Medication</button>
+                  <button type="button" class="btn btn-outline btn-sm" (click)="isAddingItem = false">{{ 'Cancel' | translate }}</button>
+                  <button type="submit" [disabled]="itemForm.invalid" class="btn btn-primary btn-sm">{{ 'Add Medication' | translate }}</button>
                 </div>
               </form>
             </div>
 
             <!-- Medication Items List -->
             <div *ngIf="prescriptionItems.length === 0 && !isAddingItem" class="rx-items-empty">
-              No medications added yet. Click "+ Add Medication" to start.
+              {{ 'No medications added yet. Click "+ Add Medication" to start.' | translate }}
             </div>
 
             <div class="rx-items-list" *ngIf="prescriptionItems.length > 0">
@@ -409,8 +409,8 @@
                     <span class="rx-chip">{{ item.route }}</span>
                     <span class="rx-chip">{{ item.frequency }}</span>
                     <span class="rx-chip">{{ item.durationDays }}d</span>
-                    <span class="rx-chip">Qty: {{ item.quantity }}</span>
-                    <span *ngIf="item.refillsAllowed > 0" class="rx-chip rx-chip-refill">Refills: {{ item.refillsAllowed }}</span>
+                    <span class="rx-chip">{{ 'Qty:' | translate }} {{ item.quantity }}</span>
+                    <span *ngIf="item.refillsAllowed > 0" class="rx-chip rx-chip-refill">{{ 'Refills:' | translate }} {{ item.refillsAllowed }}</span>
                   </div>
                   <div *ngIf="item.specialInstructions" class="rx-item-instructions">
                     📝 {{ item.specialInstructions }}
@@ -431,14 +431,14 @@
     <!-- Panel Header -->
     <div class="lab-panel-header">
       <div>
-        <h3 class="lab-panel-title m-0">🔬 Lab Results</h3>
+        <h3 class="lab-panel-title m-0">🔬 {{ 'Lab Results' | translate }}</h3>
         <p class="lab-panel-subtitle m-0" *ngIf="selectedConsultation">
           {{ selectedConsultation.patientName }} · {{ selectedConsultation.subject }}
         </p>
       </div>
       <div class="d-flex gap-2">
         <button class="btn btn-primary btn-sm" (click)="startNewLabResult()" *ngIf="!isCreatingLabResult">
-          + New Lab Result
+          + {{ 'New Lab Result' | translate }}
         </button>
         <button class="btn-close-lab" (click)="closeLabPanel()">&times;</button>
       </div>
@@ -448,44 +448,44 @@
 
       <!-- NEW LAB RESULT FORM -->
       <div *ngIf="isCreatingLabResult" class="lab-create-form">
-        <h4 class="lab-section-title">📋 New Lab Report Details</h4>
+        <h4 class="lab-section-title">📋 {{ 'New Lab Report Details' | translate }}</h4>
         <form [formGroup]="labForm" (ngSubmit)="submitLabResult()">
           <div class="lab-form-group">
-            <label class="lab-label">Lab Facility Name *</label>
-            <input type="text" formControlName="labName" class="form-control form-control-sm" placeholder="E.g. Al Borg Diagnostics">
+            <label class="lab-label">{{ 'Lab Facility Name *' | translate }}</label>
+            <input type="text" formControlName="labName" class="form-control form-control-sm" [placeholder]="'E.g. Al Borg Diagnostics' | translate">
           </div>
           <div class="lab-form-row">
             <div class="lab-form-group flex-2">
-              <label class="lab-label">Report Type / Test Category *</label>
-              <input type="text" formControlName="reportType" class="form-control form-control-sm" placeholder="E.g. Lipid Profile, Blood Test">
+              <label class="lab-label">{{ 'Report Type / Test Category *' | translate }}</label>
+              <input type="text" formControlName="reportType" class="form-control form-control-sm" [placeholder]="'E.g. Lipid Profile, Blood Test' | translate">
             </div>
             <div class="lab-form-group">
-              <label class="lab-label">Report Date *</label>
+              <label class="lab-label">{{ 'Report Date *' | translate }}</label>
               <input type="date" formControlName="reportDate" class="form-control form-control-sm">
             </div>
           </div>
           <div class="lab-form-row">
             <div class="lab-form-group">
-              <label class="lab-label">Status *</label>
+              <label class="lab-label">{{ 'Status *' | translate }}</label>
               <select formControlName="status" class="form-control form-control-sm">
-                <option value="PENDING">Pending</option>
-                <option value="RECEIVED">Received</option>
-                <option value="REVIEWED">Reviewed</option>
-                <option value="ABNORMAL">Abnormal</option>
-                <option value="CRITICAL">Critical</option>
+                <option value="PENDING">{{ 'Pending' | translate }}</option>
+                <option value="RECEIVED">{{ 'Received' | translate }}</option>
+                <option value="REVIEWED">{{ 'Reviewed' | translate }}</option>
+                <option value="ABNORMAL">{{ 'Abnormal' | translate }}</option>
+                <option value="CRITICAL">{{ 'Critical' | translate }}</option>
               </select>
             </div>
             <div class="lab-form-group">
-              <label class="lab-label">Overall Flag *</label>
+              <label class="lab-label">{{ 'Overall Flag *' | translate }}</label>
               <select formControlName="overallFlag" class="form-control form-control-sm">
-                <option value="NORMAL">Normal</option>
-                <option value="ABNORMAL">Abnormal</option>
-                <option value="CRITICAL">Critical</option>
+                <option value="NORMAL">{{ 'Normal' | translate }}</option>
+                <option value="ABNORMAL">{{ 'Abnormal' | translate }}</option>
+                <option value="CRITICAL">{{ 'Critical' | translate }}</option>
               </select>
             </div>
           </div>
           <div class="lab-form-group">
-            <label class="lab-label">Select Report Attachment (PDF/Image)</label>
+            <label class="lab-label">{{ 'Select Report Attachment (PDF/Image)' | translate }}</label>
             <div class="file-upload-wrapper">
               <span class="file-upload-icon">📎</span>
               <input type="file" (change)="onLabFileSelected($event)" class="form-control form-control-sm file-input-styled">
@@ -495,12 +495,12 @@
             </div>
           </div>
           <div class="lab-form-group">
-            <label class="lab-label">Clinical Annotation Notes</label>
-            <textarea formControlName="doctorAnnotation" class="form-control form-control-sm" rows="3" placeholder="Enter diagnostic observations, abnormal flags..."></textarea>
+            <label class="lab-label">{{ 'Clinical Annotation Notes' | translate }}</label>
+            <textarea formControlName="doctorAnnotation" class="form-control form-control-sm" rows="3" [placeholder]="'Enter diagnostic observations, abnormal flags...' | translate"></textarea>
           </div>
           <div class="lab-form-actions">
-            <button type="button" class="btn btn-outline btn-sm" (click)="isCreatingLabResult = false">Cancel</button>
-            <button type="submit" [disabled]="labForm.invalid" class="btn btn-primary btn-sm">Create Lab Result</button>
+            <button type="button" class="btn btn-outline btn-sm" (click)="isCreatingLabResult = false">{{ 'Cancel' | translate }}</button>
+            <button type="submit" [disabled]="labForm.invalid" class="btn btn-primary btn-sm">{{ 'Create Lab Result' | translate }}</button>
           </div>
         </form>
       </div>
@@ -511,8 +511,8 @@
         <!-- Empty state -->
         <div *ngIf="labResults.length === 0" class="lab-empty-state">
           <div class="lab-empty-icon">🔬</div>
-          <p class="lab-empty-text">No lab results recorded yet for this consultation.</p>
-          <button class="btn btn-primary btn-sm" (click)="startNewLabResult()">+ Create First Lab Result</button>
+          <p class="lab-empty-text">{{ 'No lab results recorded yet for this consultation.' | translate }}</p>
+          <button class="btn btn-primary btn-sm" (click)="startNewLabResult()">+ {{ 'Create First Lab Result' | translate }}</button>
         </div>
 
         <!-- Lab selector tabs -->
@@ -544,7 +544,7 @@
               </span>
             </div>
             <button class="btn btn-outline btn-danger btn-sm" (click)="deleteLabResult(selectedLabResult.labResultId)">
-              🗑 Delete
+              🗑 {{ 'Delete' | translate }}
             </button>
           </div>
 
@@ -552,83 +552,83 @@
           <div *ngIf="selectedLabResult.fileId" class="lab-file-attachment-bar">
             <span class="file-icon">📄</span>
             <div class="flex-1">
-              <div class="file-name">Lab Attachment Document</div>
-              <div class="file-subtext">Uploaded report file</div>
+              <div class="file-name">{{ 'Lab Attachment Document' | translate }}</div>
+              <div class="file-subtext">{{ 'Uploaded report file' | translate }}</div>
             </div>
             <button class="btn btn-primary btn-sm d-flex align-center gap-1" (click)="downloadLabResultFile(selectedLabResult.fileId)">
-              📥 Download
+              📥 {{ 'Download' | translate }}
             </button>
           </div>
 
           <!-- Diagnosis/Annotation notes -->
           <div *ngIf="selectedLabResult.doctorAnnotation" class="lab-annotation-notes">
-            <strong>📋 Clinical Notes:</strong> {{ selectedLabResult.doctorAnnotation }}
+            <strong>📋 {{ 'Clinical Notes:' | translate }}</strong> {{ selectedLabResult.doctorAnnotation }}
           </div>
 
           <!-- Lab Items List -->
           <div class="lab-items-section">
             <div class="d-flex justify-between align-center mb-3">
-              <h5 class="lab-items-title m-0">🧪 Test Items ({{ labItems.length }})</h5>
+              <h5 class="lab-items-title m-0">🧪 {{ 'Test Items' | translate }} ({{ labItems.length }})</h5>
               <button class="btn btn-outline btn-sm lab-add-item-btn" (click)="startAddLabItem()" *ngIf="!isAddingLabItem">
-                + Add Test Item
+                + {{ 'Add Test Item' | translate }}
               </button>
             </div>
 
             <!-- Add Lab Item Form -->
             <div *ngIf="isAddingLabItem" class="lab-add-item-form">
-              <h6 class="lab-section-title mb-3">+ New Test Item</h6>
+              <h6 class="lab-section-title mb-3">+ {{ 'New Test Item' | translate }}</h6>
               <form [formGroup]="labItemForm" (ngSubmit)="submitLabItem()">
                 <div class="lab-form-row">
                   <div class="lab-form-group flex-2">
-                    <label class="lab-label">Test Name *</label>
-                    <input type="text" formControlName="testName" class="form-control form-control-sm" placeholder="e.g. Hemoglobin, LDL Cholesterol">
+                    <label class="lab-label">{{ 'Test Name *' | translate }}</label>
+                    <input type="text" formControlName="testName" class="form-control form-control-sm" [placeholder]="'e.g. Hemoglobin, LDL Cholesterol' | translate">
                   </div>
                   <div class="lab-form-group">
-                    <label class="lab-label">Value *</label>
-                    <input type="text" formControlName="value" class="form-control form-control-sm" placeholder="e.g. 13.5, 110">
+                    <label class="lab-label">{{ 'Value *' | translate }}</label>
+                    <input type="text" formControlName="value" class="form-control form-control-sm" [placeholder]="'e.g. 13.5, 110' | translate">
                   </div>
                   <div class="lab-form-group">
-                    <label class="lab-label">Unit *</label>
-                    <input type="text" formControlName="unit" class="form-control form-control-sm" placeholder="e.g. g/dL, mg/dL">
+                    <label class="lab-label">{{ 'Unit *' | translate }}</label>
+                    <input type="text" formControlName="unit" class="form-control form-control-sm" [placeholder]="'e.g. g/dL, mg/dL' | translate">
                   </div>
                 </div>
                 <div class="lab-form-row">
                   <div class="lab-form-group">
-                    <label class="lab-label">Flag *</label>
+                    <label class="lab-label">{{ 'Flag *' | translate }}</label>
                     <select formControlName="flag" class="form-control form-control-sm">
-                      <option value="NORMAL">Normal</option>
-                      <option value="HIGH">High</option>
-                      <option value="LOW">Low</option>
-                      <option value="CRITICAL_HIGH">Critical High</option>
-                      <option value="CRITICAL_LOW">Critical Low</option>
-                      <option value="ABNORMAL">Abnormal</option>
+                      <option value="NORMAL">{{ 'Normal' | translate }}</option>
+                      <option value="HIGH">{{ 'High' | translate }}</option>
+                      <option value="LOW">{{ 'Low' | translate }}</option>
+                      <option value="CRITICAL_HIGH">{{ 'Critical High' | translate }}</option>
+                      <option value="CRITICAL_LOW">{{ 'Critical Low' | translate }}</option>
+                      <option value="ABNORMAL">{{ 'Abnormal' | translate }}</option>
                     </select>
                   </div>
                   <div class="lab-form-group">
-                    <label class="lab-label">LOINC Code</label>
-                    <input type="text" formControlName="loincCode" class="form-control form-control-sm" placeholder="e.g. 2345-7">
+                    <label class="lab-label">{{ 'LOINC Code' | translate }}</label>
+                    <input type="text" formControlName="loincCode" class="form-control form-control-sm" [placeholder]="'e.g. 2345-7' | translate">
                   </div>
                 </div>
                 <div class="lab-form-row">
                   <div class="lab-form-group">
-                    <label class="lab-label">Reference Low</label>
-                    <input type="number" formControlName="referenceLow" class="form-control form-control-sm" placeholder="e.g. 12.0">
+                    <label class="lab-label">{{ 'Reference Low' | translate }}</label>
+                    <input type="number" formControlName="referenceLow" class="form-control form-control-sm" [placeholder]="'e.g. 12.0' | translate">
                   </div>
                   <div class="lab-form-group">
-                    <label class="lab-label">Reference High</label>
-                    <input type="number" formControlName="referenceHigh" class="form-control form-control-sm" placeholder="e.g. 16.0">
+                    <label class="lab-label">{{ 'Reference High' | translate }}</label>
+                    <input type="number" formControlName="referenceHigh" class="form-control form-control-sm" [placeholder]="'e.g. 16.0' | translate">
                   </div>
                 </div>
                 <div class="lab-form-actions">
-                  <button type="button" class="btn btn-outline btn-sm" (click)="isAddingLabItem = false">Cancel</button>
-                  <button type="submit" [disabled]="labItemForm.invalid" class="btn btn-primary btn-sm">Add Item</button>
+                  <button type="button" class="btn btn-outline btn-sm" (click)="isAddingLabItem = false">{{ 'Cancel' | translate }}</button>
+                  <button type="submit" [disabled]="labItemForm.invalid" class="btn btn-primary btn-sm">{{ 'Add Item' | translate }}</button>
                 </div>
               </form>
             </div>
 
             <!-- Lab Items List -->
             <div *ngIf="labItems.length === 0 && !isAddingLabItem" class="lab-items-empty">
-              No test items added yet. Click "+ Add Test Item" to start.
+              {{ 'No test items added yet. Click "+ Add Test Item" to start.' | translate }}
             </div>
 
             <div class="lab-items-list" *ngIf="labItems.length > 0">
@@ -645,9 +645,9 @@
                     </span>
                   </div>
                   <div class="lab-item-details">
-                    <span class="lab-chip font-bold">Value: {{ item.value }} {{ item.unit }}</span>
+                    <span class="lab-chip font-bold">{{ 'Value:' | translate }} {{ item.value }} {{ item.unit }}</span>
                     <span *ngIf="item.referenceLow !== null || item.referenceHigh !== null" class="lab-chip">
-                      Ref Range: {{ item.referenceLow !== null ? item.referenceLow : '--' }} - {{ item.referenceHigh !== null ? item.referenceHigh : '--' }}
+                      {{ 'Ref Range:' | translate }} {{ item.referenceLow !== null ? item.referenceLow : '--' }} - {{ item.referenceHigh !== null ? item.referenceHigh : '--' }}
                     </span>
                     <span *ngIf="item.loincCode" class="lab-chip">LOINC: {{ item.loincCode }}</span>
                   </div>

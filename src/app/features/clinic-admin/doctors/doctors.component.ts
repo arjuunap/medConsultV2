@@ -14,13 +14,15 @@ import {
 import { ClinicResponseDto, ClinicBranchResponseDto } from '../../../core/models/clinic.model';
 import { SpecialtyResponseDto, LanguageResponseDto, SubSpecialtyResponseDto } from '../../../core/models/reference.model';
 import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
+import { LanguageService } from '../../../core/services/language.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-doctors',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, CustomSelectComponent, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, CustomSelectComponent, RouterLink, TranslatePipe],
   templateUrl: './doctors.component.html',
   styleUrls: ['./doctors.component.css']
 })
@@ -30,6 +32,7 @@ export class DoctorsComponent implements OnInit {
   private referenceService = inject(ReferenceService);
   private uiService = inject(UiService);
   private fb = inject(FormBuilder);
+  public languageService = inject(LanguageService);
 
   public activeMainTab: 'placements' | 'profiles' = 'placements';
   
@@ -41,14 +44,14 @@ export class DoctorsComponent implements OnInit {
 
   get clinicSelectOptions() {
     return this.clinics.map(c => ({
-      label: c.nameEn,
+      label: this.languageService.isArabic ? (c.nameAr || c.nameEn) : c.nameEn,
       value: c.clinicId
     }));
   }
 
   get branchSelectOptions() {
     return this.branches.map(b => ({
-      label: b.branchNameEn,
+      label: this.languageService.isArabic ? (b.branchNameAr || b.branchNameEn) : b.branchNameEn,
       value: b.branchId
     }));
   }
@@ -60,21 +63,25 @@ export class DoctorsComponent implements OnInit {
     }));
   }
 
-  public scheduleDayOptions = [
-    { label: 'Monday', value: 1 },
-    { label: 'Tuesday', value: 2 },
-    { label: 'Wednesday', value: 3 },
-    { label: 'Thursday', value: 4 },
-    { label: 'Friday', value: 5 },
-    { label: 'Saturday', value: 6 },
-    { label: 'Sunday', value: 7 }
-  ];
+  get scheduleDayOptions() {
+    return [
+      { label: this.languageService.translate('Monday', 'الإثنين'), value: 1 },
+      { label: this.languageService.translate('Tuesday', 'الثلاثاء'), value: 2 },
+      { label: this.languageService.translate('Wednesday', 'الأربعاء'), value: 3 },
+      { label: this.languageService.translate('Thursday', 'الخميس'), value: 4 },
+      { label: this.languageService.translate('Friday', 'الجمعة'), value: 5 },
+      { label: this.languageService.translate('Saturday', 'السبت'), value: 6 },
+      { label: this.languageService.translate('Sunday', 'الأحد'), value: 7 }
+    ];
+  }
 
-  public scheduleSessionTypeOptions = [
-    { label: 'In-Clinic', value: 'IN_CLINIC' },
-    { label: 'Virtual / Online', value: 'VIRTUAL' },
-    { label: 'Both (Hybrid)', value: 'BOTH' }
-  ];
+  get scheduleSessionTypeOptions() {
+    return [
+      { label: this.languageService.translate('In-Clinic', 'في العيادة'), value: 'IN_CLINIC' },
+      { label: this.languageService.translate('Virtual / Online', 'افتراضي / عبر الإنترنت'), value: 'VIRTUAL' },
+      { label: this.languageService.translate('Both (Hybrid)', 'كلاهما (مختلط)'), value: 'BOTH' }
+    ];
+  }
 
   get filteredDoctorClinics(): DoctorClinicResponseDto[] {
     if (!this.searchTerm.trim()) return this.doctorClinics;
@@ -236,8 +243,12 @@ export class DoctorsComponent implements OnInit {
   }
 
   getDayName(dayOfWeek: number): string {
-    const days = ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    return days[dayOfWeek] || `Day ${dayOfWeek}`;
+    const daysEn = ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const daysAr = ['', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت', 'الأحد'];
+    if (this.languageService.isArabic) {
+      return daysAr[dayOfWeek] || `يوم ${dayOfWeek}`;
+    }
+    return daysEn[dayOfWeek] || `Day ${dayOfWeek}`;
   }
 
   // ── DOCTOR LEAVE MANAGEMENT (Clinic Side) ──────────────────────────────
@@ -423,7 +434,8 @@ export class DoctorsComponent implements OnInit {
 
   getBranchName(branchId: string): string {
     const branch = this.branches.find(b => b.branchId === branchId);
-    return branch ? branch.branchNameEn : branchId;
+    if (!branch) return branchId;
+    return this.languageService.isArabic ? (branch.branchNameAr || branch.branchNameEn) : branch.branchNameEn;
   }
 
   openAddModal(): void {
@@ -634,11 +646,13 @@ export class DoctorsComponent implements OnInit {
   // Helpers
   getSpecialtyName(specialtyId: string): string {
     const s = this.globalSpecialties.find(x => x.specialtyId === specialtyId);
-    return s ? s.nameEn : specialtyId;
+    if (!s) return specialtyId;
+    return this.languageService.isArabic ? s.nameAr : s.nameEn;
   }
   
   getLanguageName(languageId: string): string {
     const l = this.globalLanguages.find(x => x.languageId === languageId);
-    return l ? l.nameEn : languageId;
+    if (!l) return languageId;
+    return this.languageService.isArabic ? l.nameAr : l.nameEn;
   }
 }

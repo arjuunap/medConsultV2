@@ -8,11 +8,13 @@ import { UiService } from '../../../core/services/ui.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { SpecialtyResponseDto, LanguageResponseDto, InsuranceProviderResponseDto } from '../../../core/models/reference.model';
 import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
+import { LanguageService } from '../../../core/services/language.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-become-clinic',
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule, CustomSelectComponent],
+  imports: [CommonModule, RouterLink, ReactiveFormsModule, CustomSelectComponent, TranslatePipe],
   templateUrl: './become-clinic.component.html',
   styleUrls: ['./become-clinic.component.css']
 })
@@ -23,6 +25,7 @@ export class BecomeClinicComponent implements OnInit {
   private authService = inject(AuthService);
   private fb = inject(FormBuilder);
   private router = inject(Router);
+  public languageService = inject(LanguageService);
 
   public clinicId: string | null = null;
   public logoFile: File | null = null;
@@ -35,21 +38,21 @@ export class BecomeClinicComponent implements OnInit {
 
   get specialtySelectOptions() {
     return this.globalSpecialties.map(s => ({
-      label: s.nameEn,
+      label: this.languageService.isArabic ? s.nameAr : s.nameEn,
       value: s.specialtyId
     }));
   }
 
   get languageSelectOptions() {
     return this.globalLanguages.map(l => ({
-      label: l.nameEn,
+      label: this.languageService.isArabic ? l.nameAr : l.nameEn,
       value: l.languageId
     }));
   }
 
   get insuranceSelectOptions() {
     return this.globalInsuranceProviders.map(p => ({
-      label: p.nameEn,
+      label: this.languageService.isArabic ? p.nameAr : p.nameEn,
       value: p.providerId
     }));
   }
@@ -295,21 +298,24 @@ export class BecomeClinicComponent implements OnInit {
   // Helpers
   getSpecialtyName(specialtyId: string): string {
     const s = this.globalSpecialties.find(x => x.specialtyId === specialtyId);
-    return s ? s.nameEn : specialtyId;
+    if (!s) return specialtyId;
+    return this.languageService.isArabic ? s.nameAr : s.nameEn;
   }
 
   getLanguageName(languageId: string): string {
     const l = this.globalLanguages.find(x => x.languageId === languageId);
-    return l ? l.nameEn : languageId;
+    if (!l) return languageId;
+    return this.languageService.isArabic ? l.nameAr : l.nameEn;
   }
 
   getInsuranceName(providerId: string): string {
     const p = this.globalInsuranceProviders.find(x => x.providerId === providerId);
-    return p ? p.nameEn : providerId;
+    if (!p) return providerId;
+    return this.languageService.isArabic ? p.nameAr : p.nameEn;
   }
 
   finishRegistration(): void {
-    this.uiService.showSuccess('Clinic registration completed! Redirecting to managed clinics...');
+    this.uiService.showSuccess(this.languageService.translate('Clinic registration complete! Redirecting...', 'اكتمل تسجيل العيادة بنجاح! جاري التوجيه...'));
     this.router.navigate(['/clinic-admin/clinics']);
   }
 }

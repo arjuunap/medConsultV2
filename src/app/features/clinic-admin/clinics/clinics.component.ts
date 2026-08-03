@@ -8,11 +8,13 @@ import { environment } from '../../../../environments/environment';
 import { ClinicResponseDto, ClinicBranchResponseDto, ClinicSpecialtyResponseDto, ClinicInsuranceResponseDto, ClinicLanguageResponseDto, ClinicOperatingHourResponseDto, ClinicOperatingHourRequestDto } from '../../../core/models/clinic.model';
 import { SpecialtyResponseDto, InsuranceProviderResponseDto, CityResponseDto, LocalityResponseDto, LanguageResponseDto } from '../../../core/models/reference.model';
 import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
+import { LanguageService } from '../../../core/services/language.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-clinics',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, CustomSelectComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, CustomSelectComponent, TranslatePipe],
   templateUrl: './clinics.component.html',
   styleUrls: ['./clinics.component.css']
 })
@@ -21,6 +23,7 @@ export class ClinicsComponent implements OnInit {
   private referenceService = inject(ReferenceService);
   private uiService = inject(UiService);
   private fb = inject(FormBuilder);
+  public languageService = inject(LanguageService);
 
   public apiUrl = environment.apiUrl;
   public clinics: ClinicResponseDto[] = [];
@@ -28,35 +31,35 @@ export class ClinicsComponent implements OnInit {
 
   get citySelectOptions() {
     return this.globalCities.map(c => ({
-      label: `${c.nameEn} (${c.nameAr})`,
+      label: this.languageService.isArabic ? c.nameAr : c.nameEn,
       value: c.cityId
     }));
   }
 
   get localitySelectOptions() {
     return this.branchLocalities.map(loc => ({
-      label: `${loc.nameEn} (${loc.nameAr})`,
+      label: this.languageService.isArabic ? loc.nameAr : loc.nameEn,
       value: loc.localityId
     }));
   }
 
   get specialtyLinkSelectOptions() {
     return this.globalSpecialties.map(s => ({
-      label: s.nameEn,
+      label: this.languageService.isArabic ? s.nameAr : s.nameEn,
       value: s.specialtyId
     }));
   }
 
   get insuranceLinkSelectOptions() {
     return this.globalInsurances.map(ins => ({
-      label: ins.nameEn,
+      label: this.languageService.isArabic ? ins.nameAr : ins.nameEn,
       value: ins.providerId
     }));
   }
 
   get languageLinkSelectOptions() {
     return this.globalLanguages.map(l => ({
-      label: l.nameEn,
+      label: this.languageService.isArabic ? l.nameAr : l.nameEn,
       value: l.languageId
     }));
   }
@@ -210,12 +213,14 @@ export class ClinicsComponent implements OnInit {
   // ── Specialty and Insurance Name Mappers ──────────────────────────
   getSpecialtyName(specialtyId: string): string {
     const spec = this.globalSpecialties.find(s => s.specialtyId === specialtyId);
-    return spec ? spec.nameEn : 'Unknown Specialty';
+    if (!spec) return 'Unknown Specialty';
+    return this.languageService.isArabic ? spec.nameAr : spec.nameEn;
   }
 
   getInsuranceName(providerId: string): string {
     const ins = this.globalInsurances.find(i => i.providerId === providerId);
-    return ins ? ins.nameEn : 'Unknown Provider';
+    if (!ins) return 'Unknown Provider';
+    return this.languageService.isArabic ? ins.nameAr : ins.nameEn;
   }
 
   getLogoUrl(path: string | undefined | null): string {
@@ -234,7 +239,8 @@ export class ClinicsComponent implements OnInit {
 
   getLanguageName(languageId: string): string {
     const lang = this.globalLanguages.find(l => l.languageId === languageId);
-    return lang ? lang.nameEn : 'Unknown Language';
+    if (!lang) return 'Unknown Language';
+    return this.languageService.isArabic ? lang.nameAr : lang.nameEn;
   }
 
   onCitySelectChange(cityId: any): void {

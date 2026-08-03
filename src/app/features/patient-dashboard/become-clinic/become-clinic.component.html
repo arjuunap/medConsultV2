@@ -2,12 +2,12 @@
   <!-- Header Banner -->
   <div class="d-flex justify-between align-center border-bottom pb-4 mb-5 flex-wrap gap-3">
     <div>
-      <h2 class="fs-xl text-primary m-0 fw-bold">🏥 Clinic Professional Registration</h2>
-      <p class="text-muted fs-sm mt-1 m-0">Establish your healthcare facility profile and primary administrator details</p>
+      <h2 class="fs-xl text-primary m-0 fw-bold">🏥 {{ 'Clinic Professional Registration' | translate }}</h2>
+      <p class="text-muted fs-sm mt-1 m-0">{{ 'Establish your healthcare facility profile and primary administrator details' | translate }}</p>
     </div>
     <div>
       <a routerLink="/patient/profile" class="btn btn-outline btn-sm">
-        ⬅ Back to Profile
+        ⬅ {{ 'Back to Profile' | translate }}
       </a>
     </div>
   </div>
@@ -20,7 +20,7 @@
       (click)="switchTab('general')"
     >
       <div class="step-number">1</div>
-      <div class="step-label">Clinic Profile</div>
+      <div class="step-label">{{ 'Clinic Profile' | translate }}</div>
     </div>
     <div class="step-connector" [class.active]="clinicId !== null"></div>
     <div 
@@ -30,7 +30,7 @@
       (click)="switchTab('specialties')"
     >
       <div class="step-number">2</div>
-      <div class="step-label">Specialties</div>
+      <div class="step-label">{{ 'Specialties' | translate }}</div>
     </div>
     <div class="step-connector" [class.active]="clinicId !== null"></div>
     <div 
@@ -40,7 +40,7 @@
       (click)="switchTab('languages')"
     >
       <div class="step-number">3</div>
-      <div class="step-label">Languages</div>
+      <div class="step-label">{{ 'Languages' | translate }}</div>
     </div>
     <div class="step-connector" [class.active]="clinicId !== null"></div>
     <div 
@@ -50,7 +50,7 @@
       (click)="switchTab('insurance')"
     >
       <div class="step-number">4</div>
-      <div class="step-label">Insurance Providers</div>
+      <div class="step-label">{{ 'Insurance Providers' | translate }}</div>
     </div>
   </div>
 
@@ -58,147 +58,147 @@
   <div class="registration-card shadow-sm">
     <!-- STEP 1: General Details -->
     <div *ngIf="activeTab === 'general'">
-      <h3 class="step-title mb-4">📝 Step 1: Health Facility Profile</h3>
+      <h3 class="step-title mb-4">📝 {{ 'Step 1: Health Facility Profile' | translate }}</h3>
 
       <form [formGroup]="clinicForm" (ngSubmit)="registerClinicProfile()">
         <div class="form-row mb-3">
           <div class="form-group flex-1">
-            <label class="form-label" for="nameEn">Clinic Name (English) *</label>
+            <label class="form-label" for="nameEn">{{ 'Clinic Name (English) *' | translate }}</label>
             <input 
               type="text" 
               id="nameEn" 
               formControlName="nameEn" 
               class="form-control" 
-              placeholder="e.g. Al-Amal Medical Clinic"
+              [placeholder]="'e.g. Al-Amal Medical Clinic' | translate"
             >
             <div *ngIf="clinicForm.get('nameEn')?.touched && clinicForm.get('nameEn')?.invalid" class="error-text">
-              English Name is required.
+              {{ 'English Name is required.' | translate }}
             </div>
           </div>
           <div class="form-group flex-1">
-            <label class="form-label" for="nameAr">Clinic Name (Arabic) *</label>
+            <label class="form-label" for="nameAr">{{ 'Clinic Name (Arabic) *' | translate }}</label>
             <input 
               type="text" 
               id="nameAr" 
               formControlName="nameAr" 
               class="form-control text-right" 
-              placeholder="مثال: مجمع عيادات الأمل الطبي"
+              [placeholder]="'مثال: مجمع عيادات الأمل الطبي' | translate"
             >
             <div *ngIf="clinicForm.get('nameAr')?.touched && clinicForm.get('nameAr')?.invalid" class="error-text">
-              Arabic Name is required.
+              {{ 'Arabic Name is required.' | translate }}
             </div>
           </div>
         </div>
 
         <div class="form-row mb-3">
           <div class="form-group flex-1">
-            <label class="form-label" for="email">Contact Email Address *</label>
+            <label class="form-label" for="email">{{ 'Contact Email Address *' | translate }}</label>
             <input 
               type="email" 
               id="email" 
               formControlName="email" 
               class="form-control" 
-              placeholder="contact@clinicname.com"
+              [placeholder]="'contact@clinicname.com' | translate"
             >
             <div *ngIf="clinicForm.get('email')?.touched && clinicForm.get('email')?.invalid" class="error-text">
-              Valid email is required.
+              {{ 'Valid email is required.' | translate }}
             </div>
           </div>
           <div class="form-group flex-1">
-            <label class="form-label" for="website">Website Address</label>
+            <label class="form-label" for="website">{{ 'Website Address' | translate }}</label>
             <input 
               type="url" 
               id="website" 
               formControlName="website" 
               class="form-control" 
-              placeholder="https://www.clinicname.com"
+              [placeholder]="'https://www.clinicname.com' | translate"
             >
           </div>
         </div>
 
         <div class="form-row mb-3">
           <div class="form-group flex-1">
-            <label class="form-label" for="phonePrimary">Primary Phone Number *</label>
+            <label class="form-label" for="phonePrimary">{{ 'Primary Phone Number *' | translate }}</label>
             <input 
               type="tel" 
               id="phonePrimary" 
               formControlName="phonePrimary" 
               class="form-control" 
-              placeholder="+966 50 000 0000"
+              [placeholder]="'+966 50 000 0000' | translate"
             >
             <div *ngIf="clinicForm.get('phonePrimary')?.touched && clinicForm.get('phonePrimary')?.invalid" class="error-text">
-              Primary phone is required.
+              {{ 'Primary phone is required.' | translate }}
             </div>
           </div>
           <div class="form-group flex-1">
-            <label class="form-label" for="phoneSecondary">Secondary Phone Number</label>
+            <label class="form-label" for="phoneSecondary">{{ 'Secondary Phone Number' | translate }}</label>
             <input 
               type="tel" 
               id="phoneSecondary" 
               formControlName="phoneSecondary" 
               class="form-control" 
-              placeholder="+966 11 000 0000"
+              [placeholder]="'+966 11 000 0000' | translate"
             >
           </div>
         </div>
 
         <div class="form-row mb-3">
           <div class="form-group flex-1">
-            <label class="form-label" for="mohLicenseNumber">MOH Facility License Number *</label>
+            <label class="form-label" for="mohLicenseNumber">{{ 'MOH Facility License Number *' | translate }}</label>
             <input 
               type="text" 
               id="mohLicenseNumber" 
               formControlName="mohLicenseNumber" 
               class="form-control" 
-              placeholder="LIC-998877"
+              [placeholder]="'LIC-998877' | translate"
             >
             <div *ngIf="clinicForm.get('mohLicenseNumber')?.touched && clinicForm.get('mohLicenseNumber')?.invalid" class="error-text">
-              MOH license is required.
+              {{ 'MOH license is required.' | translate }}
             </div>
           </div>
           <div class="form-group flex-1">
-            <label class="form-label" for="vatNumber">VAT Number / Tax ID</label>
+            <label class="form-label" for="vatNumber">{{ 'VAT Number / Tax ID' | translate }}</label>
             <input 
               type="text" 
               id="vatNumber" 
               formControlName="vatNumber" 
               class="form-control" 
-              placeholder="300123456700003"
+              [placeholder]="'300123456700003' | translate"
             >
           </div>
         </div>
 
         <div class="form-group mb-3">
-          <label class="form-label" for="descriptionEn">English Facility Description</label>
+          <label class="form-label" for="descriptionEn">{{ 'English Facility Description' | translate }}</label>
           <textarea 
             id="descriptionEn" 
             formControlName="descriptionEn" 
             class="form-control" 
             rows="3" 
-            placeholder="Introduce your medical facility, specialized departments, and care standards in English..."
+            [placeholder]="'Introduce your medical facility, specialized departments, and care standards in English...' | translate"
           ></textarea>
         </div>
 
         <div class="form-group mb-3">
-          <label class="form-label" for="descriptionAr">Arabic Facility Description</label>
+          <label class="form-label" for="descriptionAr">{{ 'Arabic Facility Description' | translate }}</label>
           <textarea 
             id="descriptionAr" 
             formControlName="descriptionAr" 
             class="form-control text-right" 
             rows="3" 
-            placeholder="نبذة عن المرافق والأقسام الطبية باللغة العربية..."
+            [placeholder]="'نبذة عن المرافق والأقسام الطبية باللغة العربية...' | translate"
           ></textarea>
         </div>
 
         <div class="form-group mb-4">
-          <label class="form-label">Facility Brand Logo</label>
+          <label class="form-label">{{ 'Facility Brand Logo' | translate }}</label>
           <div class="logo-upload-wrapper border rounded p-3 d-flex align-center gap-3">
             <div class="logo-placeholder flex-shrink-0 d-flex align-center justify-center bg-light rounded" style="width: 50px; height: 50px; font-size: 1.5rem;">
               🏥
             </div>
             <div>
               <input type="file" (change)="onLogoChange($event)" accept="image/*" class="form-control-file">
-              <p class="text-muted fs-xs m-0 mt-1">Recommended size: Square PNG or JPG, max 2MB</p>
+              <p class="text-muted fs-xs m-0 mt-1">{{ 'Recommended size: Square PNG or JPG, max 2MB' | translate }}</p>
             </div>
           </div>
         </div>
@@ -209,7 +209,7 @@
             [disabled]="clinicForm.invalid" 
             class="btn btn-primary"
           >
-            💾 Register Clinic &amp; Continue
+            💾 {{ 'Register Clinic & Continue' | translate }}
           </button>
         </div>
       </form>
@@ -218,29 +218,29 @@
     <!-- STEP 2: Specialties -->
     <div *ngIf="activeTab === 'specialties'">
       <div class="d-flex justify-between align-center mb-4">
-        <h3 class="step-title m-0">🎓 Step 2: Clinic Specialties</h3>
+        <h3 class="step-title m-0">🎓 {{ 'Step 2: Clinic Specialties' | translate }}</h3>
         <button class="btn btn-outline btn-sm" (click)="finishRegistration()">
-          Skip &amp; Finish Setup
+          {{ 'Skip & Finish Setup' | translate }}
         </button>
       </div>
 
       <form [formGroup]="specialtyForm" (ngSubmit)="submitSpecialty()" class="card p-4 border bg-light mb-4 shadow-sm">
-        <h4 class="fs-sm text-primary uppercase fw-bold mb-3">+ Link Specialty to Clinic</h4>
+        <h4 class="fs-sm text-primary uppercase fw-bold mb-3">+ {{ 'Link Specialty to Clinic' | translate }}</h4>
         <div class="form-row align-end">
           <div class="form-group flex-1 mb-0">
-            <label class="form-label">Select Specialty *</label>
+            <label class="form-label">{{ 'Select Specialty *' | translate }}</label>
             <app-custom-select 
               formControlName="specialtyId" 
               [options]="specialtySelectOptions" 
               bindLabel="label" 
               bindValue="value" 
               [searchable]="true" 
-              placeholder="-- Choose Specialty --">
+              [placeholder]="'-- Choose Specialty --' | translate">
             </app-custom-select>
           </div>
           <div class="form-group m-0" style="flex: 0 0 auto;">
             <button type="submit" [disabled]="specialtyForm.invalid" class="btn btn-primary">
-              + Link Specialty
+              + {{ 'Link Specialty' | translate }}
             </button>
           </div>
         </div>
@@ -251,8 +251,8 @@
         <table class="table">
           <thead>
             <tr>
-              <th>Linked Specialty</th>
-              <th class="text-end">Actions</th>
+              <th>{{ 'Linked Specialty' | translate }}</th>
+              <th class="text-end">{{ 'Actions' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -260,12 +260,12 @@
               <td class="fw-bold text-dark">🎓 {{ getSpecialtyName(s.specialtyId) }}</td>
               <td class="text-end">
                 <button (click)="removeSpecialty(s.specialtyId || s.id)" class="btn btn-outline btn-danger btn-sm">
-                  Remove
+                  {{ 'Remove' | translate }}
                 </button>
               </td>
             </tr>
             <tr *ngIf="addedSpecialties.length === 0">
-              <td colspan="2" class="text-center text-muted p-4">No specialties linked yet.</td>
+              <td colspan="2" class="text-center text-muted p-4">{{ 'No specialties linked yet.' | translate }}</td>
             </tr>
           </tbody>
         </table>
@@ -273,7 +273,7 @@
 
       <div class="d-flex justify-end pt-3 border-top">
         <button class="btn btn-accent" (click)="switchTab('languages')">
-          Next: Languages ➡
+          {{ 'Next: Languages' | translate }} ➡
         </button>
       </div>
     </div>
@@ -281,29 +281,29 @@
     <!-- STEP 3: Spoken Languages -->
     <div *ngIf="activeTab === 'languages'">
       <div class="d-flex justify-between align-center mb-4">
-        <h3 class="step-title m-0">🗣️ Step 3: Facility Operating Languages</h3>
+        <h3 class="step-title m-0">🗣️ {{ 'Step 3: Facility Operating Languages' | translate }}</h3>
         <button class="btn btn-outline btn-sm" (click)="finishRegistration()">
-          Skip &amp; Finish Setup
+          {{ 'Skip & Finish Setup' | translate }}
         </button>
       </div>
 
       <form [formGroup]="languageForm" (ngSubmit)="submitLanguage()" class="card p-4 border bg-light mb-4 shadow-sm">
-        <h4 class="fs-sm text-primary uppercase fw-bold mb-3">+ Link Language to Clinic</h4>
+        <h4 class="fs-sm text-primary uppercase fw-bold mb-3">+ {{ 'Link Language to Clinic' | translate }}</h4>
         <div class="form-row align-end">
           <div class="form-group flex-1 mb-0">
-            <label class="form-label">Select Language *</label>
+            <label class="form-label">{{ 'Select Language *' | translate }}</label>
             <app-custom-select 
               formControlName="languageId" 
               [options]="languageSelectOptions" 
               bindLabel="label" 
               bindValue="value" 
               [searchable]="true" 
-              placeholder="-- Choose Language --">
+              [placeholder]="'-- Choose Language --' | translate">
             </app-custom-select>
           </div>
           <div class="form-group m-0" style="flex: 0 0 auto;">
             <button type="submit" [disabled]="languageForm.invalid" class="btn btn-primary">
-              + Link Language
+              + {{ 'Link Language' | translate }}
             </button>
           </div>
         </div>
@@ -314,8 +314,8 @@
         <table class="table">
           <thead>
             <tr>
-              <th>Linked Language</th>
-              <th class="text-end">Actions</th>
+              <th>{{ 'Linked Language' | translate }}</th>
+              <th class="text-end">{{ 'Actions' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -323,12 +323,12 @@
               <td class="fw-bold text-dark">🗣️ {{ getLanguageName(l.languageId) }}</td>
               <td class="text-end">
                 <button (click)="removeLanguage(l.languageId || l.id)" class="btn btn-outline btn-danger btn-sm">
-                  Remove
+                  {{ 'Remove' | translate }}
                 </button>
               </td>
             </tr>
             <tr *ngIf="addedLanguages.length === 0">
-              <td colspan="2" class="text-center text-muted p-4">No languages linked yet.</td>
+              <td colspan="2" class="text-center text-muted p-4">{{ 'No languages linked yet.' | translate }}</td>
             </tr>
           </tbody>
         </table>
@@ -336,7 +336,7 @@
 
       <div class="d-flex justify-end pt-3 border-top">
         <button class="btn btn-accent" (click)="switchTab('insurance')">
-          Next: Insurance ➡
+          {{ 'Next: Insurance' | translate }} ➡
         </button>
       </div>
     </div>
@@ -344,33 +344,33 @@
     <!-- STEP 4: Insurance -->
     <div *ngIf="activeTab === 'insurance'">
       <div class="d-flex justify-between align-center mb-4">
-        <h3 class="step-title m-0">🛡️ Step 4: Accepted Insurance Networks</h3>
+        <h3 class="step-title m-0">🛡️ {{ 'Step 4: Accepted Insurance Networks' | translate }}</h3>
         <button class="btn btn-outline btn-sm" (click)="finishRegistration()">
-          Skip &amp; Finish Setup
+          {{ 'Skip & Finish Setup' | translate }}
         </button>
       </div>
 
       <form [formGroup]="insuranceForm" (ngSubmit)="submitInsurance()" class="card p-4 border bg-light mb-4 shadow-sm">
-        <h4 class="fs-sm text-primary uppercase fw-bold mb-3">+ Link Insurance Provider</h4>
+        <h4 class="fs-sm text-primary uppercase fw-bold mb-3">+ {{ 'Link Insurance Provider' | translate }}</h4>
         <div class="form-row align-end">
           <div class="form-group flex-1 mb-0">
-            <label class="form-label">Insurance Provider *</label>
+            <label class="form-label">{{ 'Insurance Provider *' | translate }}</label>
             <app-custom-select 
               formControlName="providerId" 
               [options]="insuranceSelectOptions" 
               bindLabel="label" 
               bindValue="value" 
               [searchable]="true" 
-              placeholder="-- Choose Provider --">
+              [placeholder]="'-- Choose Provider --' | translate">
             </app-custom-select>
           </div>
           <div class="form-group flex-1 mb-0">
-            <label class="form-label">Network Class *</label>
-            <input type="text" formControlName="networkClass" class="form-control" placeholder="E.g. VIP, Class A, B, Silver">
+            <label class="form-label">{{ 'Network Class *' | translate }}</label>
+            <input type="text" formControlName="networkClass" class="form-control" [placeholder]="'E.g. VIP, Class A, B, Silver' | translate">
           </div>
           <div class="form-group m-0" style="flex: 0 0 auto;">
             <button type="submit" [disabled]="insuranceForm.invalid" class="btn btn-primary">
-              + Link Insurance
+              + {{ 'Link Insurance' | translate }}
             </button>
           </div>
         </div>
@@ -381,9 +381,9 @@
         <table class="table">
           <thead>
             <tr>
-              <th>Insurance Provider</th>
-              <th>Network Class</th>
-              <th class="text-end">Actions</th>
+              <th>{{ 'Insurance Provider' | translate }}</th>
+              <th>{{ 'Network Class' | translate }}</th>
+              <th class="text-end">{{ 'Actions' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -392,12 +392,12 @@
               <td><span class="badge badge-info">{{ i.networkClass }}</span></td>
               <td class="text-end">
                 <button (click)="removeInsurance(i.providerId || i.id)" class="btn btn-outline btn-danger btn-sm">
-                  Remove
+                  {{ 'Remove' | translate }}
                 </button>
               </td>
             </tr>
             <tr *ngIf="addedInsurance.length === 0">
-              <td colspan="3" class="text-center text-muted p-4">No insurance networks linked yet.</td>
+              <td colspan="3" class="text-center text-muted p-4">{{ 'No insurance networks linked yet.' | translate }}</td>
             </tr>
           </tbody>
         </table>
@@ -405,7 +405,7 @@
 
       <div class="d-flex justify-end pt-3 border-top">
         <button class="btn btn-accent btn-lg" (click)="finishRegistration()">
-          🎉 Complete Setup &amp; Finish
+          🎉 {{ 'Complete Setup & Finish' | translate }}
         </button>
       </div>
     </div>

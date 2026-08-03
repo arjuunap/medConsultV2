@@ -18,12 +18,14 @@ import {
   CaseRoomMemberResponseDto
 } from '../../../../core/models/case-room.model';
 import { CustomSelectComponent } from '../../../../shared/components/custom-select/custom-select.component';
+import { LanguageService } from '../../../../core/services/language.service';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-case-rooms',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, CustomSelectComponent, RouterLink],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, CustomSelectComponent, RouterLink, TranslatePipe],
   templateUrl: './case-rooms.component.html',
   styleUrls: ['./case-rooms.component.css']
 })
@@ -36,6 +38,7 @@ export class CaseRoomsComponent implements OnInit, OnDestroy {
   private doctorService = inject(DoctorService);
   private clinicalRecordService = inject(ClinicalRecordService);
   private fb = inject(FormBuilder);
+  public languageService = inject(LanguageService);
 
   public isChatActive = false;
   public caseRooms: CaseRoomResponseDto[] = [];
@@ -55,23 +58,50 @@ export class CaseRoomsComponent implements OnInit, OnDestroy {
 
   get prioritySelectOptions() {
     return this.priorityOptions.map(p => ({
-      label: p,
+      label: this.languageService.translate(p, this.getPriorityAr(p)),
       value: p
     }));
   }
 
+  getPriorityAr(priority: string): string {
+    const map: { [key: string]: string } = {
+      'ROUTINE': 'اعتيادي',
+      'URGENT': 'عاجل',
+      'CRITICAL': 'حرج'
+    };
+    return map[priority] || priority;
+  }
+
   get statusSelectOptions() {
     return this.statusOptions.map(s => ({
-      label: s.replace(/_/g, ' '),
+      label: this.languageService.translate(s.replace(/_/g, ' '), this.getStatusAr(s)),
       value: s
     }));
   }
 
+  getStatusAr(status: string): string {
+    const map: { [key: string]: string } = {
+      'ACTIVE': 'نشطة',
+      'RESOLVED': 'تم الحل',
+      'ARCHIVED': 'مؤرشفة'
+    };
+    return map[status] || status;
+  }
+
   get postTypeSelectOptions() {
     return this.postTypeOptions.map(pt => ({
-      label: pt.replace(/_/g, ' '),
+      label: this.languageService.translate(pt.replace(/_/g, ' '), this.getPostTypeAr(pt)),
       value: pt
     }));
+  }
+
+  getPostTypeAr(postType: string): string {
+    const map: { [key: string]: string } = {
+      'NOTE': 'ملاحظة',
+      'ACTION_ITEM': 'إجراء مطلوب',
+      'FILE': 'ملف'
+    };
+    return map[postType] || postType;
   }
 
   get filteredDoctors() {

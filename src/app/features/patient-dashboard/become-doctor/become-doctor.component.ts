@@ -9,11 +9,13 @@ import { AuthService } from '../../../core/services/auth.service';
 import { DoctorTitle, DoctorSpecialtyResponseDto, DoctorLanguageResponseDto, DoctorQualificationResponseDto } from '../../../core/models/doctor.model';
 import { SpecialtyResponseDto, LanguageResponseDto, SubSpecialtyResponseDto } from '../../../core/models/reference.model';
 import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
+import { LanguageService } from '../../../core/services/language.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-become-doctor',
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule, CustomSelectComponent],
+  imports: [CommonModule, RouterLink, ReactiveFormsModule, CustomSelectComponent, TranslatePipe],
   templateUrl: './become-doctor.component.html',
   styleUrls: ['./become-doctor.component.css']
 })  
@@ -24,6 +26,7 @@ export class BecomeDoctorComponent implements OnInit {
   private authService = inject(AuthService);
   private fb = inject(FormBuilder);
   private router = inject(Router);
+  public languageService = inject(LanguageService);
 
   public doctorId: string | null = null;
   public doctorProfile: any = null;
@@ -34,37 +37,41 @@ export class BecomeDoctorComponent implements OnInit {
   public globalSubSpecialties: SubSpecialtyResponseDto[] = [];
   public globalLanguages: LanguageResponseDto[] = [];
 
-  public titles = [
-    { label: 'Dr. (Doctor)', value: 'DR' },
-    { label: 'Prof. (Professor)', value: 'PROF' },
-    { label: 'Consultant', value: 'CONSULTANT' },
-    { label: 'Specialist', value: 'SPECIALIST' }
-  ];
+  get titles() {
+    return [
+      { label: this.languageService.translate('Dr. (Doctor)', 'د. (طبيب)'), value: 'DR' },
+      { label: this.languageService.translate('Prof. (Professor)', 'أ.د. (أستاذ دكتور)'), value: 'PROF' },
+      { label: this.languageService.translate('Consultant', 'استشاري'), value: 'CONSULTANT' },
+      { label: this.languageService.translate('Specialist', 'أخصائي'), value: 'SPECIALIST' }
+    ];
+  }
 
-  public proficiencies = [
-    { label: 'Native', value: 'NATIVE' },
-    { label: 'Fluent', value: 'FLUENT' },
-    { label: 'Intermediate', value: 'INTERMEDIATE' },
-    { label: 'Basic', value: 'BASIC' }
-  ];
+  get proficiencies() {
+    return [
+      { label: this.languageService.translate('Native', 'اللغة الأم'), value: 'NATIVE' },
+      { label: this.languageService.translate('Fluent', 'طلاقة تامة'), value: 'FLUENT' },
+      { label: this.languageService.translate('Intermediate', 'متوسط'), value: 'INTERMEDIATE' },
+      { label: this.languageService.translate('Basic', 'مبتدئ'), value: 'BASIC' }
+    ];
+  }
 
   get specialtySelectOptions() {
     return this.globalSpecialties.map(s => ({
-      label: s.nameEn,
+      label: this.languageService.isArabic ? s.nameAr : s.nameEn,
       value: s.specialtyId
     }));
   }
 
   get subSpecialtySelectOptions() {
     return this.globalSubSpecialties.map(ss => ({
-      label: ss.nameEn,
+      label: this.languageService.isArabic ? ss.nameAr : ss.nameEn,
       value: ss.subSpecialtyId
     }));
   }
 
   get languageSelectOptions() {
     return this.globalLanguages.map(l => ({
-      label: l.nameEn,
+      label: this.languageService.isArabic ? l.nameAr : l.nameEn,
       value: l.languageId
     }));
   }
@@ -336,12 +343,14 @@ export class BecomeDoctorComponent implements OnInit {
   // Helpers
   getSpecialtyName(specialtyId: string): string {
     const s = this.globalSpecialties.find(x => x.specialtyId === specialtyId);
-    return s ? s.nameEn : specialtyId;
+    if (!s) return specialtyId;
+    return this.languageService.isArabic ? s.nameAr : s.nameEn;
   }
   
   getLanguageName(languageId: string): string {
     const l = this.globalLanguages.find(x => x.languageId === languageId);
-    return l ? l.nameEn : languageId;
+    if (!l) return languageId;
+    return this.languageService.isArabic ? l.nameAr : l.nameEn;
   }
 
   finishRegistration(): void {

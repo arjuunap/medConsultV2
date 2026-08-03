@@ -2,8 +2,8 @@
 <div class="patients-directory-card" *ngIf="!selectedPatientId">
   <div class="d-flex justify-between align-center flex-wrap gap-3">
     <div>
-      <h2 class="fs-xl text-primary m-0 fw-bold">📋 Patient Medical Directory</h2>
-      <p class="text-muted fs-sm mt-1 m-0">Select a registered patient from the list below to review their full EMR chart and profile</p>
+      <h2 class="fs-xl text-primary m-0 fw-bold">📋 {{ 'Patient Medical Directory' | translate }}</h2>
+      <p class="text-muted fs-sm mt-1 m-0">{{ 'Select a registered patient from the list below to review their full EMR chart and profile' | translate }}</p>
     </div>
     
     <!-- Searchable Select patient dropdown with "View Chart" action -->
@@ -15,7 +15,7 @@
         [searchable]="true" 
         [ngModel]="selectedPatientId" 
         (selectionChange)="onPatientChartChange($event)"
-        placeholder="-- Quick Search Chart --">
+        [placeholder]="'-- Quick Search Chart --' | translate">
       </app-custom-select>
     </div>
   </div>
@@ -23,7 +23,7 @@
   <!-- Search Input filter -->
   <div class="search-bar-wrapper mt-4">
     <span class="search-icon-inside">🔍</span>
-    <input type="text" [(ngModel)]="searchTerm" placeholder="Search patient name or ID..." class="form-control search-input" />
+    <input type="text" [(ngModel)]="searchTerm" [placeholder]="'Search patient name or ID...' | translate" class="form-control search-input" />
   </div>
 
   <!-- Directory Cards Grid -->
@@ -32,24 +32,24 @@
       <div class="patient-card-avatar">👤</div>
       <div class="patient-card-info">
         <h3>{{ p.patientName }}</h3>
-        <p class="patient-id-sub">ID: {{ p.patientId }}</p>
+        <p class="patient-id-sub">{{ 'ID:' | translate }} {{ p.patientId }}</p>
       </div>
       <button class="btn btn-primary btn-sm w-100 mt-3" (click)="selectPatient(p.patientId, p.patientName)">
-        📋 Open EMR &amp; Profile Details
+        📋 {{ 'Open EMR & Profile Details' | translate }}
       </button>
     </div>
   </div>
 
   <div *ngIf="filteredPatients.length === 0" class="text-center text-muted py-5 mt-4 border rounded-lg bg-light">
-    <span class="fs-lg d-block mb-1">🚫 No Patients Found</span>
-    <span class="fs-xs">Try adjusting your search terms or verify patient list rosters.</span>
+    <span class="fs-lg d-block mb-1">🚫 {{ 'No Patients Found' | translate }}</span>
+    <span class="fs-xs">{{ 'Try adjusting your search terms or verify patient list rosters.' | translate }}</span>
   </div>
 </div>
 
 <!-- Back header if a patient is selected -->
 <div class="chart-back-nav-bar mb-3 d-flex align-center justify-between" *ngIf="selectedPatientId">
   <button class="btn btn-outline btn-sm d-flex align-center gap-1" (click)="backToDirectory()">
-    ⬅️ Back to Patient Directory
+    ⬅️ {{ 'Back to Patient Directory' | translate }}
   </button>
   <div style="min-width: 260px;">
     <app-custom-select 
@@ -59,7 +59,7 @@
       [searchable]="true" 
       [ngModel]="selectedPatientId" 
       (selectionChange)="onPatientChartChange($event)"
-      placeholder="-- Quick Switch Chart --">
+      [placeholder]="'-- Quick Switch Chart --' | translate">
     </app-custom-select>
   </div>
 </div>
@@ -71,28 +71,28 @@
     <div class="d-flex justify-between align-center flex-wrap gap-4">
       <div>
         <h3 class="fs-xl text-primary mb-2 fw-bold d-flex align-center gap-2">
-          <span>👤 Patient Chart:</span>
+          <span>👤 {{ 'Patient Chart:' | translate }}</span>
           <span>{{ selectedPatientName }}</span>
         </h3>
         <div class="d-flex gap-3 align-center flex-wrap mt-2" *ngIf="healthProfile">
-          <span class="patient-vital-pill">📏 Height: {{ healthProfile.heightCm }} cm</span>
-          <span class="patient-vital-pill">⚖️ Weight: {{ healthProfile.weightKg }} kg</span>
-          <span class="patient-vital-pill">📊 BMI: {{ healthProfile.bmi | number:'1.1-2' }}</span>
-          <span class="badge badge-success">🚬 Smoking: {{ healthProfile.smokingStatus }}</span>
-          <span class="badge badge-info">🍷 Alcohol: {{ healthProfile.alcoholStatus }}</span>
+          <span class="patient-vital-pill">📏 {{ 'Height:' | translate }} {{ healthProfile.heightCm }} {{ 'cm' | translate }}</span>
+          <span class="patient-vital-pill">⚖️ {{ 'Weight:' | translate }} {{ healthProfile.weightKg }} {{ 'kg' | translate }}</span>
+          <span class="patient-vital-pill">📊 {{ 'BMI:' | translate }} {{ healthProfile.bmi | number:'1.1-2' }}</span>
+          <span class="badge badge-success">🚬 {{ 'Smoking:' | translate }} {{ healthProfile.smokingStatus | translate }}</span>
+          <span class="badge badge-info">🍷 {{ 'Alcohol:' | translate }} {{ healthProfile.alcoholStatus | translate }}</span>
         </div>
       </div>
 
       <!-- Quick Action Buttons -->
       <div class="d-flex gap-2 flex-wrap align-center">
         <button class="btn btn-primary btn-sm d-flex align-center gap-1" (click)="openModal('vital')">
-          <span>+ Record Vitals</span>
+          <span>+ {{ 'Record Vitals' | translate }}</span>
         </button>
         <button class="btn btn-accent btn-sm d-flex align-center gap-1" (click)="openModal('prescription')">
-          <span>💊 Write Prescription</span>
+          <span>💊 {{ 'Write Prescription' | translate }}</span>
         </button>
         <button class="btn btn-outline btn-sm d-flex align-center gap-1" (click)="openModal('lab')">
-          <span>🔬 Upload Lab Report</span>
+          <span>🔬 {{ 'Upload Lab Report' | translate }}</span>
         </button>
       </div>
     </div>
@@ -100,29 +100,29 @@
     <!-- Allergies & Conditions Summary Grid -->
     <div class="chart-summary-grid">
       <div>
-        <h4 class="fs-xs text-uppercase text-muted mb-3 fw-bold tracking-wider">Known Allergies ({{ allergies.length }})</h4>
+        <h4 class="fs-xs text-uppercase text-muted mb-3 fw-bold tracking-wider">{{ 'Known Allergies' | translate }} ({{ allergies.length }})</h4>
         <div class="d-flex flex-col gap-2">
           <div *ngFor="let al of allergies" class="allergy-item-card d-flex align-center gap-2">
             <span>🚨</span>
             <div>
               <strong>{{ al.allergen }}</strong>
-              <span class="ms-1">({{ al.severity }}) — {{ al.reaction }}</span>
+              <span class="ms-1">({{ al.severity | translate }}) — {{ al.reaction }}</span>
             </div>
           </div>
-          <div *ngIf="allergies.length === 0" class="fs-sm text-muted">No allergies recorded on file.</div>
+          <div *ngIf="allergies.length === 0" class="fs-sm text-muted">{{ 'No allergies recorded on file.' | translate }}</div>
         </div>
       </div>
       <div>
-        <h4 class="fs-xs text-uppercase text-muted mb-3 fw-bold tracking-wider">Chronic Conditions ({{ chronicConditions.length }})</h4>
+        <h4 class="fs-xs text-uppercase text-muted mb-3 fw-bold tracking-wider">{{ 'Chronic Conditions' | translate }} ({{ chronicConditions.length }})</h4>
         <div class="d-flex flex-col gap-2">
           <div *ngFor="let cc of chronicConditions" class="condition-item-card d-flex align-center gap-2">
             <span>🩺</span>
             <div>
               <strong>{{ cc.conditionName }}</strong>
-              <span class="ms-1">[{{ cc.icd10Code }}] — Status: {{ cc.status }}</span>
+              <span class="ms-1">[{{ cc.icd10Code }}] — {{ 'Status:' | translate }} {{ cc.status | translate }}</span>
             </div>
           </div>
-          <div *ngIf="chronicConditions.length === 0" class="fs-sm text-muted">No chronic conditions recorded.</div>
+          <div *ngIf="chronicConditions.length === 0" class="fs-sm text-muted">{{ 'No chronic conditions recorded.' | translate }}</div>
         </div>
       </div>
     </div>
@@ -133,27 +133,27 @@
     <div class="emr-section-card">
       <div class="d-flex justify-between align-center mb-4 border-bottom pb-3">
         <h3 class="fs-md text-primary m-0 fw-bold d-flex align-center gap-2">
-          <span>📜 Prescription History</span>
+          <span>📜 {{ 'Prescription History' | translate }}</span>
         </h3>
-        <span class="badge badge-info">{{ prescriptions.length }} Records</span>
+        <span class="badge badge-info">{{ prescriptions.length }} {{ 'Records' | translate }}</span>
       </div>
 
       <div *ngFor="let rx of prescriptions" class="emr-item-card">
         <div class="d-flex justify-between align-center fs-sm text-muted mb-2">
-          <span class="fw-semibold">📅 Issued: {{ rx.issuedDate }}</span>
-          <span class="badge badge-success">{{ rx.status }}</span>
+          <span class="fw-semibold">📅 {{ 'Issued:' | translate }} {{ rx.issuedDate }}</span>
+          <span class="badge badge-success">{{ rx.status | translate }}</span>
         </div>
-        <div class="fs-sm fw-bold text-dark mb-2">🩺 Diagnosis: {{ rx.diagnosisNotes }}</div>
+        <div class="fs-sm fw-bold text-dark mb-2">🩺 {{ 'Diagnosis:' | translate }} {{ rx.diagnosisNotes }}</div>
         
         <!-- Nested Items -->
         <div class="mt-3 pt-3 border-top" style="border-top-style: dashed !important;">
           <div *ngFor="let item of selectedRxItems[rx.prescriptionId]" class="fs-sm text-dark mb-2 d-flex align-center gap-2">
             <span>💊</span>
-            <span><strong>{{ item.drugName }}</strong> ({{ item.dosage }}) — {{ item.frequency }} for {{ item.durationDays }} Days</span>
+            <span><strong>{{ item.drugName }}</strong> ({{ item.dosage }}) — {{ item.frequency | translate }} {{ 'for' | translate }} {{ item.durationDays }} {{ 'Days' | translate }}</span>
           </div>
         </div>
       </div>
-      <div *ngIf="prescriptions.length === 0" class="text-center text-muted p-4 fs-sm">No prescription records found.</div>
+      <div *ngIf="prescriptions.length === 0" class="text-center text-muted p-4 fs-sm">{{ 'No prescription records found.' | translate }}</div>
     </div>
 
     <!-- Right column: Vitals and Labs -->
@@ -162,23 +162,23 @@
       <div class="emr-section-card">
         <div class="d-flex justify-between align-center mb-4 border-bottom pb-3">
           <h3 class="fs-md text-primary m-0 fw-bold d-flex align-center gap-2">
-            <span>🫀 Recorded Vitals History</span>
+            <span>🫀 {{ 'Recorded Vitals History' | translate }}</span>
           </h3>
-          <span class="badge badge-info">{{ vitals.length }} Entries</span>
+          <span class="badge badge-info">{{ vitals.length }} {{ 'Entries' | translate }}</span>
         </div>
 
         <div class="d-flex flex-col gap-2 overflow-y-auto" style="max-height: 320px;">
           <div *ngFor="let v of vitals" class="vitals-row-item">
             <div class="d-flex justify-between align-center fw-bold text-dark">
-              <span>🩺 BP: {{ v.bloodPressureSystolic }}/{{ v.bloodPressureDiastolic }} mmHg</span>
-              <span class="badge badge-success">❤️ {{ v.heartRateBpm }} BPM</span>
+              <span>🩺 {{ 'BP:' | translate }} {{ v.bloodPressureSystolic }}/{{ v.bloodPressureDiastolic }} mmHg</span>
+              <span class="badge badge-success">❤️ {{ v.heartRateBpm }} {{ 'BPM' | translate }}</span>
             </div>
             <div class="d-flex justify-between align-center text-muted fs-xs mt-2">
-              <span>🩸 Glucose: {{ v.bloodGlucoseMmol || 'N/A' }} | 🌡️ Temp: {{ v.temperatureC || 'N/A' }}°C</span>
+              <span>🩸 {{ 'Glucose:' | translate }} {{ v.bloodGlucoseMmol || 'N/A' }} | 🌡️ {{ 'Temp:' | translate }} {{ v.temperatureC || 'N/A' }}°C</span>
               <span class="fw-semibold">{{ v.recordedAt | date:'mediumDate' }}</span>
             </div>
           </div>
-          <div *ngIf="vitals.length === 0" class="text-center text-muted py-4 fs-sm">No vitals documented.</div>
+          <div *ngIf="vitals.length === 0" class="text-center text-muted py-4 fs-sm">{{ 'No vitals documented.' | translate }}</div>
         </div>
       </div>
 
@@ -186,33 +186,33 @@
       <div class="emr-section-card">
         <div class="d-flex justify-between align-center mb-4 border-bottom pb-3">
           <h3 class="fs-md text-primary m-0 fw-bold d-flex align-center gap-2">
-            <span>🔬 Lab Reports &amp; Attachments</span>
+            <span>🔬 {{ 'Lab Reports & Attachments' | translate }}</span>
           </h3>
-          <span class="badge badge-info">{{ labResults.length }} Reports</span>
+          <span class="badge badge-info">{{ labResults.length }} {{ 'Reports' | translate }}</span>
         </div>
 
         <div *ngFor="let lab of labResults" class="emr-item-card">
           <div class="d-flex justify-between align-center fw-bold fs-sm">
             <span>🧪 {{ lab.labName }} — {{ lab.reportType }}</span>
-            <span class="badge" [class.badge-danger]="lab.overallFlag === 'CRITICAL'" [class.badge-warning]="lab.overallFlag === 'ABNORMAL'" [class.badge-success]="lab.overallFlag === 'NORMAL'">{{ lab.overallFlag }}</span>
+            <span class="badge" [class.badge-danger]="lab.overallFlag === 'CRITICAL'" [class.badge-warning]="lab.overallFlag === 'ABNORMAL'" [class.badge-success]="lab.overallFlag === 'NORMAL'">{{ lab.overallFlag | translate }}</span>
           </div>
-          <div class="text-muted fs-xs mt-1">📅 Date: {{ lab.reportDate }} | Status: {{ lab.status }}</div>
+          <div class="text-muted fs-xs mt-1">📅 {{ 'Date:' | translate }} {{ lab.reportDate }} | {{ 'Status:' | translate }} {{ lab.status | translate }}</div>
           
           <div class="annotation-quote-box" *ngIf="lab.doctorAnnotation">
-            💬 <strong>Clinical Note:</strong> {{ lab.doctorAnnotation }}
+            💬 <strong>{{ 'Clinical Note:' | translate }}</strong> {{ lab.doctorAnnotation }}
           </div>
 
           <div *ngIf="lab.fileId" class="lab-file-attachment-bar">
             <span class="fs-xs text-primary fw-bold d-flex align-center gap-1">
               <span>📄</span>
-              <span>Lab Attachment Document</span>
+              <span>{{ 'Lab Attachment Document' | translate }}</span>
             </span>
             <button class="btn btn-primary btn-sm d-flex align-center gap-1" (click)="downloadLabFile(lab.fileId)">
-              <span>⬇️ Download File</span>
+              <span>⬇️ {{ 'Download File' | translate }}</span>
             </button>
           </div>
         </div>
-        <div *ngIf="labResults.length === 0" class="text-center text-muted py-4 fs-sm">No reports found.</div>
+        <div *ngIf="labResults.length === 0" class="text-center text-muted py-4 fs-sm">{{ 'No reports found.' | translate }}</div>
       </div>
     </div>
   </div>
@@ -222,60 +222,60 @@
 <div *ngIf="activeModal === 'vital'" class="modal-backdrop">
   <div class="modal-content">
     <div class="modal-header">
-      <h3 class="fs-xl text-primary m-0">Document Vitals Metric</h3>
+      <h3 class="fs-xl text-primary m-0">{{ 'Document Vitals Metric' | translate }}</h3>
       <button class="btn-close" (click)="closeModal()">&times;</button>
     </div>
     <div class="modal-body">
       <form [formGroup]="vitalForm" (ngSubmit)="submitVital()">
         <div class="form-row">
           <div class="form-group mb-3">
-            <label class="form-label">Systolic BP (mmHg)</label>
+            <label class="form-label">{{ 'Systolic BP (mmHg)' | translate }}</label>
             <input type="number" formControlName="bloodPressureSystolic" class="form-control">
           </div>
           <div class="form-group mb-3">
-            <label class="form-label">Diastolic BP (mmHg)</label>
+            <label class="form-label">{{ 'Diastolic BP (mmHg)' | translate }}</label>
             <input type="number" formControlName="bloodPressureDiastolic" class="form-control">
           </div>
         </div>
         <div class="form-row">
           <div class="form-group mb-3">
-            <label class="form-label">Heart Rate (BPM)</label>
+            <label class="form-label">{{ 'Heart Rate (BPM)' | translate }}</label>
             <input type="number" formControlName="heartRateBpm" class="form-control">
           </div>
           <div class="form-group mb-3">
-            <label class="form-label">Glucose (mmol/L)</label>
+            <label class="form-label">{{ 'Glucose (mmol/L)' | translate }}</label>
             <input type="number" step="0.1" formControlName="bloodGlucoseMmol" class="form-control">
           </div>
         </div>
         <div class="form-row">
           <div class="form-group mb-3">
-            <label class="form-label">HbA1c (%)</label>
+            <label class="form-label">{{ 'HbA1c (%)' | translate }}</label>
             <input type="number" step="0.1" formControlName="hba1cPercent" class="form-control">
           </div>
           <div class="form-group mb-3">
-            <label class="form-label">Weight (kg)</label>
+            <label class="form-label">{{ 'Weight (kg)' | translate }}</label>
             <input type="number" formControlName="weightKg" class="form-control">
           </div>
         </div>
         <div class="form-row">
           <div class="form-group mb-3">
-            <label class="form-label">Temperature (°C)</label>
+            <label class="form-label">{{ 'Temperature (°C)' | translate }}</label>
             <input type="number" step="0.1" formControlName="temperatureC" class="form-control">
           </div>
           <div class="form-group mb-3">
-            <label class="form-label">Oxygen Saturation (%)</label>
+            <label class="form-label">{{ 'Oxygen Saturation (%)' | translate }}</label>
             <input type="number" formControlName="oxygenSaturation" class="form-control">
           </div>
         </div>
         <div class="form-group m-0">
-          <label class="form-label">Notes</label>
+          <label class="form-label">{{ 'Notes' | translate }}</label>
           <textarea formControlName="notes" class="form-control" rows="2"></textarea>
         </div>
       </form>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
-      <button type="button" class="btn btn-accent" (click)="submitVital()" [disabled]="vitalForm.invalid">Save Entry</button>
+      <button type="button" class="btn btn-outline" (click)="closeModal()">{{ 'Cancel' | translate }}</button>
+      <button type="button" class="btn btn-accent" (click)="submitVital()" [disabled]="vitalForm.invalid">{{ 'Save Entry' | translate }}</button>
     </div>
   </div>
 </div>
@@ -284,7 +284,7 @@
 <div *ngIf="activeModal === 'prescription'" class="modal-backdrop">
   <div class="modal-content" style="max-width: 600px;">
     <div class="modal-header">
-      <h3 class="fs-xl text-primary m-0">Write E-Prescription</h3>
+      <h3 class="fs-xl text-primary m-0">{{ 'Write E-Prescription' | translate }}</h3>
       <button class="btn-close" (click)="closeModal()">&times;</button>
     </div>
     <div class="modal-body">
@@ -292,20 +292,20 @@
       <div *ngIf="!createdRxId">
         <form [formGroup]="rxForm" (ngSubmit)="submitPrescription()">
           <div class="form-group mb-3">
-            <label class="form-label">Valid Until Date</label>
+            <label class="form-label">{{ 'Valid Until Date' | translate }}</label>
             <input type="date" formControlName="validUntil" class="form-control">
           </div>
           <div class="form-group mb-3">
-            <label class="form-label">Clinical Diagnosis Notes</label>
-            <textarea formControlName="diagnosisNotes" class="form-control" rows="3" placeholder="Symptoms, diagnostic findings..."></textarea>
+            <label class="form-label">{{ 'Clinical Diagnosis Notes' | translate }}</label>
+            <textarea formControlName="diagnosisNotes" class="form-control" rows="3" [placeholder]="'Symptoms, diagnostic findings...' | translate"></textarea>
           </div>
           <div class="form-group m-0">
-            <label class="form-label">Pharmacist Instructions</label>
-            <textarea formControlName="pharmacistNotes" class="form-control" rows="2" placeholder="Substitutions, warnings..."></textarea>
+            <label class="form-label">{{ 'Pharmacist Instructions' | translate }}</label>
+            <textarea formControlName="pharmacistNotes" class="form-control" rows="2" [placeholder]="'Substitutions, warnings...' | translate"></textarea>
           </div>
           <div class="modal-footer px-0 pb-0 mt-4">
-            <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
-            <button type="submit" class="btn btn-accent" [disabled]="rxForm.invalid">Create Shell</button>
+            <button type="button" class="btn btn-outline" (click)="closeModal()">{{ 'Cancel' | translate }}</button>
+            <button type="submit" class="btn btn-accent" [disabled]="rxForm.invalid">{{ 'Create Shell' | translate }}</button>
           </div>
         </form>
       </div>
@@ -313,61 +313,61 @@
       <!-- Stage 2: Adding Items -->
       <div *ngIf="createdRxId">
         <div class="mb-4 bg-light p-3 rounded-md border">
-          <h4 class="fs-sm text-primary mb-2 fw-bold">Added Items ({{ rxItemsList.length }})</h4>
+          <h4 class="fs-sm text-primary mb-2 fw-bold">{{ 'Added Items' | translate }} ({{ rxItemsList.length }})</h4>
           <div *ngFor="let item of rxItemsList" class="fs-sm border-bottom pb-1 mb-1">
-            💊 {{ item.drugName }} ({{ item.dosage }}) - {{ item.frequency }} for {{ item.durationDays }} Days
+            💊 {{ item.drugName }} ({{ item.dosage }}) - {{ item.frequency }} {{ 'for' | translate }} {{ item.durationDays }} {{ 'Days' | translate }}
           </div>
         </div>
 
         <form [formGroup]="rxItemForm" (ngSubmit)="addRxItem(); $event.preventDefault()">
           <div class="form-group mb-3">
-            <label class="form-label">Drug / Medicine Name</label>
-            <input type="text" formControlName="drugName" class="form-control" placeholder="E.g. Amoxicillin 500mg">
+            <label class="form-label">{{ 'Drug / Medicine Name' | translate }}</label>
+            <input type="text" formControlName="drugName" class="form-control" [placeholder]="'E.g. Amoxicillin 500mg' | translate">
           </div>
           <div class="form-row">
             <div class="form-group mb-3">
-              <label class="form-label">Dosage</label>
-              <input type="text" formControlName="dosage" class="form-control" placeholder="E.g. 1 tablet">
+              <label class="form-label">{{ 'Dosage' | translate }}</label>
+              <input type="text" formControlName="dosage" class="form-control" [placeholder]="'E.g. 1 tablet' | translate">
             </div>
             <div class="form-group mb-3">
-              <label class="form-label">Route</label>
+              <label class="form-label">{{ 'Route' | translate }}</label>
               <app-custom-select 
                 formControlName="route" 
-                [options]="rxRouteOptions" 
+                [options]="localizedRxRouteOptions" 
                 bindLabel="label" 
                 bindValue="value" 
-                placeholder="Select Route">
+                [placeholder]="'Select Route' | translate">
               </app-custom-select>
             </div>
           </div>
           <div class="form-row">
             <div class="form-group mb-3">
-              <label class="form-label">Frequency</label>
-              <input type="text" formControlName="frequency" class="form-control" placeholder="E.g. Twice daily">
+              <label class="form-label">{{ 'Frequency' | translate }}</label>
+              <input type="text" formControlName="frequency" class="form-control" [placeholder]="'E.g. Twice daily' | translate">
             </div>
             <div class="form-group mb-3">
-              <label class="form-label">Duration (Days)</label>
+              <label class="form-label">{{ 'Duration (Days)' | translate }}</label>
               <input type="number" formControlName="durationDays" class="form-control">
             </div>
           </div>
           <div class="form-row">
             <div class="form-group mb-3">
-              <label class="form-label">Total Quantity</label>
+              <label class="form-label">{{ 'Total Quantity' | translate }}</label>
               <input type="number" formControlName="quantity" class="form-control">
             </div>
             <div class="form-group mb-3">
-              <label class="form-label">Refills Allowed</label>
+              <label class="form-label">{{ 'Refills Allowed' | translate }}</label>
               <input type="number" formControlName="refillsAllowed" class="form-control">
             </div>
           </div>
           <div class="form-group m-0">
-            <label class="form-label">Special Instructions</label>
-            <input type="text" formControlName="specialInstructions" class="form-control" placeholder="E.g. Take after meal">
+            <label class="form-label">{{ 'Special Instructions' | translate }}</label>
+            <input type="text" formControlName="specialInstructions" class="form-control" [placeholder]="'E.g. Take after meal' | translate">
           </div>
 
           <div class="d-flex justify-between gap-3 mt-4 pt-3 border-top">
-            <button type="submit" class="btn btn-outline" [disabled]="rxItemForm.invalid">+ Add Item</button>
-            <button type="button" class="btn btn-accent" (click)="finishPrescription()">Finish Prescription</button>
+            <button type="submit" class="btn btn-outline" [disabled]="rxItemForm.invalid">+ {{ 'Add Item' | translate }}</button>
+            <button type="button" class="btn btn-accent" (click)="finishPrescription()">{{ 'Finish Prescription' | translate }}</button>
           </div>
         </form>
       </div>
@@ -379,29 +379,29 @@
 <div *ngIf="activeModal === 'lab'" class="modal-backdrop">
   <div class="modal-content">
     <div class="modal-header">
-      <h3 class="fs-xl text-primary m-0">Upload Lab Report</h3>
+      <h3 class="fs-xl text-primary m-0">{{ 'Upload Lab Report' | translate }}</h3>
       <button class="btn-close" (click)="closeModal()">&times;</button>
     </div>
     <div class="modal-body">
       <form [formGroup]="labForm" (ngSubmit)="submitLab()">
         <div class="form-group mb-3">
-          <label class="form-label">Lab Facility Name</label>
-          <input type="text" formControlName="labName" class="form-control" placeholder="E.g. Al Borg Diagnostics">
+          <label class="form-label">{{ 'Lab Facility Name' | translate }}</label>
+          <input type="text" formControlName="labName" class="form-control" [placeholder]="'E.g. Al Borg Diagnostics' | translate">
         </div>
         <div class="form-row">
           <div class="form-group mb-3">
-            <label class="form-label">Report Type / Test Category</label>
-            <input type="text" formControlName="reportType" class="form-control" placeholder="E.g. Lipid Profile">
+            <label class="form-label">{{ 'Report Type / Test Category' | translate }}</label>
+            <input type="text" formControlName="reportType" class="form-control" [placeholder]="'E.g. Lipid Profile' | translate">
           </div>
           <div class="form-group mb-3">
-            <label class="form-label">Report Date</label>
+            <label class="form-label">{{ 'Report Date' | translate }}</label>
             <input type="date" formControlName="reportDate" class="form-control">
           </div>
         </div>
         
         <!-- File Selector -->
         <div class="form-group mb-3">
-          <label class="form-label">Select Report Attachment (PDF/Image)</label>
+          <label class="form-label">{{ 'Select Report Attachment (PDF/Image)' | translate }}</label>
           <div class="file-upload-wrapper">
             <span class="file-upload-icon">📎</span>
             <input type="file" (change)="onFileSelected($event)" class="form-control file-input-styled">
@@ -409,14 +409,14 @@
         </div>
 
         <div class="form-group m-0">
-          <label class="form-label">Clinical Annotation Notes</label>
+          <label class="form-label">{{ 'Clinical Annotation Notes' | translate }}</label>
           <textarea formControlName="doctorAnnotation" class="form-control" rows="2"></textarea>
         </div>
       </form>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
-      <button type="button" class="btn btn-accent" (click)="submitLab()" [disabled]="labForm.invalid">Upload Report</button>
+      <button type="button" class="btn btn-outline" (click)="closeModal()">{{ 'Cancel' | translate }}</button>
+      <button type="button" class="btn btn-accent" (click)="submitLab()" [disabled]="labForm.invalid">{{ 'Upload Report' | translate }}</button>
     </div>
   </div>
 </div>

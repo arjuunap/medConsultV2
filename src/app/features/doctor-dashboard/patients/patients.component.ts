@@ -15,6 +15,8 @@ import {
   LabResultResponseDto, LabResultStatus, ResultFlag
 } from '../../../core/models/clinical-record.model';
 import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
+import { LanguageService } from '../../../core/services/language.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 interface PatientOption {
   patientId: string;
@@ -24,7 +26,7 @@ interface PatientOption {
 @Component({
   selector: 'app-patients',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, CustomSelectComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, CustomSelectComponent, TranslatePipe],
   templateUrl: './patients.component.html',
   styleUrls: ['./patients.component.css']
 })
@@ -37,6 +39,7 @@ export class PatientsComponent implements OnInit {
   private authService = inject(AuthService);
   private uiService = inject(UiService);
   private fb = inject(FormBuilder);
+  public languageService = inject(LanguageService);
 
   public patientList: PatientOption[] = [];
   public selectedPatientId = '';
@@ -72,11 +75,13 @@ export class PatientsComponent implements OnInit {
     }));
   }
 
-  public rxRouteOptions = [
-    { label: 'Oral', value: 'ORAL' },
-    { label: 'Intravenous', value: 'INTRAVENOUS' },
-    { label: 'Topical', value: 'TOPICAL' }
-  ];
+  get localizedRxRouteOptions() {
+    return [
+      { label: this.languageService.translate('Oral', 'فموي'), value: 'ORAL' },
+      { label: this.languageService.translate('Intravenous', 'وريدي'), value: 'INTRAVENOUS' },
+      { label: this.languageService.translate('Topical', 'موضعي'), value: 'TOPICAL' }
+    ];
+  }
 
   // EMR Chart details
   public healthProfile: PatientHealthProfileResponseDto | null = null;

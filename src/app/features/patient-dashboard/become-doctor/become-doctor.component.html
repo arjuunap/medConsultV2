@@ -2,12 +2,12 @@
   <!-- Header Banner -->
   <div class="d-flex justify-between align-center border-bottom pb-4 mb-5 flex-wrap gap-3">
     <div>
-      <h2 class="fs-xl text-primary m-0 fw-bold">🩺 Doctor Professional Registration</h2>
-      <p class="text-muted fs-sm mt-1 m-0">Complete your practitioner details to register as a consulting doctor</p>
+      <h2 class="fs-xl text-primary m-0 fw-bold">🩺 {{ 'Doctor Professional Registration' | translate }}</h2>
+      <p class="text-muted fs-sm mt-1 m-0">{{ 'Complete your practitioner details to register as a consulting doctor' | translate }}</p>
     </div>
     <div>
       <a routerLink="/patient/profile" class="btn btn-outline btn-sm">
-        ⬅ Back to Profile
+        ⬅ {{ 'Back to Profile' | translate }}
       </a>
     </div>
   </div>
@@ -20,7 +20,7 @@
       (click)="switchTab('general')"
     >
       <div class="step-number">1</div>
-      <div class="step-label">Bio & Credentials</div>
+      <div class="step-label">{{ 'Bio & Credentials' | translate }}</div>
     </div>
     <div class="step-connector" [class.active]="doctorId !== null"></div>
     <div 
@@ -30,7 +30,7 @@
       (click)="switchTab('specialties')"
     >
       <div class="step-number">2</div>
-      <div class="step-label">Specialties</div>
+      <div class="step-label">{{ 'Specialties' | translate }}</div>
     </div>
     <div class="step-connector" [class.active]="doctorId !== null"></div>
     <div 
@@ -40,7 +40,7 @@
       (click)="switchTab('languages')"
     >
       <div class="step-number">3</div>
-      <div class="step-label">Languages</div>
+      <div class="step-label">{{ 'Languages' | translate }}</div>
     </div>
     <div class="step-connector" [class.active]="doctorId !== null"></div>
     <div 
@@ -50,7 +50,7 @@
       (click)="switchTab('qualifications')"
     >
       <div class="step-number">4</div>
-      <div class="step-label">Qualifications</div>
+      <div class="step-label">{{ 'Qualifications' | translate }}</div>
     </div>
   </div>
 
@@ -58,38 +58,38 @@
   <div class="registration-card shadow-sm">
     <!-- STEP 1: General Details Form -->
     <div *ngIf="activeTab === 'general'">
-      <h3 class="step-title mb-4">📝 Step 1: Personal Overview & Practice Bio</h3>
+      <h3 class="step-title mb-4">📝 {{ 'Step 1: Personal Overview & Practice Bio' | translate }}</h3>
       
       <form [formGroup]="profileForm" (ngSubmit)="registerDoctorProfile()">
         <div class="form-row mb-3">
           <div class="form-group flex-1">
-            <label class="form-label" for="title">Professional Title *</label>
+            <label class="form-label" for="title">{{ 'Professional Title *' | translate }}</label>
             <app-custom-select 
               formControlName="title" 
               [options]="titles" 
               bindLabel="label" 
               bindValue="value" 
-              placeholder="Select Title">
+              [placeholder]="'Select Title' | translate">
             </app-custom-select>
           </div>
           <div class="form-group flex-1">
-            <label class="form-label" for="mohRegistrationNumber">MOH Registration Number *</label>
+            <label class="form-label" for="mohRegistrationNumber">{{ 'MOH Registration Number *' | translate }}</label>
             <input 
               type="text" 
               id="mohRegistrationNumber"
               formControlName="mohRegistrationNumber" 
               class="form-control" 
-              placeholder="MOH-123456"
+              [placeholder]="'MOH-123456' | translate"
             >
             <div *ngIf="profileForm.get('mohRegistrationNumber')?.touched && profileForm.get('mohRegistrationNumber')?.invalid" class="error-text">
-              MOH license registration number is required.
+              {{ 'MOH license registration number is required.' | translate }}
             </div>
           </div>
         </div>
 
         <div class="form-row mb-3">
           <div class="form-group flex-1">
-            <label class="form-label" for="experienceYears">Years of Experience *</label>
+            <label class="form-label" for="experienceYears">{{ 'Years of Experience *' | translate }}</label>
             <input 
               type="number" 
               id="experienceYears"
@@ -99,11 +99,11 @@
               min="0"
             >
             <div *ngIf="profileForm.get('experienceYears')?.touched && profileForm.get('experienceYears')?.invalid" class="error-text">
-              Please enter valid years of experience.
+              {{ 'Please enter valid years of experience.' | translate }}
             </div>
           </div>
           <div class="form-group flex-1">
-            <label class="form-label" for="consultationFeeSar">Base Consultation Fee (SAR) *</label>
+            <label class="form-label" for="consultationFeeSar">{{ 'Base Consultation Fee (SAR) *' | translate }}</label>
             <input 
               type="number" 
               id="consultationFeeSar"
@@ -113,30 +113,30 @@
               min="0"
             >
             <div *ngIf="profileForm.get('consultationFeeSar')?.touched && profileForm.get('consultationFeeSar')?.invalid" class="error-text">
-              Please enter a valid consultation fee.
+              {{ 'Please enter a valid consultation fee.' | translate }}
             </div>
           </div>
         </div>
 
         <div class="form-group mb-3">
-          <label class="form-label" for="bioEn">English Biography / Summary</label>
+          <label class="form-label" for="bioEn">{{ 'English Biography / Summary' | translate }}</label>
           <textarea 
             id="bioEn"
             formControlName="bioEn" 
             class="form-control" 
             rows="3" 
-            placeholder="Describe your medical background, expertise, and patient care philosophy in English..."
+            [placeholder]="'Describe your medical background, expertise, and patient care philosophy in English...' | translate"
           ></textarea>
         </div>
 
         <div class="form-group mb-4">
-          <label class="form-label" for="bioAr">Arabic Biography / Summary</label>
+          <label class="form-label" for="bioAr">{{ 'Arabic Biography / Summary' | translate }}</label>
           <textarea 
             id="bioAr"
             formControlName="bioAr" 
             class="form-control" 
             rows="3" 
-            placeholder="نبذة عن خبراتك الطبية وتخصصك باللغة العربية..."
+            [placeholder]="'نبذة عن خبراتك الطبية وتخصصك باللغة العربية...' | translate"
           ></textarea>
         </div>
 
@@ -146,7 +146,7 @@
             [disabled]="profileForm.invalid" 
             class="btn btn-primary"
           >
-            💾 Submit Registration &amp; Continue
+            💾 {{ 'Submit Registration & Continue' | translate }}
           </button>
         </div>
       </form>
@@ -155,46 +155,46 @@
     <!-- STEP 2: Specialties -->
     <div *ngIf="activeTab === 'specialties'">
       <div class="d-flex justify-between align-center mb-4">
-        <h3 class="step-title m-0">🎓 Step 2: Add Medical Specialties</h3>
+        <h3 class="step-title m-0">🎓 {{ 'Step 2: Add Medical Specialties' | translate }}</h3>
         <button class="btn btn-outline btn-sm" (click)="finishRegistration()">
-          Skip &amp; Finish Setup
+          {{ 'Skip & Finish Setup' | translate }}
         </button>
       </div>
 
       <form [formGroup]="specialtyForm" (ngSubmit)="submitSpecialty()" class="card p-4 border bg-light mb-4 shadow-sm">
-        <h4 class="fs-sm text-primary uppercase fw-bold mb-3">+ Add Medical Specialty</h4>
+        <h4 class="fs-sm text-primary uppercase fw-bold mb-3">+ {{ 'Add Medical Specialty' | translate }}</h4>
         <div class="form-row mb-3">
           <div class="form-group flex-1">
-            <label class="form-label">Specialty *</label>
+            <label class="form-label">{{ 'Specialty *' | translate }}</label>
             <app-custom-select 
               formControlName="specialtyId" 
               [options]="specialtySelectOptions" 
               bindLabel="label" 
               bindValue="value" 
               [searchable]="true" 
-              placeholder="-- Choose Specialty --"
+              [placeholder]="'-- Choose Specialty --' | translate"
               (selectionChange)="onSpecialtyChange()">
             </app-custom-select>
           </div>
           <div class="form-group flex-1">
-            <label class="form-label">Sub-Specialty (Optional)</label>
+            <label class="form-label">{{ 'Sub-Specialty (Optional)' | translate }}</label>
             <app-custom-select 
               formControlName="subSpecialtyId" 
               [options]="subSpecialtySelectOptions" 
               bindLabel="label" 
               bindValue="value" 
-              placeholder="-- None --">
+              [placeholder]="'-- None --' | translate">
             </app-custom-select>
           </div>
         </div>
         <div class="form-row align-center mb-3">
           <div class="form-group d-flex align-center gap-2 m-0">
             <input type="checkbox" id="becomeSpecPrimary" formControlName="isPrimary">
-            <label for="becomeSpecPrimary" class="form-label m-0 cursor-pointer">Primary Specialty</label>
+            <label for="becomeSpecPrimary" class="form-label m-0 cursor-pointer">{{ 'Primary Specialty' | translate }}</label>
           </div>
           <div class="ml-auto">
             <button type="submit" [disabled]="specialtyForm.invalid" class="btn btn-primary">
-              + Add Specialty
+              + {{ 'Add Specialty' | translate }}
             </button>
           </div>
         </div>
@@ -205,9 +205,9 @@
         <table class="table">
           <thead>
             <tr>
-              <th>Specialty Name</th>
-              <th>Primary Status</th>
-              <th class="text-end">Actions</th>
+              <th>{{ 'Specialty Name' | translate }}</th>
+              <th>{{ 'Primary Status' | translate }}</th>
+              <th class="text-end">{{ 'Actions' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -215,17 +215,17 @@
               <td class="fw-bold text-dark">🎓 {{ getSpecialtyName(s.specialtyId) }}</td>
               <td>
                 <span class="badge" [class.badge-primary]="s.isPrimary" [class.badge-secondary]="!s.isPrimary">
-                  {{ s.isPrimary ? 'Primary' : 'Secondary' }}
+                  {{ s.isPrimary ? ('Primary' | translate) : ('Secondary' | translate) }}
                 </span>
               </td>
               <td class="text-end">
                 <button (click)="removeSpecialty(s.id || s.specialtyId)" class="btn btn-outline btn-danger btn-sm">
-                  Remove
+                  {{ 'Remove' | translate }}
                 </button>
               </td>
             </tr>
             <tr *ngIf="addedSpecialties.length === 0">
-              <td colspan="3" class="text-center text-muted p-4">No specialties added yet.</td>
+              <td colspan="3" class="text-center text-muted p-4">{{ 'No specialties added yet.' | translate }}</td>
             </tr>
           </tbody>
         </table>
@@ -233,7 +233,7 @@
 
       <div class="d-flex justify-end pt-3 border-top">
         <button class="btn btn-accent" (click)="switchTab('languages')">
-          Next: Languages ➡
+          {{ 'Next: Languages' | translate }} ➡
         </button>
       </div>
     </div>
@@ -241,40 +241,40 @@
     <!-- STEP 3: Spoken Languages -->
     <div *ngIf="activeTab === 'languages'">
       <div class="d-flex justify-between align-center mb-4">
-        <h3 class="step-title m-0">🗣️ Step 3: Add Spoken Languages</h3>
+        <h3 class="step-title m-0">🗣️ {{ 'Step 3: Add Spoken Languages' | translate }}</h3>
         <button class="btn btn-outline btn-sm" (click)="finishRegistration()">
-          Skip &amp; Finish Setup
+          {{ 'Skip & Finish Setup' | translate }}
         </button>
       </div>
 
       <form [formGroup]="languageForm" (ngSubmit)="submitLanguage()" class="card p-4 border bg-light mb-4 shadow-sm">
-        <h4 class="fs-sm text-primary uppercase fw-bold mb-3">+ Add Spoken Language</h4>
+        <h4 class="fs-sm text-primary uppercase fw-bold mb-3">+ {{ 'Add Spoken Language' | translate }}</h4>
         <div class="form-row mb-3">
           <div class="form-group flex-1">
-            <label class="form-label">Language *</label>
+            <label class="form-label">{{ 'Language *' | translate }}</label>
             <app-custom-select 
               formControlName="languageId" 
               [options]="languageSelectOptions" 
               bindLabel="label" 
               bindValue="value" 
               [searchable]="true" 
-              placeholder="-- Choose Language --">
+              [placeholder]="'-- Choose Language --' | translate">
             </app-custom-select>
           </div>
           <div class="form-group flex-1">
-            <label class="form-label">Proficiency *</label>
+            <label class="form-label">{{ 'Proficiency *' | translate }}</label>
             <app-custom-select 
               formControlName="proficiency" 
               [options]="proficiencies" 
               bindLabel="label" 
               bindValue="value" 
-              placeholder="Select proficiency">
+              [placeholder]="'Select proficiency' | translate">
             </app-custom-select>
           </div>
         </div>
         <div class="d-flex justify-end">
           <button type="submit" [disabled]="languageForm.invalid" class="btn btn-primary">
-            + Add Language
+            + {{ 'Add Language' | translate }}
           </button>
         </div>
       </form>
@@ -284,23 +284,23 @@
         <table class="table">
           <thead>
             <tr>
-              <th>Language</th>
-              <th>Proficiency</th>
-              <th class="text-end">Actions</th>
+              <th>{{ 'Language' | translate }}</th>
+              <th>{{ 'Proficiency' | translate }}</th>
+              <th class="text-end">{{ 'Actions' | translate }}</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let l of addedLanguages">
               <td class="fw-bold text-dark">🗣️ {{ getLanguageName(l.languageId) }}</td>
-              <td><span class="badge badge-info">{{ l.proficiency }}</span></td>
+              <td><span class="badge badge-info">{{ l.proficiency | translate }}</span></td>
               <td class="text-end">
                 <button (click)="removeLanguage(l.id)" class="btn btn-outline btn-danger btn-sm">
-                  Remove
+                  {{ 'Remove' | translate }}
                 </button>
               </td>
             </tr>
             <tr *ngIf="addedLanguages.length === 0">
-              <td colspan="3" class="text-center text-muted p-4">No languages added yet.</td>
+              <td colspan="3" class="text-center text-muted p-4">{{ 'No languages added yet.' | translate }}</td>
             </tr>
           </tbody>
         </table>
@@ -308,7 +308,7 @@
 
       <div class="d-flex justify-end pt-3 border-top">
         <button class="btn btn-accent" (click)="switchTab('qualifications')">
-          Next: Qualifications ➡
+          {{ 'Next: Qualifications' | translate }} ➡
         </button>
       </div>
     </div>
@@ -316,37 +316,37 @@
     <!-- STEP 4: Academic Qualifications -->
     <div *ngIf="activeTab === 'qualifications'">
       <div class="d-flex justify-between align-center mb-4">
-        <h3 class="step-title m-0">📜 Step 4: Add Qualifications / Degrees</h3>
+        <h3 class="step-title m-0">📜 {{ 'Step 4: Add Qualifications / Degrees' | translate }}</h3>
         <button class="btn btn-outline btn-sm" (click)="finishRegistration()">
-          Skip &amp; Finish Setup
+          {{ 'Skip & Finish Setup' | translate }}
         </button>
       </div>
 
       <form [formGroup]="qualificationForm" (ngSubmit)="submitQualification()" class="card p-4 border bg-light mb-4 shadow-sm">
-        <h4 class="fs-sm text-primary uppercase fw-bold mb-3">+ Add Academic Degree / Qualification</h4>
+        <h4 class="fs-sm text-primary uppercase fw-bold mb-3">+ {{ 'Add Academic Degree / Qualification' | translate }}</h4>
         <div class="form-row mb-3">
           <div class="form-group flex-1">
-            <label class="form-label">Degree *</label>
-            <input type="text" formControlName="degree" class="form-control" placeholder="E.g. MBBS, MD, Board Certification">
+            <label class="form-label">{{ 'Degree *' | translate }}</label>
+            <input type="text" formControlName="degree" class="form-control" [placeholder]="'E.g. MBBS, MD, Board Certification' | translate">
           </div>
           <div class="form-group flex-1">
-            <label class="form-label">Institution / University *</label>
-            <input type="text" formControlName="institution" class="form-control" placeholder="University Name">
+            <label class="form-label">{{ 'Institution / University *' | translate }}</label>
+            <input type="text" formControlName="institution" class="form-control" [placeholder]="'University Name' | translate">
           </div>
         </div>
         <div class="form-row mb-3">
           <div class="form-group flex-1">
-            <label class="form-label">Country *</label>
-            <input type="text" formControlName="country" class="form-control" placeholder="Saudi Arabia">
+            <label class="form-label">{{ 'Country *' | translate }}</label>
+            <input type="text" formControlName="country" class="form-control" [placeholder]="'Saudi Arabia' | translate">
           </div>
           <div class="form-group flex-1">
-            <label class="form-label">Year Obtained *</label>
+            <label class="form-label">{{ 'Year Obtained *' | translate }}</label>
             <input type="number" formControlName="yearObtained" class="form-control" placeholder="2018">
           </div>
         </div>
         <div class="d-flex justify-end">
           <button type="submit" [disabled]="qualificationForm.invalid" class="btn btn-primary">
-            + Add Degree
+            + {{ 'Add Degree' | translate }}
           </button>
         </div>
       </form>
@@ -356,10 +356,10 @@
         <table class="table">
           <thead>
             <tr>
-              <th>Degree</th>
-              <th>Institution</th>
-              <th>Country &amp; Year</th>
-              <th class="text-end">Actions</th>
+              <th>{{ 'Degree' | translate }}</th>
+              <th>{{ 'Institution' | translate }}</th>
+              <th>{{ 'Country & Year' | translate }}</th>
+              <th class="text-end">{{ 'Actions' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -369,12 +369,12 @@
               <td>{{ q.country }} ({{ q.yearObtained }})</td>
               <td class="text-end">
                 <button (click)="removeQualification(q.qualId)" class="btn btn-outline btn-danger btn-sm">
-                  Remove
+                  {{ 'Remove' | translate }}
                 </button>
               </td>
             </tr>
             <tr *ngIf="addedQualifications.length === 0">
-              <td colspan="4" class="text-center text-muted p-4">No qualifications added yet.</td>
+              <td colspan="4" class="text-center text-muted p-4">{{ 'No qualifications added yet.' | translate }}</td>
             </tr>
           </tbody>
         </table>
@@ -382,7 +382,7 @@
 
       <div class="d-flex justify-end pt-3 border-top">
         <button class="btn btn-accent btn-lg" (click)="finishRegistration()">
-          🎉 Complete Setup &amp; Finish
+          🎉 {{ 'Complete Setup & Finish' | translate }}
         </button>
       </div>
     </div>
