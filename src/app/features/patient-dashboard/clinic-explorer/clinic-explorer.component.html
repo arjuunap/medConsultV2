@@ -1,17 +1,16 @@
-<div class="explorer-container">
-  <!-- Header Title -->
-  <div class="explorer-header-section">
+<div class="explorer-container" [class.mobile-show-detail]="showMobileDetail">
+  <!-- Header Title (Hidden on mobile detail view to maximize screen space) -->
+  <div class="explorer-header-section" *ngIf="!showMobileDetail">
     <div class="header-content">
       <span class="eyebrow-badge">🇸🇦 {{ 'SA MOH Verified Network' | translate }}</span>
       <h1 class="page-title">{{ 'Clinics & Branches' | translate }}</h1>
       <p class="page-subtitle">
-        {{ 'Search verified private clinics across Saudi Arabia. Browse doctors, filter by specialty, city, language,
-        and availability — and book real appointments online.' | translate }}
+        {{ 'Search verified private clinics across Saudi Arabia. Browse doctors, filter by specialty, city, language, and availability — and book real appointments online.' | translate }}
       </p>
     </div>
   </div>
 
-  <!-- Dashboard Columns Layout -->
+  <!-- Dashboard 2-Column Layout Grid -->
   <div class="explorer-grid">
 
     <!-- COLUMN 1: Clinic Listing & Search -->
@@ -43,10 +42,9 @@
 
             <div class="card-main-info">
               <div class="logo-placeholder-avatar">
-                <img *ngIf="clinic.logoUrl" [src]="apiUrl +'/'+ clinic.logoUrl" [alt]="clinic | translateObj:'name'"
+                <img *ngIf="clinic.logoUrl" [src]="apiUrl + '/' + clinic.logoUrl" [alt]="clinic | translateObj:'name'"
                   class="clinic-logo-img" />
-                <span *ngIf="!clinic.logoUrl" class="logo-initial">{{ (clinic.nameEn || '').substring(0,
-                  2).toUpperCase() }}</span>  
+                <span *ngIf="!clinic.logoUrl" class="logo-initial">{{ (clinic.nameEn || '').substring(0, 2).toUpperCase() }}</span>  
               </div>
 
               <div class="info-text">
@@ -66,37 +64,49 @@
       </div>
     </div>
 
-    <!-- COLUMN 2: Clinic Detail & Branches -->
-    <div class="grid-column branch-column">
+    <!-- COLUMN 2: Clinic Detail, Branches & Roster (Detail Viewport) -->
+    <div class="grid-column detail-viewport-column">
+      
+      <!-- Placeholder View when no clinic selected -->
       <div class="column-card placeholder-card" *ngIf="!selectedClinic">
         <div class="centered-placeholder">
           <span class="placeholder-icon pulse-animation">🏥</span>
-          <h3>{{ 'Select a clinic' | translate }}</h3>
-          <p>{{ 'Choose a clinic from the list to view its branches and specialties.' | translate }}</p>
+          <h3>{{ 'Select a Clinic' | translate }}</h3>
+          <p>{{ 'Choose a clinic from the list on the left to view its branches, operating hours, and specialist doctors roster.' | translate }}</p>
         </div>
       </div>
 
+      <!-- Selected Clinic Viewport -->
       <div class="column-card" *ngIf="selectedClinic">
-        <div class="scroll-content">
-          <!-- Clinic Detail Section -->
+        
+        <!-- Mobile Navigation Back Bar -->
+        <div class="mobile-back-bar">
+          <button class="btn-back-to-list" (click)="goBackToList()">
+            <span>←</span> {{ 'Back to Clinics List' | translate }}
+          </button>
+        </div>
+
+        <div class="scroll-content detail-scroll-wrapper">
+          
+          <!-- Clinic Info Header Banner -->
           <div class="clinic-detail-header-card">
             <div class="logo-title-row">
               <div class="detail-logo-avatar">
                 <img *ngIf="selectedClinic.logoUrl" [src]="apiUrl + '/' + selectedClinic.logoUrl"
                   [alt]="selectedClinic | translateObj:'name'" />
-                <span *ngIf="!selectedClinic.logoUrl">{{ (selectedClinic.nameEn || '').substring(0, 2).toUpperCase()
-                  }}</span>
+                <span *ngIf="!selectedClinic.logoUrl">{{ (selectedClinic.nameEn || '').substring(0, 2).toUpperCase() }}</span>
               </div>
-              <div>
+              <div class="title-meta-block">
+                <div class="badge-status-row">
+                  <span *ngIf="selectedClinic.mohVerified" class="verified-tag">✓ MOH Verified</span>
+                  <span class="license-number">📋 MOH License: {{ selectedClinic.mohLicenseNumber || 'MOH-SA-10023' }}</span>
+                </div>
                 <h2 class="detail-clinic-name">{{ selectedClinic | translateObj:'name' }}</h2>
-                <p class="license-number">{{ 'MOH License:' | translate }} {{ selectedClinic.mohLicenseNumber ||
-                  'MOH-SA-10023' }}</p>
               </div>
             </div>
 
             <p class="detail-description">
-              {{ (selectedClinic | translateObj:'description') || ('Premier medical facility description' | translate)
-              }}
+              {{ (selectedClinic | translateObj:'description') || ('Premier medical facility description' | translate) }}
             </p>
 
             <div class="detail-contact-strip">
@@ -107,133 +117,133 @@
             </div>
           </div>
 
-          <!-- Branches Section -->
-          <div class="branches-list-section">
-            <h3 class="section-subtitle">📍 {{ 'Branches & Locations' | translate }}</h3>
-
+          <!-- Branches Selector Section -->
+          <div class="branches-section-wrapper">
+            <h3 class="section-subtitle">📍 {{ 'Select a Branch Location' | translate }}</h3>
+            
             <div *ngIf="!selectedClinic.branches || selectedClinic.branches.length === 0" class="empty-state">
               <p>{{ 'No active clinic branch locations assigned.' | translate }}</p>
             </div>
 
-            <div *ngFor="let branch of selectedClinic.branches" class="branch-list-card"
-              [class.active]="selectedBranch?.branchId === branch.branchId" (click)="selectBranch(branch)">
-              <div class="branch-card-header">
-                <h4 class="branch-name">{{ branch | translateObj:'branchName' }}</h4>
-                <span *ngIf="branch.isPrimary" class="primary-badge">{{ 'Primary Location' | translate }}</span>
-              </div>
-              <p class="branch-address">📍 {{ branch.addressLine1 }} {{ branch.addressLine2 }}</p>
-              <div class="branch-contact-line">
-                <span *ngIf="branch.phone">📞 {{ branch.phone }}</span>
-                <span *ngIf="branch.email">✉️ {{ branch.email }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- COLUMN 3: Branch Info & Doctors -->
-    <div class="grid-column doctor-column">
-      <div class="column-card placeholder-card" *ngIf="!selectedBranch">
-        <div class="centered-placeholder">
-          <span class="placeholder-icon">📍</span>
-          <h3>{{ 'Select a branch' | translate }}</h3>
-          <p>{{ 'Choose a clinic branch to view its operating hours and assigned specialist doctors.' | translate }}</p>
-        </div>
-      </div>
-
-      <div class="column-card" *ngIf="selectedBranch">
-        <div class="scroll-content">
-          <!-- Selected Branch Header -->
-          <div class="branch-header-card">
-            <h3 class="branch-header-title">🏢 {{ selectedBranch | translateObj:'branchName' }}</h3>
-            <p class="branch-header-sub">📍 {{ selectedBranch.addressLine1 }}</p>
-
-            <!-- Operating Hours Accordion/Section -->
-            <div class="operating-hours-box">
-              <h4 class="box-title">⏰ {{ 'Availability & Slots' | translate }}</h4>
-              <div class="hours-grid">
-                <div *ngFor="let hr of branchOperatingHours" class="hours-row" [class.closed]="hr.isClosed">
-                  <span class="day-label">{{ getDaysOfWeekName(hr.dayOfWeek) }}</span>
-                  <span class="time-label" *ngIf="!hr.isClosed">⏰ {{ hr.openTime }} - {{ hr.closeTime }}</span>
-                  <span class="time-label closed-text" *ngIf="hr.isClosed">🔴 {{ 'Closed' | translate }}</span>
+            <div class="branches-selector-grid" *ngIf="selectedClinic.branches && selectedClinic.branches.length > 0">
+              <div *ngFor="let branch of selectedClinic.branches" class="branch-selector-card"
+                [class.active]="selectedBranch?.branchId === branch.branchId" (click)="selectBranch(branch)">
+                <div class="branch-card-header">
+                  <h4 class="branch-name">{{ branch | translateObj:'branchName' }}</h4>
+                  <span *ngIf="branch.isPrimary" class="primary-badge">{{ 'Primary' | translate }}</span>
                 </div>
-                <div *ngIf="branchOperatingHours.length === 0" class="no-hours-text">
-                  {{ 'No schedules listed for this branch.' | translate }}
+                <p class="branch-address">📍 {{ branch.addressLine1 }} {{ branch.addressLine2 }}</p>
+                <div class="branch-contact-line">
+                  <span *ngIf="branch.phone">📞 {{ branch.phone }}</span>
+                  <span *ngIf="branch.email">✉️ {{ branch.email }}</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Doctors roster at this branch -->
-          <div class="doctors-roster-section">
-            <h3 class="section-subtitle">👨‍⚕️ {{ 'Doctors Roster' | translate }}</h3>
+          <!-- Selected Branch Workspace (Hours & Doctors) -->
+          <div class="branch-workspace-wrapper" *ngIf="selectedBranch">
+            <div class="branch-workspace-grid">
+              
+              <!-- Sub-column A: Operating Hours -->
+              <div class="branch-hours-panel">
+                <div class="operating-hours-box">
+                  <h4 class="box-title">⏰ {{ 'Availability & Hours' | translate }}</h4>
+                  <p class="hours-branch-title">🏢 {{ selectedBranch | translateObj:'branchName' }}</p>
+                  
+                  <div class="hours-rows-container">
+                    <div *ngFor="let hr of branchOperatingHours" class="hours-row" [class.closed]="hr.isClosed">
+                      <span class="day-label">{{ getDaysOfWeekName(hr.dayOfWeek) }}</span>
+                      <span class="time-label" *ngIf="!hr.isClosed">⏰ {{ hr.openTime }} - {{ hr.closeTime }}</span>
+                      <span class="time-label closed-text" *ngIf="hr.isClosed">🔴 {{ 'Closed' | translate }}</span>
+                    </div>
+                    <div *ngIf="branchOperatingHours.length === 0" class="no-hours-text">
+                      {{ 'No schedules listed for this branch.' | translate }}
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-            <div *ngIf="branchDoctors.length === 0" class="empty-state">
-              <span class="empty-icon">🩺</span>
-              <p>{{ 'No active clinic branch locations assigned to this doctor.' | translate }}</p>
+              <!-- Sub-column B: Doctors Roster -->
+              <div class="branch-doctors-panel">
+                <h3 class="section-subtitle">👨‍⚕️ {{ 'Doctors Roster' | translate }}</h3>
+
+                <div *ngIf="branchDoctors.length === 0" class="empty-state">
+                  <span class="empty-icon">🩺</span>
+                  <p>{{ 'No active specialist doctors assigned to this branch location.' | translate }}</p>
+                </div>
+
+                <div class="doctors-roster-list" *ngIf="branchDoctors.length > 0">
+                  <div *ngFor="let item of branchDoctors" class="doctor-profile-card">
+                    <!-- Doctor Card Header -->
+                    <div class="doctor-card-main">
+                      <div class="doctor-avatar-circle" [style.backgroundColor]="getAvatarBg(item.doctor.fullName)"
+                        [style.color]="getAvatarColor(item.doctor.fullName)">
+                        {{ getInitials(item.doctor.fullName) }}
+                      </div>
+                      <div class="doctor-primary-details">
+                        <h4 class="doctor-name">
+                          {{ item.doctor.title === 'DR' ? ('Dr. ' | translate) : '' }}{{ item.doctor.fullName }}
+                        </h4>
+                        <p class="doctor-department">🩺 {{ item.dcLink.department }}</p>
+
+                        <div class="doctor-badge-row">
+                          <span class="exp-badge">🏆 {{ item.doctor.experienceYears }} {{ 'Years Exp' | translate }}</span>
+                          <span class="fee-badge">💰 {{ item.dcLink.consultationFeeSar }} SAR</span>
+                        </div>
+
+                        <div class="rating-reviews-line">
+                          <span class="stars-gold">★</span>
+                          <span class="rating-val">{{ item.doctor.overallRating || 0 }}</span>
+                          <span class="reviews-count">({{ item.doctor.reviewCount || 0 }} {{ 'reviews' | translate }})</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Doctor Card Body -->
+                    <div class="doctor-card-body">
+                      <h5 class="body-sub-title">{{ 'Professional Biography' | translate }}</h5>
+                      <p class="doctor-bio">{{ (item.doctor | translateObj:'bio') || ('No bio notes provided.' | translate) }}</p>
+
+                      <!-- Spoken languages -->
+                      <div class="languages-line" *ngIf="item.languages && item.languages.length > 0">
+                        <strong>💬 {{ 'Spoken Languages' | translate }}:</strong>
+                        <span *ngFor="let lang of item.languages" class="lang-pill">
+                          {{ getLanguageName(lang.languageId) }}
+                        </span>
+                      </div>
+
+                      <!-- Academic Qualifications -->
+                      <div class="qualifications-list" *ngIf="item.qualifications && item.qualifications.length > 0">
+                        <h5 class="body-sub-title">🎓 {{ 'Academic Qualifications' | translate }}</h5>
+                        <div *ngFor="let qual of item.qualifications" class="qual-item">
+                          <span class="qual-degree">🎓 {{ qual.degree }}</span>
+                          <span class="qual-inst">- {{ qual.institution }}, {{ qual.country }} ({{ qual.yearObtained }})</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Book Button -->
+                    <div class="doctor-card-action">
+                      <button class="btn-book-now" (click)="openBooking(item.doctor, item.dcLink)">
+                        📅 {{ 'Book appointment' | translate }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
             </div>
-
-            <div *ngFor="let item of branchDoctors" class="doctor-profile-card">
-              <!-- Doctor Card Header -->
-              <div class="doctor-card-main">
-                <div class="doctor-avatar-circle" [style.backgroundColor]="getAvatarBg(item.doctor.fullName)"
-                  [style.color]="getAvatarColor(item.doctor.fullName)">
-                  {{ getInitials(item.doctor.fullName) }}
-                </div>
-                <div class="doctor-primary-details">
-                  <h4 class="doctor-name">
-                    {{ item.doctor.title === 'DR' ? ('Dr. ' | translate) : '' }}{{ item.doctor.fullName }}
-                  </h4>
-                  <p class="doctor-department">🩺 {{ item.dcLink.department }}</p>
-
-                  <div class="doctor-badge-row">
-                    <span class="exp-badge">🏆 {{ item.doctor.experienceYears }} {{ 'Years Exp' | translate }}</span>
-                    <span class="fee-badge">💰 {{ item.dcLink.consultationFeeSar }} SAR</span>
-                  </div>
-
-                  <div class="rating-reviews-line">
-                    <span class="stars-gold">★</span>
-                    <span class="rating-val">{{ item.doctor.overallRating || 0 }}</span>
-                    <span class="reviews-count">({{ item.doctor.reviewCount || 0 }} {{ 'reviews' | translate }})</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Doctor Card Body -->
-              <div class="doctor-card-body">
-                <h5 class="body-sub-title">{{ 'Professional Biography' | translate }}</h5>
-                <p class="doctor-bio">{{ (item.doctor | translateObj:'bio') || ('No bio notes provided.' | translate) }}
-                </p>
-
-                <!-- Spoken languages -->
-                <div class="languages-line" *ngIf="item.languages && item.languages.length > 0">
-                  <strong>💬 {{ 'Spoken Languages' | translate }}:</strong>
-                  <span *ngFor="let lang of item.languages" class="lang-pill">
-                    {{ getLanguageName(lang.languageId) }}
-                  </span>
-                </div>
-
-                <!-- Academic Qualifications -->
-                <div class="qualifications-list" *ngIf="item.qualifications && item.qualifications.length > 0">
-                  <h5 class="body-sub-title">🎓 {{ 'Academic Qualifications' | translate }}</h5>
-                  <div *ngFor="let qual of item.qualifications" class="qual-item">
-                    <span class="qual-degree">🎓 {{ qual.degree }}</span>
-                    <span class="qual-inst">- {{ qual.institution }}, {{ qual.country }} ({{ qual.yearObtained
-                      }})</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Book Button -->
-              <div class="doctor-card-action">
-                <button class="btn-book-now" (click)="openBooking(item.doctor, item.dcLink)">
-                  📅 {{ 'Book appointment' | translate }}
-                </button>
-              </div>
-            </div>
-
           </div>
+
+          <!-- Empty state when branch is not selected -->
+          <div class="select-branch-placeholder-card" *ngIf="!selectedBranch">
+            <span class="placeholder-icon-small">📍</span>
+            <h4>{{ 'Select a Branch Location above' | translate }}</h4>
+            <p>{{ 'Choose one of the branch locations above to view its operating hours and list of available specialist doctors.' | translate }}</p>
+          </div>
+
         </div>
       </div>
     </div>
@@ -261,11 +271,9 @@
                 {{ bookingDoctor.title === 'DR' ? ('Dr. ' | translate) : '' }}{{ bookingDoctor.fullName }}
               </h4>
               <p class="summary-doc-subtitle">
-                {{ bookingDcLink.department }} · {{ selectedClinic | translateObj:'name' }} - {{ selectedBranch |
-                translateObj:'branchName' }}
+                {{ bookingDcLink.department }} · {{ selectedClinic | translateObj:'name' }} - {{ selectedBranch | translateObj:'branchName' }}
               </p>
-              <p class="summary-fee-line">💰 {{ 'Standard Fee:' | translate }} <strong>{{
-                  bookingDcLink.consultationFeeSar }} SAR</strong></p>
+              <p class="summary-fee-line">💰 {{ 'Standard Fee:' | translate }} <strong>{{ bookingDcLink.consultationFeeSar }} SAR</strong></p>
             </div>
           </div>
         </div>

@@ -654,3 +654,21 @@
   border: 1px solid #FEF3C7;
   border-radius: 12px;
 }
+
+/* Background utilities and responsiveness adjustments */
+.bg-teal {
+  background-color: var(--teal) !important;
+}
+
+@media (max-width: 640px) {
+  .booking-wizard-steps {
+    padding: 0.75rem 1rem !important;
+    gap: 0.25rem !important;
+  }
+  .step-nav-item .label {
+    display: none !important; /* Hide labels to fit step indicators on mobile */
+  }
+  .step-divider {
+    font-size: 1rem !important;
+  }
+}

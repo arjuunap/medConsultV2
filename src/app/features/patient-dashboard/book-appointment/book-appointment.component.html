@@ -20,19 +20,19 @@
       <span class="num">1</span>
       <span class="label">{{ 'Doctor' | translate }}</span>
     </div>
-    <span class="divider">›</span>
+    <span class="step-divider">›</span>
 
     <div class="step-nav-item" [class.active]="currentStep === 2" [class.completed]="currentStep > 2" (click)="goToStep(2)">
       <span class="num">2</span>
       <span class="label">{{ 'Clinic' | translate }}</span>
     </div>
-    <span class="divider">›</span>
+    <span class="step-divider">›</span>
 
     <div class="step-nav-item" [class.active]="currentStep === 3" [class.completed]="currentStep > 3" (click)="goToStep(3)">
       <span class="num">3</span>
       <span class="label">{{ 'Date & Time' | translate }}</span>
     </div>
-    <span class="divider">›</span>
+    <span class="step-divider">›</span>
 
     <div class="step-nav-item" [class.active]="currentStep === 4" [class.completed]="currentStep > 4" (click)="goToStep(4)">
       <span class="num">4</span>
@@ -127,6 +127,9 @@
 
       <div class="navigation-footer mt-4" *ngIf="doctorClinics.length > 0">
         <button type="button" class="btn btn-outline" (click)="goToStep(1)">🔙 {{ 'Back' | translate }}</button>
+        <button type="button" class="btn btn-primary bg-teal border-none" *ngIf="wizardForm.get('dcId')?.value" (click)="goToStep(3)">
+          {{ 'Next' | translate }} 🔜
+        </button>
       </div>
     </div>
 
@@ -183,6 +186,9 @@
 
       <div class="navigation-footer mt-4">
         <button type="button" class="btn btn-outline" (click)="goToStep(2)">🔙 {{ 'Back' | translate }}</button>
+        <button type="button" class="btn btn-primary bg-teal border-none" *ngIf="wizardForm.get('slotId')?.value" (click)="goToStep(4)">
+          {{ 'Next' | translate }} 🔜
+        </button>
       </div>
     </div>
 

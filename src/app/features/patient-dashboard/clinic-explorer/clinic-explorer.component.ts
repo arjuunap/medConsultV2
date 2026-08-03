@@ -54,6 +54,7 @@ export class ClinicExplorerComponent implements OnInit {
   public selectedBranch: ClinicBranchResponseDto | null = null;
   public branchOperatingHours: ClinicOperatingHourResponseDto[] = [];
   public branchDoctors: { doctor: DoctorResponseDto; dcLink: DoctorClinicResponseDto; qualifications: any[]; languages: any[] }[] = [];
+  public showMobileDetail = false;
 
   // Search Filter Form
   public searchForm: FormGroup = this.fb.group({
@@ -154,6 +155,7 @@ export class ClinicExplorerComponent implements OnInit {
     this.selectedBranch = null;
     this.branchDoctors = [];
     this.branchOperatingHours = [];
+    this.showMobileDetail = true;
 
     this.clinicService.getClinicDetail(clinic.clinicId).subscribe({
       next: (detail) => {
@@ -165,6 +167,14 @@ export class ClinicExplorerComponent implements OnInit {
         this.uiService.showError('Failed to load clinic details.');
       }
     });
+  }
+
+  goBackToList(): void {
+    this.showMobileDetail = false;
+    this.selectedClinic = null;
+    this.selectedBranch = null;
+    this.branchDoctors = [];
+    this.branchOperatingHours = [];
   }
 
   selectBranch(branch: ClinicBranchResponseDto): void {

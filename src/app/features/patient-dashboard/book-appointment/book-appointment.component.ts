@@ -117,9 +117,18 @@ export class BookAppointmentComponent implements OnInit {
     ).subscribe({
       next: (res) => {
         const list = res?.content || [];
-        // Extract doctorId from all appointments where status !== 'CANCELLED'
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const todayStr = `${year}-${month}-${day}`;
+
+        // Extract doctorId from active upcoming appointments (SCHEDULED or CONFIRMED status, date >= today)
         this.activeBookedDoctorIds = list
-          .filter((appt: any) => appt.status !== 'CANCELLED')
+          .filter((appt: any) => 
+            (appt.status === 'SCHEDULED' || appt.status === 'CONFIRMED') &&
+            appt.scheduledDate >= todayStr
+          )
           .map((appt: any) => appt.doctorId)
           .filter(Boolean);
           
