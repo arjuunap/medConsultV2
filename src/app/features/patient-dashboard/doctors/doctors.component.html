@@ -21,35 +21,40 @@
       <!-- Specialty Select -->
       <div class="filter-field">
         <label class="filter-label">{{ 'Medical Specialty' | translate }}</label>
-        <select [(ngModel)]="selectedSpecialtyId" (change)="applyFilters()" class="filter-select-input">
-          <option value="">{{ 'All Specialties' | translate }}</option>
-          <option *ngFor="let spec of specialties" [value]="spec.specialtyId">
-            {{ spec | translateObj:'name' }}
-          </option>
-        </select>
+        <app-custom-select 
+          [(ngModel)]="selectedSpecialtyId" 
+          (selectionChange)="applyFilters()" 
+          [options]="specialtyOptions" 
+          [searchable]="true"
+          bindLabel="label"
+          bindValue="value">
+        </app-custom-select>
       </div>
 
       <!-- City Select -->
       <div class="filter-field">
         <label class="filter-label">{{ 'Location / City' | translate }}</label>
-        <select [(ngModel)]="selectedCityId" (change)="applyFilters()" class="filter-select-input">
-          <option value="">{{ 'All Cities' | translate }}</option>
-          <option *ngFor="let city of cities" [value]="city.cityId">
-            {{ city | translateObj:'name' }}
-          </option>
-        </select>
+        <app-custom-select 
+          [(ngModel)]="selectedCityId" 
+          (selectionChange)="applyFilters()" 
+          [options]="cityOptions" 
+          [searchable]="true"
+          bindLabel="label"
+          bindValue="value">
+        </app-custom-select>
       </div>
 
       <!-- Rating Select -->
       <div class="filter-field">
         <label class="filter-label">{{ 'Minimum Rating' | translate }}</label>
-        <select [(ngModel)]="selectedRating" (change)="applyFilters()" class="filter-select-input">
-          <option [value]="0">{{ 'All Ratings' | translate }}</option>
-          <option [value]="5">⭐⭐⭐⭐⭐ (5/5)</option>
-          <option [value]="4.5">⭐⭐⭐⭐½+ (4.5+)</option>
-          <option [value]="4">⭐⭐⭐⭐+ (4.0+)</option>
-          <option [value]="3">⭐⭐⭐+ (3.0+)</option>
-        </select>
+        <app-custom-select 
+          [(ngModel)]="selectedRating" 
+          (selectionChange)="applyFilters()" 
+          [options]="ratingSelectOptions"
+          icon="⭐"
+          bindLabel="label"
+          bindValue="value">
+        </app-custom-select>
       </div>
     </div>
 
@@ -59,12 +64,14 @@
         <!-- Language Select -->
         <div class="filter-field">
           <label class="filter-label">{{ 'Spoken Language' | translate }}</label>
-          <select [(ngModel)]="selectedLanguageId" (change)="applyFilters()" class="filter-select-input">
-            <option value="">{{ 'All Languages' | translate }}</option>
-            <option *ngFor="let lang of languages" [value]="lang.languageId">
-              {{ lang | translateObj:'name' }}
-            </option>
-          </select>
+          <app-custom-select 
+            [(ngModel)]="selectedLanguageId" 
+            (selectionChange)="applyFilters()" 
+            [options]="languageSelectOptions" 
+            [searchable]="true"
+            bindLabel="label"
+            bindValue="value">
+          </app-custom-select>
         </div>
 
         <!-- Experience Slider -->

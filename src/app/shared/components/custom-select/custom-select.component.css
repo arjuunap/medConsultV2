@@ -246,9 +246,11 @@
 }
 
 .option-sublabel {
-  font-size: 0.75rem;
-  color: var(--t3, #6B7280);
-  font-weight: 400;
+  font-size: 0.78rem;
+  color: #D97706;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-top: 1px;
 }
 
 .check-badge {

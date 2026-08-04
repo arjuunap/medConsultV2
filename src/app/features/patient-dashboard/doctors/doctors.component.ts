@@ -14,6 +14,8 @@ import { SpecialtyResponseDto, LanguageResponseDto, CityResponseDto } from '../.
 import { DoctorResponseDto, DoctorDetailResponse } from '../../../core/models/doctor.model';
 import { ClinicResponseDto } from '../../../core/models/clinic.model';
 
+import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
+
 export interface EnrichedDoctor extends DoctorResponseDto {
   specialtyIds: string[];
   languageIds: string[];
@@ -27,7 +29,7 @@ export interface EnrichedDoctor extends DoctorResponseDto {
 @Component({
   selector: 'app-doctors',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, TranslatePipe, TranslateObjPipe],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, TranslatePipe, TranslateObjPipe, CustomSelectComponent],
   templateUrl: './doctors.component.html',
   styleUrls: ['./doctors.component.css']
 })
@@ -61,6 +63,72 @@ export class DoctorsComponent implements OnInit {
   public selectedLanguageId: string = '';
   public minExperience: number = 0;
   public maxFee: number = 500;
+
+  get specialtyOptions() {
+    return [
+      { label: this.languageService.isArabic ? 'جميع التخصصات' : 'All Specialties', value: '' },
+      ...this.specialties.map(s => ({
+        label: this.languageService.isArabic && s.nameAr ? s.nameAr : s.nameEn || '',
+        value: s.specialtyId
+      }))
+    ];
+  }
+
+  get cityOptions() {
+    return [
+      { label: this.languageService.isArabic ? 'جميع المدن' : 'All Cities', value: '' },
+      ...this.cities.map(c => ({
+        label: this.languageService.isArabic && c.nameAr ? c.nameAr : c.nameEn || '',
+        value: c.cityId
+      }))
+    ];
+  }
+
+  get ratingSelectOptions() {
+    const isAr = this.languageService.isArabic;
+    return [
+      { 
+        label: isAr ? 'جميع التقييمات' : 'All Ratings', 
+        value: 0, 
+        // icon: '✨', 
+        sublabel: isAr ? 'عرض جميع التقييمات' : 'Show all ratings' 
+      },
+      { 
+        label: isAr ? '5.0 نجوم (الأعلى تقييماً)' : '5.0 Stars (Top Rated)', 
+        value: 5, 
+        // icon: '🌟', 
+        sublabel: '★ ★ ★ ★ ★ (5.0)' 
+      },
+      { 
+        label: isAr ? '4.5+ نجوم وأعلى' : '4.5+ Stars & Above', 
+        value: 4.5, 
+        // icon: '⭐', 
+        sublabel: '★ ★ ★ ★ ½ (4.5+)' 
+      },
+      { 
+        label: isAr ? '4.0+ نجوم وأعلى' : '4.0+ Stars & Above', 
+        value: 4, 
+        // icon: '⭐', 
+        sublabel: '★ ★ ★ ★ ☆ (4.0+)' 
+      },
+      { 
+        label: isAr ? '3.0+ نجوم وأعلى' : '3.0+ Stars & Above', 
+        value: 3, 
+        // icon: '⭐', 
+        sublabel: '★ ★ ★ ☆ ☆ (3.0+)' 
+      }
+    ];
+  }
+
+  get languageSelectOptions() {
+    return [
+      { label: this.languageService.isArabic ? 'جميع اللغات' : 'All Languages', value: '' },
+      ...this.languages.map(l => ({
+        label: this.languageService.isArabic && l.nameAr ? l.nameAr : l.nameEn || '',
+        value: l.languageId
+      }))
+    ];
+  }
 
   // Selected doctor details state
   public selectedDoctorDetail: DoctorDetailResponse | null = null;

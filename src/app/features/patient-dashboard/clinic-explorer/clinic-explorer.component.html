@@ -559,20 +559,22 @@
           <div class="form-row-grid">
             <div class="form-control-wrapper">
               <label class="section-label">{{ 'Appointment Type *' | translate }}</label>
-              <select formControlName="appointmentType" class="modal-select-input">
-                <option *ngFor="let type of appointmentTypes" [value]="type">
-                  {{ type.replace('_', ' ') }}
-                </option>
-              </select>
+              <app-custom-select 
+                formControlName="appointmentType" 
+                [options]="appointmentTypeOptions" 
+                bindLabel="label" 
+                bindValue="value">
+              </app-custom-select>
             </div>
 
             <div class="form-control-wrapper">
               <label class="section-label">{{ 'Session Mode *' | translate }}</label>
-              <select formControlName="sessionType" class="modal-select-input">
-                <option *ngFor="let sMode of sessionTypes" [value]="sMode">
-                  {{ sMode.replace('_', ' ') }}
-                </option>
-              </select>
+              <app-custom-select 
+                formControlName="sessionType" 
+                [options]="sessionTypeOptions" 
+                bindLabel="label" 
+                bindValue="value">
+              </app-custom-select>
             </div>
           </div>
 

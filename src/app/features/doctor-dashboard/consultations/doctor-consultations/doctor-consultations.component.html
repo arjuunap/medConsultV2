@@ -360,9 +360,13 @@
                 <div class="rx-form-row">
                   <div class="rx-form-group">
                     <label class="rx-label">{{ 'Route' | translate }}</label>
-                    <select formControlName="route" class="form-control form-control-sm">
-                      <option *ngFor="let r of routeOptions" [value]="r.value">{{ r.label }}</option>
-                    </select>
+                    <app-custom-select 
+                      formControlName="route" 
+                      size="sm" 
+                      [options]="routeOptions" 
+                      bindLabel="label" 
+                      bindValue="value">
+                    </app-custom-select>
                   </div>
                   <div class="rx-form-group flex-2">
                     <label class="rx-label">{{ 'Frequency *' | translate }}</label>
@@ -467,21 +471,23 @@
           <div class="lab-form-row">
             <div class="lab-form-group">
               <label class="lab-label">{{ 'Status *' | translate }}</label>
-              <select formControlName="status" class="form-control form-control-sm">
-                <option value="PENDING">{{ 'Pending' | translate }}</option>
-                <option value="RECEIVED">{{ 'Received' | translate }}</option>
-                <option value="REVIEWED">{{ 'Reviewed' | translate }}</option>
-                <option value="ABNORMAL">{{ 'Abnormal' | translate }}</option>
-                <option value="CRITICAL">{{ 'Critical' | translate }}</option>
-              </select>
+              <app-custom-select 
+                formControlName="status" 
+                size="sm" 
+                [options]="labStatusSelectOptions" 
+                bindLabel="label" 
+                bindValue="value">
+              </app-custom-select>
             </div>
             <div class="lab-form-group">
               <label class="lab-label">{{ 'Overall Flag *' | translate }}</label>
-              <select formControlName="overallFlag" class="form-control form-control-sm">
-                <option value="NORMAL">{{ 'Normal' | translate }}</option>
-                <option value="ABNORMAL">{{ 'Abnormal' | translate }}</option>
-                <option value="CRITICAL">{{ 'Critical' | translate }}</option>
-              </select>
+              <app-custom-select 
+                formControlName="overallFlag" 
+                size="sm" 
+                [options]="labOverallFlagOptions" 
+                bindLabel="label" 
+                bindValue="value">
+              </app-custom-select>
             </div>
           </div>
           <div class="lab-form-group">
@@ -595,14 +601,13 @@
                 <div class="lab-form-row">
                   <div class="lab-form-group">
                     <label class="lab-label">{{ 'Flag *' | translate }}</label>
-                    <select formControlName="flag" class="form-control form-control-sm">
-                      <option value="NORMAL">{{ 'Normal' | translate }}</option>
-                      <option value="HIGH">{{ 'High' | translate }}</option>
-                      <option value="LOW">{{ 'Low' | translate }}</option>
-                      <option value="CRITICAL_HIGH">{{ 'Critical High' | translate }}</option>
-                      <option value="CRITICAL_LOW">{{ 'Critical Low' | translate }}</option>
-                      <option value="ABNORMAL">{{ 'Abnormal' | translate }}</option>
-                    </select>
+                    <app-custom-select 
+                      formControlName="flag" 
+                      size="sm" 
+                      [options]="labItemFlagOptions" 
+                      bindLabel="label" 
+                      bindValue="value">
+                    </app-custom-select>
                   </div>
                   <div class="lab-form-group">
                     <label class="lab-label">{{ 'LOINC Code' | translate }}</label>

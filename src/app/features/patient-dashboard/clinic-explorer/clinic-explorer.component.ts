@@ -18,11 +18,12 @@ import { AppointmentType, SessionType } from '../../../core/models/appointment.m
 import { ReferenceService } from '../../../core/services/reference.service';
 import { LanguageResponseDto } from '../../../core/models/reference.model';
 import { environment } from '../../../../environments/environment';
+import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
 
 @Component({
   selector: 'app-clinic-explorer',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, TranslateObjPipe],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, TranslateObjPipe, CustomSelectComponent],
   templateUrl: './clinic-explorer.component.html',
   styleUrls: ['./clinic-explorer.component.css']
 })
@@ -72,6 +73,20 @@ export class ClinicExplorerComponent implements OnInit {
 
   public appointmentTypes = Object.values(AppointmentType);
   public sessionTypes = Object.values(SessionType);
+
+  get appointmentTypeOptions() {
+    return this.appointmentTypes.map(t => ({
+      label: t.replace(/_/g, ' '),
+      value: t
+    }));
+  }
+
+  get sessionTypeOptions() {
+    return this.sessionTypes.map(s => ({
+      label: s.replace(/_/g, ' '),
+      value: s
+    }));
+  }
 
   public bookingForm: FormGroup = this.fb.group({
     appointmentType: [AppointmentType.NEW_PATIENT, [Validators.required]],

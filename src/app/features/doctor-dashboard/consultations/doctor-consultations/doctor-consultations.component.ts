@@ -145,6 +145,35 @@ export class DoctorConsultationsComponent implements OnInit, OnDestroy {
     ];
   }
 
+  get labStatusSelectOptions() {
+    return [
+      { label: this.languageService.translate('Pending', 'معلق'), value: 'PENDING' },
+      { label: this.languageService.translate('Received', 'مستلم'), value: 'RECEIVED' },
+      { label: this.languageService.translate('Reviewed', 'تمت المراجعة'), value: 'REVIEWED' },
+      { label: this.languageService.translate('Abnormal', 'غير طبيعي'), value: 'ABNORMAL' },
+      { label: this.languageService.translate('Critical', 'حرج'), value: 'CRITICAL' }
+    ];
+  }
+
+  get labOverallFlagOptions() {
+    return [
+      { label: this.languageService.translate('Normal', 'طبيعي'), value: 'NORMAL' },
+      { label: this.languageService.translate('Abnormal', 'غير طبيعي'), value: 'ABNORMAL' },
+      { label: this.languageService.translate('Critical', 'حرج'), value: 'CRITICAL' }
+    ];
+  }
+
+  get labItemFlagOptions() {
+    return [
+      { label: this.languageService.translate('Normal', 'طبيعي'), value: 'NORMAL' },
+      { label: this.languageService.translate('High', 'مرتفع'), value: 'HIGH' },
+      { label: this.languageService.translate('Low', 'منخفض'), value: 'LOW' },
+      { label: this.languageService.translate('Critical High', 'مرتفع جداً حرج'), value: 'CRITICAL_HIGH' },
+      { label: this.languageService.translate('Critical Low', 'منخفض جداً حرج'), value: 'CRITICAL_LOW' },
+      { label: this.languageService.translate('Abnormal', 'غير طبيعي'), value: 'ABNORMAL' }
+    ];
+  }
+
   public statusOptions = Object.values(ConsultationStatus);
 
   get statusSelectOptions() {

@@ -105,6 +105,22 @@ export class AppointmentsComponent implements OnInit {
     isAnonymous: [false]
   });
 
+  public overallRatingOptions = [
+    { label: '⭐⭐⭐⭐⭐ (5/5)', value: 5 },
+    { label: '⭐⭐⭐⭐ (4/5)', value: 4 },
+    { label: '⭐⭐⭐ (3/5)', value: 3 },
+    { label: '⭐⭐ (2/5)', value: 2 },
+    { label: '⭐ (1/5)', value: 1 }
+  ];
+
+  public subRatingOptions = [
+    { label: '5 ★', value: 5 },
+    { label: '4 ★', value: 4 },
+    { label: '3 ★', value: 3 },
+    { label: '2 ★', value: 2 },
+    { label: '1 ★', value: 1 }
+  ];
+
   // Cache doctor clinic relations for displaying clinic names
   private doctorClinicsCache: { [doctorId: string]: any[] } = {};
 
