@@ -53,35 +53,39 @@
         [class.active]="activeTab === 'general'" 
         (click)="switchTab('general')"
       >
-        📝 {{ 'Bio & General Details' | translate }}
+        <span>📝 {{ 'Bio & General Details' | translate }}</span>
       </button>
       <button 
         class="sub-tab-btn" 
         [class.active]="activeTab === 'specialties'" 
         (click)="switchTab('specialties')"
       >
-        🎓 {{ 'Specialties' | translate }} ({{ doctorProfile.specialties.length }})
+        <span>🎓 {{ 'Specialties' | translate }}</span>
+        <span class="tab-badge">{{ doctorProfile.specialties.length }}</span>
       </button>
       <button 
         class="sub-tab-btn" 
         [class.active]="activeTab === 'languages'" 
         (click)="switchTab('languages')"
       >
-        🗣️ {{ 'Spoken Languages' | translate }} ({{ doctorProfile.languages.length }})
+        <span>🗣️ {{ 'Spoken Languages' | translate }}</span>
+        <span class="tab-badge">{{ doctorProfile.languages.length }}</span>
       </button>
       <button 
         class="sub-tab-btn" 
         [class.active]="activeTab === 'qualifications'" 
         (click)="switchTab('qualifications')"
       >
-        📜 {{ 'Qualifications' | translate }} ({{ doctorProfile.qualifications.length }})
+        <span>📜 {{ 'Qualifications' | translate }}</span>
+        <span class="tab-badge">{{ doctorProfile.qualifications.length }}</span>
       </button>
       <button 
         class="sub-tab-btn" 
         [class.active]="activeTab === 'clinics'" 
         (click)="switchTab('clinics')"
       >
-        🏢 {{ 'Clinics' | translate }} ({{ doctorProfile.clinics.length }})
+        <span>🏢 {{ 'Clinics' | translate }}</span>
+        <span class="tab-badge">{{ doctorProfile.clinics.length }}</span>
       </button>
     </div>
 

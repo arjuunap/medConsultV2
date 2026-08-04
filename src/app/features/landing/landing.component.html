@@ -129,7 +129,7 @@
     <form [formGroup]="searchForm" (submit)="applyFilters(); $event.preventDefault()">
       <div class="hs-row1" style="margin-bottom: 0;">
         <div class="hs-input-wrap">
-          <span class="hs-icon d-inline-flex align-center justify-center" style="top:50%; transform:translateY(-50%);">
+          <span class="hs-icon d-inline-flex align-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
               style="color: var(--t3);">
@@ -142,10 +142,16 @@
         </div>
         <div class="hs-city-select">
           <app-custom-select formControlName="location" [options]="citySelectOptions" [searchable]="true"
-            [placeholder]="'All Cities / Areas' | translate" (selectionChange)="onLocationChange()" [multiple]="true">
+            [placeholder]="'All Cities' | translate" (selectionChange)="onLocationChange()" [multiple]="true">
           </app-custom-select>
         </div>
-        <button class="hs-search-btn" type="submit">{{ 'Search clinics' | translate }}</button>
+        <button class="hs-search-btn" type="submit">
+          <svg class="search-btn-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.3-4.3"></path>
+          </svg>
+          <span class="search-btn-text">{{ 'Search' | translate }}</span>
+        </button>
       </div>
     </form>
   </div>

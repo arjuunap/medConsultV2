@@ -991,33 +991,45 @@
 }
 
 /* Tabs */
+/* Prescription Selector Tabs */
 .rx-tabs {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
   margin-bottom: 16px;
+  background: var(--off, #f8fafc);
+  padding: 6px;
+  border-radius: 14px;
+  border: 1.5px solid var(--border-color, #e2e8f0);
 }
 
 .rx-tab-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  border: 1.5px solid var(--border-color);
-  background: var(--white);
-  border-radius: 20px;
-  padding: 6px 14px;
-  font-size: 0.78rem;
+  gap: 8px;
+  border: 1.5px solid transparent;
+  background: transparent;
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
   font-weight: 600;
-  color: var(--t3);
+  color: var(--t2, #374151);
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rx-tab-btn:hover:not(.active) {
+  color: var(--teal-d, #085041);
+  background-color: rgba(255, 255, 255, 0.7);
+  border-color: rgba(29, 158, 117, 0.15);
 }
 
 .rx-tab-btn.active {
-  background: #f5f3ff;
-  border-color: #7c3aed;
-  color: #5b21b6;
-  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.1);
+  background: #ffffff;
+  border-color: rgba(29, 158, 117, 0.3);
+  color: var(--teal-d, #085041);
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(8, 80, 65, 0.08);
 }
 
 .rx-status-dot {

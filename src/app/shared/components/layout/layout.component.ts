@@ -48,6 +48,7 @@ export class LayoutComponent {
   // Computes the menu items dynamically based on the logged-in user's role
   public menuItems = computed<MenuItem[]>(() => {
     const user = this.authService.currentUser();
+    console.log(user)
     if (!user) return [];
 
     switch (user.role) {

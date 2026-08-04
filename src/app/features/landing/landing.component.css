@@ -96,7 +96,7 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  box-shadow: none;
   transition: all 0.2s ease;
 }
 
@@ -109,14 +109,18 @@
 }
 
 /* Search Box */
-.hero-search { background: var(--white); border-radius: var(--radius-lg); box-shadow: 0 20px 60px rgba(0,0,0,.35); padding: clamp(14px,2vw,22px); margin: 0 auto; max-width: 860px; text-align: left; }
-.hs-row1 { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; margin-bottom: 0; }
-.hs-input-wrap { position: relative; }
-.hs-input-wrap .hs-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 16px; color: var(--t3); }
+.hero-search { background: var(--white); border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: none; padding: clamp(12px,2vw,18px); margin: 0 auto; max-width: 860px; text-align: left; }
+.hs-row1 { display: grid; grid-template-columns: 2fr 1fr auto; gap: 10px; align-items: center; margin-bottom: 0; }
+.hs-input-wrap { position: relative; width: 100%; min-width: 0; }
+.hs-input-wrap .hs-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 16px; color: var(--t3); pointer-events: none; }
 .hs-input { width: 100%; height: 48px; padding: 0 14px 0 42px; border: 1.5px solid var(--border); border-radius: var(--radius-md); font-size: 14px; color: var(--text); background: var(--off); transition: border-color .15s; }
 .hs-input:focus { outline: none; border-color: var(--teal); background: var(--white); }
-.hs-select { height: 48px; min-width: 140px; font-size: 13px; }
-.hs-search-btn { height: 48px; padding: 0 28px; background: var(--teal); color: var(--white); border: none; border-radius: var(--radius-md); font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: opacity .15s; }
+.hs-city-select { width: 100%; min-width: 0; }
+.hs-city-select ::ng-deep .select-trigger { height: 48px; background-color: var(--off); border: 1.5px solid var(--border); border-radius: var(--radius-md); font-size: 13.5px; padding: 0 12px; gap: 6px; }
+.hs-city-select ::ng-deep .select-trigger:hover:not(:disabled) { border-color: var(--teal); background-color: var(--white); }
+.hs-city-select ::ng-deep .selected-value,
+.hs-city-select ::ng-deep .placeholder-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hs-search-btn { height: 48px; padding: 0 24px; background: var(--teal); color: var(--white); border: none; border-radius: var(--radius-md); font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: opacity .15s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
 .hs-search-btn:hover { opacity: .88; }
 
 .hs-row2 { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
@@ -269,13 +273,22 @@
   .nav { padding: 0 16px; flex-wrap: wrap; height: auto; padding-top: 12px; padding-bottom: 12px; gap: 12px; }
   .nav-links { display: flex; gap: 16px; font-size: 13px; flex-wrap: wrap; }
   .nav-actions { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
-  .hs-row1 { grid-template-columns: 1fr; }
+  .hero-search { padding: 8px 10px; border-radius: 16px; }
+  .hs-row1 { grid-template-columns: 1.75fr 1fr auto; gap: 6px; align-items: center; }
+  .hs-input { height: 44px; font-size: 13px; padding-left: 34px; padding-right: 8px; }
+  .hs-input-wrap .hs-icon { left: 10px; }
+  .hs-city-select ::ng-deep .select-trigger { height: 44px; font-size: 12px; padding: 0 8px; gap: 4px; }
+  .hs-search-btn { height: 44px; padding: 0 14px; font-size: 13px; border-radius: 10px; }
   .hs-row2 { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 6px; -webkit-overflow-scrolling: touch; }
   .how-grid, .feat-grid, .testi-grid, .footer-grid { grid-template-columns: 1fr; }
 }
 @media(max-width:480px) {
-  .hero-search { padding: 14px; }
-  .hs-search-btn { width: 100%; }
+  .hero-search { padding: 6px 8px; }
+  .hs-row1 { grid-template-columns: 1.75fr 1fr auto; gap: 4px; }
+  .hs-input { height: 42px; font-size: 12px; padding-left: 28px; padding-right: 4px; }
+  .hs-input-wrap .hs-icon { left: 8px; }
+  .hs-city-select ::ng-deep .select-trigger { height: 42px; font-size: 11.5px; padding: 0 6px; gap: 2px; }
+  .hs-search-btn { height: 42px; padding: 0 10px; font-size: 12px; gap: 4px; }
   .nav-actions .btn { width: 100%; text-align: center; justify-content: center; }
 }
 

@@ -1,82 +1,155 @@
-<div class="auth-page-container">
-  <div class="auth-card">
-    <!-- Brand Mark Top of Card -->
-    <a class="auth-brand" routerLink="/">
-      <div class="brand-logo-icon">🩺</div>
-      <h1 class="brand-name">MedConsult <span>V2</span></h1>
-    </a>
+<div class="auth-split-wrapper">
+  <!-- Left Column: Hero Branding & Trust Panel -->
+  <div class="auth-hero-panel">
+    <div class="hero-glow-orb orb-1"></div>
+    <div class="hero-glow-orb orb-2"></div>
+    
+    <div class="hero-content">
+      <!-- Brand Logo -->
+      <a class="hero-brand" routerLink="/">
+        <div class="hero-brand-icon">🩺</div>
+        <div class="hero-brand-text">
+          <span class="brand-title">MedConsult <span class="v2-tag">V2</span></span>
+          <span class="brand-tagline">{{ 'Smart Telehealth & Clinical Portal' | translate }}</span>
+        </div>
+      </a>
 
-    <!-- Header Text -->
-    <div class="auth-header text-center">
-      <h2 class="auth-title">{{ 'Welcome Back' | translate }}</h2>
-      <p class="auth-subtitle">{{ 'Please enter your credentials to access your account' | translate }}</p>
-    </div>
+      <!-- Headline -->
+      <div class="hero-headline-block">
+        <h1 class="hero-title">{{ 'Advanced Healthcare & Clinical Consultations' | translate }}</h1>
+        <p class="hero-subtitle">
+          {{ 'Streamlined medical consultations, digital EMR prescriptions, and multi-clinic scheduling in one unified platform.' | translate }}
+        </p>
+      </div>
 
-    <!-- Error Alert Message -->
-    <div *ngIf="errorMessage" class="auth-alert-danger">
-      <span class="alert-icon">⚠️</span>
-      <span>{{ errorMessage }}</span>
-    </div>
+      <!-- Feature Cards Grid -->
+      <div class="hero-features-grid">
+        <div class="hero-feature-card">
+          <div class="feature-icon-wrap">🔒</div>
+          <div class="feature-text">
+            <strong>{{ 'Verified Data Security' | translate }}</strong>
+            <span>{{ 'MOH & HIPAA Compliant Privacy' | translate }}</span>
+          </div>
+        </div>
 
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
-      <!-- Email Field -->
-      <div class="form-group mb-4">
-        <label class="form-label" for="email">{{ 'Email Address' | translate }}</label>
-        <input 
-          type="email" 
-          id="email" 
-          formControlName="email" 
-          class="form-control" 
-          [class.is-invalid]="loginForm.get('email')?.touched && loginForm.get('email')?.invalid"
-          placeholder="name@example.com"
-        >
-        <div *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid" class="error-text">
-          {{ 'Please enter a valid email address.' | translate }}
+        <div class="hero-feature-card">
+          <div class="feature-icon-wrap">🩺</div>
+          <div class="feature-text">
+            <strong>{{ 'Tele-Consultations' | translate }}</strong>
+            <span>{{ 'HD Video Case Rooms & EMR' | translate }}</span>
+          </div>
+        </div>
+
+        <div class="hero-feature-card">
+          <div class="feature-icon-wrap">⚡</div>
+          <div class="feature-text">
+            <strong>{{ 'Instant Booking' | translate }}</strong>
+            <span>{{ 'Direct Doctor & Clinic Schedules' | translate }}</span>
+          </div>
         </div>
       </div>
 
-      <!-- Password Field -->
-      <div class="form-group mb-4">
-        <label class="form-label" for="password">{{ 'Password' | translate }}</label>
-        <input 
-          type="password" 
-          id="password" 
-          formControlName="password" 
-          class="form-control" 
-          [class.is-invalid]="loginForm.get('password')?.touched && loginForm.get('password')?.invalid"
-          placeholder="••••••••"
-        >
-        <div *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid" class="error-text">
-          {{ 'Password must be at least 6 characters.' | translate }}
+      <!-- Trust Metrics Strip -->
+      <div class="hero-metrics-strip">
+        <div class="metric-item">
+          <span class="metric-value">10K+</span>
+          <span class="metric-label">{{ 'Consultations' | translate }}</span>
+        </div>
+        <div class="metric-divider"></div>
+        <div class="metric-item">
+          <span class="metric-value">500+</span>
+          <span class="metric-label">{{ 'Verified Clinics' | translate }}</span>
+        </div>
+        <div class="metric-divider"></div>
+        <div class="metric-item">
+          <span class="metric-value">4.9★</span>
+          <span class="metric-label">{{ 'Patient Rating' | translate }}</span>
         </div>
       </div>
+    </div>
+  </div>
 
-      <!-- Submit Button -->
-      <button type="submit" class="btn btn-primary w-100 py-3 mb-3 btn-auth">
-        {{ 'Sign In' | translate }}
-      </button>
+  <!-- Right Column: Form Container Panel -->
+  <div class="auth-form-panel">
+    <div class="auth-card">
+      <!-- Mobile Top Brand Mark -->
+      <a class="mobile-auth-brand" routerLink="/">
+        <div class="brand-logo-icon">🩺</div>
+        <h1 class="brand-name">MedConsult <span>V2</span></h1>
+      </a>
 
-      <!-- Divider -->
-      <div class="auth-divider mb-3">
-        <span>{{ 'or' | translate }}</span>
+      <!-- Header Text -->
+      <div class="auth-header text-center">
+        <h2 class="auth-title">{{ 'Welcome Back' | translate }}</h2>
+        <p class="auth-subtitle">{{ 'Please enter your credentials to access your account' | translate }}</p>
       </div>
 
-      <!-- Google Button -->
-      <button type="button" class="btn btn-outline w-100 py-3 mb-4 btn-google d-flex align-center justify-center gap-2" (click)="loginWithGoogle()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22c-.87-2.6-2.87-4.53-5.84-4.53z" fill="#FBBC05"/>
-          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
-        </svg>
-        <span>{{ 'Continue with Google' | translate }}</span>
-      </button>
-
-      <!-- Footer Link to Register -->
-      <div class="auth-footer">
-        <span>{{ "Don't have an account?" | translate }}</span> 
-        <a routerLink="/register" class="auth-link">{{ 'Create an account' | translate }}</a>
+      <!-- Error Alert Message -->
+      <div *ngIf="errorMessage" class="auth-alert-danger">
+        <span class="alert-icon">⚠️</span>
+        <span>{{ errorMessage }}</span>
       </div>
-    </form>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+        <!-- Email Field -->
+        <div class="form-group mb-4">
+          <label class="form-label" for="email">{{ 'Email Address' | translate }}</label>
+          <input 
+            type="email" 
+            id="email" 
+            formControlName="email" 
+            class="form-control" 
+            [class.is-invalid]="loginForm.get('email')?.touched && loginForm.get('email')?.invalid"
+            placeholder="name@example.com"
+          >
+          <div *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid" class="error-text">
+            {{ 'Please enter a valid email address.' | translate }}
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group mb-4">
+          <label class="form-label" for="password">{{ 'Password' | translate }}</label>
+          <input 
+            type="password" 
+            id="password" 
+            formControlName="password" 
+            class="form-control" 
+            [class.is-invalid]="loginForm.get('password')?.touched && loginForm.get('password')?.invalid"
+            placeholder="••••••••"
+          >
+          <div *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid" class="error-text">
+            {{ 'Password must be at least 6 characters.' | translate }}
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary w-100 py-3 mb-3 btn-auth">
+          {{ 'Sign In' | translate }}
+        </button>
+
+        <!-- Divider -->
+        <div class="auth-divider mb-3">
+          <span>{{ 'or' | translate }}</span>
+        </div>
+
+        <!-- Google Button -->
+        <button type="button" class="btn btn-outline w-100 py-3 mb-4 btn-google d-flex align-center justify-center gap-2" (click)="loginWithGoogle()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22c-.87-2.6-2.87-4.53-5.84-4.53z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
+          </svg>
+          <span>{{ 'Continue with Google' | translate }}</span>
+        </button>
+
+        <!-- Footer Link to Register -->
+        <div class="auth-footer">
+          <span>{{ "Don't have an account?" | translate }}</span> 
+          <a routerLink="/register" class="auth-link">{{ 'Create an account' | translate }}</a>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
