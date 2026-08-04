@@ -1,19 +1,19 @@
 :host {
   display: block;
-  margin: -32px;
+  margin: -24px;
   height: calc(100vh - var(--header-height, 70px));
   overflow: hidden;
 }
 
 @media (max-width: 992px) {
   :host {
-    margin: -20px -16px;
+    margin: -16px;
   }
 }
 
 @media (max-width: 576px) {
   :host {
-    margin: -16px -10px;
+    margin: -12px;
   }
 }
 

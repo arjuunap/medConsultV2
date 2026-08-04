@@ -235,7 +235,7 @@
 
 /* Page Content Viewport */
 .content-viewport {
-  padding: 32px;
+  padding: 24px;
   flex: 1;
   background-color: var(--off);
   overflow-y: auto;
@@ -291,7 +291,7 @@
   }
 
   .content-viewport {
-    padding: 20px 16px;
+    padding: 16px;
   }
 }
 
@@ -314,7 +314,7 @@
   }
 
   .content-viewport {
-    padding: 16px 10px;
+    padding: 12px;
   }
 
   .sidebar {

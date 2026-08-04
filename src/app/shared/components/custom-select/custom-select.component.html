@@ -16,7 +16,7 @@
       <span *ngIf="icon || getOptionIcon(selectedOption)" class="trigger-icon">
         {{ getOptionIcon(selectedOption) || icon }}
       </span>
-      <span class="trigger-text" [class.is-placeholder]="!selectedOption && (selectedValue === null || selectedValue === undefined || selectedValue === '')">
+      <span class="trigger-text" [class.is-star-text]="displayLabel.includes('★')" [class.is-placeholder]="!selectedOption && (selectedValue === null || selectedValue === undefined || selectedValue === '')">
         {{ displayLabel }}
       </span>
     </div>
@@ -49,7 +49,7 @@
         <span *ngIf="getOptionIcon(option)" class="option-icon">{{ getOptionIcon(option) }}</span>
         
         <div class="option-text-group">
-          <span class="option-label">{{ getOptionLabel(option) }}</span>
+          <span class="option-label" [class.is-star-text]="getOptionLabel(option).includes('★')">{{ getOptionLabel(option) }}</span>
           <span *ngIf="option.sublabel" class="option-sublabel">{{ option.sublabel }}</span>
         </div>
 

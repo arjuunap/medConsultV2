@@ -87,36 +87,11 @@ export class DoctorsComponent implements OnInit {
   get ratingSelectOptions() {
     const isAr = this.languageService.isArabic;
     return [
-      { 
-        label: isAr ? 'جميع التقييمات' : 'All Ratings', 
-        value: 0, 
-        // icon: '✨', 
-        sublabel: isAr ? 'عرض جميع التقييمات' : 'Show all ratings' 
-      },
-      { 
-        label: isAr ? '5.0 نجوم (الأعلى تقييماً)' : '5.0 Stars (Top Rated)', 
-        value: 5, 
-        // icon: '🌟', 
-        sublabel: '★ ★ ★ ★ ★ (5.0)' 
-      },
-      { 
-        label: isAr ? '4.5+ نجوم وأعلى' : '4.5+ Stars & Above', 
-        value: 4.5, 
-        // icon: '⭐', 
-        sublabel: '★ ★ ★ ★ ½ (4.5+)' 
-      },
-      { 
-        label: isAr ? '4.0+ نجوم وأعلى' : '4.0+ Stars & Above', 
-        value: 4, 
-        // icon: '⭐', 
-        sublabel: '★ ★ ★ ★ ☆ (4.0+)' 
-      },
-      { 
-        label: isAr ? '3.0+ نجوم وأعلى' : '3.0+ Stars & Above', 
-        value: 3, 
-        // icon: '⭐', 
-        sublabel: '★ ★ ★ ☆ ☆ (3.0+)' 
-      }
+      { label: isAr ? 'جميع التقييمات' : 'All Ratings', value: 0 },
+      { label: '★ ★ ★ ★ ★ (5.0)', value: 5 },
+      { label: '★ ★ ★ ★ ½ (4.5+)', value: 4.5 },
+      { label: '★ ★ ★ ★ ☆ (4.0+)', value: 4 },
+      { label: '★ ★ ★ ☆ ☆ (3.0+)', value: 3 }
     ];
   }
 

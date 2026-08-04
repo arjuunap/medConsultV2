@@ -245,6 +245,13 @@
   text-overflow: ellipsis;
 }
 
+.trigger-text.is-star-text,
+.option-label.is-star-text {
+  color: var(--yellow-500, #d97706) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px;
+}
+
 .option-sublabel {
   font-size: 0.78rem;
   color: #D97706;

@@ -1,7 +1,8 @@
 .become-doctor-container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: clamp(16px, 3vw, 32px);
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 /* Wizard Steps Navigation */

@@ -1,14 +1,16 @@
 <div class="patient-profile-card">
   <!-- Avatar Header -->
   <div class="profile-avatar-header">
-    <div class="avatar-large">👤</div>
-    <div class="profile-header-info">
-      <h2 class="profile-header-name">{{ 'Patient Medical Profile' | translate }}</h2>
-      <div class="profile-header-meta">
-        {{ 'Registered Patient Consultation Records & Emergency Information' | translate }}
+    <div class="profile-header-main">
+      <div class="avatar-large">👤</div>
+      <div class="profile-header-info">
+        <h2 class="profile-header-name">{{ 'Patient Medical Profile' | translate }}</h2>
+        <div class="profile-header-meta">
+          {{ 'Registered Patient Consultation Records & Emergency Information' | translate }}
+        </div>
       </div>
     </div>
-    <div class="d-flex align-center gap-2">
+    <div class="profile-header-actions">
       <button *ngIf="!isEditMode" class="btn btn-secondary" routerLink="/patient/become-doctor">
         🩺 {{ 'Register as Doctor' | translate }}
       </button>
@@ -147,7 +149,7 @@
     </div>
 
     <!-- Submit/Cancel controls -->
-    <div *ngIf="isEditMode" class="d-flex justify-end gap-3 mt-4 pt-4 border-top">
+    <div *ngIf="isEditMode" class="profile-actions-bar">
       <button *ngIf="profileExists" type="button" class="btn btn-outline" (click)="cancelEdit()">
         {{ 'Cancel' | translate }}
       </button>

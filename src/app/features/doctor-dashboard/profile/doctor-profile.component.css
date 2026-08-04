@@ -29,19 +29,24 @@
 
 .sub-nav-tabs {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   border-bottom: 2px solid var(--border-color);
   padding-bottom: 0;
   margin-bottom: 24px;
   overflow-x: auto;
+  scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
 }
 
+.sub-nav-tabs::-webkit-scrollbar {
+  display: none;
+}
+
 .sub-tab-btn {
-  padding: 12px 18px;
+  padding: 12px 16px;
   font-family: 'Outfit', sans-serif;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   border: none;
   background: transparent;
   color: var(--t3);
@@ -49,6 +54,7 @@
   border-bottom: 3px solid transparent;
   transition: var(--transition);
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .sub-tab-btn:hover {
@@ -61,14 +67,43 @@
   font-weight: 700;
 }
 
-@media (max-width: 576px) {
+@media (max-width: 768px) {
+  .doctor-profile-container {
+    gap: 16px;
+  }
+
   .profile-card-group {
-    padding: 14px;
+    padding: 18px 14px;
+    margin-bottom: 16px;
   }
 
   .sub-tab-btn {
-    padding: 10px 14px;
-    font-size: 0.88rem;
+    padding: 10px 12px;
+    font-size: 0.85rem;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .d-flex.justify-end {
+    justify-content: stretch !important;
+  }
+
+  .d-flex.justify-end > .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .profile-card-group {
+    padding: 14px 10px;
+  }
+
+  .group-card-title {
+    font-size: 1.1rem;
   }
 }
 
