@@ -47,8 +47,9 @@
         <div>
           <div class="d-flex justify-between align-start mb-3">
             <div class="d-flex align-center gap-3">
-              <!-- Avatar square -->
-              <div class="doctor-avatar-circle">👨‍⚕️</div>
+              <!-- Avatar square / image -->
+              <img *ngIf="getDoctorAvatarUrl(dc.doctorId)" [src]="getDoctorAvatarUrl(dc.doctorId) | apiUrl" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex-shrink: 0;" [alt]="getDoctorName(dc.doctorId)">
+              <div *ngIf="!getDoctorAvatarUrl(dc.doctorId)" class="doctor-avatar-circle">👨‍⚕️</div>
               <div>
                 <span class="badge badge-teal mb-1 fs-2xs">{{ dc.department || ('General Practice' | translate) }}</span>
                 <h3 class="fs-sm text-primary m-0 fw-bold">{{ getDoctorName(dc.doctorId) }}</h3>
@@ -174,11 +175,14 @@
     <div *ngIf="isScheduleModalOpen && selectedDcForSchedule" class="modal-backdrop" (click)="closeScheduleModal()">
       <div class="modal-content admin-modal-card" style="max-width: 640px;" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <div>
-            <span class="badge badge-teal mb-1">{{ 'Branch:' | translate }} {{ getBranchName(selectedDcForSchedule.branchId) }}</span>
-            <h3 class="fs-md text-primary m-0 fw-bold">
-              📅 {{ 'Working Schedule' | translate }} — {{ getDoctorName(selectedDcForSchedule.doctorId) }}
-            </h3>
+          <div class="d-flex align-center gap-3">
+            <img *ngIf="getDoctorAvatarUrl(selectedDcForSchedule.doctorId)" [src]="getDoctorAvatarUrl(selectedDcForSchedule.doctorId) | apiUrl" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" [alt]="getDoctorName(selectedDcForSchedule.doctorId)">
+            <div>
+              <span class="badge badge-teal mb-1">{{ 'Branch:' | translate }} {{ getBranchName(selectedDcForSchedule.branchId) }}</span>
+              <h3 class="fs-md text-primary m-0 fw-bold">
+                📅 {{ 'Working Schedule' | translate }} — {{ getDoctorName(selectedDcForSchedule.doctorId) }}
+              </h3>
+            </div>
           </div>
           <button class="btn-close" (click)="closeScheduleModal()">&times;</button>
         </div>
@@ -293,11 +297,14 @@
     <div *ngIf="isLeaveModalOpen && selectedDcForLeave" class="modal-backdrop" (click)="closeLeaveModal()">
       <div class="modal-content admin-modal-card" style="max-width: 640px;" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <div>
-            <span class="badge badge-teal mb-1">{{ 'Branch:' | translate }} {{ getBranchName(selectedDcForLeave.branchId) }}</span>
-            <h3 class="fs-md text-primary m-0 fw-bold">
-              🏖️ {{ 'Leave Requests' | translate }} — {{ getDoctorName(selectedDcForLeave.doctorId) }}
-            </h3>
+          <div class="d-flex align-center gap-3">
+            <img *ngIf="getDoctorAvatarUrl(selectedDcForLeave.doctorId)" [src]="getDoctorAvatarUrl(selectedDcForLeave.doctorId) | apiUrl" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" [alt]="getDoctorName(selectedDcForLeave.doctorId)">
+            <div>
+              <span class="badge badge-teal mb-1">{{ 'Branch:' | translate }} {{ getBranchName(selectedDcForLeave.branchId) }}</span>
+              <h3 class="fs-md text-primary m-0 fw-bold">
+                🏖️ {{ 'Leave Requests' | translate }} — {{ getDoctorName(selectedDcForLeave.doctorId) }}
+              </h3>
+            </div>
           </div>
           <button class="btn-close" (click)="closeLeaveModal()">&times;</button>
         </div>

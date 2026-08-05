@@ -85,7 +85,8 @@
           <tr *ngFor="let app of filteredAppointments" class="appointment-row">
             <td>
               <div class="d-flex align-center gap-3">
-                <div class="patient-avatar" [style.background]="getAvatarBg(app.doctorName)" [style.color]="getAvatarColor(app.doctorName)">
+                <img *ngIf="app.doctorAvatarUrl" [src]="app.doctorAvatarUrl | apiUrl" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" [alt]="app.doctorName">
+                <div *ngIf="!app.doctorAvatarUrl" class="patient-avatar" [style.background]="getAvatarBg(app.doctorName)" [style.color]="getAvatarColor(app.doctorName)">
                   {{ getInitials(app.doctorName) }}
                 </div>
                 <div>

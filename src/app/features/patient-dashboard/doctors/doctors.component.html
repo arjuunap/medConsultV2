@@ -102,9 +102,10 @@
   <div class="doctors-list-grid" *ngIf="filteredDoctors.length > 0">
     <div class="doctor-display-card" *ngFor="let doc of filteredDoctors">
       <div class="card-upper-section">
-        <!-- Left Side: Initials Avatar & Stat Details -->
+        <!-- Left Side: Avatar & Stat Details -->
         <div class="card-left-identity">
-          <div class="doctor-circle-avatar" [style.background-color]="doc.avatarBg" [style.color]="doc.avatarColor">
+          <img *ngIf="doc.avatarUrl" [src]="doc.avatarUrl | apiUrl" class="doctor-circle-avatar-img" [alt]="getDoctorDisplayName(doc)">
+          <div *ngIf="!doc.avatarUrl" class="doctor-circle-avatar" [style.background-color]="doc.avatarBg" [style.color]="doc.avatarColor">
             {{ doc.initials }}
           </div>
           <span class="doctor-fee-badge">SAR {{ doc.consultationFeeSar || 150 }}</span>
@@ -189,9 +190,10 @@
     <div class="modal-body p-4" style="max-height: 70vh; overflow-y: auto;">
       <!-- Profile Header Summary -->
       <div class="profile-header-summary d-flex gap-3 align-center mb-4">
-        <div class="doctor-initials-avatar-large"
+        <img *ngIf="selectedDoctorDetail.doctor?.avatarUrl" [src]="selectedDoctorDetail.doctor.avatarUrl | apiUrl" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover;" [alt]="getDoctorDisplayName(selectedDoctorDetail.doctor)">
+        <div *ngIf="!selectedDoctorDetail.doctor?.avatarUrl" class="doctor-initials-avatar-large"
           style="width: 70px; height: 70px; border-radius: 50%; background: #E1F5EE; color: #085041; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700;">
-          {{ selectedDoctorDetail.doctor?.fullName ? selectedDoctorDetail.doctor.fullName.substring(0,2).toUpperCase() :
+          {{ selectedDoctorDetail.doctor.fullName ? selectedDoctorDetail.doctor.fullName.substring(0,2).toUpperCase() :
           'DR' }}
         </div>
         <div>

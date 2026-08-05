@@ -16,13 +16,14 @@ import { SpecialtyResponseDto, LanguageResponseDto, SubSpecialtyResponseDto } fr
 import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
 import { LanguageService } from '../../../core/services/language.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { ApiUrlPipe } from '../../../shared/pipes/api-url.pipe';
 
 import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-doctors',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, CustomSelectComponent, RouterLink, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, CustomSelectComponent, RouterLink, TranslatePipe, ApiUrlPipe],
   templateUrl: './doctors.component.html',
   styleUrls: ['./doctors.component.css']
 })
@@ -430,6 +431,11 @@ export class DoctorsComponent implements OnInit {
       return name;
     }
     return `${title ? title + '. ' : ''}${name}`;
+  }
+
+  getDoctorAvatarUrl(doctorId: string): string {
+    const doc = this.doctors.find(d => d.doctorId === doctorId);
+    return doc?.avatarUrl || '';
   }
 
   getBranchName(branchId: string): string {

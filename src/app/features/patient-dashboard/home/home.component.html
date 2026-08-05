@@ -20,7 +20,7 @@
       <!-- If profile is NOT initialized -->
       <div *ngIf="needProfileInit">
         <p class="welcome-subtitle text-warning fw-semibold">
-          {{ 'Welcome to MedConsult! Please complete your patient profile to unlock bookings and health records.' | translate }}
+          {{ ('Welcome to ' + appConfigService.name() + '! Please complete your patient profile to unlock bookings and health records.') | translate }}
         </p>
         <a routerLink="/patient/profile" class="btn btn-primary btn-action-touch mt-2">{{ 'Initialize Profile Now' | translate }}</a>
       </div>

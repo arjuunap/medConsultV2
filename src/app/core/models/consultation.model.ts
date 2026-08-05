@@ -25,8 +25,10 @@ export interface ConsultationResponseDto {
   consultationId: string;
   patientId: string;
   patientName: string;
+  patientAvatarUrl?: string;
   doctorId: string;
   doctorName: string;
+  doctorAvatarUrl?: string;
   appointmentId?: string;
   subject?: string;
   status: ConsultationStatus;
@@ -52,6 +54,7 @@ export interface ConsultationMessageResponseDto {
   consultationId: string;
   senderId: string;
   senderName: string;
+  senderAvatarUrl?: string;
   messageType: MessageType;
   body?: string;
   fileId?: string;

@@ -10,6 +10,7 @@ import { ClinicService } from '../../../core/services/clinic.service';
 import { UiService } from '../../../core/services/ui.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { TranslatePipe, TranslateObjPipe } from '../../../shared/pipes/translate.pipe';
+import { ApiUrlPipe } from '../../../shared/pipes/api-url.pipe';
 import { SpecialtyResponseDto, LanguageResponseDto, CityResponseDto } from '../../../core/models/reference.model';
 import { DoctorResponseDto, DoctorDetailResponse } from '../../../core/models/doctor.model';
 import { ClinicResponseDto } from '../../../core/models/clinic.model';
@@ -29,7 +30,7 @@ export interface EnrichedDoctor extends DoctorResponseDto {
 @Component({
   selector: 'app-doctors',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, TranslatePipe, TranslateObjPipe, CustomSelectComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, TranslatePipe, TranslateObjPipe, ApiUrlPipe, CustomSelectComponent],
   templateUrl: './doctors.component.html',
   styleUrls: ['./doctors.component.css']
 })

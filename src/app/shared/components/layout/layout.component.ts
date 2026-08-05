@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { LanguageService } from '../../../core/services/language.service';
+import { AppConfigService } from '../../../core/services/app-config.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { UserRole } from '../../../core/models/auth.model';
 import { ApiUrlPipe } from '../../pipes/api-url.pipe';
@@ -24,6 +25,7 @@ interface MenuItem {
 export class LayoutComponent {
   public authService = inject(AuthService);
   public languageService = inject(LanguageService);
+  public appConfigService = inject(AppConfigService);
   private router = inject(Router);
 
   public isSidebarOpen = signal<boolean>(false);

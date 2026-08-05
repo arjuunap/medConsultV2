@@ -4,17 +4,15 @@
 <header class="hero">
   <!-- Nav -->
   <nav class="nav">
-    <div class="nav-logo">
-      <div class="logo-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-          style="color: var(--white);">
-          <path
-            d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z">
-          </path>
-        </svg>
-      </div>
-      <span>MedConsult</span>
+    <div class="nav-logo d-flex align-center gap-2">
+      <img *ngIf="appConfigService.hasLogoImage()" [src]="appConfigService.logoSrc()" [alt]="appConfigService.name()"
+        class="logo-img" style="height: 60px; max-width: 260px; width: auto; object-fit: contain;" />
+      <ng-container *ngIf="!appConfigService.hasLogoImage()">
+        <div *ngIf="appConfigService.logoIcon()" class="logo-icon">
+          <span style="font-size: 1.1rem;">{{ appConfigService.logoIcon() }}</span>
+        </div>
+        <span>{{ appConfigService.name() }}</span>
+      </ng-container>
     </div>
 
     <div class="nav-links">
@@ -45,8 +43,7 @@
             <rect width="7" height="9" x="14" y="12" rx="1"></rect>
             <rect width="7" height="5" x="3" y="16" rx="1"></rect>
           </svg>
-          <span class="desktop-only" style="margin-inline-start: 6px;">{{ 'Go to Portal Dashboard →' | translate
-            }}</span>
+          <span class="desktop-only" style="margin-inline-start: 6px;">{{ 'Dashboard →' | translate }}</span>
         </a>
         <button (click)="handleLogout()" class="btn btn-outline btn-sm text-white"
           style="border-color:rgba(255,255,255,0.35);">
@@ -146,7 +143,8 @@
           </app-custom-select>
         </div>
         <button class="hs-search-btn" type="submit">
-          <svg class="search-btn-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg class="search-btn-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8"></circle>
             <path d="m21 21-4.3-4.3"></path>
           </svg>
@@ -225,9 +223,9 @@
         <!-- Clinic Card Header -->
         <div class="clinic-card-head">
           <div class="clinic-logo" style="background:#E1F5EE">
-            <img *ngIf="getLogoUrl(clinic.logoUrl)" [src]="getLogoUrl(clinic.logoUrl)" alt="Logo"
+            <img *ngIf="clinic.logoUrl" [src]="clinic.logoUrl | apiUrl" (error)="clinic.logoUrl = ''" alt="Logo"
               style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
-            <svg *ngIf="!getLogoUrl(clinic.logoUrl)" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+            <svg *ngIf="!clinic.logoUrl" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
               stroke-linejoin="round" style="color: var(--teal-d);">
               <path d="M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18"></path>
@@ -371,7 +369,8 @@
                 <ng-container *ngFor="let doc of branch.doctors">
                   <div *ngIf="clinic.expanded || isDoctorVisible(clinic, doc)" class="doc-mini">
                     <div class="doc-mini-top">
-                      <div class="doc-av" [style.background]="doc.avatarBg" [style.color]="doc.avatarColor">
+                      <img *ngIf="doc.avatarUrl" [src]="doc.avatarUrl | apiUrl" (error)="doc.avatarUrl = ''" class="doc-av-img" [alt]="doc.name" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; flex-shrink: 0;">
+                      <div *ngIf="!doc.avatarUrl" class="doc-av" [style.background]="doc.avatarBg" [style.color]="doc.avatarColor">
                         {{ doc.initials }}
                       </div>
                       <div>
@@ -447,7 +446,8 @@
         </svg>
       </div>
       <div class="how-title">{{ 'Search for a clinic' | translate }}</div>
-      <div class="how-sub">{{ 'Search by clinic name, city location, specialty or doctor. Filter by ratings, language, and insurance.' | translate }}</div>
+      <div class="how-sub">{{ 'Search by clinic name, city location, specialty or doctor. Filter by ratings, language,
+        and insurance.' | translate }}</div>
     </div>
     <div class="how-step">
       <div class="how-num">2</div>
@@ -685,7 +685,7 @@
               <rect width="7" height="9" x="14" y="12" rx="1"></rect>
               <rect width="7" height="5" x="3" y="16" rx="1"></rect>
             </svg>
-            {{ 'Go to Portal Dashboard →' | translate }}
+            {{ 'Dashboard →' | translate }}
           </a>
           <button (click)="handleLogout()" class="btn btn-outline d-inline-flex align-center gap-2"
             style="font-size:15px;padding:14px 32px;color:white;border-color:white;">
@@ -710,16 +710,16 @@
     <footer>
       <div class="footer-grid">
         <div>
-          <div class="footer-logo">
-            <div class="footer-logo-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                style="color: var(--white);">
-                <path
-                  d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z">
-                </path>
-              </svg>
-            </div>MedConsult
+          <div class="footer-logo d-flex align-center gap-2">
+            <img *ngIf="appConfigService.hasLogoImage()" [src]="appConfigService.logoSrc()"
+              [alt]="appConfigService.name()" class="footer-logo-img"
+              style="height: 50px; max-width: 220px; width: auto; object-fit: contain;" />
+            <ng-container *ngIf="!appConfigService.hasLogoImage()">
+              <div *ngIf="appConfigService.logoIcon()" class="footer-logo-icon">
+                <span style="font-size: 0.9rem;">{{ appConfigService.logoIcon() }}</span>
+              </div>
+              <span>{{ appConfigService.name() }}</span>
+            </ng-container>
           </div>
           <div class="footer-desc">{{ 'Footer description' | translate }}</div>
         </div>
@@ -741,8 +741,8 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <div class="footer-copy">© 2026 MedConsult. {{ 'All rights reserved.' | translate }} Riyadh, {{ 'Saudi Arabia' |
-          translate }}.</div>
+        <div class="footer-copy">© {{ appConfigService.copyrightYear() }} {{ appConfigService.name() }}. {{ 'All rights
+          reserved.' | translate }} {{ appConfigService.location() }}.</div>
         <div class="footer-copy">{{ 'Footer Bottom' | translate }}</div>
       </div>
     </footer>
@@ -765,6 +765,19 @@
     </div>
 
     <div style="padding:24px;">
+      <!-- Error Alert Message -->
+      <div *ngIf="bookingError" class="auth-alert-danger mb-4 d-flex flex-column align-items-start gap-1">
+        <div class="d-flex align-center gap-2">
+          <span class="alert-icon">⚠️</span>
+          <span>{{ bookingError }}</span>
+        </div>
+        <a *ngIf="authService.isLoggedIn() && authService.currentUser()?.role === 'PATIENT'"
+          routerLink="/patient/appointments" (click)="closeBooking()" class="text-danger fw-bold fs-xs ms-4"
+          style="text-decoration: underline; cursor: pointer;">
+          ➔ {{ 'Cancel or manage your existing appointments here' | translate }}
+        </a>
+      </div>
+
       <!-- Date Picker with Chips -->
       <div class="form-group mb-4">
         <label class="form-label d-inline-flex align-center gap-1">
@@ -856,14 +869,24 @@
           style="color: var(--teal);">
           <path d="M20 6 9 17l-5-5"></path>
         </svg>
-        {{ 'Selected:' | translate }} {{ selectedDate }} at {{ selectedSlot.startTime.substring(0, 5) }} (SAR {{
-        bookingDoctor?.consultationFeeSar || 150 }})
+        {{ 'Selected:' | translate }} {{ selectedDate }} at {{ selectedSlot.startTime.substring(0, 5) }} · 🏥 {{
+        bookingClinicName }} (SAR {{ bookingDoctor?.consultationFeeSar || 150 }})
       </div>
 
       <button (click)="confirmBooking()" [disabled]="isSubmittingBooking"
         class="btn btn-primary w-100 py-3 fs-md fw-bold">
         {{ (isSubmittingBooking ? 'Processing Booking...' : 'Confirm Appointment Booking →') | translate }}
       </button>
+
+      <!-- Manage / Cancel Appointments Action Link -->
+      <div *ngIf="authService.isLoggedIn() && authService.currentUser()?.role === 'PATIENT'"
+        class="text-center mt-3 fs-xs text-muted">
+        {{ 'Need to change or cancel a previous booking?' | translate }}
+        <a routerLink="/patient/appointments" (click)="closeBooking()" class="text-teal-d fw-bold ms-1"
+          style="text-decoration: underline; cursor: pointer;">
+          {{ 'Manage & Cancel Appointments' | translate }} →
+        </a>
+      </div>
     </div>
   </div>
 </div>

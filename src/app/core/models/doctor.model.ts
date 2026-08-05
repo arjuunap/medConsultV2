@@ -58,6 +58,7 @@ export interface DoctorResponseDto {
   overallRating: number;
   reviewCount: number;
   consultationFeeSar: number;
+  avatarUrl?: string;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

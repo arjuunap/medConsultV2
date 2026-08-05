@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SpinnerComponent } from './shared/components/spinner/spinner.component';
 import { ToastComponent } from './shared/components/toast/toast.component';
+import { AppConfigService } from './core/services/app-config.service';
 
 @Component({
   selector: 'app-root',
@@ -11,5 +12,6 @@ import { ToastComponent } from './shared/components/toast/toast.component';
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'medconsult-frontend';
+  public appConfigService = inject(AppConfigService);
 }
+

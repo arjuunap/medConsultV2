@@ -7,6 +7,7 @@ import { UiService } from '../../core/services/ui.service';
 import { LanguageService } from '../../core/services/language.service';
 import { ClinicService } from '../../core/services/clinic.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { ApiUrlPipe } from '../../shared/pipes/api-url.pipe';
 import { DoctorDetailResponse } from '../../core/models/doctor.model';
 import { SpecialtyResponseDto, LanguageResponseDto } from '../../core/models/reference.model';
 import { forkJoin, of } from 'rxjs';
@@ -15,7 +16,7 @@ import { catchError, map } from 'rxjs/operators';
 @Component({
   selector: 'app-doctor-detail',
   standalone: true,
-  imports: [CommonModule, TranslatePipe, RouterLink],
+  imports: [CommonModule, TranslatePipe, RouterLink, ApiUrlPipe],
   templateUrl: './doctor-detail.component.html',
   styleUrls: ['./doctor-detail.component.css']
 })

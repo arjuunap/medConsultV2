@@ -18,7 +18,8 @@
         <div *ngFor="let room of caseRooms" class="inbox-item-card"
           [class.active]="selectedRoom?.caseRoomId === room.caseRoomId" (click)="selectRoom(room)">
 
-          <div class="avatar-circle">
+          <img *ngIf="room.patientAvatarUrl" [src]="room.patientAvatarUrl | apiUrl" (error)="room.patientAvatarUrl = ''" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0;" [alt]="room.patientName">
+          <div *ngIf="!room.patientAvatarUrl" class="avatar-circle">
             {{ room.patientName.charAt(0).toUpperCase() }}
           </div>
 
@@ -98,7 +99,8 @@
         <div *ngFor="let post of posts" class="message-bubble-wrapper"
           [class.sent-by-me]="post.authorId === authService.currentUser()?.userId" style="max-width: 82%;">
 
-          <div class="message-meta">
+          <div class="message-meta d-flex align-center gap-1">
+            <img *ngIf="post.authorAvatarUrl" [src]="post.authorAvatarUrl | apiUrl" (error)="post.authorAvatarUrl = ''" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover;" [alt]="post.authorName">
             <span class="sender-name">Dr. {{ post.authorName }}</span>
             <span class="sent-time">• {{ post.postedAt | date:'mediumTime' }}</span>
             <span class="badge post-type-badge ml-2" [ngClass]="{

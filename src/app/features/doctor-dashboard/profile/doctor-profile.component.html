@@ -17,24 +17,109 @@
     </div>
   </div>
 
-  <!-- Card 1: Doctor Personal Overview & License Card (Distinct Personal Info Section) -->
+  <!-- Card 0: User Account Settings & Profile Picture (Auth User) -->
+  <div class="profile-card-group" style="border-left: 5px solid var(--primary-dark, #0f172a);">
+    <div class="d-flex justify-between align-center border-bottom pb-3 mb-4">
+      <div class="d-flex align-center gap-4">
+        <div class="doctor-avatar-upload-container" (click)="triggerAvatarUpload()">
+          <img *ngIf="stagedAvatarPreviewUrl || authService.currentUser()?.avatarUrl" 
+               [src]="stagedAvatarPreviewUrl || (authService.currentUser()?.avatarUrl | apiUrl)" 
+               class="doctor-avatar-img" [class.avatar-staged]="!!stagedAvatarPreviewUrl" alt="Doctor Avatar">
+          <div *ngIf="!stagedAvatarPreviewUrl && !authService.currentUser()?.avatarUrl" style="width: 68px; height: 68px; border-radius: 50%; background: var(--teal-l); color: var(--teal);" class="d-flex align-center justify-center fs-xl fw-bold flex-shrink-0 shadow-sm">
+            👨‍⚕️
+          </div>
+          <div class="avatar-upload-badge" title="{{ 'Upload Profile Photo' | translate }}">
+            📷
+          </div>
+          <input type="file" #avatarInput accept="image/png, image/jpeg, image/webp" (change)="onAvatarSelected($event)" style="display: none;">
+        </div>
+        <div>
+          <h3 class="fs-xl text-primary m-0 fw-bold">{{ authService.currentUser()?.fullName }}</h3>
+          <div class="text-muted fs-xs mt-1">
+            ✉️ {{ authService.currentUser()?.email }} &bull; <span class="badge badge-success">{{ authService.currentUser()?.role }}</span>
+          </div>
+          <div *ngIf="stagedAvatarPreviewUrl" class="text-amber fs-xs fw-bold mt-1">
+            📷 {{ 'New profile photo selected. Click "Save Account Info" to upload.' | translate }}
+          </div>
+        </div>
+      </div>
+      <div>
+        <button *ngIf="!isEditingAccount" type="button" class="btn btn-outline-primary btn-sm" (click)="enableAccountEdit()">
+          ✏️ {{ 'Edit Account Details' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Account Form -->
+    <form [formGroup]="accountForm" (ngSubmit)="saveAccountInfo()">
+      <h4 class="group-card-title mb-3" style="font-size: 1rem;">1. {{ 'User Account Details' | translate }}</h4>
+
+      <div class="form-two-col">
+        <div class="form-group mb-3">
+          <label class="form-label" for="fullName">{{ 'Full Name *' | translate }}</label>
+          <input type="text" id="fullName" formControlName="fullName" class="form-control">
+        </div>
+        <div class="form-group mb-3">
+          <label class="form-label" for="email">{{ 'Email Address *' | translate }}</label>
+          <input type="email" id="email" formControlName="email" class="form-control">
+        </div>
+        <div class="form-group mb-3">
+          <label class="form-label" for="phone">{{ 'Phone Number' | translate }}</label>
+          <input type="tel" id="phone" formControlName="phone" class="form-control">
+        </div>
+        <div class="form-group mb-3">
+          <label class="form-label" for="gender">{{ 'Gender' | translate }}</label>
+          <app-custom-select 
+            formControlName="gender" 
+            [options]="[
+              { label: 'Male' | translate, value: 'MALE' },
+              { label: 'Female' | translate, value: 'FEMALE' },
+              { label: 'Other' | translate, value: 'OTHER' }
+            ]" 
+            bindLabel="label" 
+            bindValue="value" 
+            [placeholder]="'Select gender' | translate">
+          </app-custom-select>
+        </div>
+        <div class="form-group mb-3">
+          <label class="form-label" for="preferredLang">{{ 'Preferred Language' | translate }}</label>
+          <app-custom-select 
+            formControlName="preferredLang" 
+            [options]="[
+              { label: 'English', value: 'en' },
+              { label: 'العربية', value: 'ar' }
+            ]" 
+            bindLabel="label" 
+            bindValue="value" 
+            [placeholder]="'Select language' | translate">
+          </app-custom-select>
+        </div>
+      </div>
+
+      <div *ngIf="isEditingAccount" class="d-flex align-center justify-end gap-3 mt-3 pt-3 border-top">
+        <button type="button" class="btn btn-secondary btn-sm" (click)="cancelAccountEdit()">
+          {{ 'Cancel' | translate }}
+        </button>
+        <button type="submit" class="btn btn-primary btn-sm">
+          💾 {{ 'Save Account Info' | translate }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Card 1: Doctor Personal Overview & License Card (Distinct Clinical Practice Section) -->
   <div class="profile-card-group" style="border-left: 5px solid var(--teal);">
     <div class="group-card-header">
-      <h3 class="group-card-title">1. {{ 'Personal Overview & Practice Details' | translate }}</h3>
+      <h3 class="group-card-title">2. {{ 'Personal Overview & Practice Details' | translate }}</h3>
     </div>
     
     <div class="d-flex justify-between align-center flex-wrap gap-3">
-      <div class="d-flex align-center gap-4">
-        <div style="width: 68px; height: 68px; border-radius: 50%; background: var(--teal-l); color: var(--teal);" class="d-flex align-center justify-center fs-xl fw-bold flex-shrink-0 shadow-sm">
-          👨‍⚕️
-        </div>
-        <div>
-          <h3 class="fs-xl text-primary m-0 fw-bold">{{ doctorDisplayName }}</h3>
-          <div class="d-flex align-center gap-3 fs-xs text-muted mt-2 flex-wrap">
-            <span>{{ 'Experience' | translate }}: <strong>{{ doctorProfile.experienceYears !== undefined && doctorProfile.experienceYears !== null ? doctorProfile.experienceYears : 0 }} {{ 'Years' | translate }}</strong></span>
-            <span>{{ 'Rating:' | translate }} <strong>⭐ {{ doctorProfile.overallRating || 0 }} ({{ doctorProfile.reviewCount || 0 }} {{ 'reviews' | translate }})</strong></span>
-            <span>{{ 'Standard Fee:' | translate }} <strong class="text-success">SAR {{ doctorProfile.consultationFeeSar || 150 }}</strong></span>
-          </div>
+      <div>
+        <h3 class="fs-xl text-primary m-0 fw-bold">{{ doctorDisplayName }}</h3>
+        <div class="d-flex align-center gap-3 fs-xs text-muted mt-2 flex-wrap">
+          <span>{{ 'Experience' | translate }}: <strong>{{ doctorProfile.experienceYears !== undefined && doctorProfile.experienceYears !== null ? doctorProfile.experienceYears : 0 }} {{ 'Years' | translate }}</strong></span>
+          <span>{{ 'Rating:' | translate }} <strong>⭐ {{ doctorProfile.overallRating || 0 }} ({{ doctorProfile.reviewCount || 0 }} {{ 'reviews' | translate }})</strong></span>
+          <span>{{ 'Standard Fee:' | translate }} <strong class="text-success">SAR {{ doctorProfile.consultationFeeSar || 150 }}</strong></span>
         </div>
       </div>
     </div>

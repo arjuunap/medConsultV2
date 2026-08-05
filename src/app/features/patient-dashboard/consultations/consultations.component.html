@@ -21,7 +21,10 @@
              [class.active]="selectedConsultation?.consultationId === c.consultationId"
              (click)="selectConsultation(c)">
           <div class="d-flex justify-between align-center mb-1">
-            <strong class="doc-name-title">{{ getDoctorDisplayName(c.doctorName) }}</strong>
+            <div class="d-flex align-center gap-2">
+              <img *ngIf="c.doctorAvatarUrl" [src]="c.doctorAvatarUrl | apiUrl" (error)="c.doctorAvatarUrl = ''" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;" [alt]="c.doctorName">
+              <strong class="doc-name-title">{{ getDoctorDisplayName(c.doctorName) }}</strong>
+            </div>
             <span [ngClass]="{
               'status-badge-open': c.status === 'OPEN',
               'status-badge-progress': c.status === 'IN_PROGRESS',
@@ -37,9 +40,12 @@
     <!-- Active Consultation Chat Panel -->
     <div class="chat-main-card" *ngIf="selectedConsultation">
       <div class="card-header d-flex justify-between align-center border-bottom p-4">
-        <div>
-          <h3 class="fs-lg text-primary m-0">{{ selectedConsultation.subject }}</h3>
-          <div class="fs-sm text-muted mt-1">{{ 'Consulting with' | translate }} {{ getDoctorDisplayName(selectedConsultation.doctorName) }}</div>
+        <div class="d-flex align-center gap-3">
+          <img *ngIf="selectedConsultation.doctorAvatarUrl" [src]="selectedConsultation.doctorAvatarUrl | apiUrl" (error)="selectedConsultation.doctorAvatarUrl = ''" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover;" [alt]="selectedConsultation.doctorName">
+          <div>
+            <h3 class="fs-lg text-primary m-0">{{ selectedConsultation.subject }}</h3>
+            <div class="fs-sm text-muted mt-1">{{ 'Consulting with' | translate }} {{ getDoctorDisplayName(selectedConsultation.doctorName) }}</div>
+          </div>
         </div>
         <span class="badge badge-danger" *ngIf="selectedConsultation.isUrgent">{{ 'Urgent' | translate }}</span>
       </div>
@@ -54,8 +60,9 @@
              style="max-width: 78%;"
              [style.align-self]="msg.senderId === authService.currentUser()?.userId ? 'flex-end' : 'flex-start'">
           
-          <div class="fs-xs text-muted mb-1 px-1">
-            {{ msg.senderName }} • {{ msg.sentAt | date:'shortTime' }}
+          <div class="d-flex align-center gap-1 fs-xs text-muted mb-1 px-1" [style.justify-content]="msg.senderId === authService.currentUser()?.userId ? 'flex-end' : 'flex-start'">
+            <img *ngIf="msg.senderAvatarUrl" [src]="msg.senderAvatarUrl | apiUrl" (error)="msg.senderAvatarUrl = ''" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover;" [alt]="msg.senderName">
+            <span>{{ msg.senderName }} • {{ msg.sentAt | date:'shortTime' }}</span>
           </div>
           <div class="p-3 shadow-sm"
                [ngStyle]="{

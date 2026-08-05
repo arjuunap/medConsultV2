@@ -20,12 +20,13 @@ import {
 import { CustomSelectComponent } from '../../../../shared/components/custom-select/custom-select.component';
 import { LanguageService } from '../../../../core/services/language.service';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { ApiUrlPipe } from '../../../../shared/pipes/api-url.pipe';
 import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-case-rooms',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, CustomSelectComponent, RouterLink, TranslatePipe],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, CustomSelectComponent, RouterLink, TranslatePipe, ApiUrlPipe],
   templateUrl: './case-rooms.component.html',
   styleUrls: ['./case-rooms.component.css']
 })

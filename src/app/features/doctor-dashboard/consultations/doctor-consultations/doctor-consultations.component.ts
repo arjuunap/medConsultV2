@@ -15,6 +15,7 @@ import {
 import { CustomSelectComponent } from '../../../../shared/components/custom-select/custom-select.component';
 import { LanguageService } from '../../../../core/services/language.service';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { ApiUrlPipe } from '../../../../shared/pipes/api-url.pipe';
 import { PatientService } from '../../../../core/services/patient.service';
 import {
   LabResultResponseDto,
@@ -27,7 +28,7 @@ import {
 @Component({
   selector: 'app-doctor-consultations',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, CustomSelectComponent, TranslatePipe],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, CustomSelectComponent, TranslatePipe, ApiUrlPipe],
   templateUrl: './doctor-consultations.component.html',
   styleUrls: ['./doctor-consultations.component.css']
 })

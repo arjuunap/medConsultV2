@@ -15,7 +15,8 @@
       
       <!-- Primary Doctor Info Card -->
       <div class="detail-section-card text-center py-5">
-        <div style="width: 100px; height: 100px; border-radius: 50%; background: var(--teal-l); color: var(--teal);" class="mx-auto d-flex align-center justify-center fs-3xl fw-bold shadow-sm mb-4">
+        <img *ngIf="doctorDetail.doctor.avatarUrl" [src]="doctorDetail.doctor.avatarUrl | apiUrl" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;" class="mx-auto shadow-sm mb-4" [alt]="doctorDisplayName">
+        <div *ngIf="!doctorDetail.doctor.avatarUrl" style="width: 100px; height: 100px; border-radius: 50%; background: var(--teal-l); color: var(--teal);" class="mx-auto d-flex align-center justify-center fs-3xl fw-bold shadow-sm mb-4">
           👨‍⚕️
         </div>
         

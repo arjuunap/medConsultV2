@@ -12,7 +12,9 @@ import { PatientService } from '../../core/services/patient.service';
 import { AuthService } from '../../core/services/auth.service';
 import { UiService } from '../../core/services/ui.service';
 import { LanguageService } from '../../core/services/language.service';
+import { AppConfigService } from '../../core/services/app-config.service';
 import { TranslatePipe, TranslateObjPipe } from '../../shared/pipes/translate.pipe';
+import { ApiUrlPipe, getFullImageUrl } from '../../shared/pipes/api-url.pipe';
 import { environment } from '../../../environments/environment';
 import { ClinicResponseDto, ClinicDetailResponse } from '../../core/models/clinic.model';
 import { SpecialtyResponseDto, LanguageResponseDto, CityResponseDto, InsuranceProviderResponseDto } from '../../core/models/reference.model';
@@ -33,6 +35,7 @@ export interface DoctorCardDisplay {
   initials: string;
   avatarBg: string;
   avatarColor: string;
+  avatarUrl?: string;
   consultationFeeSar?: number;
   branchName?: string;
   branchId?: string;
@@ -75,7 +78,8 @@ import { CustomSelectComponent } from '../../shared/components/custom-select/cus
     RouterLink, 
     CustomSelectComponent, 
     TranslatePipe, 
-    TranslateObjPipe
+    TranslateObjPipe,
+    ApiUrlPipe
   ],
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.css']
@@ -91,6 +95,7 @@ export class LandingComponent implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   public languageService = inject(LanguageService);
+  public appConfigService = inject(AppConfigService);
 
   constructor() {
     effect(() => {
@@ -186,6 +191,7 @@ export class LandingComponent implements OnInit {
   public selectedSessionType = 'IN_CLINIC';
   public bookingReason = '';
   public isSubmittingBooking = false;
+  public bookingError = '';
   public showToast = false;
   public toastMessage = '';
 
@@ -380,6 +386,7 @@ export class LandingComponent implements OnInit {
             initials,
             avatarBg: bgColors[dIdx % bgColors.length],
             avatarColor: textColors[dIdx % textColors.length],
+            avatarUrl: doc.avatarUrl,
             consultationFeeSar: link.consultationFeeSar || doc.consultationFeeSar || 150,
             branchName: branchName || this.languageService.translate('Main Branch', 'الفرع الرئيسي'),
             branchId: link.branchId
@@ -663,6 +670,10 @@ export class LandingComponent implements OnInit {
     this.bookingClinicName = clinicName;
     this.bookingModalOpen = true;
     this.bookingReason = '';
+    this.bookingError = '';
+
+    // Ensure patient profile is loaded if patient is logged in
+    this.loadPatientProfileIfLoggedIn();
 
     // Clear available slots initially to avoid submitting fake slots
     this.availableSlots = [];
@@ -765,9 +776,12 @@ export class LandingComponent implements OnInit {
     this.bookingModalOpen = false;
     this.bookingDoctor = null;
     this.selectedSlot = null;
+    this.bookingError = '';
   }
 
   confirmBooking(): void {
+    this.bookingError = '';
+
     if (!this.authService.isLoggedIn()) {
       this.closeBooking();
       this.router.navigate(['/login']);
@@ -776,24 +790,56 @@ export class LandingComponent implements OnInit {
     }
 
     if (this.authService.currentUser()?.role !== 'PATIENT') {
-      this.closeBooking();
-      this.uiService.showWarning('Only Patient accounts can book appointments.');
-      return;
-    }
-
-    if (!this.patientId) {
-      this.closeBooking();
-      this.router.navigate(['/patient/profile']);
-      this.uiService.showWarning('Please complete your Patient Profile before booking.');
+      const msg = 'Only Patient accounts can book appointments.';
+      this.bookingError = msg;
+      this.uiService.showWarning(msg);
       return;
     }
 
     if (!this.selectedSlot) {
-      this.uiService.showWarning('Please select an available time slot.');
+      const msg = 'Please select an available time slot.';
+      this.bookingError = msg;
+      this.uiService.showWarning(msg);
       return;
     }
 
+    if (!this.patientId) {
+      this.uiService.showLoading();
+      this.patientService.getMyProfile().subscribe({
+        next: (p) => {
+          this.uiService.hideLoading();
+          if (p && p.patientId) {
+            this.patientId = p.patientId;
+            this.executeBookingSubmission();
+          } else {
+            const msg = 'Please complete your Patient Profile before booking.';
+            this.bookingError = msg;
+            this.uiService.showWarning(msg);
+            this.closeBooking();
+            this.router.navigate(['/patient/profile']);
+          }
+        },
+        error: (err) => {
+          this.uiService.hideLoading();
+          const msg = err?.error?.message || 'Please complete your Patient Profile before booking.';
+          this.bookingError = msg;
+          this.uiService.showWarning(msg);
+          this.closeBooking();
+          this.router.navigate(['/patient/profile']);
+        }
+      });
+      return;
+    }
+
+    this.executeBookingSubmission();
+  }
+
+  executeBookingSubmission(): void {
+    if (!this.selectedSlot) return;
+
     this.isSubmittingBooking = true;
+    this.bookingError = '';
+
     const payload = {
       patientId: this.patientId,
       dcId: this.bookingDoctor?.dcId || 'dc-1',
@@ -812,12 +858,19 @@ export class LandingComponent implements OnInit {
         this.showToast = true;
         setTimeout(() => this.showToast = false, 4000);
       },
-      error: () => {
+      error: (err) => {
         this.isSubmittingBooking = false;
-        this.closeBooking();
-        this.toastMessage = `Appointment request submitted for ${this.bookingDoctor?.name} on ${this.selectedDate}!`;
-        this.showToast = true;
-        setTimeout(() => this.showToast = false, 4000);
+        let errorMsg = err?.error?.error || err?.error?.message || (typeof err?.error === 'string' ? err.error : null) || err?.message;
+        if (!errorMsg || typeof errorMsg !== 'string' || errorMsg.includes('Http failure response')) {
+          errorMsg = 'Failed to book appointment. The selected time slot may no longer be available.';
+        }
+        this.bookingError = errorMsg;
+        this.uiService.showError(errorMsg);
+
+        // Refresh slot availability for doctor so the slot updates visually
+        if (this.bookingDoctor?.dcId) {
+          this.fetchRealSlotsForDoctor(this.bookingDoctor.dcId, this.selectedDate);
+        }
       }
     });
   }

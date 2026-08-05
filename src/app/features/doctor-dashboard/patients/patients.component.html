@@ -29,12 +29,13 @@
   <!-- Directory Cards Grid -->
   <div class="patients-grid mt-4" *ngIf="filteredPatients.length > 0">
     <div *ngFor="let p of filteredPatients" class="patient-profile-card">
-      <div class="patient-card-avatar">👤</div>
+      <img *ngIf="p.avatarUrl" [src]="p.avatarUrl | apiUrl" class="patient-card-avatar-img" [alt]="p.patientName" style="width: 56px; height: 56px; border-radius: 50%; object-fit: cover; margin-bottom: 8px;">
+      <div *ngIf="!p.avatarUrl" class="patient-card-avatar">👤</div>
       <div class="patient-card-info">
         <h3>{{ p.patientName }}</h3>
         <p class="patient-id-sub">{{ 'ID:' | translate }} {{ p.patientId }}</p>
       </div>
-      <button class="btn btn-primary btn-sm w-100 mt-3" (click)="selectPatient(p.patientId, p.patientName)">
+      <button class="btn btn-primary btn-sm w-100 mt-3" (click)="selectPatient(p.patientId, p.patientName, p.avatarUrl)">
         📋 {{ 'Open EMR & Profile Details' | translate }}
       </button>
     </div>
@@ -71,7 +72,9 @@
     <div class="d-flex justify-between align-center flex-wrap gap-4">
       <div>
         <h3 class="fs-xl text-primary mb-2 fw-bold d-flex align-center gap-2">
-          <span>👤 {{ 'Patient Chart:' | translate }}</span>
+          <img *ngIf="selectedPatientAvatarUrl" [src]="selectedPatientAvatarUrl | apiUrl" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;" [alt]="selectedPatientName">
+          <span *ngIf="!selectedPatientAvatarUrl">👤</span>
+          <span>{{ 'Patient Chart:' | translate }}</span>
           <span>{{ selectedPatientName }}</span>
         </h3>
         <div class="d-flex gap-3 align-center flex-wrap mt-2" *ngIf="healthProfile">

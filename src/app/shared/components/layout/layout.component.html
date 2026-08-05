@@ -5,9 +5,13 @@
   <!-- Sidebar Navigation -->
   <aside class="sidebar">
     <div class="brand-section cursor-pointer" routerLink="/">
-      <h1 class="brand-title">
-        <span class="brand-logo-dot"></span>
-        MedConsult
+      <h1 class="brand-title d-flex align-center gap-2 w-100 justify-center">
+        <img *ngIf="appConfigService.hasLogoImage()" [src]="appConfigService.logoSrc()" [alt]="appConfigService.name()" class="brand-logo-img" style="height: 60px; max-width: 230px; width: auto; object-fit: contain; vertical-align: middle;" />
+        <ng-container *ngIf="!appConfigService.hasLogoImage()">
+          <span *ngIf="appConfigService.logoIcon()" class="brand-logo-icon">{{ appConfigService.logoIcon() }}</span>
+          <span *ngIf="!appConfigService.logoIcon()" class="brand-logo-dot"></span>
+          <span>{{ appConfigService.name() }}</span>
+        </ng-container>
       </h1>
       <button class="mobile-close-btn" (click)="closeSidebar()" aria-label="Close menu">&times;</button>
     </div>
@@ -59,7 +63,7 @@
   <div class="main-area">
     <!-- Top Header Bar -->
     <header class="header">
-      <div class="d-flex align-center gap-3 flex-wrap">
+      <div class="header-left d-flex align-center gap-3">
         <!-- Mobile Toggle Button -->
         <button class="hamburger-btn" (click)="toggleSidebar()" aria-label="Toggle navigation menu">
           <span></span>
@@ -67,33 +71,45 @@
           <span></span>
         </button>
 
-        <div class="page-title m-0">
-          {{ 'Dashboard Title' | translate }}
+        <div class="page-title-badge d-flex align-center gap-2">
+          <span class="title-dot"></span>
+          <span class="page-title">{{ 'Dashboard Title' | translate }}</span>
         </div>
-        <a routerLink="/" class="btn btn-sm btn-outline-primary py-1 px-3 fs-xs rounded-pill portal-pill-btn d-inline-flex align-center gap-1">
-          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
-          {{ 'View Public Portal' | translate }}
-        </a>
 
-        <!-- Quick Language Toggle in Header -->
-        <button class="btn btn-sm btn-outline-secondary py-1 px-3 fs-xs rounded-pill lang-header-btn d-inline-flex align-center gap-1" (click)="languageService.toggleLanguage()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
-          {{ languageService.currentLang() === 'en' ? 'العربية' : 'English' }}
-        </button>
+        <a routerLink="/" class="portal-pill-btn d-inline-flex align-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
+          <span>{{ 'View Public Portal' | translate }}</span>
+        </a>
       </div>
 
-      <div class="user-profile" *ngIf="authService.currentUser() as user">
-        <div class="user-avatar">
-          <img *ngIf="user.avatarUrl" [src]="user.avatarUrl | apiUrl" alt="Avatar" (error)="user.avatarUrl = ''">
-          <span *ngIf="!user.avatarUrl">{{ userInitials() }}</span>
-        </div>
-        <div class="user-details">
-          <span class="user-name">{{ user.fullName }}</span>
-          <span class="user-role-badge">{{ user.role.replace('_', ' ') }}</span>
-        </div>
-        <button class="btn btn-sm text-danger border-0 bg-transparent ms-2 cursor-pointer logout-icon-btn d-inline-flex align-center justify-center" (click)="handleLogout()" [title]="'Logout' | translate">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" x2="9" y1="12" y2="12"></line></svg>
+      <div class="header-right d-flex align-center gap-3">
+        <!-- Quick Language Toggle Pill -->
+        <button class="lang-header-pill d-inline-flex align-center gap-2" (click)="languageService.toggleLanguage()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
+          <span>{{ languageService.currentLang() === 'en' ? 'العربية' : 'English' }}</span>
         </button>
+
+        <!-- User Profile Card Pill -->
+        <div class="user-profile-pill" *ngIf="authService.currentUser() as user">
+          <div class="user-avatar-wrapper">
+            <div class="user-avatar">
+              <img *ngIf="user.avatarUrl" [src]="user.avatarUrl | apiUrl" alt="Avatar" (error)="user.avatarUrl = ''">
+              <span *ngIf="!user.avatarUrl">{{ userInitials() }}</span>
+            </div>
+            <span class="user-status-online" title="Online"></span>
+          </div>
+          
+          <div class="user-details">
+            <div class="d-flex align-center gap-1">
+              <span class="user-name">{{ user.fullName }}</span>
+              <span class="user-role-badge">{{ user.role.replace('_', ' ') }}</span>
+            </div>
+          </div>
+
+          <button class="logout-pill-btn" (click)="handleLogout()" [title]="'Logout' | translate">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" x2="9" y1="12" y2="12"></line></svg>
+          </button>
+        </div>
       </div>
     </header>
 

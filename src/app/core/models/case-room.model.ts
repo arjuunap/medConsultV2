@@ -35,8 +35,10 @@ export interface CaseRoomResponseDto {
   caseRoomId: string;
   patientId: string;
   patientName: string;
+  patientAvatarUrl?: string;
   openedById: string;
   openedByName: string;
+  openedByAvatarUrl?: string;
   title: string;
   description?: string;
   status: CaseRoomStatus;
@@ -61,6 +63,7 @@ export interface CaseRoomPostResponseDto {
   caseRoomId: string;
   authorId: string;
   authorName: string;
+  authorAvatarUrl?: string;
   postType: PostType;
   body?: string;
   fileId?: string;

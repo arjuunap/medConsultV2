@@ -1,27 +1,47 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PatientService } from '../../../core/services/patient.service';
+import { UserService } from '../../../core/services/user.service';
 import { UiService } from '../../../core/services/ui.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { BloodType, MaritalStatus } from '../../../core/models/patient.model';
 import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
 import { LanguageService } from '../../../core/services/language.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { ApiUrlPipe } from '../../../shared/pipes/api-url.pipe';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule, CustomSelectComponent, TranslatePipe],
+  imports: [CommonModule, RouterLink, ReactiveFormsModule, CustomSelectComponent, TranslatePipe, ApiUrlPipe],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit {
   private patientService = inject(PatientService);
+  public userService = inject(UserService);
   private uiService = inject(UiService);
+  public authService = inject(AuthService);
   private fb = inject(FormBuilder);
   public languageService = inject(LanguageService);
 
+  @ViewChild('avatarInput') avatarInput!: ElementRef<HTMLInputElement>;
+  public stagedAvatarFile: File | null = null;
+  public stagedAvatarPreviewUrl: string | null = null;
+
+  // Account (User) Profile state
+  public isEditingAccount = false;
+  public accountForm: FormGroup = this.fb.group({
+    fullName: ['', [Validators.required]],
+    email: ['', [Validators.required, Validators.email]],
+    phone: [''],
+    gender: ['MALE'],
+    preferredLang: ['en']
+  });
+
+  // Medical (Patient) Profile state
   public isEditMode = false;
   public profileExists = false;
 
@@ -47,6 +67,21 @@ export class ProfileComponent implements OnInit {
       label: this.languageService.translate(ms, this.getMaritalStatusAr(ms)),
       value: ms
     }));
+  }
+
+  get genderOptions() {
+    return [
+      { label: this.languageService.translate('Male', 'ذكر'), value: 'MALE' },
+      { label: this.languageService.translate('Female', 'أنثى'), value: 'FEMALE' },
+      { label: this.languageService.translate('Other', 'آخر'), value: 'OTHER' }
+    ];
+  }
+
+  get langOptions() {
+    return [
+      { label: 'English', value: 'en' },
+      { label: 'العربية', value: 'ar' }
+    ];
   }
 
   private getMaritalStatusAr(ms: string): string {
@@ -106,7 +141,83 @@ export class ProfileComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.initAccountData();
     this.loadProfile();
+  }
+
+  initAccountData(): void {
+    const user = this.authService.currentUser();
+    if (user) {
+      this.accountForm.patchValue({
+        fullName: user.fullName || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        gender: user.gender || 'MALE',
+        preferredLang: user.preferredLang || 'en'
+      });
+    }
+    this.accountForm.disable();
+  }
+
+  enableAccountEdit(): void {
+    this.isEditingAccount = true;
+    this.accountForm.enable();
+  }
+
+  cancelAccountEdit(): void {
+    this.isEditingAccount = false;
+    this.stagedAvatarFile = null;
+    this.stagedAvatarPreviewUrl = null;
+    this.initAccountData();
+  }
+
+  triggerAvatarUpload(): void {
+    if (this.avatarInput) {
+      this.avatarInput.nativeElement.click();
+    }
+  }
+
+  onAvatarSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+    if (file.size > 5 * 1024 * 1024) {
+      this.uiService.showError(this.languageService.translate('Image size should be less than 5MB.', 'حجم الصورة يجب أن يكون أقل من 5 ميجابايت.'));
+      return;
+    }
+
+    this.stagedAvatarFile = file;
+    this.stagedAvatarPreviewUrl = URL.createObjectURL(file);
+    this.isEditingAccount = true;
+    this.accountForm.enable();
+    this.uiService.showInfo(this.languageService.translate('Photo selected. Click "Save Account Info" to upload.', 'تم تحديد الصورة. اضغط "حفظ معلومات الحساب" للرفع.'));
+  }
+
+  saveAccountInfo(): void {
+    if (this.accountForm.invalid) {
+      this.accountForm.markAllAsTouched();
+      return;
+    }
+
+    this.uiService.showLoading();
+    const dto = this.accountForm.value;
+
+    this.userService.updateProfile(this.stagedAvatarFile, dto).subscribe({
+      next: (updatedUser) => {
+        this.uiService.hideLoading();
+        this.uiService.showSuccess(this.languageService.translate('User account details and avatar saved successfully!', 'تم حفظ بيانات الحساب وصورة البروفايل بنجاح!'));
+        this.isEditingAccount = false;
+        this.stagedAvatarFile = null;
+        this.stagedAvatarPreviewUrl = null;
+        this.accountForm.disable();
+      },
+      error: (err) => {
+        this.uiService.hideLoading();
+        const msg = err?.error?.message || err?.error?.error || this.languageService.translate('Failed to update account details.', 'فشل في تحديث بيانات الحساب.');
+        this.uiService.showError(msg);
+      }
+    });
   }
 
   loadProfile(): void {
@@ -158,21 +269,21 @@ export class ProfileComponent implements OnInit {
       this.patientService.updateProfile(payload).subscribe({
         next: (res) => {
           this.uiService.hideLoading();
-          this.uiService.showSuccess(this.languageService.translate('Profile updated successfully.', 'تم تحديث الملف الشخصي بنجاح.'));
+          this.uiService.showSuccess(this.languageService.translate('Medical profile updated successfully.', 'تم تحديث الملف الطبي بنجاح.'));
           this.isEditMode = false;
           this.profileForm.disable();
           this.profileForm.patchValue(res);
         },
         error: (err) => {
           this.uiService.hideLoading();
-          this.uiService.showError(err.error?.message || this.languageService.translate('Failed to update profile.', 'فشل في تحديث الملف الشخصي.'));
+          this.uiService.showError(err.error?.message || this.languageService.translate('Failed to update medical profile.', 'فشل في تحديث الملف الطبي.'));
         }
       });
     } else {
       this.patientService.createProfile(payload).subscribe({
         next: (res) => {
           this.uiService.hideLoading();
-          this.uiService.showSuccess(this.languageService.translate('Profile initialized successfully.', 'تم إنشاء الملف الشخصي بنجاح.'));
+          this.uiService.showSuccess(this.languageService.translate('Medical profile initialized successfully.', 'تم إنشاء الملف الطبي بنجاح.'));
           this.profileExists = true;
           this.isEditMode = false;
           this.profileForm.disable();
@@ -180,9 +291,10 @@ export class ProfileComponent implements OnInit {
         },
         error: (err) => {
           this.uiService.hideLoading();
-          this.uiService.showError(err.error?.message || this.languageService.translate('Failed to initialize profile.', 'فشل في إنشاء الملف الشخصي.'));
+          this.uiService.showError(err.error?.message || this.languageService.translate('Failed to initialize medical profile.', 'فشل في إنشاء الملف الطبي.'));
         }
       });
     }
   }
 }
+

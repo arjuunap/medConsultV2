@@ -11,13 +11,14 @@ import { UiService } from '../../../core/services/ui.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { ApiUrlPipe } from '../../../shared/pipes/api-url.pipe';
 import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
 import { AppointmentStatus, SessionType } from '../../../core/models/appointment.model';
 
 @Component({
   selector: 'app-appointments-history',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, CustomSelectComponent, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, CustomSelectComponent, TranslatePipe, ApiUrlPipe],
   templateUrl: './appointments-history.component.html',
   styleUrls: ['./appointments-history.component.css']
 })

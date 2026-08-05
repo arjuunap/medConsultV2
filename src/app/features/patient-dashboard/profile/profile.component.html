@@ -1,34 +1,113 @@
-<div class="patient-profile-card">
-  <!-- Avatar Header -->
-  <div class="profile-avatar-header">
-    <div class="profile-header-main">
-      <div class="avatar-large">👤</div>
-      <div class="profile-header-info">
-        <h2 class="profile-header-name">{{ 'Patient Medical Profile' | translate }}</h2>
-        <div class="profile-header-meta">
-          {{ 'Registered Patient Consultation Records & Emergency Information' | translate }}
+<div class="patient-profile-container flex-col gap-4">
+  <!-- Card 1: User Account & Profile Picture (Auth User Settings) -->
+  <div class="patient-profile-card">
+    <div class="profile-avatar-header">
+      <div class="profile-header-main">
+        <div class="avatar-container" (click)="triggerAvatarUpload()">
+          <img *ngIf="stagedAvatarPreviewUrl || authService.currentUser()?.avatarUrl" 
+               [src]="stagedAvatarPreviewUrl || (authService.currentUser()?.avatarUrl | apiUrl)" 
+               class="avatar-large-img" [class.avatar-staged]="!!stagedAvatarPreviewUrl" alt="User Avatar">
+          <div *ngIf="!stagedAvatarPreviewUrl && !authService.currentUser()?.avatarUrl" class="avatar-large">👤</div>
+          <div class="avatar-upload-badge" title="{{ 'Upload Avatar Photo' | translate }}">
+            📷
+          </div>
+          <input type="file" #avatarInput accept="image/png, image/jpeg, image/webp" (change)="onAvatarSelected($event)" style="display: none;">
+        </div>
+
+        <div class="profile-header-info">
+          <h2 class="profile-header-name">{{ authService.currentUser()?.fullName }}</h2>
+          <div class="profile-header-meta">
+            ✉️ {{ authService.currentUser()?.email }} &bull; 
+            <span class="user-role-badge-inline">{{ authService.currentUser()?.role }}</span>
+          </div>
+
+          <div *ngIf="stagedAvatarPreviewUrl" class="text-amber fs-xs fw-bold mt-1">
+            📷 {{ 'New profile photo selected. Click "Save Account Info" below to upload.' | translate }}
+          </div>
         </div>
       </div>
+
+      <div class="profile-header-actions">
+        <button *ngIf="!isEditingAccount" type="button" class="btn btn-outline-primary" (click)="enableAccountEdit()">
+          ✏️ {{ 'Edit Account Info' | translate }}
+        </button>
+      </div>
     </div>
-    <div class="profile-header-actions">
-      <button *ngIf="!isEditMode" class="btn btn-secondary" routerLink="/patient/become-doctor">
-        🩺 {{ 'Register as Doctor' | translate }}
-      </button>
-      <button *ngIf="!isEditMode" class="btn btn-secondary" routerLink="/patient/become-clinic">
-        🏥 {{ 'Register Clinic' | translate }}
-      </button>
-      <button *ngIf="!isEditMode" class="btn btn-primary" (click)="enableEdit()">
-        ✏️ {{ 'Edit Profile' | translate }}
-      </button>
-    </div>
+
+    <!-- Account Form -->
+    <form [formGroup]="accountForm" (ngSubmit)="saveAccountInfo()">
+      <h3 class="section-divider-title">1. {{ 'Account & User Details' | translate }}</h3>
+
+      <div class="form-two-col">
+        <!-- Full Name -->
+        <div class="form-group mb-3">
+          <label class="form-label" for="fullName">{{ 'Full Name *' | translate }}</label>
+          <input type="text" id="fullName" formControlName="fullName" class="form-control">
+        </div>
+
+        <!-- Email -->
+        <div class="form-group mb-3">
+          <label class="form-label" for="email">{{ 'Email Address *' | translate }}</label>
+          <input type="email" id="email" formControlName="email" class="form-control">
+        </div>
+
+        <!-- Phone -->
+        <div class="form-group mb-3">
+          <label class="form-label" for="phone">{{ 'Phone Number' | translate }}</label>
+          <input type="tel" id="phone" formControlName="phone" class="form-control">
+        </div>
+
+        <!-- Gender -->
+        <div class="form-group mb-3">
+          <label class="form-label" for="gender">{{ 'Gender' | translate }}</label>
+          <app-custom-select 
+            formControlName="gender" 
+            [options]="genderOptions" 
+            bindLabel="label" 
+            bindValue="value" 
+            [placeholder]="'Select gender' | translate">
+          </app-custom-select>
+        </div>
+
+        <!-- Preferred Language -->
+        <div class="form-group mb-3">
+          <label class="form-label" for="preferredLang">{{ 'Preferred Language' | translate }}</label>
+          <app-custom-select 
+            formControlName="preferredLang" 
+            [options]="langOptions" 
+            bindLabel="label" 
+            bindValue="value" 
+            [placeholder]="'Select language' | translate">
+          </app-custom-select>
+        </div>
+      </div>
+
+      <div *ngIf="isEditingAccount" class="d-flex align-center justify-end gap-3 mt-4 pt-3 border-top">
+        <button type="button" class="btn btn-secondary" (click)="cancelAccountEdit()">
+          {{ 'Cancel' | translate }}
+        </button>
+        <button type="submit" class="btn btn-primary">
+          💾 {{ 'Save Account Info' | translate }}
+        </button>
+      </div>
+    </form>
   </div>
 
-  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
-    
-    <!-- Section 1: General Medical Information -->
-    <div class="mb-5">
-      <h3 class="section-divider-title">1. {{ 'General Information' | translate }}</h3>
-      
+  <!-- Card 2: Medical Profile Information (Patient Profile) -->
+  <div class="patient-profile-card">
+    <div class="d-flex justify-between align-center border-bottom pb-3 mb-4">
+      <div>
+        <h3 class="section-divider-title m-0">2. {{ 'Medical Profile & Emergency Information' | translate }}</h3>
+        <p class="text-muted fs-xs m-0 mt-1">{{ 'Medical details, blood type, emergency contact, and allergies' | translate }}</p>
+      </div>
+      <div>
+        <button *ngIf="!isEditMode" type="button" class="btn btn-primary" (click)="enableEdit()">
+          ✏️ {{ 'Edit Medical Info' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
       <div class="form-two-col">
         <!-- Birth date -->
         <div class="form-group mb-3">
@@ -64,7 +143,7 @@
             id="nationalId" 
             formControlName="nationalId" 
             class="form-control"
-            [placeholder]="'E.g. 1092837493' | translate"
+            placeholder="e.g. 1029384756"
           >
           <div *ngIf="profileForm.get('nationalId')?.touched && profileForm.get('nationalId')?.invalid" class="error-text">
             {{ 'Valid National ID is required (5-20 characters).' | translate }}
@@ -79,83 +158,67 @@
             [options]="nationalityOptions" 
             bindLabel="label" 
             bindValue="value" 
-            [searchable]="true" 
-            [placeholder]="'-- Select Nationality --' | translate">
+            [placeholder]="'Select nationality' | translate">
           </app-custom-select>
-          <div *ngIf="profileForm.get('nationality')?.touched && profileForm.get('nationality')?.invalid" class="error-text">
-            {{ 'Nationality is required.' | translate }}
-          </div>
         </div>
-      </div>
 
-      <!-- Marital status -->
-      <div class="form-group mb-3">
-        <label class="form-label" for="maritalStatus">{{ 'Marital Status' | translate }}</label>
-        <app-custom-select 
-          formControlName="maritalStatus" 
-          [options]="maritalStatusOptions" 
-          bindLabel="label" 
-          bindValue="value" 
-          [placeholder]="'Select marital status' | translate">
-        </app-custom-select>
-      </div>
-    </div>
-
-    <!-- Section 2: Emergency Contact -->
-    <div class="mb-5 pt-3 border-top">
-      <h3 class="section-divider-title">2. {{ 'Emergency Contact Information' | translate }}</h3>
-      
-      <div class="form-two-col">
+        <!-- Marital Status -->
         <div class="form-group mb-3">
-          <label class="form-label" for="emergencyContactName">{{ 'Contact Full Name *' | translate }}</label>
+          <label class="form-label" for="maritalStatus">{{ 'Marital Status *' | translate }}</label>
+          <app-custom-select 
+            formControlName="maritalStatus" 
+            [options]="maritalStatusOptions" 
+            bindLabel="label" 
+            bindValue="value" 
+            [placeholder]="'Select marital status' | translate">
+          </app-custom-select>
+        </div>
+
+        <!-- Emergency Contact Name -->
+        <div class="form-group mb-3">
+          <label class="form-label" for="emergencyContactName">{{ 'Emergency Contact Person *' | translate }}</label>
           <input 
             type="text" 
             id="emergencyContactName" 
             formControlName="emergencyContactName" 
             class="form-control"
-            [placeholder]="'Jane Doe' | translate"
+            placeholder="e.g. Abdullah Ahmed"
           >
-          <div *ngIf="profileForm.get('emergencyContactName')?.touched && profileForm.get('emergencyContactName')?.invalid" class="error-text">
-            {{ 'Emergency contact name is required.' | translate }}
-          </div>
         </div>
 
+        <!-- Emergency Contact Phone -->
         <div class="form-group mb-3">
-          <label class="form-label" for="emergencyContactPhone">{{ 'Contact Phone Number *' | translate }}</label>
+          <label class="form-label" for="emergencyContactPhone">{{ 'Emergency Contact Phone *' | translate }}</label>
           <input 
             type="tel" 
             id="emergencyContactPhone" 
             formControlName="emergencyContactPhone" 
             class="form-control"
-            [placeholder]="'+966 50 000 0000' | translate"
+            placeholder="+966 50 000 0000"
           >
-          <div *ngIf="profileForm.get('emergencyContactPhone')?.touched && profileForm.get('emergencyContactPhone')?.invalid" class="error-text">
-            {{ 'Valid phone number is required.' | translate }}
-          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Section 3: General Health Notes -->
-    <div class="form-group m-0 pt-2 border-top">
-      <label class="form-label" for="notes">3. {{ 'Additional Health Notes (Optional)' | translate }}</label>
-      <textarea 
-        id="notes" 
-        formControlName="notes" 
-        class="form-control"
-        [placeholder]="'List any general health preferences or notes for your consulting doctor...' | translate"
-        rows="3"
-      ></textarea>
-    </div>
+      <!-- General Medical Notes -->
+      <div class="form-group mb-4">
+        <label class="form-label" for="notes">{{ 'Medical History & Special Conditions Note' | translate }}</label>
+        <textarea 
+          id="notes" 
+          formControlName="notes" 
+          class="form-control" 
+          rows="3"
+          placeholder="Mention any ongoing medical observations or special emergency care requirements..."
+        ></textarea>
+      </div>
 
-    <!-- Submit/Cancel controls -->
-    <div *ngIf="isEditMode" class="profile-actions-bar">
-      <button *ngIf="profileExists" type="button" class="btn btn-outline" (click)="cancelEdit()">
-        {{ 'Cancel' | translate }}
-      </button>
-      <button type="submit" class="btn btn-accent" [disabled]="profileForm.invalid">
-        {{ 'Save Profile' | translate }}
-      </button>
-    </div>
-  </form>
+      <div *ngIf="isEditMode" class="d-flex align-center justify-end gap-3 pt-3 border-top">
+        <button type="button" class="btn btn-secondary" (click)="cancelEdit()">
+          {{ 'Cancel' | translate }}
+        </button>
+        <button type="submit" class="btn btn-primary">
+          💾 {{ profileExists ? ('Save Medical Profile' | translate) : ('Initialize Medical Profile' | translate) }}
+        </button>
+      </div>
+    </form>
+  </div>
 </div>

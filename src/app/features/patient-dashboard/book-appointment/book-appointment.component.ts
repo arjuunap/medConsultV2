@@ -360,6 +360,8 @@ export class BookAppointmentComponent implements OnInit {
         if (err.error) {
           if (typeof err.error === 'string') {
             errorMsg = err.error;
+          } else if (err.error.error) {
+            errorMsg = err.error.error;
           } else if (err.error.message) {
             errorMsg = err.error.message;
           } else if (err.error.errors && Array.isArray(err.error.errors)) {

@@ -6,6 +6,7 @@ import { switchMap } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { UiService } from '../../../core/services/ui.service';
 import { LanguageService } from '../../../core/services/language.service';
+import { AppConfigService } from '../../../core/services/app-config.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { UserRole, Gender } from '../../../core/models/auth.model';
 import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
@@ -24,6 +25,7 @@ export class RegisterComponent {
   private uiService = inject(UiService);
   private router = inject(Router);
   public languageService = inject(LanguageService);
+  public appConfigService = inject(AppConfigService);
 
   loginWithGoogle(): void {
     window.location.href = `${environment.apiUrl}/oauth2/authorization/google`;

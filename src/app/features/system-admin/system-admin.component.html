@@ -241,7 +241,8 @@
       <div *ngFor="let doc of doctors" class="doctor-profile-card">
         <div>
           <div class="doctor-profile-head">
-            <div class="doctor-avatar">
+            <img *ngIf="doc.avatarUrl" [src]="doc.avatarUrl | apiUrl" (error)="doc.avatarUrl = ''" class="doctor-avatar-img" [alt]="doc.fullName" style="width: 44px; height: 44px; border-radius: 8px; object-fit: cover; flex-shrink: 0;">
+            <div *ngIf="!doc.avatarUrl" class="doctor-avatar">
               {{ (doc.fullName.substring(0, 2) || 'DR').toUpperCase() }}
             </div>
             <div class="doctor-head-info">

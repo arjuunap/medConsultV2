@@ -11,6 +11,7 @@ import { PatientResponseDto } from '../../../core/models/patient.model';
 import { AppointmentResponseDto } from '../../../core/models/appointment.model';
 import { VitalResponseDto } from '../../../core/models/clinical-record.model';
 
+import { AppConfigService } from '../../../core/services/app-config.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 @Component({
@@ -26,6 +27,7 @@ export class HomeComponent implements OnInit {
   private clinicalRecordService = inject(ClinicalRecordService);
   private uiService = inject(UiService);
   private authService = inject(AuthService);
+  public appConfigService = inject(AppConfigService);
   private router = inject(Router);
   private fb = inject(FormBuilder);
 

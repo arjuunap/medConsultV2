@@ -3,15 +3,24 @@
   <div class="auth-hero-panel">
     <div class="hero-glow-orb orb-1"></div>
     <div class="hero-glow-orb orb-2"></div>
+
+    <!-- Back to Home Link -->
+    <a routerLink="/" class="hero-back-link d-inline-flex align-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="back-arrow-icon" style="transition: transform 0.2s ease;"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <span>{{ 'Back to Home' | translate }}</span>
+    </a>
     
     <div class="hero-content">
       <!-- Brand Logo -->
       <a class="hero-brand" routerLink="/">
-        <div class="hero-brand-icon">🩺</div>
-        <div class="hero-brand-text">
-          <span class="brand-title">MedConsult <span class="v2-tag">V2</span></span>
-          <span class="brand-tagline">{{ 'Smart Telehealth & Clinical Portal' | translate }}</span>
-        </div>
+        <img *ngIf="appConfigService.hasLogoImage()" [src]="appConfigService.logoSrc()" [alt]="appConfigService.name()" class="hero-brand-img" style="height: 80px; max-width: 320px; width: auto; object-fit: contain;" />
+        <ng-container *ngIf="!appConfigService.hasLogoImage()">
+          <div *ngIf="appConfigService.logoIcon()" class="hero-brand-icon">{{ appConfigService.logoIcon() }}</div>
+          <div class="hero-brand-text">
+            <span class="brand-title">{{ appConfigService.name() }} <span class="v2-tag" *ngIf="appConfigService.version()">{{ appConfigService.version() }}</span></span>
+            <span class="brand-tagline">{{ appConfigService.tagline() | translate }}</span>
+          </div>
+        </ng-container>
       </a>
 
       <!-- Headline -->
@@ -74,14 +83,17 @@
     <div class="auth-card">
       <!-- Mobile Top Brand Mark -->
       <a class="mobile-auth-brand" routerLink="/">
-        <div class="brand-logo-icon">🩺</div>
-        <h1 class="brand-name">MedConsult <span>V2</span></h1>
+        <img *ngIf="appConfigService.hasLogoImage()" [src]="appConfigService.logoSrc()" [alt]="appConfigService.name()" style="height: 56px; max-width: 240px; width: auto; object-fit: contain;" />
+        <ng-container *ngIf="!appConfigService.hasLogoImage()">
+          <div *ngIf="appConfigService.logoIcon()" class="brand-logo-icon">{{ appConfigService.logoIcon() }}</div>
+          <h1 class="brand-name">{{ appConfigService.name() }} <span *ngIf="appConfigService.version()">{{ appConfigService.version() }}</span></h1>
+        </ng-container>
       </a>
 
       <!-- Header Text -->
       <div class="auth-header text-center">
         <h2 class="auth-title">{{ 'Create an Account' | translate }}</h2>
-        <p class="auth-subtitle">{{ 'Join MedConsult to manage consultations and records seamlessly' | translate }}</p>
+        <p class="auth-subtitle">{{ ('Join ' + appConfigService.name() + ' to manage consultations and records seamlessly') | translate }}</p>
       </div>
 
       <!-- Error Alert Message -->

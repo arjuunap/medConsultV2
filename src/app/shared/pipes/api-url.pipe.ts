@@ -4,9 +4,9 @@ import { environment } from '../../../environments/environment';
 export function getFullImageUrl(path: string | null | undefined): string {
   if (!path) return '';
   if (
-    path.startsWith('http://') || 
-    path.startsWith('https://') || 
-    path.startsWith('data:') || 
+    path.startsWith('http://') ||
+    path.startsWith('https://') ||
+    path.startsWith('data:') ||
     path.startsWith('blob:')
   ) {
     return path;

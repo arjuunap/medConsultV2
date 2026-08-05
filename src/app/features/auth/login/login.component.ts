@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { UiService } from '../../../core/services/ui.service';
+import { AppConfigService } from '../../../core/services/app-config.service';
 import { UserRole } from '../../../core/models/auth.model';
 import { environment } from '../../../../environments/environment';
 
@@ -21,6 +22,7 @@ export class LoginComponent {
   private authService = inject(AuthService);
   private uiService = inject(UiService);
   private router = inject(Router);
+  public appConfigService = inject(AppConfigService);
 
   loginWithGoogle(): void {
     window.location.href = `${environment.apiUrl}/oauth2/authorization/google`;

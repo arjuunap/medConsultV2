@@ -1,13 +1,15 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DoctorService } from '../../../core/services/doctor.service';
+import { UserService } from '../../../core/services/user.service';
 import { ReferenceService } from '../../../core/services/reference.service';
 import { UiService } from '../../../core/services/ui.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ClinicService } from '../../../core/services/clinic.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { ApiUrlPipe } from '../../../shared/pipes/api-url.pipe';
 import { environment } from '../../../../environments/environment';
 import {
   DoctorDetailResponse, DoctorTitle,
@@ -22,18 +24,33 @@ import { catchError, map } from 'rxjs/operators';
 @Component({
   selector: 'app-doctor-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, CustomSelectComponent, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, CustomSelectComponent, TranslatePipe, ApiUrlPipe],
   templateUrl: './doctor-profile.component.html',
   styleUrls: ['./doctor-profile.component.css']
 })
 export class DoctorProfileComponent implements OnInit {
   private doctorService = inject(DoctorService);
+  public userService = inject(UserService);
   private referenceService = inject(ReferenceService);
   private uiService = inject(UiService);
-  private authService = inject(AuthService);
+  public authService = inject(AuthService);
   private clinicService = inject(ClinicService);
   private fb = inject(FormBuilder);
   public languageService = inject(LanguageService);
+
+  @ViewChild('avatarInput') avatarInput!: ElementRef<HTMLInputElement>;
+  public stagedAvatarFile: File | null = null;
+  public stagedAvatarPreviewUrl: string | null = null;
+
+  // Account (User) Profile state
+  public isEditingAccount = false;
+  public accountForm: FormGroup = this.fb.group({
+    fullName: ['', [Validators.required]],
+    email: ['', [Validators.required, Validators.email]],
+    phone: [''],
+    gender: ['MALE'],
+    preferredLang: ['en']
+  });
 
   public apiUrl = environment.apiUrl;
   public doctorProfile: DoctorDetailResponse | null = null;
@@ -118,8 +135,84 @@ export class DoctorProfileComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.initAccountData();
     this.loadDoctorData();
     this.loadReferences();
+  }
+
+  initAccountData(): void {
+    const user = this.authService.currentUser();
+    if (user) {
+      this.accountForm.patchValue({
+        fullName: user.fullName || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        gender: user.gender || 'MALE',
+        preferredLang: user.preferredLang || 'en'
+      });
+    }
+    this.accountForm.disable();
+  }
+
+  enableAccountEdit(): void {
+    this.isEditingAccount = true;
+    this.accountForm.enable();
+  }
+
+  cancelAccountEdit(): void {
+    this.isEditingAccount = false;
+    this.stagedAvatarFile = null;
+    this.stagedAvatarPreviewUrl = null;
+    this.initAccountData();
+  }
+
+  triggerAvatarUpload(): void {
+    if (this.avatarInput) {
+      this.avatarInput.nativeElement.click();
+    }
+  }
+
+  onAvatarSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+    if (file.size > 5 * 1024 * 1024) {
+      this.uiService.showError(this.languageService.translate('Image size should be less than 5MB.', 'حجم الصورة يجب أن يكون أقل من 5 ميجابايت.'));
+      return;
+    }
+
+    this.stagedAvatarFile = file;
+    this.stagedAvatarPreviewUrl = URL.createObjectURL(file);
+    this.isEditingAccount = true;
+    this.accountForm.enable();
+    this.uiService.showInfo(this.languageService.translate('Photo selected. Click "Save Account Info" to upload.', 'تم تحديد الصورة. اضغط "حفظ معلومات الحساب" للرفع.'));
+  }
+
+  saveAccountInfo(): void {
+    if (this.accountForm.invalid) {
+      this.accountForm.markAllAsTouched();
+      return;
+    }
+
+    this.uiService.showLoading();
+    const dto = this.accountForm.value;
+
+    this.userService.updateProfile(this.stagedAvatarFile, dto).subscribe({
+      next: (updatedUser) => {
+        this.uiService.hideLoading();
+        this.uiService.showSuccess(this.languageService.translate('Doctor user account details and avatar saved successfully!', 'تم حفظ بيانات حساب الطبيب وصورة البروفايل بنجاح!'));
+        this.isEditingAccount = false;
+        this.stagedAvatarFile = null;
+        this.stagedAvatarPreviewUrl = null;
+        this.accountForm.disable();
+      },
+      error: (err) => {
+        this.uiService.hideLoading();
+        const msg = err?.error?.message || err?.error?.error || this.languageService.translate('Failed to update account details.', 'فشل في تحديث بيانات الحساب.');
+        this.uiService.showError(msg);
+      }
+    });
   }
 
   loadReferences(): void {

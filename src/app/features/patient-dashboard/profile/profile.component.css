@@ -35,6 +35,76 @@
   flex: 1;
 }
 
+.avatar-container {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.avatar-large-img {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--teal);
+  box-shadow: 0 4px 12px rgba(29, 158, 117, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.avatar-staged {
+  border: 3px dashed #f59e0b !important;
+  animation: avatarPulse 1.8s infinite;
+}
+
+@keyframes avatarPulse {
+  0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+}
+
+.avatar-container:hover .avatar-large-img {
+  transform: scale(1.04);
+}
+
+.avatar-upload-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--teal-d);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  border: 2px solid white;
+  transition: all 0.2s ease;
+}
+
+.avatar-container:hover .avatar-upload-badge {
+  background: var(--teal);
+  transform: scale(1.15);
+}
+
+.btn-remove-avatar {
+  background: none;
+  border: none;
+  color: #ef4444;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 4px;
+}
+
+.btn-remove-avatar:hover {
+  text-decoration: underline;
+}
+
 .avatar-large {
   width: 72px;
   height: 72px;

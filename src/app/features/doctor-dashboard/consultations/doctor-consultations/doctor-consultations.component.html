@@ -23,7 +23,8 @@
              [class.active]="selectedConsultation?.consultationId === c.consultationId"
              (click)="selectConsultation(c)">
           
-          <div class="avatar-circle">
+          <img *ngIf="c.patientAvatarUrl" [src]="c.patientAvatarUrl | apiUrl" (error)="c.patientAvatarUrl = ''" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0;" [alt]="c.patientName">
+          <div *ngIf="!c.patientAvatarUrl" class="avatar-circle">
             {{ c.patientName.charAt(0).toUpperCase() }}
           </div>
           
@@ -53,7 +54,8 @@
             ⬅ {{ 'Inbox' | translate }}
           </button>
 
-          <div class="avatar-circle header-avatar">
+          <img *ngIf="selectedConsultation.patientAvatarUrl" [src]="selectedConsultation.patientAvatarUrl | apiUrl" (error)="selectedConsultation.patientAvatarUrl = ''" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0;" [alt]="selectedConsultation.patientName">
+          <div *ngIf="!selectedConsultation.patientAvatarUrl" class="avatar-circle header-avatar">
             {{ selectedConsultation.patientName.charAt(0).toUpperCase() }}
           </div>
           <div>
@@ -156,7 +158,8 @@
       <div class="sidebar-sec-scrollable">
         <!-- Patient Summary Card -->
         <div class="sidebar-patient-card text-center">
-          <div class="avatar-circle big-avatar mx-auto mb-3">
+          <img *ngIf="selectedConsultation.patientAvatarUrl" [src]="selectedConsultation.patientAvatarUrl | apiUrl" (error)="selectedConsultation.patientAvatarUrl = ''" style="width: 56px; height: 56px; border-radius: 50%; object-fit: cover;" class="mx-auto mb-3" [alt]="selectedConsultation.patientName">
+          <div *ngIf="!selectedConsultation.patientAvatarUrl" class="avatar-circle big-avatar mx-auto mb-3">
             {{ selectedConsultation.patientName.charAt(0).toUpperCase() }}
           </div>
           <h4 class="sidebar-patient-name">{{ selectedConsultation.patientName }}</h4>
