@@ -1160,7 +1160,22 @@ const translations: { [lang in Lang]: { [key: string]: string } } = {
     'All Statuses': 'All Statuses',
     'All Modes': 'All Modes',
     'In-Clinic Visit': 'In-Clinic Visit',
-    'CHATTING': 'Chatting'
+    'CHATTING': 'Chatting',
+    // System Admin Dashboard & Registries
+    'REGISTERED PATIENTS': 'REGISTERED PATIENTS',
+    'CLINIC FACILITIES': 'CLINIC FACILITIES',
+    'VERIFIED DOCTORS': 'VERIFIED DOCTORS',
+    'MONTHLY VOLUME (SAR)': 'MONTHLY VOLUME (SAR)',
+    'MOH ID': 'MOH ID',
+    'Fee': 'Fee',
+    'Verified status': 'Verified status',
+    'VERIFIED': 'VERIFIED',
+    '🚫 Deactivate': '🚫 Deactivate',
+    '✅ Activate': '✅ Activate',
+    'Active Doctor': 'Active Doctor',
+    'Inactive Status': 'Inactive Status',
+    'MOH Verified': 'MOH Verified',
+    'Stripe/Linear Admin Spec': 'Stripe/Linear Admin Spec'
   },
   ar: {
     // Database Specialties fixes
@@ -2275,6 +2290,21 @@ const translations: { [lang in Lang]: { [key: string]: string } } = {
     'All Statuses': 'جميع الحالات',
     'All Modes': 'جميع الطرق',
     'In-Clinic Visit': 'زيارة العيادة',
-    'CHATTING': 'محادثة كتابية'
+    'CHATTING': 'محادثة كتابية',
+    // System Admin Dashboard & Registries
+    'REGISTERED PATIENTS': 'المرضى المسجلون',
+    'CLINIC FACILITIES': 'العيادات والمرافق',
+    'VERIFIED DOCTORS': 'الأطباء المعتمدون',
+    'MONTHLY VOLUME (SAR)': 'الحجم الشهري (ر.س)',
+    'MOH ID': 'ترخيص الوزارة',
+    'Fee': 'الكشفية',
+    'Verified status': 'حالة الاعتماد',
+    'VERIFIED': 'معتمد',
+    '🚫 Deactivate': '🚫 تعطيل',
+    '✅ Activate': '✅ تفعيل',
+    'Active Doctor': 'طبيب نشط',
+    'Inactive Status': 'حالة غير نشطة',
+    'MOH Verified': 'معتمد من وزارة الصحة',
+    'Stripe/Linear Admin Spec': 'مواصفات لوحة التحكم المتقدمة'
   }
 };

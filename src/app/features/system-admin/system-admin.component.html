@@ -3,34 +3,34 @@
   <!-- KPI Summary Cards Grid -->
   <div class="kpi-summary-grid">
     <div class="kpi-card">
-      <div class="kpi-label">{{ 'Registered Patients' | translate }}</div>
+      <div class="kpi-label">{{ 'REGISTERED PATIENTS' | translate }}</div>
       <div class="kpi-value-row">
-        <span class="kpi-value">2,840</span>
-        <span class="trend-badge trend-up">↑ 12.4%</span>
+        <span class="kpi-value">{{ kpiData.registeredPatients | number }}</span>
+        <span class="trend-badge trend-up">↑ {{ kpiData.patientTrend }}</span>
       </div>
     </div>
 
     <div class="kpi-card">
-      <div class="kpi-label">{{ 'Clinic Facilities' | translate }}</div>
+      <div class="kpi-label">{{ 'CLINIC FACILITIES' | translate }}</div>
       <div class="kpi-value-row">
-        <span class="kpi-value">142</span>
-        <span class="trend-badge trend-up">↑ 8.1%</span>
+        <span class="kpi-value">{{ kpiData.clinicFacilities | number }}</span>
+        <span class="trend-badge trend-up">↑ {{ kpiData.clinicTrend }}</span>
       </div>
     </div>
 
     <div class="kpi-card">
-      <div class="kpi-label">{{ 'Verified Doctors' | translate }}</div>
+      <div class="kpi-label">{{ 'VERIFIED DOCTORS' | translate }}</div>
       <div class="kpi-value-row">
-        <span class="kpi-value">580</span>
-        <span class="trend-badge trend-up">↑ 15.3%</span>
+        <span class="kpi-value">{{ kpiData.verifiedDoctors | number }}</span>
+        <span class="trend-badge trend-up">↑ {{ kpiData.doctorTrend }}</span>
       </div>
     </div>
 
     <div class="kpi-card">
-      <div class="kpi-label">{{ 'Monthly Volume (SAR)' | translate }}</div>
+      <div class="kpi-label">{{ 'MONTHLY VOLUME (SAR)' | translate }}</div>
       <div class="kpi-value-row">
-        <span class="kpi-value">184.2K</span>
-        <span class="trend-badge trend-up">↑ 22.8%</span>
+        <span class="kpi-value">{{ formatCurrencyShort(kpiData.monthlyVolumeSar) }}</span>
+        <span class="trend-badge trend-up">↑ {{ kpiData.volumeTrend }}</span>
       </div>
     </div>
   </div>
