@@ -149,12 +149,13 @@ export class PatientsComponent implements OnInit {
 
   loadDoctorPatients(): void {
     this.uiService.showLoading();
-    const map = new Map<string, string>();
+    const map = new Map<string, { patientName: string; avatarUrl?: string }>();
 
     const updateList = () => {
-      this.patientList = Array.from(map.entries()).map(([patientId, patientName]) => ({
+      this.patientList = Array.from(map.entries()).map(([patientId, item]) => ({
         patientId,
-        patientName
+        patientName: item.patientName,
+        avatarUrl: item.avatarUrl
       }));
       this.uiService.hideLoading();
     };
@@ -165,7 +166,11 @@ export class PatientsComponent implements OnInit {
         if (apps && Array.isArray(apps)) {
           for (const app of apps) {
             if (app.patientId && app.patientName) {
-              map.set(app.patientId, app.patientName);
+              const existing = map.get(app.patientId);
+              map.set(app.patientId, {
+                patientName: app.patientName,
+                avatarUrl: app.patientAvatarUrl || existing?.avatarUrl
+              });
             }
           }
           updateList();
@@ -180,7 +185,11 @@ export class PatientsComponent implements OnInit {
         const consultations = page.content || [];
         for (const c of consultations) {
           if (c.patientId && c.patientName) {
-            map.set(c.patientId, c.patientName);
+            const existing = map.get(c.patientId);
+            map.set(c.patientId, {
+              patientName: c.patientName,
+              avatarUrl: c.patientAvatarUrl || existing?.avatarUrl
+            });
           }
         }
         updateList();
@@ -199,7 +208,11 @@ export class PatientsComponent implements OnInit {
                   const consultations = page.content || [];
                   for (const c of consultations) {
                     if (c.patientId && c.patientName) {
-                      map.set(c.patientId, c.patientName);
+                      const existing = map.get(c.patientId);
+                      map.set(c.patientId, {
+                        patientName: c.patientName,
+                        avatarUrl: c.patientAvatarUrl || existing?.avatarUrl
+                      });
                     }
                   }
                   updateList();
@@ -219,6 +232,7 @@ export class PatientsComponent implements OnInit {
     this.selectedPatientId = typeof patientId === 'string' ? patientId : (patientId?.value || '');
     const opt = this.patientList.find(p => p.patientId === this.selectedPatientId);
     this.selectedPatientName = opt ? opt.patientName : '';
+    this.selectedPatientAvatarUrl = opt?.avatarUrl || '';
 
     if (!this.selectedPatientId) {
       this.clearPatientDetails();
@@ -233,6 +247,7 @@ export class PatientsComponent implements OnInit {
     this.selectedPatientId = val;
     const opt = this.patientList.find(p => p.patientId === val);
     this.selectedPatientName = opt ? opt.patientName : '';
+    this.selectedPatientAvatarUrl = opt?.avatarUrl || '';
 
     if (!val) {
       this.clearPatientDetails();

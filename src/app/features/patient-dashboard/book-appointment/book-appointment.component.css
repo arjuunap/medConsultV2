@@ -203,6 +203,16 @@
   border-color: #E5E7EB;
 }
 
+.doctor-avatar-img {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+  flex-shrink: 0;
+  display: block;
+}
+
 .doctor-avatar-circle {
   width: 52px;
   height: 52px;

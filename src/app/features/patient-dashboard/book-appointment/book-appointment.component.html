@@ -61,7 +61,8 @@
              [class.selected]="wizardForm.get('doctorId')?.value === doc.doctorId" 
              [class.already-booked]="activeBookedDoctorIds.includes(doc.doctorId)"
              (click)="!activeBookedDoctorIds.includes(doc.doctorId) && selectDoctor(doc.doctorId)">
-          <div class="doctor-avatar-circle" [style.background-color]="activeBookedDoctorIds.includes(doc.doctorId) ? '#F3F4F6' : getAvatarBg(doc.fullName)" [style.color]="activeBookedDoctorIds.includes(doc.doctorId) ? '#9CA3AF' : getAvatarColor(doc.fullName)">
+          <img *ngIf="doc.avatarUrl" [src]="doc.avatarUrl | apiUrl" (error)="doc.avatarUrl = ''" class="doctor-avatar-img" [alt]="doc.fullName">
+          <div *ngIf="!doc.avatarUrl" class="doctor-avatar-circle" [style.background-color]="activeBookedDoctorIds.includes(doc.doctorId) ? '#F3F4F6' : getAvatarBg(doc.fullName)" [style.color]="activeBookedDoctorIds.includes(doc.doctorId) ? '#9CA3AF' : getAvatarColor(doc.fullName)">
             {{ getInitials(doc.fullName) }}
           </div>
           <div class="doctor-summary-info">
@@ -208,7 +209,10 @@
           <!-- Doctor info line -->
           <div class="receipt-line">
             <span class="label">👨‍⚕️ {{ 'Doctor' | translate }}</span>
-            <strong class="value">{{ getDoctorDisplayName(getSelectedDoctor()) }}</strong>
+            <div class="d-flex align-center gap-2">
+              <img *ngIf="getSelectedDoctor()?.avatarUrl" [src]="getSelectedDoctor()?.avatarUrl | apiUrl" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;" [alt]="getDoctorDisplayName(getSelectedDoctor())">
+              <strong class="value">{{ getDoctorDisplayName(getSelectedDoctor()) }}</strong>
+            </div>
           </div>
           <!-- Clinic info line -->
           <div class="receipt-line border-top pt-2 mt-2">

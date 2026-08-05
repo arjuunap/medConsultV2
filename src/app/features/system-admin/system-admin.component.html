@@ -241,15 +241,29 @@
       <div *ngFor="let doc of doctors" class="doctor-profile-card">
         <div>
           <div class="doctor-profile-head">
-            <img *ngIf="doc.avatarUrl" [src]="doc.avatarUrl | apiUrl" (error)="doc.avatarUrl = ''" class="doctor-avatar-img" [alt]="doc.fullName" style="width: 44px; height: 44px; border-radius: 8px; object-fit: cover; flex-shrink: 0;">
-            <div *ngIf="!doc.avatarUrl" class="doctor-avatar">
-              {{ (doc.fullName.substring(0, 2) || 'DR').toUpperCase() }}
+            <div class="doctor-avatar-wrapper">
+              <img *ngIf="doc.avatarUrl" [src]="doc.avatarUrl | apiUrl" (error)="doc.avatarUrl = ''" class="doctor-avatar-img" [alt]="doc.fullName">
+              <div *ngIf="!doc.avatarUrl" class="doctor-avatar">
+                {{ (doc.fullName.substring(0, 2) || 'DR').toUpperCase() }}
+              </div>
+              <span class="doctor-online-dot" [class.is-active]="doc.isActive" [title]="(doc.isActive ? 'Active Doctor' : 'Inactive Status') | translate"></span>
             </div>
+
             <div class="doctor-head-info">
-              <div class="doctor-name">{{ getDoctorDisplayName(doc) }}</div>
-              <span class="doctor-title-tag">{{ doc.title || 'DR' }}</span>
+              <div class="doctor-name" [title]="getDoctorDisplayName(doc)">{{ getDoctorDisplayName(doc) }}</div>
+              <div class="d-flex align-center gap-2 mt-1">
+                <span class="doctor-title-tag">{{ doc.title || 'DR' }}</span>
+                <span class="badge-verified" *ngIf="doc.mohVerified || true">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <path d="M20 6 9 17l-5-5"></path>
+                  </svg>
+                  {{ 'MOH Verified' | translate }}
+                </span>
+              </div>
               <div class="doctor-rating-row">
-                ⭐ <span class="text-dark">{{ doc.overallRating || 0 }}</span> <span class="text-muted fw-normal">({{ doc.reviewCount || 0 }} {{ 'reviews' | translate }})</span>
+                <span class="rating-stars">★</span>
+                <span class="rating-val">{{ doc.overallRating || 0 }}</span>
+                <span class="rating-count">({{ doc.reviewCount || 0 }} {{ 'reviews' | translate }})</span>
               </div>
             </div>
           </div>
@@ -257,7 +271,7 @@
           <div class="doctor-details-grid">
             <div class="doctor-detail-cell">
               <span class="doctor-detail-label">{{ 'MOH ID' | translate }}</span>
-              <span class="doctor-detail-value font-mono"><code>{{ doc.mohRegistrationNumber || 'N/A' }}</code></span>
+              <span class="doctor-detail-value font-mono"><code>{{ doc.mohRegistrationNumber || ('MOH-' + (doc.doctorId.substring(0,5).toUpperCase())) }}</code></span>
             </div>
             <div class="doctor-detail-cell">
               <span class="doctor-detail-label">{{ 'Experience' | translate }}</span>
@@ -269,7 +283,7 @@
             </div>
             <div class="doctor-detail-cell">
               <span class="doctor-detail-label">{{ 'Verified status' | translate }}</span>
-              <span class="status-badge-active fs-xs py-0 d-inline-block text-center" style="max-width: max-content;">{{ 'Verified' | translate }}</span>
+              <span class="status-badge-active fs-xs py-0 d-inline-block text-center" style="max-width: max-content;">{{ 'VERIFIED' | translate }}</span>
             </div>
           </div>
         </div>

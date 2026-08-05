@@ -14,11 +14,12 @@ import { forkJoin, map, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { LanguageService } from '../../../core/services/language.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { ApiUrlPipe } from '../../../shared/pipes/api-url.pipe';
 
 @Component({
   selector: 'app-book-appointment',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterLink, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterLink, TranslatePipe, ApiUrlPipe],
   templateUrl: './book-appointment.component.html',
   styleUrls: ['./book-appointment.component.css']
 })
