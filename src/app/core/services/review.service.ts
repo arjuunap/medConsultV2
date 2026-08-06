@@ -38,6 +38,7 @@ export interface DoctorReviewResponse {
   doctorReply?: string;
   doctorRepliedAt?: string;
   createdAt: string;
+  patientAvatarUrl?: string;
 }
 
 export interface ClinicReviewRequest {
@@ -65,6 +66,7 @@ export interface ClinicReviewResponse {
   isPublished: boolean;
   isAnonymous: boolean;
   createdAt: string;
+  patientAvatarUrl?: string;
 }
 
 @Injectable({

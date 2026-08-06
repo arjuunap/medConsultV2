@@ -189,6 +189,57 @@
             </div>
           </div>
 
+          <!-- Clinic Reviews Section -->
+          <div class="reviews-section-wrapper">
+            <div class="reviews-header" (click)="toggleClinicReviews()">
+              <h3 class="section-subtitle">
+                <svg class="subtitle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                {{ 'Clinic Reviews' | translate }}
+                <span class="reviews-count-badge" *ngIf="clinicReviews.length > 0">({{ clinicReviews.length }})</span>
+              </h3>
+              <span class="expand-caret" [class.rotated]="showClinicReviews">▼</span>
+            </div>
+            
+            <!-- Reviews list -->
+            <div class="reviews-list-container" [class.expanded]="showClinicReviews">
+              <div *ngIf="clinicReviews.length === 0" class="no-reviews-state">
+                <span class="no-reviews-icon">💬</span>
+                <p class="no-reviews-text">{{ 'No reviews recorded for this clinic yet.' | translate }}</p>
+              </div>
+              
+              <div class="review-comment-card" *ngFor="let rev of clinicReviews">
+                <div class="review-comment-header">
+                  <div class="reviewer-meta">
+                    <div class="reviewer-avatar-wrapper">
+                      <img *ngIf="!rev.isAnonymous && rev.patientAvatarUrl" [src]="rev.patientAvatarUrl | apiUrl" (error)="rev.patientAvatarUrl = ''" class="reviewer-avatar-img" [alt]="rev.patientName">
+                      <span *ngIf="rev.isAnonymous || !rev.patientAvatarUrl" class="reviewer-avatar">
+                        {{ getInitials(rev.isAnonymous ? 'Anonymous' : rev.patientName) }}
+                      </span>
+                    </div>
+                    <div>
+                      <strong class="reviewer-name">
+                        {{ rev.isAnonymous ? ('Anonymous Patient' | translate) : rev.patientName }}
+                        <span class="my-review-tag" *ngIf="rev.patientId === patientId">({{ 'You' | translate }})</span>
+                      </strong>
+                      <span class="review-date">{{ rev.createdAt | date:'mediumDate' }}</span>
+                    </div>
+                  </div>
+                  <div class="review-rating-stars">
+                    <span class="star" *ngFor="let star of [1, 2, 3, 4, 5]" [class.filled]="rev.rating >= star">★</span>
+                  </div>
+                </div>
+                <p class="review-text-content" *ngIf="rev.reviewText">{{ rev.reviewText }}</p>
+                <div class="review-subratings" *ngIf="rev.ratingCleanliness || rev.ratingStaff || rev.ratingWait">
+                  <span class="subrating-tag" *ngIf="rev.ratingCleanliness">✨ {{ 'Cleanliness:' | translate }} {{ rev.ratingCleanliness }}/5</span>
+                  <span class="subrating-tag" *ngIf="rev.ratingStaff">🤝 {{ 'Staff:' | translate }} {{ rev.ratingStaff }}/5</span>
+                  <span class="subrating-tag" *ngIf="rev.ratingWait">⏳ {{ 'Wait Time:' | translate }} {{ rev.ratingWait }}/5</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Branches Selector Section -->
           <div class="branches-section-wrapper">
             <h3 class="section-subtitle">

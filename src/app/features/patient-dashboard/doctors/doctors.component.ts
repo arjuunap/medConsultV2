@@ -9,11 +9,14 @@ import { ReferenceService } from '../../../core/services/reference.service';
 import { ClinicService } from '../../../core/services/clinic.service';
 import { UiService } from '../../../core/services/ui.service';
 import { LanguageService } from '../../../core/services/language.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { PatientService } from '../../../core/services/patient.service';
 import { TranslatePipe, TranslateObjPipe } from '../../../shared/pipes/translate.pipe';
 import { ApiUrlPipe } from '../../../shared/pipes/api-url.pipe';
 import { SpecialtyResponseDto, LanguageResponseDto, CityResponseDto } from '../../../core/models/reference.model';
 import { DoctorResponseDto, DoctorDetailResponse } from '../../../core/models/doctor.model';
 import { ClinicResponseDto } from '../../../core/models/clinic.model';
+import { ReviewService, DoctorReviewResponse } from '../../../core/services/review.service';
 
 import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
 
@@ -41,6 +44,9 @@ export class DoctorsComponent implements OnInit {
   private uiService = inject(UiService);
   public languageService = inject(LanguageService);
   private router = inject(Router);
+  private reviewService = inject(ReviewService);
+  private authService = inject(AuthService);
+  private patientService = inject(PatientService);
 
   // References lists
   public specialties: SpecialtyResponseDto[] = [];
@@ -64,6 +70,7 @@ export class DoctorsComponent implements OnInit {
   public selectedLanguageId: string = '';
   public minExperience: number = 0;
   public maxFee: number = 500;
+  public showAdvancedFilters: boolean = false;
 
   get specialtyOptions() {
     return [
@@ -111,9 +118,21 @@ export class DoctorsComponent implements OnInit {
   public showDetailModal: boolean = false;
   public detailSpecialties: SpecialtyResponseDto[] = [];
   public detailLanguages: LanguageResponseDto[] = [];
+  public doctorReviews: DoctorReviewResponse[] = [];
+  public patientId: string = '';
 
   ngOnInit(): void {
     this.loadAllData();
+    this.loadPatientProfile();
+  }
+
+  loadPatientProfile(): void {
+    if (this.authService.isLoggedIn() && this.authService.currentUser()?.role === 'PATIENT') {
+      this.patientService.getMyProfile().subscribe({
+        next: (p) => this.patientId = p.patientId,
+        error: () => { }
+      });
+    }
   }
 
   loadAllData(): void {
@@ -281,12 +300,14 @@ export class DoctorsComponent implements OnInit {
     forkJoin({
       profile: this.doctorService.getDoctorProfile(doctorId),
       specialties: this.referenceService.getAllSpecialties().pipe(catchError(() => of([]))),
-      languages: this.referenceService.getAllLanguages().pipe(catchError(() => of([])))
+      languages: this.referenceService.getAllLanguages().pipe(catchError(() => of([]))),
+      reviews: this.reviewService.getDoctorReviews(doctorId).pipe(catchError(() => of({ content: [], totalElements: 0 } as any)))
     }).subscribe({
       next: (res) => {
         this.selectedDoctorDetail = res.profile;
         this.detailSpecialties = res.specialties;
         this.detailLanguages = res.languages;
+        this.doctorReviews = res.reviews && res.reviews.content ? res.reviews.content : [];
 
         // Enrich clinics assigned
         if (this.selectedDoctorDetail && this.selectedDoctorDetail.clinics && this.selectedDoctorDetail.clinics.length > 0) {
@@ -344,6 +365,10 @@ export class DoctorsComponent implements OnInit {
     this.router.navigate(['/patient/book-appointment'], { queryParams: { doctorId } });
   }
 
+  toggleAdvancedFilters(): void {
+    this.showAdvancedFilters = !this.showAdvancedFilters;
+  }
+
   // Helpers
   getDoctorDisplayName(d: any): string {
     if (!d) return '';
@@ -371,5 +396,14 @@ export class DoctorsComponent implements OnInit {
   getCityName(cityId: string): string {
     const c = this.cities.find(x => x.cityId === cityId);
     return c ? this.languageService.translate(c.nameEn, c.nameAr) : '';
+  }
+
+  getInitials(name: string): string {
+    if (!name) return 'PT';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
   }
 }

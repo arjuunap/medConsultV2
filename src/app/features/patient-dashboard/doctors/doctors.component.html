@@ -1,11 +1,19 @@
 <div class="doctors-dashboard-container">
-  <!-- Page Title & Header -->
-  <div class="dashboard-header-block mb-4">
-    <h2 class="dashboard-title">{{ 'Browse Doctors' | translate }}</h2>
-    <p class="dashboard-subtitle">{{ 'Find and book consultations with top medical experts' | translate }}</p>
+  
+  <!-- Premium Header Banner -->
+  <div class="dashboard-header-banner mb-4">
+    <div class="banner-overlay"></div>
+    <div class="banner-content">
+      <div class="banner-badge">
+        <span class="badge-icon">👨‍⚕️</span>
+        <span class="badge-text">{{ 'Medical Specialist Directory' | translate }}</span>
+      </div>
+      <h2 class="dashboard-title">{{ 'Browse Doctors' | translate }}</h2>
+      <p class="dashboard-subtitle">{{ 'Find and book consultations with top medical experts near you' | translate }}</p>
+    </div>
   </div>
 
-  <!-- Filters Panel -->
+  <!-- Premium Filters Panel -->
   <div class="filters-card-wrapper mb-4">
     <div class="filters-main-grid">
       <!-- Search Query -->
@@ -57,8 +65,18 @@
       </div>
     </div>
 
-    <!-- Collapsible Advanced Filters -->
-    <div class="advanced-filters-panel mt-3 pt-3 border-top">
+    <!-- Collapsible Advanced Filters Trigger -->
+    <div class="advanced-toggle-wrapper">
+      <button class="advanced-toggle-btn" (click)="toggleAdvancedFilters()">
+        <span class="toggle-btn-text">
+          ⚙️ {{ 'Advanced Filters' | translate }}
+        </span>
+        <span class="toggle-caret" [class.rotated]="showAdvancedFilters">▼</span>
+      </button>
+    </div>
+
+    <!-- Collapsible Advanced Filters Panel -->
+    <div class="advanced-filters-panel" [class.expanded]="showAdvancedFilters">
       <div class="filters-advanced-grid">
         <!-- Language Select -->
         <div class="filter-field">
@@ -75,22 +93,39 @@
 
         <!-- Experience Slider -->
         <div class="filter-field">
-          <label class="filter-label">{{ 'Min Experience' | translate }} ({{ minExperience }} {{ 'Years' | translate
-            }})</label>
-          <input type="range" min="0" max="30" [(ngModel)]="minExperience" (input)="applyFilters()"
-            class="filter-range-input">
+          <label class="filter-label">
+            💼 {{ 'Min Experience' | translate }} 
+            <span class="slider-val">{{ minExperience }} {{ 'Years' | translate }}</span>
+          </label>
+          <div class="slider-container">
+            <input type="range" min="0" max="30" [(ngModel)]="minExperience" (input)="applyFilters()"
+              class="filter-range-input">
+            <div class="slider-limits">
+              <span>0</span>
+              <span>30</span>
+            </div>
+          </div>
         </div>
 
         <!-- Max Fee Slider -->
         <div class="filter-field">
-          <label class="filter-label">{{ 'Max Consultation Fee' | translate }} ({{ maxFee }} SAR)</label>
-          <input type="range" min="50" max="500" step="10" [(ngModel)]="maxFee" (input)="applyFilters()"
-            class="filter-range-input">
+          <label class="filter-label">
+            💵 {{ 'Max Consultation Fee' | translate }} 
+            <span class="slider-val">{{ maxFee }} SAR</span>
+          </label>
+          <div class="slider-container">
+            <input type="range" min="50" max="500" step="10" [(ngModel)]="maxFee" (input)="applyFilters()"
+              class="filter-range-input">
+            <div class="slider-limits">
+              <span>50 SAR</span>
+              <span>500 SAR</span>
+            </div>
+          </div>
         </div>
 
         <!-- Reset Button -->
         <div class="filter-field d-flex align-end justify-end">
-          <button class="btn btn-outline w-100" (click)="resetFilters()">
+          <button class="btn btn-outline btn-reset-filters w-100" (click)="resetFilters()">
             🔄 {{ 'Reset Filters' | translate }}
           </button>
         </div>
@@ -102,13 +137,18 @@
   <div class="doctors-list-grid" *ngIf="filteredDoctors.length > 0">
     <div class="doctor-display-card" *ngFor="let doc of filteredDoctors">
       <div class="card-upper-section">
-        <!-- Left Side: Avatar & Stat Details -->
+        <!-- Left Side: Avatar & Fee Badge -->
         <div class="card-left-identity">
-          <img *ngIf="doc.avatarUrl" [src]="doc.avatarUrl | apiUrl" (error)="doc.avatarUrl = ''" class="doctor-circle-avatar-img" [alt]="getDoctorDisplayName(doc)">
-          <div *ngIf="!doc.avatarUrl" class="doctor-circle-avatar" [style.background-color]="doc.avatarBg" [style.color]="doc.avatarColor">
-            {{ doc.initials }}
+          <div class="doctor-avatar-wrapper">
+            <img *ngIf="doc.avatarUrl" [src]="doc.avatarUrl | apiUrl" (error)="doc.avatarUrl = ''" class="doctor-circle-avatar-img" [alt]="getDoctorDisplayName(doc)">
+            <div *ngIf="!doc.avatarUrl" class="doctor-circle-avatar" [style.background-color]="doc.avatarBg" [style.color]="doc.avatarColor">
+              {{ doc.initials }}
+            </div>
           </div>
-          <span class="doctor-fee-badge">SAR {{ doc.consultationFeeSar || 150 }}</span>
+          <span class="doctor-fee-badge">
+            <span class="fee-icon">💵</span>
+            <span class="fee-val">{{ doc.consultationFeeSar || 150 }} SAR</span>
+          </span>
         </div>
 
         <!-- Right Side: Profile Details -->
@@ -127,21 +167,23 @@
 
           <!-- Overall ratings -->
           <div class="doctor-ratings-row mt-2">
-            <span class="stars-indicator">⭐ {{ doc.overallRating || 0 }}</span>
-            <span class="reviews-indicator">({{ doc.reviewCount || 0 }} {{ 'reviews' | translate }})</span>
+            <div class="ratings-badge-pill">
+              <span class="star-icon">⭐</span>
+              <span class="rating-val">{{ doc.overallRating || 0 }}</span>
+              <span class="reviews-count">({{ doc.reviewCount || 0 }} {{ 'reviews' | translate }})</span>
+            </div>
           </div>
 
           <!-- Quick facts -->
           <div class="doctor-specs-list mt-3">
             <div class="spec-line">
-              <span class="icon">💼</span>
-              <span>{{ 'Experience:' | translate }} <strong>{{ doc.experienceYears || 0 }} {{ 'Years' | translate
-                  }}</strong></span>
+              <span class="icon-span">💼</span>
+              <span class="spec-text">{{ 'Experience:' | translate }} <strong>{{ doc.experienceYears || 0 }} {{ 'Years' | translate }}</strong></span>
             </div>
             <div class="spec-line" *ngIf="doc.languageIds && doc.languageIds.length > 0">
-              <span class="icon">🌐</span>
-              <span class="languages-badges-list">
-                <span class="lang-text" *ngFor="let langId of doc.languageIds; let last = last">
+              <span class="icon-span">🌐</span>
+              <span class="spec-text truncate">
+                <span *ngFor="let langId of doc.languageIds; let last = last">
                   {{ getLanguageName(langId) }}{{ !last ? ', ' : '' }}
                 </span>
               </span>
@@ -152,10 +194,10 @@
 
       <!-- Action Buttons Footer -->
       <div class="card-actions-footer">
-        <button class="btn btn-outline flex-1" (click)="viewDoctorDetails(doc.doctorId)">
-          📄 {{ 'View Profile' | translate }}
+        <button class="btn btn-outline btn-view-profile flex-1" (click)="viewDoctorDetails(doc.doctorId)">
+          👤 {{ 'View Profile' | translate }}
         </button>
-        <button class="btn btn-primary flex-1 bg-teal border-none" (click)="bookAppointment(doc.doctorId)">
+        <button class="btn btn-primary btn-book flex-1" (click)="bookAppointment(doc.doctorId)">
           📅 {{ 'Book Consultation' | translate }}
         </button>
       </div>
@@ -165,11 +207,10 @@
   <!-- Empty State Alert Card -->
   <div class="no-doctors-alert-card" *ngIf="filteredDoctors.length === 0">
     <div class="alert-content">
-      <span class="alert-icon">🔍</span>
+      <div class="alert-icon-wrapper">🔍</div>
       <h3 class="alert-title">{{ 'No Doctors Found' | translate }}</h3>
-      <p class="alert-text">{{ 'Try adjusting your search query or reset filters to view all specialists.' | translate
-        }}</p>
-      <button class="btn btn-primary bg-teal mt-3" (click)="resetFilters()">
+      <p class="alert-text">{{ 'Try adjusting your search filters or click below to clear all preferences.' | translate }}</p>
+      <button class="btn btn-primary btn-reset-large mt-3" (click)="resetFilters()">
         🔄 {{ 'Show All Doctors' | translate }}
       </button>
     </div>
@@ -180,82 +221,66 @@
 <div class="modal-backdrop-overlay" *ngIf="showDetailModal && selectedDoctorDetail" (click)="closeDetailModal()">
   <div class="modal-card" (click)="$event.stopPropagation()" style="max-width: 650px;">
     <!-- Modal Header -->
-    <div class="modal-header d-flex justify-between align-center bg-teal text-white p-3">
+    <div class="modal-header d-flex justify-between align-center p-3">
       <h3 class="modal-title m-0 text-white">👨‍⚕️ {{ 'Doctor Details' | translate }}</h3>
-      <button class="btn-close-modal" (click)="closeDetailModal()"
-        style="color: white; background: none; border: none; font-size: 1.25rem; cursor: pointer;">✕</button>
+      <button class="btn-close-modal" (click)="closeDetailModal()">✕</button>
     </div>
 
     <!-- Modal Body -->
-    <div class="modal-body p-4" style="max-height: 70vh; overflow-y: auto;">
+    <div class="modal-body p-4">
       <!-- Profile Header Summary -->
       <div class="profile-header-summary d-flex gap-3 align-center mb-4">
-        <img *ngIf="selectedDoctorDetail.doctor?.avatarUrl" [src]="selectedDoctorDetail.doctor.avatarUrl | apiUrl" (error)="selectedDoctorDetail.doctor.avatarUrl = ''" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; flex-shrink: 0;" [alt]="getDoctorDisplayName(selectedDoctorDetail.doctor)">
-        <div *ngIf="!selectedDoctorDetail.doctor?.avatarUrl" class="doctor-initials-avatar-large"
-          style="width: 70px; height: 70px; border-radius: 50%; background: #E1F5EE; color: #085041; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700;">
-          {{ selectedDoctorDetail.doctor.fullName ? selectedDoctorDetail.doctor.fullName.substring(0,2).toUpperCase() :
-          'DR' }}
+        <img *ngIf="selectedDoctorDetail.doctor.avatarUrl" [src]="selectedDoctorDetail.doctor.avatarUrl | apiUrl" (error)="selectedDoctorDetail.doctor.avatarUrl = ''" class="modal-profile-img" [alt]="getDoctorDisplayName(selectedDoctorDetail.doctor)">
+        <div *ngIf="!selectedDoctorDetail.doctor.avatarUrl" class="doctor-initials-avatar-large">
+          {{ selectedDoctorDetail.doctor.fullName ? selectedDoctorDetail.doctor.fullName.substring(0,2).toUpperCase() : 'DR' }}
         </div>
-        <div>
-          <h3 class="m-0" style="color: var(--teal); font-weight: 700;">{{
-            getDoctorDisplayName(selectedDoctorDetail.doctor) }}</h3>
-          <div class="d-flex align-center gap-2 mt-1">
+        <div class="modal-meta-details">
+          <h3 class="m-0 doc-modal-title">{{ getDoctorDisplayName(selectedDoctorDetail.doctor) }}</h3>
+          <div class="d-flex align-center gap-2 mt-1 flex-wrap">
             <span class="badge badge-teal" *ngFor="let spec of selectedDoctorDetail.specialties">
               {{ spec | translateObj:'name' }}
             </span>
           </div>
           <div class="ratings-stars mt-1 fs-sm">
-            ⭐ {{ selectedDoctorDetail.doctor?.overallRating || 0 }} ({{ selectedDoctorDetail.doctor?.reviewCount || 0 }}
-            {{ 'reviews' | translate }})
+            ⭐ <strong>{{ selectedDoctorDetail.doctor.overallRating || 0 }}</strong> ({{ selectedDoctorDetail.doctor.reviewCount || 0 }} {{ 'reviews' | translate }})
           </div>
         </div>
       </div>
 
       <!-- Quick Metrics Grid -->
-      <div class="metrics-grid mb-4"
-        style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; background: #F9FAFB; padding: 12px 16px; border-radius: 8px;">
+      <div class="metrics-grid mb-4">
         <div class="metric-item text-center">
-          <span style="font-size: 1.1rem; font-weight: 700; color: #374151; display: block;">{{
-            selectedDoctorDetail.doctor?.experienceYears || 0 }} Yrs</span>
-          <span style="font-size: 0.75rem; color: #6B7280;">{{ 'Experience' | translate }}</span>
+          <span class="metric-val">{{ selectedDoctorDetail.doctor.experienceYears || 0 }} {{ 'Yrs' | translate }}</span>
+          <span class="metric-lbl">{{ 'Experience' | translate }}</span>
         </div>
         <div class="metric-item text-center border-left border-right">
-          <span style="font-size: 1.1rem; font-weight: 700; color: #10B981; display: block;">{{
-            selectedDoctorDetail.doctor?.consultationFeeSar || 150 }} SAR</span>
-          <span style="font-size: 0.75rem; color: #6B7280;">{{ 'Consultation Fee' | translate }}</span>
+          <span class="metric-val text-success">{{ selectedDoctorDetail.doctor.consultationFeeSar || 150 }} SAR</span>
+          <span class="metric-lbl">{{ 'Consultation Fee' | translate }}</span>
         </div>
         <div class="metric-item text-center">
-          <span style="font-size: 1.1rem; font-weight: 700; color: #3B82F6; display: block;">{{
-            selectedDoctorDetail.doctor?.mohVerified ? '✓ Verified' : 'Pending' }}</span>
-          <span style="font-size: 0.75rem; color: #6B7280;">{{ 'MOH License' | translate }}</span>
+          <span class="metric-val text-primary">{{ selectedDoctorDetail.doctor.mohVerified ? ('Verified' | translate) : ('Pending' | translate) }}</span>
+          <span class="metric-lbl">{{ 'MOH License' | translate }}</span>
         </div>
       </div>
 
       <!-- Profile Bio Section -->
-      <div class="bio-section mb-4" *ngIf="selectedDoctorDetail.doctor?.bioEn || selectedDoctorDetail.doctor?.bioAr">
-        <h4 style="border-bottom: 2px solid #E5E7EB; padding-bottom: 6px; font-weight: 700; color: #374151;">📖 {{
-          'Professional Biography' | translate }}</h4>
-        <p style="color: #4B5563; font-size: 0.9rem; line-height: 1.5; white-space: pre-line;">
-          {{ languageService.isArabic ? (selectedDoctorDetail.doctor.bioAr || selectedDoctorDetail.doctor.bioEn) :
-          (selectedDoctorDetail.doctor.bioEn || selectedDoctorDetail.doctor.bioAr) }}
+      <div class="bio-section mb-4" *ngIf="selectedDoctorDetail.doctor.bioEn || selectedDoctorDetail.doctor.bioAr">
+        <h4 class="modal-section-title">📖 {{ 'Professional Biography' | translate }}</h4>
+        <p class="modal-bio-text">
+          {{ languageService.isArabic ? (selectedDoctorDetail.doctor.bioAr || selectedDoctorDetail.doctor.bioEn) : (selectedDoctorDetail.doctor.bioEn || selectedDoctorDetail.doctor.bioAr) }}
         </p>
       </div>
 
       <!-- Assigned Clinics Section -->
       <div class="clinics-section mb-4" *ngIf="selectedDoctorDetail.clinics && selectedDoctorDetail.clinics.length > 0">
-        <h4 style="border-bottom: 2px solid #E5E7EB; padding-bottom: 6px; font-weight: 700; color: #374151;">🏥 {{
-          'Assigned Clinics & Locations' | translate }}</h4>
-        <div style="display: flex; flex-direction: column; gap: 8px;" class="mt-2">
-          <div *ngFor="let cl of selectedDoctorDetail.clinics"
-            style="display: flex; justify-content: space-between; align-items: center; background: white; border: 1px solid #E5E7EB; padding: 10px 14px; border-radius: 6px;">
-            <div>
-              <strong style="color: #374151;">{{ languageService.isArabic ? (cl.clinicNameAr || cl.clinicNameEn) :
-                (cl.clinicNameEn || cl.clinicNameAr) }}</strong>
-              <span style="display: block; font-size: 0.75rem; color: #6B7280;">📍 {{ languageService.isArabic ?
-                (cl.branchNameAr || cl.branchNameEn) : (cl.branchNameEn || cl.branchNameAr) }}</span>
+        <h4 class="modal-section-title">🏥 {{ 'Assigned Clinics & Locations' | translate }}</h4>
+        <div class="assigned-clinics-list mt-2">
+          <div *ngFor="let cl of selectedDoctorDetail.clinics" class="clinic-location-row">
+            <div class="clinic-loc-info">
+              <strong class="clinic-title">{{ languageService.isArabic ? (cl.clinicNameAr || cl.clinicNameEn) : (cl.clinicNameEn || cl.clinicNameAr) }}</strong>
+              <span class="clinic-branch">📍 {{ languageService.isArabic ? (cl.branchNameAr || cl.branchNameEn) : (cl.branchNameEn || cl.branchNameAr) }}</span>
             </div>
-            <span class="badge" [class.badge-teal]="cl.isPrimary"
-              style="font-size: 0.7rem; padding: 4px 8px; border-radius: 4px;">
+            <span class="badge" [class.badge-teal]="cl.isPrimary" [class.badge-light]="!cl.isPrimary">
               {{ cl.isPrimary ? ('Primary Clinic' | translate) : ('Secondary' | translate) }}
             </span>
           </div>
@@ -263,11 +288,10 @@
       </div>
 
       <!-- Spoken Languages & Qualifications -->
-      <div class="row-flex-grid-details" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+      <div class="row-flex-grid-details">
         <!-- Languages -->
         <div class="langs-col">
-          <h4 style="border-bottom: 2px solid #E5E7EB; padding-bottom: 6px; font-weight: 700; color: #374151;">🌐 {{
-            'Spoken Languages' | translate }}</h4>
+          <h4 class="modal-section-title">🌐 {{ 'Spoken Languages' | translate }}</h4>
           <div class="d-flex flex-wrap gap-2 mt-2">
             <span class="badge badge-light" *ngFor="let lang of selectedDoctorDetail.languages">
               {{ lang | translateObj:'name' }}
@@ -277,23 +301,63 @@
 
         <!-- Qualifications -->
         <div class="quals-col">
-          <h4 style="border-bottom: 2px solid #E5E7EB; padding-bottom: 6px; font-weight: 700; color: #374151;">📜 {{
-            'Qualifications' | translate }}</h4>
-          <div style="display: flex; flex-direction: column; gap: 6px;" class="mt-2">
-            <div *ngFor="let q of selectedDoctorDetail.qualifications" style="font-size: 0.85rem; color: #4B5563;">
-              🎓 <strong>{{ q.degree }}</strong> ({{ q.institution }}, {{ q.country }} - {{ q.yearObtained }})
+          <h4 class="modal-section-title">📜 {{ 'Qualifications' | translate }}</h4>
+          <div class="qualifications-list mt-2">
+            <div *ngFor="let q of selectedDoctorDetail.qualifications" class="qual-item">
+              🎓 <strong>{{ q.degree }}</strong>
+              <span class="qual-detail">({{ q.institution }}, {{ q.country }} - {{ q.yearObtained }})</span>
             </div>
-            <span *ngIf="!selectedDoctorDetail.qualifications || selectedDoctorDetail.qualifications.length === 0"
-              style="font-size: 0.85rem; color: #9CA3AF; font-style: italic;">
+            <span *ngIf="!selectedDoctorDetail.qualifications || selectedDoctorDetail.qualifications.length === 0" class="qual-empty">
               {{ 'No qualifications recorded.' | translate }}
             </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Patient Reviews Section -->
+      <div class="modal-reviews-section mt-4">
+        <h4 class="modal-section-title">💬 {{ 'Patient Reviews' | translate }}</h4>
+        <div class="reviews-list-scroll mt-2">
+          <div *ngIf="doctorReviews.length === 0" class="no-reviews-state text-center p-3">
+            <span class="no-reviews-icon">💬</span>
+            <p class="no-reviews-text">{{ 'No patient reviews recorded yet.' | translate }}</p>
+          </div>
+
+          <div class="review-comment-card" *ngFor="let rev of doctorReviews">
+            <div class="review-comment-header d-flex justify-between align-center">
+              <div class="reviewer-meta d-flex align-center gap-2">
+                <div class="reviewer-avatar-wrapper-small">
+                  <img *ngIf="!rev.isAnonymous && rev.patientAvatarUrl" [src]="rev.patientAvatarUrl | apiUrl" (error)="rev.patientAvatarUrl = ''" class="reviewer-avatar-small-img" [alt]="rev.patientName">
+                  <div *ngIf="rev.isAnonymous || !rev.patientAvatarUrl" class="reviewer-avatar-small">
+                    {{ getInitials(rev.isAnonymous ? 'Anonymous' : rev.patientName) }}
+                  </div>
+                </div>
+                <div>
+                  <strong class="reviewer-name">
+                    {{ rev.isAnonymous ? ('Anonymous' | translate) : rev.patientName }}
+                    <span class="my-review-tag" *ngIf="rev.patientId === patientId">({{ 'You' | translate }})</span>
+                  </strong>
+                  <span class="review-date">{{ rev.createdAt | date:'mediumDate' }}</span>
+                </div>
+              </div>
+              <div class="review-rating-stars">
+                <span class="star" *ngFor="let star of [1, 2, 3, 4, 5]" [class.filled]="rev.rating >= star">★</span>
+              </div>
+            </div>
+            <p class="review-text-content mt-2 mb-0" *ngIf="rev.reviewText">{{ rev.reviewText }}</p>
+            
+            <!-- Doctor Reply -->
+            <div class="doctor-reply-box mt-3 p-2 bg-light border-left-teal" *ngIf="rev.doctorReply">
+              <span class="reply-header block fs-xs font-bold text-teal">👨‍⚕️ {{ 'Doctor Response' | translate }}</span>
+              <p class="reply-text fs-xs m-0">{{ rev.doctorReply }}</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Modal Footer -->
-    <div class="modal-footer p-3 bg-light d-flex justify-between align-center" style="border-top: 1px solid #E5E7EB;">
+    <div class="modal-footer p-3 bg-light d-flex justify-between align-center">
       <button class="btn btn-outline" (click)="closeDetailModal()">{{ 'Close' | translate }}</button>
       <button class="btn btn-primary bg-teal border-none"
         (click)="closeDetailModal(); bookAppointment(selectedDoctorDetail.doctor.doctorId)">

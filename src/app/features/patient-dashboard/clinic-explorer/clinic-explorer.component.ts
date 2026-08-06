@@ -17,6 +17,7 @@ import { DoctorResponseDto, DoctorClinicResponseDto, AppointmentSlotResponseDto 
 import { AppointmentType, SessionType } from '../../../core/models/appointment.model';
 import { ReferenceService } from '../../../core/services/reference.service';
 import { LanguageResponseDto } from '../../../core/models/reference.model';
+import { ReviewService, ClinicReviewResponse } from '../../../core/services/review.service';
 import { environment } from '../../../../environments/environment';
 import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
 import { ApiUrlPipe } from "../../../shared/pipes/api-url.pipe";
@@ -39,6 +40,7 @@ export class ClinicExplorerComponent implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private referenceService = inject(ReferenceService);
+  private reviewService = inject(ReviewService);
   public apiUrl = environment.apiUrl;
 
 
@@ -53,6 +55,8 @@ export class ClinicExplorerComponent implements OnInit {
 
   // Selected State
   public selectedClinic: ClinicDetailResponse | null = null;
+  public clinicReviews: ClinicReviewResponse[] = [];
+  public showClinicReviews = false;
   public selectedBranch: ClinicBranchResponseDto | null = null;
   public branchOperatingHours: ClinicOperatingHourResponseDto[] = [];
   public branchDoctors: { doctor: DoctorResponseDto; dcLink: DoctorClinicResponseDto; qualifications: any[]; languages: any[] }[] = [];
@@ -172,10 +176,22 @@ export class ClinicExplorerComponent implements OnInit {
     this.branchDoctors = [];
     this.branchOperatingHours = [];
     this.showMobileDetail = true;
+    this.clinicReviews = [];
+    this.showClinicReviews = false;
 
     this.clinicService.getClinicDetail(clinic.clinicId).subscribe({
       next: (detail) => {
         this.selectedClinic = detail;
+        
+        // Fetch reviews
+        this.reviewService.getClinicReviews(clinic.clinicId).pipe(
+          catchError(() => of({ content: [], totalElements: 0 } as any))
+        ).subscribe({
+          next: (res) => {
+            this.clinicReviews = res && res.content ? res.content : [];
+          }
+        });
+        
         this.uiService.hideLoading();
       },
       error: () => {
@@ -183,6 +199,10 @@ export class ClinicExplorerComponent implements OnInit {
         this.uiService.showError('Failed to load clinic details.');
       }
     });
+  }
+
+  toggleClinicReviews(): void {
+    this.showClinicReviews = !this.showClinicReviews;
   }
 
   goBackToList(): void {

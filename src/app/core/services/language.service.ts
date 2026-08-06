@@ -1199,7 +1199,20 @@ const translations: { [lang in Lang]: { [key: string]: string } } = {
     'Report File': 'Report File',
     'No Lab Reports Found': 'No Lab Reports Found',
     'There are no laboratory test reports uploaded to your health profile yet.': 'There are no laboratory test reports uploaded to your health profile yet.',
-    'Context or symptoms notes...': 'Context or symptoms notes...'
+    'Context or symptoms notes...': 'Context or symptoms notes...',
+    'Advanced Filters': 'Advanced Filters',
+
+    // Reviews Module Translations
+    'Clinic Reviews': 'Clinic Reviews',
+    'Patient Reviews': 'Patient Reviews',
+    'Cleanliness:': 'Cleanliness:',
+    'Staff:': 'Staff:',
+    'Wait Time:': 'Wait Time:',
+    'No reviews recorded for this clinic yet.': 'No reviews recorded for this clinic yet.',
+    'Anonymous Patient': 'Anonymous Patient',
+    'No patient reviews recorded yet.': 'No patient reviews recorded yet.',
+    'Doctor Response': 'Doctor Response',
+    'You': 'You'
   },
   ar: {
     // Database Specialties fixes
@@ -2353,6 +2366,19 @@ const translations: { [lang in Lang]: { [key: string]: string } } = {
     'Report File': 'ملف التقرير',
     'No Lab Reports Found': 'لم يتم العثور على تقارير تحاليل',
     'There are no laboratory test reports uploaded to your health profile yet.': 'لا توجد تقارير تحاليل مختبرية مرفوعة إلى ملفك الصحي بعد.',
-    'Context or symptoms notes...': 'ملاحظات السياق أو الأعراض...'
+    'Context or symptoms notes...': 'ملاحظات السياق أو الأعراض...',
+    'Advanced Filters': 'خيارات التصفية المتقدمة',
+
+    // Reviews Module Translations
+    'Clinic Reviews': 'تقييمات العيادة',
+    'Patient Reviews': 'تقييمات المرضى',
+    'Cleanliness:': 'النظافة:',
+    'Staff:': 'طاقم العمل:',
+    'Wait Time:': 'وقت الانتظار:',
+    'No reviews recorded for this clinic yet.': 'لا توجد تقييمات مسجلة لهذه العيادة بعد.',
+    'Anonymous Patient': 'مريض مجهول الهوية',
+    'No patient reviews recorded yet.': 'لا توجد تقييمات من المرضى بعد.',
+    'Doctor Response': 'رد الطبيب',
+    'You': 'أنت'
   }
 };
