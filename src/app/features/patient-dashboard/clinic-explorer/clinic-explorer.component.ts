@@ -19,11 +19,12 @@ import { ReferenceService } from '../../../core/services/reference.service';
 import { LanguageResponseDto } from '../../../core/models/reference.model';
 import { environment } from '../../../../environments/environment';
 import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
+import { ApiUrlPipe } from "../../../shared/pipes/api-url.pipe";
 
 @Component({
   selector: 'app-clinic-explorer',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, TranslateObjPipe, CustomSelectComponent],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, TranslateObjPipe, CustomSelectComponent, ApiUrlPipe],
   templateUrl: './clinic-explorer.component.html',
   styleUrls: ['./clinic-explorer.component.css']
 })
@@ -342,7 +343,7 @@ export class ClinicExplorerComponent implements OnInit {
         this.nextDays = dates.map((dateStr, idx) => {
           const slotsForDay = results[idx] || [];
           const availableSlots = slotsForDay.filter(s => s.status === 'AVAILABLE');
-          
+
           const d = new Date(dateStr);
           const label = d.toLocaleDateString(this.languageService.isArabic ? 'ar-SA' : 'en-US', { day: 'numeric', month: 'short' });
           const dayName = d.toLocaleDateString(this.languageService.isArabic ? 'ar-SA' : 'en-US', { weekday: 'short' });
@@ -360,7 +361,7 @@ export class ClinicExplorerComponent implements OnInit {
         const defaultDate = firstAvailable ? firstAvailable.date : this.bookingDate;
         this.bookingDate = defaultDate;
         this.fetchSlots(dcId, this.bookingDate);
-        
+
         this.uiService.hideLoading();
       },
       error: () => {

@@ -319,7 +319,8 @@
                   <div *ngFor="let item of branchDoctors" class="doctor-profile-card">
                     <!-- Doctor Card Header -->
                     <div class="doctor-card-main">
-                      <div class="doctor-avatar-circle" [style.backgroundColor]="getAvatarBg(item.doctor.fullName)"
+                      <img *ngIf="item.doctor.avatarUrl" [src]="item.doctor.avatarUrl | apiUrl" (error)="item.doctor.avatarUrl = ''" class="doctor-avatar-circle-img" [alt]="getDoctorDisplayName(item.doctor)">
+                      <div *ngIf="!item.doctor.avatarUrl" class="doctor-avatar-circle" [style.backgroundColor]="getAvatarBg(item.doctor.fullName)"
                         [style.color]="getAvatarColor(item.doctor.fullName)">
                         {{ getInitials(item.doctor.fullName) }}
                       </div>

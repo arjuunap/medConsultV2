@@ -11,6 +11,9 @@ import {
 } from '../../../core/models/clinical-record.model';
 
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { DoctorService } from '../../../core/services/doctor.service';
+import { LanguageService } from '../../../core/services/language.service';
+import { DoctorResponseDto } from '../../../core/models/doctor.model';
 
 @Component({
   selector: 'app-emr',
@@ -24,6 +27,8 @@ export class EmrComponent implements OnInit {
   private patientService = inject(PatientService);
   private uiService = inject(UiService);
   private fb = inject(FormBuilder);
+  private doctorService = inject(DoctorService);
+  public languageService = inject(LanguageService);
 
   public patientId = '';
   public needProfileInit = false;
@@ -35,6 +40,7 @@ export class EmrComponent implements OnInit {
   public prescriptions: PrescriptionResponseDto[] = [];
   public selectedRxItems: { [rxId: string]: PrescriptionItemResponseDto[] } = {};
   public adherenceLogs: { [rxItemId: string]: any[] } = {};
+  public doctorsMap: { [id: string]: DoctorResponseDto } = {};
 
   // Vitals State
   public vitals: VitalResponseDto[] = [];
@@ -55,7 +61,56 @@ export class EmrComponent implements OnInit {
   public labResults: LabResultResponseDto[] = [];
 
   ngOnInit(): void {
+    this.loadDoctors();
     this.checkProfileAndLoad();
+  }
+
+  loadDoctors(): void {
+    this.doctorService.getAllDoctors().subscribe({
+      next: (docs) => {
+        this.doctorsMap = {};
+        docs.forEach(doc => {
+          this.doctorsMap[doc.doctorId] = doc;
+        });
+      }
+    });
+  }
+
+  getDoctorDisplayName(d: DoctorResponseDto | null | undefined): string {
+    if (!d) return '';
+    const name = (d.fullName || '').trim();
+    const nameLower = name.toLowerCase();
+    if (nameLower.startsWith('dr') || nameLower.startsWith('doctor') || nameLower.startsWith('prof') || nameLower.startsWith('consultant') || nameLower.startsWith('specialist') || nameLower.startsWith('د.')) {
+      return name;
+    }
+    const isAr = this.languageService.isArabic;
+    const prefix = isAr ? 'د.' : 'Dr.';
+    return `${prefix} ${name}`;
+  }
+
+  getLast7DaysLogs(itemId: string): { date: Date; status: 'taken' | 'skipped' | 'none'; label: string; isToday: boolean }[] {
+    const list = [];
+    const logs = this.adherenceLogs[itemId] || [];
+    const todayStr = new Date().toISOString().split('T')[0];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      const log = logs.find(l => l.logDate === dateStr);
+      let status: 'taken' | 'skipped' | 'none' = 'none';
+      if (log) {
+        status = log.taken ? 'taken' : 'skipped';
+      }
+      const isToday = dateStr === todayStr;
+      const label = d.toLocaleDateString(this.languageService.isArabic ? 'ar-SA' : 'en-US', { weekday: 'narrow' });
+      list.push({
+        date: d,
+        status,
+        label,
+        isToday
+      });
+    }
+    return list;
   }
 
   checkProfileAndLoad(): void {

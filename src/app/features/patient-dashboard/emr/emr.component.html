@@ -37,19 +37,30 @@
     <div *ngFor="let rx of prescriptions" class="emr-card-item">
       <div class="emr-card-header">
         <div class="prescription-title-block">
-          <h3 class="m-0">📋 {{ 'Prescription Reference:' | translate }} {{ rx.naphiesReference || ('Local Record' | translate) }}</h3>
+          <div class="rx-ref-row">
+            <span class="rx-paper-icon">🧾</span>
+            <h3 class="m-0">{{ 'Prescription' | translate }} <span class="rx-code">{{ rx.naphiesReference || ('Local Record' | translate) }}</span></h3>
+          </div>
           <div class="prescription-meta-line">
-            📅 <strong>{{ 'Issued:' | translate }}</strong> {{ rx.issuedDate | date:'longDate' }} &nbsp;•&nbsp; ⏳ <strong>{{ 'Valid Until:' | translate }}</strong> {{ rx.validUntil | date:'longDate' }}
+            <span class="doc-badge" *ngIf="doctorsMap[rx.doctorId]">
+              👨‍⚕️ <strong>{{ 'Prescribed By:' | translate }}</strong> {{ getDoctorDisplayName(doctorsMap[rx.doctorId]) }}
+            </span>
+            <span class="dates-range">
+              🗓️ <strong>{{ 'Issued:' | translate }}</strong> {{ rx.issuedDate | date:'mediumDate' }} &nbsp;•&nbsp; ⏳ <strong>{{ 'Valid Until:' | translate }}</strong> {{ rx.validUntil | date:'mediumDate' }}
+            </span>
           </div>
         </div>
-        <span class="badge" [class.badge-success]="rx.status === 'ACTIVE'" [class.badge-danger]="rx.status === 'EXPIRED'">
+        <span class="rx-status-tag" [class.active]="rx.status === 'ACTIVE'" [class.expired]="rx.status !== 'ACTIVE'">
           {{ rx.status === 'ACTIVE' ? ('Active' | translate) : ('Expired' | translate) }}
         </span>
       </div>
 
-      <div class="notes-container" *ngIf="rx.diagnosisNotes">
-        <div class="notes-label">📖 {{ 'Diagnosis & Clinical Notes' | translate }}</div>
-        <p class="notes-body">{{ rx.diagnosisNotes }}</p>
+      <div class="diagnosis-callout-box" *ngIf="rx.diagnosisNotes">
+        <div class="callout-label">
+          <span class="callout-icon">📋</span>
+          {{ 'Clinical Summary & Diagnosis' | translate }}
+        </div>
+        <p class="callout-content">"{{ rx.diagnosisNotes }}"</p>
       </div>
 
       <!-- Medication Cards Grid -->
@@ -58,65 +69,82 @@
         <div class="medication-card-grid">
           <div *ngFor="let item of selectedRxItems[rx.prescriptionId]" class="med-card">
             <div class="med-card-header">
-              <div class="med-name-badge">
-                <span class="med-icon">💊</span>
+              <div class="med-icon-wrapper">💊</div>
+              <div class="med-meta-details">
                 <span class="med-title">{{ item.drugName }}</span>
+                <span class="med-subtitle-dosage">{{ item.dosage }}</span>
               </div>
             </div>
 
-            <div class="med-info-list">
-              <div class="med-info-row">
-                <span class="med-info-label">{{ 'Dosage:' | translate }}</span>
-                <span class="med-info-value">{{ item.dosage }}</span>
+            <div class="med-details-badges">
+              <div class="detail-badge" title="{{ 'Route' | translate }}">
+                <span class="badge-icon">👄</span>
+                <span class="badge-text">{{ item.route | translate }}</span>
               </div>
-              <div class="med-info-row">
-                <span class="med-info-label">{{ 'Route:' | translate }}</span>
-                <span class="med-info-value">{{ item.route | translate }}</span>
+              <div class="detail-badge" title="{{ 'Frequency' | translate }}">
+                <span class="badge-icon">⏰</span>
+                <span class="badge-text">{{ item.frequency | translate }}</span>
               </div>
-              <div class="med-info-row">
-                <span class="med-info-label">{{ 'Frequency:' | translate }}</span>
-                <span class="med-info-value">{{ item.frequency | translate }}</span>
+              <div class="detail-badge duration" title="{{ 'Duration' | translate }}">
+                <span class="badge-icon">📅</span>
+                <span class="badge-text">{{ item.durationDays }} {{ 'Days' | translate }}</span>
               </div>
-              <div class="med-info-row">
-                <span class="med-info-label">{{ 'Duration:' | translate }}</span>
-                <span class="med-info-value text-primary">{{ item.durationDays }} {{ 'Days' | translate }}</span>
-              </div>
-              <div class="med-info-row">
-                <span class="med-info-label">{{ 'Refills:' | translate }}</span>
-                <span class="med-info-value">{{ item.refillsUsed }} / {{ item.refillsAllowed }} {{ 'Used' | translate }}</span>
+              <div class="detail-badge refills" title="{{ 'Refills Allowed/Used' | translate }}">
+                <span class="badge-icon">🔄</span>
+                <span class="badge-text">{{ item.refillsUsed }} / {{ item.refillsAllowed }} {{ 'Refills' | translate }}</span>
               </div>
             </div>
 
-            <div *ngIf="item.specialInstructions" class="special-instructions-alert">
-              ⚠️ {{ item.specialInstructions }}
+            <div *ngIf="item.specialInstructions" class="special-instructions-alert-box">
+              <span class="warning-icon">⚠️</span>
+              <p class="warning-text">{{ item.specialInstructions }}</p>
             </div>
 
-            <!-- Adherence Buttons -->
-            <div class="adherence-logger-container">
-              <div class="adherence-actions">
+            <!-- Adherence Tracking Section -->
+            <div class="adherence-section">
+              <div class="adherence-header">
+                <span class="adherence-title">📈 {{ 'Adherence Tracker' | translate }}</span>
+                <span class="adherence-today-status" *ngIf="getAdherenceLogForToday(item.itemId) as todayLog" [class.taken]="todayLog.taken" [class.skipped]="!todayLog.taken">
+                  {{ (todayLog.taken ? 'Taken Today' : 'Skipped Today') | translate }}
+                </span>
+              </div>
+              
+              <!-- Daily logger actions (if not logged yet) -->
+              <div class="adherence-action-row" *ngIf="!getAdherenceLogForToday(item.itemId)">
                 <button 
-                  class="btn btn-adherence-took btn-sm" 
-                  [disabled]="getAdherenceLogForToday(item.itemId)"
-                  [class.logged-active]="getAdherenceLogForToday(item.itemId)?.taken === true"
+                  class="btn btn-adherence-action took" 
                   (click)="logAdherence(item.itemId, true)"
                 >
-                  ✓ {{ 'Took Today' | translate }}
+                  ✓ {{ 'Mark Taken' | translate }}
                 </button>
                 <button 
-                  class="btn btn-outline btn-adherence-skip btn-sm" 
-                  [disabled]="getAdherenceLogForToday(item.itemId)"
-                  [class.logged-active]="getAdherenceLogForToday(item.itemId)?.taken === false"
+                  class="btn btn-adherence-action skip" 
                   (click)="logAdherence(item.itemId, false, 'Patient skipped')"
                 >
-                  ✕ {{ 'Skipped' | translate }}
+                  ✕ {{ 'Mark Skipped' | translate }}
                 </button>
               </div>
-              <div class="adherence-history-badge">
-                🔔 {{ 'Latest Log:' | translate }} 
-                <span *ngIf="adherenceLogs[item.itemId] && adherenceLogs[item.itemId].length > 0; else noLogs" class="fw-bold">
-                  {{ (adherenceLogs[item.itemId][0].taken ? 'Taken' : 'Skipped') | translate }} ({{ adherenceLogs[item.itemId][0].logDate | date:'mediumDate' }})
-                </span>
-                <ng-template #noLogs><span class="text-muted" style="font-weight: normal;">{{ 'None recorded' | translate }}</span></ng-template>
+
+              <!-- Visual history tracker for the last 7 days -->
+              <div class="adherence-history-dots-row">
+                <div 
+                  *ngFor="let day of getLast7DaysLogs(item.itemId)" 
+                  class="history-day-col"
+                  [class.is-today]="day.isToday"
+                >
+                  <span class="day-label">{{ day.label }}</span>
+                  <div 
+                    class="history-dot" 
+                    [class.taken]="day.status === 'taken'" 
+                    [class.skipped]="day.status === 'skipped'" 
+                    [class.none]="day.status === 'none'"
+                    [title]="day.date | date:'mediumDate'"
+                  >
+                    <span class="dot-indicator-icon" *ngIf="day.status === 'taken'">✓</span>
+                    <span class="dot-indicator-icon" *ngIf="day.status === 'skipped'">✕</span>
+                    <span class="dot-indicator-icon" *ngIf="day.status === 'none'">•</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

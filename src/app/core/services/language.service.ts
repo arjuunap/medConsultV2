@@ -1175,7 +1175,31 @@ const translations: { [lang in Lang]: { [key: string]: string } } = {
     'Active Doctor': 'Active Doctor',
     'Inactive Status': 'Inactive Status',
     'MOH Verified': 'MOH Verified',
-    'Stripe/Linear Admin Spec': 'Stripe/Linear Admin Spec'
+    'Stripe/Linear Admin Spec': 'Stripe/Linear Admin Spec',
+
+    // Additional EMR Keys
+    'Prescription': 'Prescription',
+    'Prescribed By:': 'Prescribed By:',
+    'Clinical Summary & Diagnosis': 'Clinical Summary & Diagnosis',
+    'Frequency': 'Frequency',
+    'Duration': 'Duration',
+    'Refills Allowed/Used': 'Refills Allowed/Used',
+    'Refills': 'Refills',
+    'Adherence Tracker': 'Adherence Tracker',
+    'Taken Today': 'Taken Today',
+    'Skipped Today': 'Skipped Today',
+    'Mark Taken': 'Mark Taken',
+    'Mark Skipped': 'Mark Skipped',
+    'No Prescriptions Found': 'No Prescriptions Found',
+    'No prescriptions have been registered on your Electronic Medical Record file.': 'No prescriptions have been registered on your Electronic Medical Record file.',
+    'Vital Metrics History Log': 'Vital Metrics History Log',
+    'No Vitals Logged': 'No Vitals Logged',
+    'You have not registered any vitals history log yet. Click "Log New Vitals" to add your first record.': 'You have not registered any vitals history log yet. Click "Log New Vitals" to add your first record.',
+    'Report Type:': 'Report Type:',
+    'Report File': 'Report File',
+    'No Lab Reports Found': 'No Lab Reports Found',
+    'There are no laboratory test reports uploaded to your health profile yet.': 'There are no laboratory test reports uploaded to your health profile yet.',
+    'Context or symptoms notes...': 'Context or symptoms notes...'
   },
   ar: {
     // Database Specialties fixes
@@ -2305,6 +2329,30 @@ const translations: { [lang in Lang]: { [key: string]: string } } = {
     'Active Doctor': 'طبيب نشط',
     'Inactive Status': 'حالة غير نشطة',
     'MOH Verified': 'معتمد من وزارة الصحة',
-    'Stripe/Linear Admin Spec': 'مواصفات لوحة التحكم المتقدمة'
+    'Stripe/Linear Admin Spec': 'مواصفات لوحة التحكم المتقدمة',
+
+    // Additional EMR Keys
+    'Prescription': 'وصفة طبية',
+    'Prescribed By:': 'تمت الوصف بواسطة:',
+    'Clinical Summary & Diagnosis': 'الملخص السريري والتشخيص',
+    'Frequency': 'التردد',
+    'Duration': 'المدة',
+    'Refills Allowed/Used': 'إعادة التعبئة المسموح بها/المستخدمة',
+    'Refills': 'إعادة تعبئة',
+    'Adherence Tracker': 'متابع الالتزام بالعلاج',
+    'Taken Today': 'تم تناوله اليوم',
+    'Skipped Today': 'تم تخطيه اليوم',
+    'Mark Taken': 'تم تناوله',
+    'Mark Skipped': 'تخطي',
+    'No Prescriptions Found': 'لم يتم العثور على وصفات طبية',
+    'No prescriptions have been registered on your Electronic Medical Record file.': 'لم يتم تسجيل أي وصفات طبية في ملف سجلك الطبي الإلكتروني.',
+    'Vital Metrics History Log': 'سجل المؤشرات الحيوية للمريض',
+    'No Vitals Logged': 'لم يتم تسجيل مؤشرات حيوية بعد',
+    'You have not registered any vitals history log yet. Click "Log New Vitals" to add your first record.': 'لم تقم بتسجيل أي مؤشرات حيوية بعد. انقر على "تسجيل مؤشرات حيوية جديدة" لإضافة أول سجل لك.',
+    'Report Type:': 'نوع التقرير:',
+    'Report File': 'ملف التقرير',
+    'No Lab Reports Found': 'لم يتم العثور على تقارير تحاليل',
+    'There are no laboratory test reports uploaded to your health profile yet.': 'لا توجد تقارير تحاليل مختبرية مرفوعة إلى ملفك الصحي بعد.',
+    'Context or symptoms notes...': 'ملاحظات السياق أو الأعراض...'
   }
 };
