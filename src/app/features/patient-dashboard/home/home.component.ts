@@ -13,11 +13,12 @@ import { VitalResponseDto } from '../../../core/models/clinical-record.model';
 
 import { AppConfigService } from '../../../core/services/app-config.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { ApiUrlPipe } from '../../../shared/pipes/api-url.pipe';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule, TranslatePipe],
+  imports: [CommonModule, RouterLink, ReactiveFormsModule, TranslatePipe, ApiUrlPipe],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })

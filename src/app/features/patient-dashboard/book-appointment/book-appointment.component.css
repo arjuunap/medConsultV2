@@ -287,8 +287,8 @@
 /* STEP 2: Clinic Location choice cards */
 .clinic-selection-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.15rem;
 }
 
 @media (max-width: 640px) {
@@ -299,64 +299,147 @@
 
 .clinic-location-card {
   background: white;
-  border: 1px solid #E5E7EB;
-  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
   padding: 1.25rem;
   cursor: pointer;
   display: flex;
-  gap: 12px;
+  flex-direction: column;
+  gap: 0.85rem;
   position: relative;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 
 .clinic-location-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.04);
-  border-color: #cbd5e1;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+  border-color: var(--teal);
 }
 
 .clinic-location-card.selected {
   border-color: var(--teal);
   border-width: 2px;
-  background: #E1F5EE;
+  background: var(--teal-p, #F0FDF4);
+  box-shadow: 0 4px 16px rgba(13, 148, 136, 0.15);
 }
 
-.clinic-location-card .icon-location {
-  font-size: 1.5rem;
-  color: #EF4444;
+.card-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.location-icon-wrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background-color: var(--teal-l);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid rgba(13, 148, 136, 0.15);
+}
+
+.location-pin-svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--teal-d);
+}
+
+.primary-badge {
+  background: var(--teal-l);
+  color: var(--teal-d);
+  font-size: 0.65rem;
+  font-weight: 750;
+  padding: 3px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .clinic-summary-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
   flex: 1;
 }
 
 .clinic-summary-info .clinic-name {
-  font-size: 0.95rem;
-  font-weight: 700;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 750;
   color: #111827;
   margin: 0;
+  line-height: 1.25;
 }
 
-.clinic-summary-info .branch-name {
-  font-size: 0.8rem;
+.branch-address-line {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.84rem;
   color: #6B7280;
-  margin: 2px 0 0 0;
+}
+
+.pin-sub-svg {
+  width: 13px;
+  height: 13px;
+  stroke: var(--teal);
+  flex-shrink: 0;
+}
+
+.branch-name {
+  font-weight: 600;
+}
+
+.card-footer-details {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.25rem;
+  padding-top: 0.65rem;
+  border-top: 1px dashed var(--border);
 }
 
 .dept-badge {
   background: #F3F4F6;
-  color: #4B5563;
-  font-size: 0.7rem;
+  color: #374151;
+  font-size: 0.72rem;
   font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 4px;
-  margin-right: 6px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid #E5E7EB;
 }
 
-.fee-text {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: #047857;
+.fee-badge {
+  background: var(--teal-l);
+  color: var(--teal-d);
+  font-size: 0.72rem;
+  font-weight: 750;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.card-select-indicator {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--teal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(13, 148, 136, 0.3);
+}
+
+[dir="rtl"] .card-select-indicator {
+  right: auto;
+  left: 12px;
 }
 
 /* STEP 3: Date Chips */
@@ -682,4 +765,168 @@
   .step-divider {
     font-size: 1rem !important;
   }
+}
+
+/* Flex Alignment & Vector Icon Utility Classes */
+.flex-align-center {
+  display: inline-flex;
+  align-items: center;
+}
+
+.warning-svg {
+  width: 36px;
+  height: 36px;
+  stroke: var(--amber-d, #D97706);
+}
+
+.header-icon-svg {
+  width: 24px;
+  height: 24px;
+  stroke: var(--teal);
+  flex-shrink: 0;
+}
+
+.step-icon-svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--teal);
+  flex-shrink: 0;
+}
+
+.search-icon-svg {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  stroke: var(--t3);
+  pointer-events: none;
+}
+
+[dir="rtl"] .search-icon-svg {
+  left: auto;
+  right: 12px;
+}
+
+.warning-mini-svg {
+  width: 13px;
+  height: 13px;
+  stroke: #DC2626;
+  flex-shrink: 0;
+}
+
+.badge-svg {
+  width: 11px;
+  height: 11px;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+.star-svg {
+  width: 11px;
+  height: 11px;
+  color: var(--amber-d, #D97706);
+  flex-shrink: 0;
+}
+
+.check-svg {
+  width: 12px;
+  height: 12px;
+  stroke: #ffffff;
+  flex-shrink: 0;
+}
+
+.empty-state-svg {
+  width: 36px;
+  height: 36px;
+  stroke: var(--t4);
+  margin-bottom: 0.5rem;
+}
+
+.location-icon-wrapper {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--teal-l);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.location-pin-svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--teal-d);
+}
+
+.fee-svg {
+  width: 11px;
+  height: 11px;
+  stroke: var(--green-d);
+  flex-shrink: 0;
+}
+
+.nav-arrow-svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+[dir="rtl"] .nav-arrow-svg {
+  transform: scaleX(-1);
+}
+
+.clock-icon-svg {
+  width: 15px;
+  height: 15px;
+  stroke: var(--teal);
+  flex-shrink: 0;
+}
+
+.receipt-icon-svg {
+  width: 18px;
+  height: 18px;
+  stroke: #ffffff;
+  flex-shrink: 0;
+}
+
+.rec-line-icon-svg {
+  width: 14px;
+  height: 14px;
+  stroke: var(--t3);
+  flex-shrink: 0;
+}
+
+.mode-icon-wrapper {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background-color: var(--off);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  transition: all 0.2s ease;
+}
+
+.mode-choice-card.selected .mode-icon-wrapper {
+  background-color: var(--teal-l);
+  border-color: var(--teal);
+}
+
+.mode-icon-svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--teal-d);
+}
+
+.submit-btn-icon-svg {
+  width: 16px;
+  height: 16px;
+  stroke: #ffffff;
+  flex-shrink: 0;
 }

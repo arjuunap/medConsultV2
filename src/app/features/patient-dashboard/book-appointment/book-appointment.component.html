@@ -1,5 +1,12 @@
 <div *ngIf="needProfileInit" class="registration-warning-card text-center p-5 mb-5 border-none shadow-sm">
-  <h3 class="mb-2 text-warning">⚠️ {{ 'Registration Required' | translate }}</h3>
+  <div class="alert-icon-wrap mb-2">
+    <svg class="warning-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+      <line x1="12" y1="9" x2="12" y2="13"></line>
+      <line x1="12" y1="17" x2="12.01" y2="17"></line>
+    </svg>
+  </div>
+  <h3 class="mb-2 text-warning">{{ 'Registration Required' | translate }}</h3>
   <p class="mb-4 text-muted">{{ 'Please initialize your General Patient Profile before booking a new appointment.' | translate }}</p>
   <a routerLink="/patient/profile" class="btn btn-primary mx-auto">{{ 'Setup Profile' | translate }}</a>
 </div>
@@ -8,7 +15,15 @@
   <!-- Booking Header -->
   <div class="booking-header d-flex justify-between align-center flex-wrap gap-2 mb-4">
     <div>
-      <h2 class="booking-title">📅 {{ 'Schedule Your Consultation' | translate }}</h2>
+      <h2 class="booking-title flex-align-center gap-2">
+        <svg class="header-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        <span>{{ 'Schedule Your Consultation' | translate }}</span>
+      </h2>
       <p class="booking-subtitle">{{ 'Select your preferred doctor, clinic branch, and appointment slot' | translate }}</p>
     </div>
     <span class="badge-teal">{{ 'SA MOH Verified Network' | translate }}</span>
@@ -45,14 +60,23 @@
     <!-- STEP 1: Select Specialist Doctor -->
     <div class="wizard-step-view" *ngIf="currentStep === 1">
       <div class="step-title-block mb-3">
-        <h3>🧑‍⚕️ {{ 'Step 1: Choose Specialist Doctor' | translate }}</h3>
+        <h3 class="flex-align-center gap-2">
+          <svg class="step-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M4.8 2.3A10 10 0 1 0 21.7 15.2M20 9A8 8 0 1 1 4 9"></path>
+            <path d="M12 5v8M9 9h6"></path>
+          </svg>
+          <span>{{ 'Step 1: Choose Specialist Doctor' | translate }}</span>
+        </h3>
         <p>{{ 'Browse our verified doctors panel and select a specialist to check clinic locations' | translate }}</p>
       </div>
 
       <!-- Search Bar -->
       <div class="search-filter-input mb-3">
         <input type="text" [(ngModel)]="doctorSearchQuery" [ngModelOptions]="{standalone: true}" [placeholder]="'Search doctor name...' | translate" class="doctor-search-box">
-        <span class="search-icon">🔍</span>
+        <svg class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
       </div>
 
       <div class="doctors-cards-select-grid" *ngIf="filteredDoctors.length > 0">
@@ -68,26 +92,53 @@
           <div class="doctor-summary-info">
             <h4 class="name">{{ getDoctorDisplayName(doc) }}</h4>
             
-            <div *ngIf="activeBookedDoctorIds.includes(doc.doctorId)" class="already-booked-warning mt-1" style="color: #DC2626; font-size: 0.75rem; font-weight: 700;">
-              ⚠️ {{ 'Active booking exists with this doctor' | translate }}
+            <div *ngIf="activeBookedDoctorIds.includes(doc.doctorId)" class="already-booked-warning mt-1 flex-align-center gap-1">
+              <svg class="warning-mini-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <span>{{ 'Active booking exists with this doctor' | translate }}</span>
             </div>
 
             <div class="meta-row mt-1" *ngIf="!activeBookedDoctorIds.includes(doc.doctorId)">
-              <span class="badge badge-blue">💼 {{ doc.experienceYears }} {{ 'Yrs Exp' | translate }}</span>
-              <span class="badge badge-green">💰 SAR {{ doc.consultationFeeSar || 150 }}</span>
+              <span class="badge badge-blue flex-align-center gap-1">
+                <svg class="badge-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                </svg>
+                <span>{{ doc.experienceYears }} {{ 'Yrs Exp' | translate }}</span>
+              </span>
+              <span class="badge badge-green flex-align-center gap-1">
+                <svg class="badge-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="1" x2="12" y2="23"></line>
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+                <span>SAR {{ doc.consultationFeeSar || 150 }}</span>
+              </span>
             </div>
-            <div class="ratings mt-1" *ngIf="!activeBookedDoctorIds.includes(doc.doctorId)">
-              ⭐ <span class="val">{{ doc.overallRating || 0 }}</span>
+            <div class="ratings mt-1 flex-align-center gap-1" *ngIf="!activeBookedDoctorIds.includes(doc.doctorId)">
+              <svg class="star-svg" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+              <span class="val">{{ doc.overallRating || 0 }}</span>
               <span class="count">({{ doc.reviewCount || 0 }} {{ 'reviews' | translate }})</span>
             </div>
           </div>
-          <span class="checked-circle" *ngIf="wizardForm.get('doctorId')?.value === doc.doctorId">✓</span>
+          <span class="checked-circle" *ngIf="wizardForm.get('doctorId')?.value === doc.doctorId">
+            <svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </span>
         </div>
       </div>
 
       <!-- Empty State Doctors -->
       <div class="empty-state-card" *ngIf="filteredDoctors.length === 0">
-        <span class="icon">🩺</span>
+        <svg class="empty-state-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M4.8 2.3A10 10 0 1 0 21.7 15.2M20 9A8 8 0 1 1 4 9"></path>
+          <path d="M12 5v8M9 9h6"></path>
+        </svg>
         <h4>{{ 'No Doctors Found' | translate }}</h4>
         <p>{{ 'No medical experts match your search query.' | translate }}</p>
       </div>
@@ -96,7 +147,13 @@
     <!-- STEP 2: Choose Clinic Location -->
     <div class="wizard-step-view" *ngIf="currentStep === 2">
       <div class="step-title-block mb-3">
-        <h3>🏥 {{ 'Step 2: Choose Clinic Location' | translate }}</h3>
+        <h3 class="flex-align-center gap-2">
+          <svg class="step-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"></path>
+            <path d="M12 2v4M9 12h6M12 9v6"></path>
+          </svg>
+          <span>{{ 'Step 2: Choose Clinic Location' | translate }}</span>
+        </h3>
         <p>{{ 'Select from the branch locations where this doctor is currently practicing' | translate }}</p>
       </div>
 
@@ -105,31 +162,79 @@
              *ngFor="let dc of doctorClinics"
              [class.selected]="wizardForm.get('dcId')?.value === dc.dcId"
              (click)="selectClinic(dc.dcId)">
-          <span class="icon-location">📍</span>
+          <div class="card-top-row">
+            <div class="location-icon-wrapper">
+              <svg class="location-pin-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+            </div>
+            <span *ngIf="dc.isPrimary" class="primary-badge">{{ 'Primary Branch' | translate }}</span>
+          </div>
+
           <div class="clinic-summary-info">
             <h4 class="clinic-name">{{ langService.isArabic ? (dc.clinicNameAr || dc.clinicNameEn) : dc.clinicNameEn }}</h4>
-            <p class="branch-name">{{ langService.isArabic ? (dc.branchNameAr || dc.branchNameEn) : dc.branchNameEn }}</p>
-            <div class="meta-details mt-2">
-              <span class="dept-badge">🩺 {{ dc.department }}</span>
-              <span class="fee-text">💰 SAR {{ dc.consultationFeeSar || 150 }}</span>
+            <div class="branch-address-line">
+              <svg class="pin-sub-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <span class="branch-name">{{ langService.isArabic ? (dc.branchNameAr || dc.branchNameEn) : dc.branchNameEn }}</span>
+            </div>
+
+            <div class="card-footer-details">
+              <span class="dept-badge flex-align-center gap-1">
+                <svg class="badge-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                </svg>
+                <span>{{ dc.department }}</span>
+              </span>
+              <span class="fee-badge flex-align-center gap-1">
+                <svg class="fee-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="1" x2="12" y2="23"></line>
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+                <span>{{ dc.consultationFeeSar || 150 }} SAR</span>
+              </span>
             </div>
           </div>
-          <span class="checked-circle" *ngIf="wizardForm.get('dcId')?.value === dc.dcId">✓</span>
+
+          <div class="card-select-indicator" *ngIf="wizardForm.get('dcId')?.value === dc.dcId">
+            <svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
         </div>
       </div>
 
       <!-- Empty State clinics -->
       <div class="empty-state-card" *ngIf="doctorClinics.length === 0">
-        <span class="icon">🏥</span>
+        <svg class="empty-state-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M18 6H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"></path>
+          <path d="M12 2v4M9 12h6M12 9v6"></path>
+        </svg>
         <h4>{{ 'No Branches Registered' | translate }}</h4>
         <p>{{ 'This doctor is not assigned to any active clinic branch locations.' | translate }}</p>
-        <button type="button" class="btn btn-outline mt-3" (click)="goToStep(1)">🔙 {{ 'Back to Doctors' | translate }}</button>
+        <button type="button" class="btn btn-outline mt-3 flex-align-center gap-1" (click)="goToStep(1)">
+          <svg class="nav-arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span>{{ 'Back to Doctors' | translate }}</span>
+        </button>
       </div>
 
       <div class="navigation-footer mt-4" *ngIf="doctorClinics.length > 0">
-        <button type="button" class="btn btn-outline" (click)="goToStep(1)">🔙 {{ 'Back' | translate }}</button>
-        <button type="button" class="btn btn-primary bg-teal border-none" *ngIf="wizardForm.get('dcId')?.value" (click)="goToStep(3)">
-          {{ 'Next' | translate }} 🔜
+        <button type="button" class="btn btn-outline flex-align-center gap-1" (click)="goToStep(1)">
+          <svg class="nav-arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span>{{ 'Back' | translate }}</span>
+        </button>
+        <button type="button" class="btn btn-primary bg-teal border-none flex-align-center gap-1" *ngIf="wizardForm.get('dcId')?.value" (click)="goToStep(3)">
+          <span>{{ 'Next' | translate }}</span>
+          <svg class="nav-arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
         </button>
       </div>
     </div>
@@ -137,7 +242,15 @@
     <!-- STEP 3: Choose Date & Available Slot -->
     <div class="wizard-step-view" *ngIf="currentStep === 3">
       <div class="step-title-block mb-3">
-        <h3>📅 {{ 'Step 3: Appointment Date & Time' | translate }}</h3>
+        <h3 class="flex-align-center gap-2">
+          <svg class="step-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <span>{{ 'Step 3: Appointment Date & Time' | translate }}</span>
+        </h3>
         <p>{{ 'Select a booking date to see available consultation time slots' | translate }}</p>
       </div>
 
@@ -162,7 +275,13 @@
 
       <!-- Slots selection panel -->
       <div class="slots-selection-panel pt-3 border-top" *ngIf="wizardForm.get('scheduledDate')?.value">
-        <label class="input-label mb-2">⏰ {{ 'Available Slots' | translate }}</label>
+        <label class="input-label mb-2 flex-align-center gap-1">
+          <svg class="clock-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span>{{ 'Available Slots' | translate }}</span>
+        </label>
         
         <div class="slots-flex-grid" *ngIf="slots.length > 0">
           <div *ngFor="let slot of slots" 
@@ -179,16 +298,27 @@
 
         <!-- Empty slots warning -->
         <div class="empty-state-card" *ngIf="slots.length === 0">
-          <span class="icon">⏰</span>
+          <svg class="empty-state-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
           <h4>{{ 'No Time Slots Available' | translate }}</h4>
           <p>{{ 'There are no open slots on the selected date. Try choosing another day.' | translate }}</p>
         </div>
       </div>
 
       <div class="navigation-footer mt-4">
-        <button type="button" class="btn btn-outline" (click)="goToStep(2)">🔙 {{ 'Back' | translate }}</button>
-        <button type="button" class="btn btn-primary bg-teal border-none" *ngIf="wizardForm.get('slotId')?.value" (click)="goToStep(4)">
-          {{ 'Next' | translate }} 🔜
+        <button type="button" class="btn btn-outline flex-align-center gap-1" (click)="goToStep(2)">
+          <svg class="nav-arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span>{{ 'Back' | translate }}</span>
+        </button>
+        <button type="button" class="btn btn-primary bg-teal border-none flex-align-center gap-1" *ngIf="wizardForm.get('slotId')?.value" (click)="goToStep(4)">
+          <span>{{ 'Next' | translate }}</span>
+          <svg class="nav-arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
         </button>
       </div>
     </div>
@@ -196,19 +326,39 @@
     <!-- STEP 4: Confirmation & Final Details -->
     <div class="wizard-step-view" *ngIf="currentStep === 4">
       <div class="step-title-block mb-4">
-        <h3>✍️ {{ 'Step 4: Confirm & Book' | translate }}</h3>
+        <h3 class="flex-align-center gap-2">
+          <svg class="step-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+          </svg>
+          <span>{{ 'Step 4: Confirm & Book' | translate }}</span>
+        </h3>
         <p>{{ 'Provide appointment reason and choose session mode to book consultation' | translate }}</p>
       </div>
 
       <!-- Selected Summary Receipt Card -->
       <div class="booking-receipt-card mb-4" *ngIf="getSelectedDoctor() && getSelectedClinic()">
         <div class="receipt-header bg-teal text-white p-3">
-          <h4 class="m-0 text-white">📋 {{ 'Consultation Details Summary' | translate }}</h4>
+          <h4 class="m-0 text-white flex-align-center gap-2">
+            <svg class="receipt-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+            </svg>
+            <span>{{ 'Consultation Details Summary' | translate }}</span>
+          </h4>
         </div>
         <div class="receipt-body p-3">
           <!-- Doctor info line -->
           <div class="receipt-line">
-            <span class="label">👨‍⚕️ {{ 'Doctor' | translate }}</span>
+            <span class="label flex-align-center gap-1">
+              <svg class="rec-line-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4.8 2.3A10 10 0 1 0 21.7 15.2M20 9A8 8 0 1 1 4 9"></path>
+                <path d="M12 5v8M9 9h6"></path>
+              </svg>
+              <span>{{ 'Doctor' | translate }}</span>
+            </span>
             <div class="d-flex align-center gap-2">
               <img *ngIf="getSelectedDoctor()?.avatarUrl" [src]="getSelectedDoctor()?.avatarUrl | apiUrl" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;" [alt]="getDoctorDisplayName(getSelectedDoctor())">
               <strong class="value">{{ getDoctorDisplayName(getSelectedDoctor()) }}</strong>
@@ -216,7 +366,13 @@
           </div>
           <!-- Clinic info line -->
           <div class="receipt-line border-top pt-2 mt-2">
-            <span class="label">🏥 {{ 'Clinic Branch' | translate }}</span>
+            <span class="label flex-align-center gap-1">
+              <svg class="rec-line-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"></path>
+                <path d="M12 2v4M9 12h6M12 9v6"></path>
+              </svg>
+              <span>{{ 'Clinic Branch' | translate }}</span>
+            </span>
             <strong class="value">
               {{ langService.isArabic ? (getSelectedClinic()?.clinicNameAr || getSelectedClinic()?.clinicNameEn) : getSelectedClinic()?.clinicNameEn }} - 
               {{ langService.isArabic ? (getSelectedClinic()?.branchNameAr || getSelectedClinic()?.branchNameEn) : getSelectedClinic()?.branchNameEn }}
@@ -224,7 +380,15 @@
           </div>
           <!-- Date info line -->
           <div class="receipt-line border-top pt-2 mt-2">
-            <span class="label">📅 {{ 'Date & Time' | translate }}</span>
+            <span class="label flex-align-center gap-1">
+              <svg class="rec-line-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span>{{ 'Date & Time' | translate }}</span>
+            </span>
             <strong class="value">
               {{ wizardForm.get('scheduledDate')?.value }} &#64; 
               {{ getSelectedSlot()?.startTime?.substring(0,5) }}
@@ -232,7 +396,13 @@
           </div>
           <!-- Fee info line -->
           <div class="receipt-line border-top pt-2 mt-2">
-            <span class="label">💰 {{ 'Consultation Fee' | translate }}</span>
+            <span class="label flex-align-center gap-1">
+              <svg class="rec-line-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="1" x2="12" y2="23"></line>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+              </svg>
+              <span>{{ 'Consultation Fee' | translate }}</span>
+            </span>
             <strong class="value text-success">SAR {{ getSelectedClinic()?.consultationFeeSar || 150 }}</strong>
           </div>
         </div>
@@ -245,7 +415,12 @@
           <div class="mode-choice-card"
                [class.selected]="wizardForm.get('sessionType')?.value === 'IN_CLINIC'"
                (click)="selectSessionType('IN_CLINIC')">
-            <span class="icon">🏥</span>
+            <div class="mode-icon-wrapper">
+              <svg class="mode-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"></path>
+                <path d="M12 2v4M9 12h6M12 9v6"></path>
+              </svg>
+            </div>
             <div class="info">
               <h4>{{ 'In Clinic' | translate }}</h4>
               <p>{{ 'Visit the doctor physically at the selected branch location.' | translate }}</p>
@@ -255,7 +430,13 @@
           <div class="mode-choice-card"
                [class.selected]="wizardForm.get('sessionType')?.value === 'VIRTUAL'"
                (click)="selectSessionType('VIRTUAL')">
-            <span class="icon">💻</span>
+            <div class="mode-icon-wrapper">
+              <svg class="mode-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+            </div>
             <div class="info">
               <h4>{{ 'Virtual' | translate }}</h4>
               <p>{{ 'Consult online via text chat and attachments upload.' | translate }}</p>
@@ -292,9 +473,18 @@
 
       <!-- Submit and Back -->
       <div class="navigation-footer d-flex justify-between align-center">
-        <button type="button" class="btn btn-outline" (click)="goToStep(3)">🔙 {{ 'Back' | translate }}</button>
-        <button type="submit" class="btn btn-primary bg-teal border-none" [disabled]="wizardForm.invalid">
-          🚀 {{ 'Confirm & Book Appointment' | translate }}
+        <button type="button" class="btn btn-outline flex-align-center gap-1" (click)="goToStep(3)">
+          <svg class="nav-arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span>{{ 'Back' | translate }}</span>
+        </button>
+        <button type="submit" class="btn btn-primary bg-teal border-none flex-align-center gap-2" [disabled]="wizardForm.invalid">
+          <svg class="submit-btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          <span>{{ 'Confirm & Book Appointment' | translate }}</span>
         </button>
       </div>
     </div>

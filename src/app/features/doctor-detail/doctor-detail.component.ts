@@ -70,6 +70,7 @@ export class DoctorDetailComponent implements OnInit {
                   if (res && res.clinic) {
                     (c as any).clinicNameEn = res.clinic.nameEn;
                     (c as any).clinicNameAr = res.clinic.nameAr;
+                    (c as any).logoUrl = res.clinic.logoUrl;
                     if (res.branches) {
                       const br = res.branches.find((b: any) => b.branchId === c.branchId);
                       if (br) {

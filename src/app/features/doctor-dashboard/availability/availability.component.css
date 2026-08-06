@@ -206,3 +206,103 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* Flex Alignment & Vector Icon Utility Classes */
+.flex-align-center {
+  display: inline-flex;
+  align-items: center;
+}
+
+.header-icon-svg {
+  width: 24px;
+  height: 24px;
+  stroke: var(--teal);
+  flex-shrink: 0;
+}
+
+.placement-hosp-svg {
+  width: 22px;
+  height: 22px;
+  stroke: var(--teal-d);
+}
+
+.role-star-svg {
+  width: 12px;
+  height: 12px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+.role-user-svg {
+  width: 12px;
+  height: 12px;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+.pin-svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+.tab-icon-svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+.info-icon-wrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--teal-l);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.info-svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--teal-d);
+}
+
+.btn-sm-svg {
+  width: 14px;
+  height: 14px;
+  stroke: #ffffff;
+  flex-shrink: 0;
+}
+
+.badge-clock-svg {
+  width: 12px;
+  height: 12px;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+.badge-mini-svg {
+  width: 11px;
+  height: 11px;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+.btn-zap-svg {
+  width: 14px;
+  height: 14px;
+  stroke: #ffffff;
+  fill: #ffffff;
+  flex-shrink: 0;
+}
+
+.sec-plus-svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--teal);
+  flex-shrink: 0;
+}

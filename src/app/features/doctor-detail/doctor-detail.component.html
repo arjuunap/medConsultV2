@@ -1,154 +1,337 @@
 <div *ngIf="doctorDetail" class="doctor-detail-container">
   
-  <!-- Back Button / Context Navigation -->
-  <div class="mb-4">
-    <a routerLink="/" class="text-primary fw-600 fs-sm d-flex align-center gap-1 cursor-pointer decoration-none">
-      ← {{ 'Public Portal Home' | translate }}
+  <!-- Back Button Navigation -->
+  <div class="navigation-bar">
+    <a routerLink="/patient/doctors" class="back-nav-link flex-align-center gap-2">
+      <svg class="nav-arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      <span>{{ 'Back to Browse Doctors' | translate }}</span>
     </a>
   </div>
 
-  <!-- Main Split Layout -->
-  <div class="workspace-layout">
-    
-    <!-- Left Column: Primary Contact Card & Key Badges -->
-    <div class="workspace-sidebar flex-col gap-4">
-      
-      <!-- Primary Doctor Info Card -->
-      <div class="detail-section-card text-center py-5">
-        <img *ngIf="doctorDetail.doctor.avatarUrl" [src]="doctorDetail.doctor.avatarUrl | apiUrl" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;" class="mx-auto shadow-sm mb-4" [alt]="doctorDisplayName">
-        <div *ngIf="!doctorDetail.doctor.avatarUrl" style="width: 100px; height: 100px; border-radius: 50%; background: var(--teal-l); color: var(--teal);" class="mx-auto d-flex align-center justify-center fs-3xl fw-bold shadow-sm mb-4">
-          👨‍⚕️
+  <!-- Hero Header Profile Card -->
+  <div class="doctor-hero-card">
+    <div class="hero-content">
+      <div class="avatar-column">
+        <div class="doctor-profile-avatar-wrap">
+          <img *ngIf="doctorDetail.doctor.avatarUrl" [src]="doctorDetail.doctor.avatarUrl | apiUrl" (error)="doctorDetail.doctor.avatarUrl = ''" class="doctor-profile-avatar-img" [alt]="doctorDisplayName">
+          <div *ngIf="!doctorDetail.doctor.avatarUrl" class="doctor-profile-avatar-fallback flex-align-center justify-center">
+            <svg class="doctor-fallback-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
         </div>
-        
-        <h2 class="fs-xl text-primary fw-800 m-0">{{ doctorDisplayName }}</h2>
-        
-        <div class="d-flex justify-center mt-3 gap-2 flex-wrap">
-          <span class="badge" [class.badge-success]="doctorDetail.doctor.mohVerified" [class.badge-info]="!doctorDetail.doctor.mohVerified">
-            {{ (doctorDetail.doctor.mohVerified ? '✓ MOH Verified License' : 'MOH Verification Pending') | translate }}
+      </div>
+
+      <div class="info-column">
+        <div class="name-status-row flex-align-center gap-3 flex-wrap">
+          <h1 class="doctor-hero-name">{{ doctorDisplayName }}</h1>
+          <span class="verification-badge flex-align-center gap-1" [class.verified]="doctorDetail.doctor.mohVerified">
+            <svg class="badge-check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            <span>{{ (doctorDetail.doctor.mohVerified ? 'MOH Verified License' : 'MOH Verification Pending') | translate }}</span>
           </span>
         </div>
 
-        <div class="doctor-quick-stats-grid mt-4 pt-4 border-top">
-          <div class="stat-cell">
-            <span class="stat-val">{{ doctorDetail.doctor.experienceYears || 0 }}</span>
-            <span class="stat-lbl">{{ 'Experience' | translate }}</span>
-          </div>
-          <div class="stat-cell">
-            <span class="stat-val">⭐ {{ doctorDetail.doctor.overallRating || 0 }}</span>
-            <span class="stat-lbl">{{ doctorDetail.doctor.reviewCount || 0 }} {{ 'reviews' | translate }}</span>
-          </div>
-          <div class="stat-cell">
-            <span class="stat-val text-success">SAR {{ doctorDetail.doctor.consultationFeeSar || 150 }}</span>
-            <span class="stat-lbl">{{ 'Standard Fee:' | translate }}</span>
-          </div>
+        <div class="specialties-pills-row mt-2">
+          <span *ngFor="let s of doctorDetail.specialties" class="specialty-hero-pill flex-align-center gap-1">
+            <svg class="pill-spec-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+            </svg>
+            <span>{{ getSpecialtyName(s.specialtyId) }}</span>
+          </span>
         </div>
 
-        <div class="border-top mt-4 pt-4 px-3 text-start fs-sm text-muted">
-          <div class="stats-row mb-2">
-            <span>{{ 'Specialties' | translate }}:</span>
-            <strong class="text-dark">
-              <span *ngFor="let s of doctorDetail.specialties; let last = last">
-                {{ getSpecialtyName(s.specialtyId) }}{{ last ? '' : ', ' }}
-              </span>
-            </strong>
-          </div>
-          <div class="stats-row">
-            <span>{{ 'Registration ID:' | translate }}</span>
-            <strong>{{ doctorDetail.doctor.mohRegistrationNumber }}</strong>
-          </div>
+        <div class="reg-number-text mt-2">
+          <span class="text-muted">{{ 'Registration ID:' | translate }}</span>
+          <strong class="text-dark ms-1">{{ doctorDetail.doctor.mohRegistrationNumber || 'N/A' }}</strong>
         </div>
       </div>
 
-      <!-- Spoken Languages -->
-      <div class="detail-section-card">
-        <h3 class="section-card-title">🗣️ {{ 'Spoken Languages' | translate }}</h3>
-        <div class="languages-vertical-list mt-3">
-          <div *ngFor="let lang of doctorDetail.languages" class="language-detail-row">
-            <span>🌐 {{ getLanguageName(lang.languageId) }}</span>
-            <span class="badge badge-outline-teal">{{ lang.proficiency | translate }}</span>
-          </div>
-          <div *ngIf="doctorDetail.languages.length === 0" class="text-muted fs-sm">
-            {{ 'No languages documented.' | translate }}
-          </div>
-        </div>
+      <div class="action-column flex-align-center justify-end">
+        <a routerLink="/patient/book-appointment" [queryParams]="{ doctorId: doctorDetail.doctor.doctorId }" class="btn btn-hero-cta flex-align-center gap-2">
+          <svg class="cta-cal-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <span>{{ 'Book Consultation' | translate }}</span>
+        </a>
       </div>
-
     </div>
 
-    <!-- Right Column: Biography, Clinics, and Qualifications -->
-    <div class="workspace-main flex-col gap-4">
+    <!-- Quick Stats Metric Strip -->
+    <div class="hero-stats-grid">
+      <div class="hero-stat-cell">
+        <div class="stat-icon-wrapper">
+          <svg class="stat-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </div>
+        <div>
+          <div class="stat-value-num">{{ doctorDetail.doctor.experienceYears || 0 }} {{ 'Years' | translate }}</div>
+          <div class="stat-label-title">{{ 'Medical Experience' | translate }}</div>
+        </div>
+      </div>
+
+      <div class="hero-stat-cell">
+        <div class="stat-icon-wrapper star-wrapper">
+          <svg class="stat-icon-svg star-fill-svg" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+        </div>
+        <div>
+          <div class="stat-value-num">{{ doctorDetail.doctor.overallRating || 5.0 }} / 5.0</div>
+          <div class="stat-label-title">{{ doctorDetail.doctor.reviewCount || 0 }} {{ 'Patient Reviews' | translate }}</div>
+        </div>
+      </div>
+
+      <div class="hero-stat-cell">
+        <div class="stat-icon-wrapper fee-wrapper">
+          <svg class="stat-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+            <circle cx="12" cy="12" r="2"></circle>
+            <path d="M6 12h.01M18 12h.01"></path>
+          </svg>
+        </div>
+        <div>
+          <div class="stat-value-num text-teal">SAR {{ doctorDetail.doctor.consultationFeeSar || 150 }}</div>
+          <div class="stat-label-title">{{ 'Standard Consultation Fee' | translate }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main 2-Column Grid Layout -->
+  <div class="doctor-detail-grid">
+    
+    <!-- Left / Primary Column -->
+    <div class="main-content-column flex-col gap-4">
       
-      <!-- Biography notes -->
-      <div class="detail-section-card">
-        <h3 class="section-card-title">📝 {{ 'Professional Biography' | translate }}</h3>
-        <div class="bio-content-box mt-3">
-          <p class="bio-text" *ngIf="doctorDetail.doctor.bioEn && languageService.currentLang() === 'en'">
+      <!-- Professional Biography -->
+      <div class="detail-card">
+        <h2 class="card-heading flex-align-center gap-2">
+          <svg class="card-title-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          <span>{{ 'Professional Biography' | translate }}</span>
+        </h2>
+        <div class="card-body-content mt-3">
+          <p class="bio-paragraph" *ngIf="doctorDetail.doctor.bioEn && languageService.currentLang() === 'en'">
             {{ doctorDetail.doctor.bioEn }}
           </p>
-          <p class="bio-text bio-ar" *ngIf="doctorDetail.doctor.bioAr" [dir]="languageService.currentLang() === 'ar' ? 'rtl' : 'ltr'">
+          <p class="bio-paragraph bio-ar" *ngIf="doctorDetail.doctor.bioAr" [dir]="languageService.currentLang() === 'ar' ? 'rtl' : 'ltr'">
             {{ doctorDetail.doctor.bioAr }}
           </p>
-          <p class="bio-text" *ngIf="doctorDetail.doctor.bioEn && !doctorDetail.doctor.bioAr && languageService.currentLang() === 'ar'">
+          <p class="bio-paragraph" *ngIf="doctorDetail.doctor.bioEn && !doctorDetail.doctor.bioAr && languageService.currentLang() === 'ar'">
             {{ doctorDetail.doctor.bioEn }}
           </p>
-          <div *ngIf="!doctorDetail.doctor.bioEn && !doctorDetail.doctor.bioAr" class="text-muted fs-sm">
-            {{ 'No bio notes provided.' | translate }}
+          <div *ngIf="!doctorDetail.doctor.bioEn && !doctorDetail.doctor.bioAr" class="empty-info-box text-muted">
+            <svg class="empty-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span>{{ 'No biography details provided.' | translate }}</span>
           </div>
         </div>
       </div>
 
       <!-- Affiliated Clinics & Locations -->
-      <div class="detail-section-card">
-        <h3 class="section-card-title">🏥 {{ 'Associated Clinics & Locations' | translate }}</h3>
-        <div class="clinics-vertical-deck mt-3">
-          <div *ngFor="let cl of doctorDetail.clinics" class="clinic-location-strip">
-            <div class="clinic-strip-header">
-              <span class="clinic-location-icon">🏥</span>
-              <div class="clinic-strip-names">
-                <strong>{{ languageService.translate(cl.clinicNameEn, cl.clinicNameAr) || ('Clinic Location' | translate) }}</strong>
-                <span>{{ languageService.translate(cl.branchNameEn, cl.branchNameAr) || ('Main Branch' | translate) }}</span>
+      <div class="detail-card">
+        <h2 class="card-heading flex-align-center gap-2">
+          <svg class="card-title-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 21h18"></path>
+            <path d="M5 21V7l8-4v18"></path>
+            <path d="M19 21V11l-6-3"></path>
+            <path d="M9 9h.01"></path>
+            <path d="M9 12h.01"></path>
+            <path d="M9 15h.01"></path>
+            <path d="M9 18h.01"></path>
+          </svg>
+          <span>{{ 'Associated Clinics & Locations' | translate }}</span>
+        </h2>
+        
+        <div class="clinic-locations-list mt-3">
+          <div *ngFor="let cl of doctorDetail.clinics" class="location-item-card">
+            <div class="location-card-header">
+              <div class="hosp-icon-badge" [class.has-logo]="cl.logoUrl">
+                <img *ngIf="cl.logoUrl" [src]="cl.logoUrl | apiUrl" (error)="cl.logoUrl = ''" class="clinic-logo-badge-img" [alt]="languageService.translate(cl.clinicNameEn, cl.clinicNameAr)">
+                <svg *ngIf="!cl.logoUrl" class="hosp-badge-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 21h18"></path>
+                  <path d="M5 21V7l8-4v18"></path>
+                  <path d="M19 21V11l-6-3"></path>
+                </svg>
               </div>
-              <span class="badge badge-outline-teal designation-badge" *ngIf="cl.isPrimary">{{ 'Primary Location' | translate }}</span>
+              <div class="location-title-group">
+                <div class="location-name-row flex-align-center gap-2">
+                  <h3 class="location-clinic-name">{{ languageService.translate(cl.clinicNameEn, cl.clinicNameAr) || ('Clinic Location' | translate) }}</h3>
+                  <span class="primary-loc-tag" *ngIf="cl.isPrimary">{{ 'Primary Location' | translate }}</span>
+                </div>
+                <div class="location-branch-sub">{{ languageService.translate(cl.branchNameEn, cl.branchNameAr) || ('Main Branch' | translate) }}</div>
+              </div>
             </div>
-            
-            <div class="clinic-strip-details mt-2">
-              <div>🎯 <strong>{{ 'Department:' | translate }}</strong> {{ (cl.department | translate) || ('General Practice' | translate) }}</div>
-              <div>💵 <strong>{{ 'Fee:' | translate }}</strong> {{ 'SAR' | translate }} {{ cl.consultationFeeSar || doctorDetail.doctor.consultationFeeSar }}</div>
-              <div>📅 <strong>{{ 'Joined:' | translate }}</strong> {{ cl.startDate | date:'mediumDate' }}</div>
+
+            <div class="location-meta-grid mt-3">
+              <div class="meta-item">
+                <svg class="meta-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="16"></line>
+                  <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+                <span><strong>{{ 'Department:' | translate }}</strong> {{ (cl.department | translate) || ('General Practice' | translate) }}</span>
+              </div>
+
+              <div class="meta-item">
+                <svg class="meta-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+                  <circle cx="12" cy="12" r="2"></circle>
+                </svg>
+                <span><strong>{{ 'Fee:' | translate }}</strong> SAR {{ cl.consultationFeeSar || doctorDetail.doctor.consultationFeeSar }}</span>
+              </div>
+
+              <div class="meta-item">
+                <svg class="meta-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                <span><strong>{{ 'Joined:' | translate }}</strong> {{ cl.startDate | date:'mediumDate' }}</span>
+              </div>
             </div>
           </div>
-          
-          <div *ngIf="doctorDetail.clinics.length === 0" class="text-center text-muted py-4 fs-sm">
-            {{ 'No registered clinical locations assigned.' | translate }}
+
+          <div *ngIf="doctorDetail.clinics.length === 0" class="empty-info-box text-muted">
+            <svg class="empty-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span>{{ 'No registered clinical locations assigned.' | translate }}</span>
           </div>
         </div>
       </div>
 
       <!-- Academic Qualifications -->
-      <div class="detail-section-card">
-        <h3 class="section-card-title">🎓 {{ 'Academic Qualifications' | translate }}</h3>
-        <div class="qualifications-vertical-deck mt-3">
-          <div *ngFor="let ql of doctorDetail.qualifications" class="qualification-strip">
-            <div class="qualification-strip-header">
-              <span class="degree-icon">📜</span>
-              <div class="qualification-strip-meta">
-                <strong>{{ ql.degree }}</strong>
-                <span>{{ ql.institution }}, {{ ql.country }}</span>
-              </div>
-              <span class="graduation-year-badge">{{ 'Year' | translate }} {{ ql.yearObtained }}</span>
+      <div class="detail-card">
+        <h2 class="card-heading flex-align-center gap-2">
+          <svg class="card-title-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+          </svg>
+          <span>{{ 'Academic Qualifications' | translate }}</span>
+        </h2>
+
+        <div class="qualifications-list mt-3">
+          <div *ngFor="let ql of doctorDetail.qualifications" class="qualification-card">
+            <div class="degree-icon-wrap">
+              <svg class="degree-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+            </div>
+            <div class="degree-info-group">
+              <h3 class="degree-title">{{ ql.degree }}</h3>
+              <div class="degree-institution">{{ ql.institution }}, {{ ql.country }}</div>
+            </div>
+            <div class="degree-year-badge">
+              <span>{{ 'Year' | translate }} {{ ql.yearObtained }}</span>
             </div>
           </div>
 
-          <div *ngIf="doctorDetail.qualifications.length === 0" class="text-center text-muted py-4 fs-sm">
-            {{ 'No qualifications recorded on profile file.' | translate }}
+          <div *ngIf="doctorDetail.qualifications.length === 0" class="empty-info-box text-muted">
+            <svg class="empty-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span>{{ 'No qualifications recorded on profile file.' | translate }}</span>
           </div>
         </div>
       </div>
 
     </div>
 
-    <!-- Booking Floating action bar if user wants to schedule an appointment -->
-    <!-- Removed standard side elements; kept layout highly structured -->
+    <!-- Right Sidebar Column -->
+    <div class="sidebar-column flex-col gap-4">
+      
+      <!-- Quick Booking Action Box -->
+      <div class="detail-card booking-cta-card">
+        <h3 class="card-heading border-0 pb-0 flex-align-center gap-2">
+          <svg class="card-title-svg text-teal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <span>{{ 'Book Consultation' | translate }}</span>
+        </h3>
+
+        <div class="cta-fee-summary mt-3">
+          <span class="cta-fee-label">{{ 'Consultation Fee' | translate }}</span>
+          <span class="cta-fee-amount">SAR {{ doctorDetail.doctor.consultationFeeSar || 150 }}</span>
+        </div>
+
+        <p class="cta-description text-muted fs-sm mt-2">
+          {{ 'Select an available clinic branch, date, and appointment slot.' | translate }}
+        </p>
+
+        <a routerLink="/patient/book-appointment" [queryParams]="{ doctorId: doctorDetail.doctor.doctorId }" class="btn btn-primary w-100 btn-action-touch flex-align-center justify-center gap-2 mt-3">
+          <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>{{ 'Book Appointment Now' | translate }}</span>
+        </a>
+      </div>
+
+      <!-- Spoken Languages -->
+      <div class="detail-card">
+        <h3 class="card-heading flex-align-center gap-2">
+          <svg class="card-title-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          </svg>
+          <span>{{ 'Spoken Languages' | translate }}</span>
+        </h3>
+
+        <div class="languages-list mt-3">
+          <div *ngFor="let lang of doctorDetail.languages" class="language-item-row flex-align-center justify-between">
+            <span class="flex-align-center gap-2">
+              <svg class="lang-globe-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+              </svg>
+              <strong class="text-dark fs-sm">{{ getLanguageName(lang.languageId) }}</strong>
+            </span>
+            <span class="badge badge-outline-teal">{{ lang.proficiency | translate }}</span>
+          </div>
+
+          <div *ngIf="doctorDetail.languages.length === 0" class="empty-info-box text-muted">
+            <svg class="empty-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+            </svg>
+            <span>{{ 'No languages documented.' | translate }}</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
 
   </div>
+
 </div>

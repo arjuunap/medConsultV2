@@ -888,3 +888,184 @@
   border-color: var(--border) !important;
   box-shadow: none !important;
 }
+
+/* Flex Alignment & Vector Icon Utility Classes */
+.flex-align-center {
+  display: inline-flex;
+  align-items: center;
+}
+
+.warning-svg {
+  width: 28px;
+  height: 28px;
+  stroke: #b45309;
+}
+
+.tab-btn-icon-svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+.rx-paper-icon-wrap {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: var(--teal-l);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rx-paper-icon-svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--teal-d);
+}
+
+.meta-icon-svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+.callout-icon-svg {
+  width: 15px;
+  height: 15px;
+  stroke: var(--teal);
+  flex-shrink: 0;
+}
+
+.sec-title-icon-svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--teal);
+  flex-shrink: 0;
+}
+
+.med-icon-svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--teal);
+}
+
+.badge-icon-svg {
+  width: 13px;
+  height: 13px;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+.warning-icon-svg {
+  width: 15px;
+  height: 15px;
+  stroke: #D97706;
+  flex-shrink: 0;
+}
+
+.adherence-title-svg {
+  width: 15px;
+  height: 15px;
+  stroke: var(--teal);
+  flex-shrink: 0;
+}
+
+.btn-check-svg {
+  width: 13px;
+  height: 13px;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+.dot-indicator-icon-svg {
+  width: 10px;
+  height: 10px;
+  stroke: currentColor;
+}
+
+.empty-state-svg {
+  width: 48px;
+  height: 48px;
+  stroke: var(--teal);
+}
+
+.vitals-title-svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--teal);
+  flex-shrink: 0;
+}
+
+.btn-action-icon-svg {
+  width: 16px;
+  height: 16px;
+  stroke: #ffffff;
+  flex-shrink: 0;
+}
+
+.vital-time-svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+.vital-svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--teal);
+  flex-shrink: 0;
+}
+
+.heart-svg {
+  color: #DC2626;
+}
+
+.blood-svg {
+  stroke: #DC2626;
+}
+
+.lab-title-svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--teal);
+  flex-shrink: 0;
+}
+
+.lab-meta-svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+.annotation-icon-svg {
+  width: 15px;
+  height: 15px;
+  stroke: var(--teal);
+  flex-shrink: 0;
+}
+
+.attachment-icon-svg {
+  width: 15px;
+  height: 15px;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+.download-icon-svg {
+  width: 14px;
+  height: 14px;
+  stroke: #ffffff;
+  flex-shrink: 0;
+}
+
+.modal-title-svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--teal);
+  flex-shrink: 0;
+}

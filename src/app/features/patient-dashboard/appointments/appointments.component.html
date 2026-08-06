@@ -2,15 +2,27 @@
   <!-- Header Banner -->
   <div class="page-header-banner d-flex justify-between align-center flex-wrap gap-3">
     <div>
-      <span class="eyebrow-badge">🗓️ {{ 'Appointment Center' | translate }}</span>
+      <span class="eyebrow-badge flex-align-center gap-1">
+        <svg class="eyebrow-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        <span>{{ 'Appointment Center' | translate }}</span>
+      </span>
       <h1 class="page-title">{{ 'My Appointments' | translate }}</h1>
       <p class="page-subtitle">
         {{ 'Manage your upcoming consultations, view clinical session history, and modify scheduled visits.' | translate }}
       </p>
     </div>
     <div>
-      <a routerLink="/patient/book-appointment" class="btn btn-primary btn-action-touch">
-        + {{ 'Book New Appointment' | translate }}
+      <a routerLink="/patient/book-appointment" class="btn btn-primary btn-action-touch flex-align-center gap-2">
+        <svg class="btn-action-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        <span>{{ 'Book New Appointment' | translate }}</span>
       </a>
     </div>
   </div>
@@ -57,11 +69,17 @@
     </div>
 
     <div class="d-flex justify-end gap-2 mt-3">
-      <button class="btn btn-outline btn-sm" (click)="clearFilters()">
-        🧹 {{ 'Clear Filters' | translate }}
+      <button class="btn btn-outline btn-sm flex-align-center gap-1" (click)="clearFilters()">
+        <svg class="btn-sm-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+        </svg>
+        <span>{{ 'Clear Filters' | translate }}</span>
       </button>
-      <button class="btn btn-primary btn-sm" (click)="loadAppointments()">
-        🔍 {{ 'Refresh' | translate }}
+      <button class="btn btn-primary btn-sm flex-align-center gap-1" (click)="loadAppointments()">
+        <svg class="btn-sm-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+        </svg>
+        <span>{{ 'Refresh' | translate }}</span>
       </button>
     </div>
   </div>
@@ -97,11 +115,26 @@
             </td>
             <td>
               <div class="fw-bold">{{ app.scheduledDate | date:'mediumDate' }}</div>
-              <div class="fs-xs text-muted">⏰ {{ app.startTime.substring(0,5) }} ({{ app.durationMinutes }} {{ 'min' | translate }})</div>
+              <div class="fs-xs text-muted flex-align-center gap-1 mt-1">
+                <svg class="table-clock-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span>{{ app.startTime.substring(0,5) }} ({{ app.durationMinutes }} {{ 'min' | translate }})</span>
+              </div>
             </td>
             <td>
-              <span class="mode-badge" [class.mode-clinic]="app.sessionType === 'IN_CLINIC'" [class.mode-video]="app.sessionType === 'VIDEO_CALL'">
-                {{ app.sessionType === 'IN_CLINIC' ? ('🏢 In-Clinic' | translate) : ('💻 Video Call' | translate) }}
+              <span class="mode-badge flex-align-center gap-1" [class.mode-clinic]="app.sessionType === 'IN_CLINIC'" [class.mode-video]="app.sessionType === 'VIDEO_CALL'">
+                <svg class="mode-inline-svg" *ngIf="app.sessionType === 'IN_CLINIC'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 6H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"></path>
+                  <path d="M12 2v4M9 12h6M12 9v6"></path>
+                </svg>
+                <svg class="mode-inline-svg" *ngIf="app.sessionType !== 'IN_CLINIC'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                  <line x1="8" y1="21" x2="16" y2="21"></line>
+                  <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+                <span>{{ app.sessionType === 'IN_CLINIC' ? ('In-Clinic' | translate) : ('Video Call' | translate) }}</span>
               </span>
             </td>
             <td>
@@ -117,8 +150,12 @@
               </span>
             </td>
             <td class="text-end">
-              <button class="btn btn-outline btn-sm px-3" (click)="openDetails(app)">
-                👁️ {{ 'View Details' | translate }}
+              <button class="btn btn-outline btn-sm px-3 flex-align-center gap-1 ms-auto" (click)="openDetails(app)">
+                <svg class="btn-sm-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <span>{{ 'View Details' | translate }}</span>
               </button>
             </td>
           </tr>
@@ -149,15 +186,28 @@
             {{ app.status | translate }}
           </span>
         </div>
-        <div class="fs-sm mb-1">
-          <strong>🗓️ {{ app.scheduledDate | date:'mediumDate' }}</strong> &#64; ⏰ {{ app.startTime.substring(0,5) }}
+        <div class="fs-sm mb-1 flex-align-center gap-1">
+          <svg class="table-clock-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <strong>{{ app.scheduledDate | date:'mediumDate' }}</strong> &#64; {{ app.startTime.substring(0,5) }}
         </div>
-        <div class="fs-xs text-muted mb-2">
-          🏢 {{ languageService.isArabic ? app.clinicNameAr : app.clinicNameEn }} ({{ app.sessionType === 'IN_CLINIC' ? ('In-Clinic' | translate) : ('Video Call' | translate) }})
+        <div class="fs-xs text-muted mb-2 flex-align-center gap-1">
+          <svg class="table-clock-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"></path>
+          </svg>
+          <span>{{ languageService.isArabic ? app.clinicNameAr : app.clinicNameEn }} ({{ app.sessionType === 'IN_CLINIC' ? ('In-Clinic' | translate) : ('Video Call' | translate) }})</span>
         </div>
         <div class="text-end">
-          <button class="btn btn-outline btn-sm w-100" (click)="openDetails(app)">
-            👁️ {{ 'View Details' | translate }}
+          <button class="btn btn-outline btn-sm w-100 flex-align-center justify-center gap-1" (click)="openDetails(app)">
+            <svg class="btn-sm-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <span>{{ 'View Details' | translate }}</span>
           </button>
         </div>
       </div>
@@ -173,11 +223,17 @@
         {{ 'Showing page' | translate }} {{ page + 1 }} {{ 'of' | translate }} {{ totalPages }} ({{ totalElements }} {{ 'total records' | translate }})
       </span>
       <div class="d-flex gap-2">
-        <button class="btn btn-outline btn-sm" [disabled]="page === 0" (click)="prevPage()">
-          ◀ {{ 'Previous' | translate }}
+        <button class="btn btn-outline btn-sm flex-align-center gap-1" [disabled]="page === 0" (click)="prevPage()">
+          <svg class="page-arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span>{{ 'Previous' | translate }}</span>
         </button>
-        <button class="btn btn-outline btn-sm" [disabled]="page >= totalPages - 1" (click)="nextPage()">
-          {{ 'Next' | translate }} ▶
+        <button class="btn btn-outline btn-sm flex-align-center gap-1" [disabled]="page >= totalPages - 1" (click)="nextPage()">
+          <span>{{ 'Next' | translate }}</span>
+          <svg class="page-arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
         </button>
       </div>
     </div>
@@ -190,7 +246,14 @@
     <!-- Hero Header Banner -->
     <div class="spec-modal-header d-flex justify-between align-center p-4">
       <div class="d-flex align-center gap-3">
-        <div class="spec-icon-badge">🗓️</div>
+        <div class="spec-icon-badge">
+          <svg class="spec-modal-header-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+        </div>
         <div>
           <h3 class="m-0 fw-bold text-white fs-5">{{ 'Appointment Specification Details' | translate }}</h3>
           <p class="m-0 text-white-80 fs-xs mt-1">ID: #{{ selectedAppointment.appointmentId ? selectedAppointment.appointmentId.substring(0, 8) : 'APT-REF' }}</p>
@@ -217,9 +280,19 @@
           <div>
             <div class="d-flex align-center gap-2">
               <h4 class="m-0 text-dark fw-bold spec-doctor-name">{{ getDoctorDisplayName(selectedAppointment.doctorName) }}</h4>
-              <span class="moh-badge-mini" title="MOH Verified">✓ MOH</span>
+              <span class="moh-badge-mini flex-align-center gap-1" title="MOH Verified">
+                <svg class="check-mini-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>MOH</span>
+              </span>
             </div>
-            <div class="fs-sm text-teal fw-medium mt-1">🩺 {{ selectedAppointment.department || ('General Specialist' | translate) }}</div>
+            <div class="fs-sm text-teal fw-medium mt-1 flex-align-center gap-1">
+              <svg class="dept-inline-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+              </svg>
+              <span>{{ selectedAppointment.department || ('General Specialist' | translate) }}</span>
+            </div>
           </div>
         </div>
         <div class="fee-pill-card">
@@ -235,35 +308,77 @@
           <div class="spec-cards-grid">
             <!-- Scheduled Date & Time Card -->
             <div class="spec-info-card">
-              <div class="card-icon-wrapper teal-icon">📅</div>
+              <div class="card-icon-wrapper teal-icon">
+                <svg class="card-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+              </div>
               <div class="card-content">
                 <div class="info-label">{{ 'Scheduled Date & Time' | translate }}</div>
                 <div class="info-value-main">{{ selectedAppointment.scheduledDate | date:'fullDate' }}</div>
-                <div class="info-value-sub">
-                  ⏰ <strong>{{ selectedAppointment.startTime.substring(0,5) }}</strong> 
-                  <span class="duration-badge">⏱️ {{ selectedAppointment.durationMinutes }} {{ 'min' | translate }}</span>
+                <div class="info-value-sub flex-align-center gap-1">
+                  <svg class="sub-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  <strong>{{ selectedAppointment.startTime.substring(0,5) }}</strong> 
+                  <span class="duration-badge flex-align-center gap-1">
+                    <svg class="badge-mini-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <span>{{ selectedAppointment.durationMinutes }} {{ 'min' | translate }}</span>
+                  </span>
                 </div>
               </div>
             </div>
 
             <!-- Clinical Assignment Card -->
             <div class="spec-info-card">
-              <div class="card-icon-wrapper blue-icon">🏢</div>
+              <div class="card-icon-wrapper blue-icon">
+                <svg class="card-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 6H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"></path>
+                  <path d="M12 2v4M9 12h6M12 9v6"></path>
+                </svg>
+              </div>
               <div class="card-content">
                 <div class="info-label">{{ 'Clinical Assignment' | translate }}</div>
                 <div class="info-value-main">{{ languageService.isArabic ? selectedAppointment.clinicNameAr : selectedAppointment.clinicNameEn }}</div>
-                <div class="info-value-sub text-muted">📍 {{ languageService.isArabic ? selectedAppointment.branchNameAr : selectedAppointment.branchNameEn }}</div>
+                <div class="info-value-sub text-muted flex-align-center gap-1">
+                  <svg class="sub-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  <span>{{ languageService.isArabic ? selectedAppointment.branchNameAr : selectedAppointment.branchNameEn }}</span>
+                </div>
               </div>
             </div>
 
             <!-- Consultation Details Card -->
             <div class="spec-info-card">
-              <div class="card-icon-wrapper purple-icon">🩺</div>
+              <div class="card-icon-wrapper purple-icon">
+                <svg class="card-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4.8 2.3A10 10 0 1 0 21.7 15.2M20 9A8 8 0 1 1 4 9"></path>
+                  <path d="M12 5v8M9 9h6"></path>
+                </svg>
+              </div>
               <div class="card-content">
                 <div class="info-label">{{ 'Consultation Details' | translate }}</div>
                 <div class="d-flex align-center gap-2 flex-wrap mt-1">
-                  <span class="mode-badge" [class.mode-clinic]="selectedAppointment.sessionType === 'IN_CLINIC'" [class.mode-video]="selectedAppointment.sessionType === 'VIDEO_CALL'">
-                    {{ selectedAppointment.sessionType === 'IN_CLINIC' ? ('🏢 In-Clinic Visit' | translate) : ('💻 Video Call Session' | translate) }}
+                  <span class="mode-badge flex-align-center gap-1" [class.mode-clinic]="selectedAppointment.sessionType === 'IN_CLINIC'" [class.mode-video]="selectedAppointment.sessionType === 'VIDEO_CALL'">
+                    <svg class="mode-inline-svg" *ngIf="selectedAppointment.sessionType === 'IN_CLINIC'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 6H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"></path>
+                      <path d="M12 2v4M9 12h6M12 9v6"></path>
+                    </svg>
+                    <svg class="mode-inline-svg" *ngIf="selectedAppointment.sessionType !== 'IN_CLINIC'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                      <line x1="8" y1="21" x2="16" y2="21"></line>
+                      <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                    <span>{{ selectedAppointment.sessionType === 'IN_CLINIC' ? ('In-Clinic Visit' | translate) : ('Video Call Session' | translate) }}</span>
                   </span>
                   <span class="type-badge">{{ selectedAppointment.appointmentType?.replace('_', ' ') | translate }}</span>
                 </div>
@@ -274,7 +389,12 @@
           <!-- Reason for Consultation Box -->
           <div class="spec-reason-card mt-3">
             <div class="reason-card-header d-flex align-center gap-2">
-              <span>📝</span>
+              <svg class="card-sec-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+              </svg>
               <span class="info-label m-0">{{ 'Reason for Consultation' | translate }}</span>
             </div>
             <div class="reason-card-body">
@@ -285,7 +405,11 @@
           <!-- Cancellation Information Alert Card (if cancelled) -->
           <div class="cancellation-alert-card mt-3" *ngIf="selectedAppointment.status === 'CANCELLED' || selectedAppointment.status === 'NO_SHOW'">
             <div class="cancellation-alert-header d-flex align-center gap-2 text-danger">
-              <span>⚠️</span>
+              <svg class="alert-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
               <strong class="m-0">{{ 'Cancellation Information' | translate }}</strong>
             </div>
             <div class="cancellation-alert-body mt-2">
@@ -299,27 +423,44 @@
         <!-- Shortcuts / Quick Actions Sidebar -->
         <div class="details-sidebar spec-sidebar" *ngIf="hasActions(selectedAppointment)">
           <h5 class="fw-bold mb-3 d-flex align-center gap-2">
-            <span>⚡</span> {{ 'Quick Shortcuts' | translate }}
+            <svg class="shortcut-header-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+            <span>{{ 'Quick Shortcuts' | translate }}</span>
           </h5>
           <div class="shortcut-buttons d-flex flex-column gap-2">
             <!-- Review -->
-            <button class="btn btn-teal btn-sm w-100 shadow-sm" *ngIf="selectedAppointment.status === 'COMPLETED'" (click)="openReviewModal(selectedAppointment)">
-              ⭐ {{ 'Write Review' | translate }}
+            <button class="btn btn-teal btn-sm w-100 shadow-sm flex-align-center justify-center gap-1" *ngIf="selectedAppointment.status === 'COMPLETED'" (click)="openReviewModal(selectedAppointment)">
+              <svg class="btn-sm-icon-svg" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+              <span>{{ 'Write Review' | translate }}</span>
             </button>
             
             <!-- Reschedule / Cancel -->
             <ng-container *ngIf="selectedAppointment.status === 'SCHEDULED' || selectedAppointment.status === 'CONFIRMED'">
-              <button class="btn btn-teal btn-sm w-100 shadow-sm" (click)="openReschedule(selectedAppointment)">
-                🔄 {{ 'Reschedule Visit' | translate }}
+              <button class="btn btn-teal btn-sm w-100 shadow-sm flex-align-center justify-center gap-1" (click)="openReschedule(selectedAppointment)">
+                <svg class="btn-sm-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+                </svg>
+                <span>{{ 'Reschedule Visit' | translate }}</span>
               </button>
-              <button class="btn btn-outline-danger btn-sm w-100" (click)="openCancel(selectedAppointment)">
-                ✕ {{ 'Cancel Appointment' | translate }}
+              <button class="btn btn-outline-danger btn-sm w-100 flex-align-center justify-center gap-1" (click)="openCancel(selectedAppointment)">
+                <svg class="btn-sm-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="15" y1="9" x2="9" y2="15"></line>
+                  <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+                <span>{{ 'Cancel Appointment' | translate }}</span>
               </button>
             </ng-container>
 
             <!-- Go to Chat -->
-            <button class="btn btn-primary btn-sm w-100 shadow-sm" *ngIf="selectedAppointment.consultationId && (selectedAppointment.status === 'CONFIRMED' || selectedAppointment.status === 'COMPLETED')" (click)="goToChat(selectedAppointment.consultationId)">
-              💬 {{ 'Go to Chat Session' | translate }}
+            <button class="btn btn-primary btn-sm w-100 shadow-sm flex-align-center justify-center gap-1" *ngIf="selectedAppointment.consultationId && (selectedAppointment.status === 'CONFIRMED' || selectedAppointment.status === 'COMPLETED')" (click)="goToChat(selectedAppointment.consultationId)">
+              <svg class="btn-sm-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+              <span>{{ 'Go to Chat Session' | translate }}</span>
             </button>
           </div>
         </div>
@@ -336,7 +477,14 @@
 <div class="modal-backdrop-overlay" *ngIf="showCancelModal && selectedAppointment" (click)="closeCancel()">
   <div class="modal-card" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h3 class="text-danger">✕ {{ 'Cancel Appointment' | translate }}</h3>
+      <h3 class="text-danger flex-align-center gap-2">
+        <svg class="modal-title-alert-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="15" y1="9" x2="9" y2="15"></line>
+          <line x1="9" y1="9" x2="15" y2="15"></line>
+        </svg>
+        <span>{{ 'Cancel Appointment' | translate }}</span>
+      </h3>
       <button class="btn-close-modal" (click)="closeCancel()">✕</button>
     </div>
 
@@ -376,13 +524,23 @@
 <div class="modal-backdrop-overlay" *ngIf="rescheduleModalOpen && selectedAppointment" (click)="closeReschedule()">
   <div class="modal-card" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h3>🔄 {{ 'Reschedule Consultation' | translate }}</h3>
+      <h3 class="flex-align-center gap-2">
+        <svg class="modal-title-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+        </svg>
+        <span>{{ 'Reschedule Consultation' | translate }}</span>
+      </h3>
       <button class="btn-close-modal" (click)="closeReschedule()">✕</button>
     </div>
 
     <div class="modal-body">
       <div class="reschedule-context-strip">
-        <span class="icon">👨‍⚕️</span>
+        <div class="reschedule-doc-avatar-wrap">
+          <svg class="doc-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4.8 2.3A10 10 0 1 0 21.7 15.2M20 9A8 8 0 1 1 4 9"></path>
+            <path d="M12 5v8M9 9h6"></path>
+          </svg>
+        </div>
         <div>
           <h4>{{ getDoctorDisplayName(selectedAppointment.doctorName) }}</h4>
           <p>{{ languageService.isArabic ? selectedAppointment.clinicNameAr : selectedAppointment.clinicNameEn }}</p>
@@ -391,7 +549,15 @@
 
       <!-- Dates horizontal picker -->
       <div class="reschedule-section">
-        <label class="section-label">📅 {{ 'Select New Appointment Date *' | translate }}</label>
+        <label class="section-label flex-align-center gap-1">
+          <svg class="sec-label-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <span>{{ 'Select New Appointment Date *' | translate }}</span>
+        </label>
         
         <div class="date-chips-scroll-container">
           <div 
@@ -404,8 +570,7 @@
           >
             <span class="chip-day-name">{{ day.dayName }}</span>
             <span class="chip-date-label">{{ day.label }}</span>
-            <span class="slots-badge" *ngIf="day.hasSlots">🟢</span>
-            <span class="slots-badge" *ngIf="!day.hasSlots">🔴</span>
+            <span class="slots-badge slots-badge-dot" [class.badge-active]="day.hasSlots"></span>
           </div>
         </div>
 
@@ -418,10 +583,21 @@
 
       <!-- Slots selection grid -->
       <div class="reschedule-section mt-3">
-        <label class="section-label">⏰ {{ 'Available Slots for' | translate }} {{ bookingDate }}</label>
+        <label class="section-label flex-align-center gap-1">
+          <svg class="sec-label-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span>{{ 'Available Slots for' | translate }} {{ bookingDate }}</span>
+        </label>
         
-        <div *ngIf="availableSlots.length === 0" class="no-slots-warning-card">
-          ⚠️ {{ 'No open slots warning' | translate }}
+        <div *ngIf="availableSlots.length === 0" class="no-slots-warning-card flex-align-center gap-2">
+          <svg class="warning-mini-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span>{{ 'No open consultation slots available for this date.' | translate }}</span>
         </div>
 
         <div class="slots-grid-wrapper" *ngIf="availableSlots.length > 0">
@@ -447,12 +623,23 @@
     <div class="modal-footer">
       <button class="btn btn-outline" (click)="closeReschedule()">{{ 'Cancel' | translate }}</button>
       <button 
-        class="btn btn-success" 
+        class="btn btn-success flex-align-center gap-1" 
         [disabled]="isSubmittingReschedule || !selectedSlot"
         (click)="confirmReschedule()"
       >
-        <span *ngIf="isSubmittingReschedule">⏳ {{ 'Processing...' | translate }}</span>
-        <span *ngIf="!isSubmittingReschedule">🚀 {{ 'Confirm Reschedule' | translate }}</span>
+        <span *ngIf="isSubmittingReschedule" class="flex-align-center gap-1">
+          <svg class="spinner-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
+            <path d="M4 12a8 8 0 0 1 8-8"></path>
+          </svg>
+          <span>{{ 'Processing...' | translate }}</span>
+        </span>
+        <span *ngIf="!isSubmittingReschedule" class="flex-align-center gap-1">
+          <svg class="submit-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>{{ 'Confirm Reschedule' | translate }}</span>
+        </span>
       </button>
     </div>
   </div>
@@ -462,7 +649,12 @@
 <div class="modal-backdrop-overlay" *ngIf="showReviewModal && selectedAppointment" (click)="closeReviewModal()">
   <div class="modal-card" (click)="$event.stopPropagation()" style="max-width: 550px;">
     <div class="modal-header" style="background: var(--teal); color: white;">
-      <h3>⭐ {{ 'Rate Your Consultation' | translate }}</h3>
+      <h3 class="flex-align-center gap-2">
+        <svg class="modal-title-svg" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+        </svg>
+        <span>{{ 'Rate Your Consultation' | translate }}</span>
+      </h3>
       <button class="btn-close-modal" (click)="closeReviewModal()" style="color: white; background: transparent; border: none; font-size: 1.25rem; cursor: pointer;">✕</button>
     </div>
 
@@ -470,7 +662,13 @@
       <form [formGroup]="reviewForm">
         <!-- Doctor Review section -->
         <div class="review-section" style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #E5E7EB;">
-          <h4 style="color: var(--teal); font-weight: 700; margin-bottom: 12px; font-size: 1.1rem;">👨‍⚕️ {{ 'Doctor Review' | translate }}: {{ getDoctorDisplayName(selectedAppointment.doctorName) }}</h4>
+          <h4 class="flex-align-center gap-2" style="color: var(--teal); font-weight: 700; margin-bottom: 12px; font-size: 1.1rem;">
+            <svg class="rev-sec-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4.8 2.3A10 10 0 1 0 21.7 15.2M20 9A8 8 0 1 1 4 9"></path>
+              <path d="M12 5v8M9 9h6"></path>
+            </svg>
+            <span>{{ 'Doctor Review' | translate }}: {{ getDoctorDisplayName(selectedAppointment.doctorName) }}</span>
+          </h4>
           
           <div class="form-group mb-3">
             <label class="form-label" style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 6px;">{{ 'Overall Doctor Rating (1-5) *' | translate }}</label>
@@ -518,7 +716,13 @@
 
         <!-- Clinic Review section -->
         <div class="review-section" style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #E5E7EB;">
-          <h4 style="color: var(--teal); font-weight: 700; margin-bottom: 12px; font-size: 1.1rem;">🏥 {{ 'Clinic Review' | translate }}: {{ languageService.isArabic ? selectedAppointment.clinicNameAr : selectedAppointment.clinicNameEn }}</h4>
+          <h4 class="flex-align-center gap-2" style="color: var(--teal); font-weight: 700; margin-bottom: 12px; font-size: 1.1rem;">
+            <svg class="rev-sec-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 6H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"></path>
+              <path d="M12 2v4M9 12h6M12 9v6"></path>
+            </svg>
+            <span>{{ 'Clinic Review' | translate }}: {{ languageService.isArabic ? selectedAppointment.clinicNameAr : selectedAppointment.clinicNameEn }}</span>
+          </h4>
           
           <div class="form-group mb-3">
             <label class="form-label" style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 6px;">{{ 'Overall Clinic Rating (1-5) *' | translate }}</label>
@@ -583,8 +787,11 @@
 
     <div class="modal-footer" style="padding: 16px 20px; border-top: 1px solid #F3F4F6; display: flex; justify-content: flex-end; gap: 12px; background: #F9FAFB; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
       <button class="btn btn-outline" (click)="closeReviewModal()" style="padding: 10px 20px; font-weight: 600;">{{ 'Cancel' | translate }}</button>
-      <button class="btn btn-primary" [disabled]="reviewForm.invalid" (click)="submitReview()" style="padding: 10px 24px; font-weight: 600;">
-        ⭐ {{ 'Submit Feedback' | translate }}
+      <button class="btn btn-primary flex-align-center gap-2" [disabled]="reviewForm.invalid" (click)="submitReview()" style="padding: 10px 24px; font-weight: 600;">
+        <svg class="submit-btn-star-svg" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+        </svg>
+        <span>{{ 'Submit Feedback' | translate }}</span>
       </button>
     </div>
   </div>

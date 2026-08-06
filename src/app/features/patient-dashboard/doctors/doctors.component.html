@@ -5,7 +5,10 @@
     <div class="banner-overlay"></div>
     <div class="banner-content">
       <div class="banner-badge">
-        <span class="badge-icon">👨‍⚕️</span>
+        <svg class="banner-badge-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M4.8 2.3A10 10 0 1 0 21.7 15.2M20 9A8 8 0 1 1 4 9"></path>
+          <path d="M12 5v8M9 9h6"></path>
+        </svg>
         <span class="badge-text">{{ 'Medical Specialist Directory' | translate }}</span>
       </div>
       <h2 class="dashboard-title">{{ 'Browse Doctors' | translate }}</h2>
@@ -22,7 +25,10 @@
         <div class="search-input-container">
           <input type="text" [(ngModel)]="searchQuery" (input)="applyFilters()"
             [placeholder]="'Type to search...' | translate" class="filter-input-text">
-          <span class="search-input-icon">🔍</span>
+          <svg class="search-input-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
         </div>
       </div>
 
@@ -69,7 +75,10 @@
     <div class="advanced-toggle-wrapper">
       <button class="advanced-toggle-btn" (click)="toggleAdvancedFilters()">
         <span class="toggle-btn-text">
-          ⚙️ {{ 'Advanced Filters' | translate }}
+          <svg class="btn-inline-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+          </svg>
+          {{ 'Advanced Filters' | translate }}
         </span>
         <span class="toggle-caret" [class.rotated]="showAdvancedFilters">▼</span>
       </button>
@@ -94,7 +103,13 @@
         <!-- Experience Slider -->
         <div class="filter-field">
           <label class="filter-label">
-            💼 {{ 'Min Experience' | translate }} 
+            <span class="label-with-icon">
+              <svg class="label-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+              </svg>
+              {{ 'Min Experience' | translate }}
+            </span>
             <span class="slider-val">{{ minExperience }} {{ 'Years' | translate }}</span>
           </label>
           <div class="slider-container">
@@ -110,7 +125,13 @@
         <!-- Max Fee Slider -->
         <div class="filter-field">
           <label class="filter-label">
-            💵 {{ 'Max Consultation Fee' | translate }} 
+            <span class="label-with-icon">
+              <svg class="label-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="1" x2="12" y2="23"></line>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+              </svg>
+              {{ 'Max Consultation Fee' | translate }}
+            </span>
             <span class="slider-val">{{ maxFee }} SAR</span>
           </label>
           <div class="slider-container">
@@ -126,7 +147,11 @@
         <!-- Reset Button -->
         <div class="filter-field d-flex align-end justify-end">
           <button class="btn btn-outline btn-reset-filters w-100" (click)="resetFilters()">
-            🔄 {{ 'Reset Filters' | translate }}
+            <svg class="btn-inline-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+              <path d="M3 3v5h5"></path>
+            </svg>
+            <span>{{ 'Reset Filters' | translate }}</span>
           </button>
         </div>
       </div>
@@ -139,21 +164,24 @@
       <div class="card-upper-section">
         <!-- Left Side: Avatar & Fee Badge -->
         <div class="card-left-identity">
-          <div class="doctor-avatar-wrapper">
+          <div class="doctor-avatar-wrapper cursor-pointer" (click)="viewDoctorDetails(doc.doctorId)">
             <img *ngIf="doc.avatarUrl" [src]="doc.avatarUrl | apiUrl" (error)="doc.avatarUrl = ''" class="doctor-circle-avatar-img" [alt]="getDoctorDisplayName(doc)">
             <div *ngIf="!doc.avatarUrl" class="doctor-circle-avatar" [style.background-color]="doc.avatarBg" [style.color]="doc.avatarColor">
               {{ doc.initials }}
             </div>
           </div>
           <span class="doctor-fee-badge">
-            <span class="fee-icon">💵</span>
+            <svg class="badge-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="12" y1="1" x2="12" y2="23"></line>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
             <span class="fee-val">{{ doc.consultationFeeSar || 150 }} SAR</span>
           </span>
         </div>
 
         <!-- Right Side: Profile Details -->
         <div class="card-right-details">
-          <h3 class="doctor-full-name">{{ getDoctorDisplayName(doc) }}</h3>
+          <h3 class="doctor-full-name cursor-pointer" (click)="viewDoctorDetails(doc.doctorId)">{{ getDoctorDisplayName(doc) }}</h3>
 
           <!-- Specialty badges -->
           <div class="doctor-specialties-row mt-1">
@@ -168,7 +196,9 @@
           <!-- Overall ratings -->
           <div class="doctor-ratings-row mt-2">
             <div class="ratings-badge-pill">
-              <span class="star-icon">⭐</span>
+              <svg class="star-icon-svg" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
               <span class="rating-val">{{ doc.overallRating || 0 }}</span>
               <span class="reviews-count">({{ doc.reviewCount || 0 }} {{ 'reviews' | translate }})</span>
             </div>
@@ -177,11 +207,18 @@
           <!-- Quick facts -->
           <div class="doctor-specs-list mt-3">
             <div class="spec-line">
-              <span class="icon-span">💼</span>
+              <svg class="spec-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+              </svg>
               <span class="spec-text">{{ 'Experience:' | translate }} <strong>{{ doc.experienceYears || 0 }} {{ 'Years' | translate }}</strong></span>
             </div>
             <div class="spec-line" *ngIf="doc.languageIds && doc.languageIds.length > 0">
-              <span class="icon-span">🌐</span>
+              <svg class="spec-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
               <span class="spec-text truncate">
                 <span *ngFor="let langId of doc.languageIds; let last = last">
                   {{ getLanguageName(langId) }}{{ !last ? ', ' : '' }}
@@ -195,10 +232,20 @@
       <!-- Action Buttons Footer -->
       <div class="card-actions-footer">
         <button class="btn btn-outline btn-view-profile flex-1" (click)="viewDoctorDetails(doc.doctorId)">
-          👤 {{ 'View Profile' | translate }}
+          <svg class="btn-inline-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span>{{ 'View Profile' | translate }}</span>
         </button>
         <button class="btn btn-primary btn-book flex-1" (click)="bookAppointment(doc.doctorId)">
-          📅 {{ 'Book Consultation' | translate }}
+          <svg class="btn-inline-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <span>{{ 'Book Consultation' | translate }}</span>
         </button>
       </div>
     </div>
@@ -207,11 +254,20 @@
   <!-- Empty State Alert Card -->
   <div class="no-doctors-alert-card" *ngIf="filteredDoctors.length === 0">
     <div class="alert-content">
-      <div class="alert-icon-wrapper">🔍</div>
+      <div class="alert-icon-wrapper">
+        <svg class="alert-search-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </div>
       <h3 class="alert-title">{{ 'No Doctors Found' | translate }}</h3>
       <p class="alert-text">{{ 'Try adjusting your search filters or click below to clear all preferences.' | translate }}</p>
       <button class="btn btn-primary btn-reset-large mt-3" (click)="resetFilters()">
-        🔄 {{ 'Show All Doctors' | translate }}
+        <svg class="btn-inline-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+          <path d="M3 3v5h5"></path>
+        </svg>
+        <span>{{ 'Show All Doctors' | translate }}</span>
       </button>
     </div>
   </div>
@@ -222,7 +278,13 @@
   <div class="modal-card" (click)="$event.stopPropagation()" style="max-width: 650px;">
     <!-- Modal Header -->
     <div class="modal-header d-flex justify-between align-center p-3">
-      <h3 class="modal-title m-0 text-white">👨‍⚕️ {{ 'Doctor Details' | translate }}</h3>
+      <h3 class="modal-title m-0 text-white flex-align-center gap-2">
+        <svg class="modal-title-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M4.8 2.3A10 10 0 1 0 21.7 15.2M20 9A8 8 0 1 1 4 9"></path>
+          <path d="M12 5v8M9 9h6"></path>
+        </svg>
+        <span>{{ 'Doctor Details' | translate }}</span>
+      </h3>
       <button class="btn-close-modal" (click)="closeDetailModal()">✕</button>
     </div>
 
@@ -241,8 +303,11 @@
               {{ spec | translateObj:'name' }}
             </span>
           </div>
-          <div class="ratings-stars mt-1 fs-sm">
-            ⭐ <strong>{{ selectedDoctorDetail.doctor.overallRating || 0 }}</strong> ({{ selectedDoctorDetail.doctor.reviewCount || 0 }} {{ 'reviews' | translate }})
+          <div class="ratings-stars mt-1 fs-sm flex-align-center gap-1">
+            <svg class="modal-star-svg" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            <strong>{{ selectedDoctorDetail.doctor.overallRating || 0 }}</strong> ({{ selectedDoctorDetail.doctor.reviewCount || 0 }} {{ 'reviews' | translate }})
           </div>
         </div>
       </div>
@@ -265,7 +330,13 @@
 
       <!-- Profile Bio Section -->
       <div class="bio-section mb-4" *ngIf="selectedDoctorDetail.doctor.bioEn || selectedDoctorDetail.doctor.bioAr">
-        <h4 class="modal-section-title">📖 {{ 'Professional Biography' | translate }}</h4>
+        <h4 class="modal-section-title flex-align-center gap-2">
+          <svg class="modal-sec-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+          </svg>
+          <span>{{ 'Professional Biography' | translate }}</span>
+        </h4>
         <p class="modal-bio-text">
           {{ languageService.isArabic ? (selectedDoctorDetail.doctor.bioAr || selectedDoctorDetail.doctor.bioEn) : (selectedDoctorDetail.doctor.bioEn || selectedDoctorDetail.doctor.bioAr) }}
         </p>
@@ -273,12 +344,24 @@
 
       <!-- Assigned Clinics Section -->
       <div class="clinics-section mb-4" *ngIf="selectedDoctorDetail.clinics && selectedDoctorDetail.clinics.length > 0">
-        <h4 class="modal-section-title">🏥 {{ 'Assigned Clinics & Locations' | translate }}</h4>
+        <h4 class="modal-section-title flex-align-center gap-2">
+          <svg class="modal-sec-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"></path>
+            <path d="M12 2v4M9 12h6M12 9v6"></path>
+          </svg>
+          <span>{{ 'Assigned Clinics & Locations' | translate }}</span>
+        </h4>
         <div class="assigned-clinics-list mt-2">
           <div *ngFor="let cl of selectedDoctorDetail.clinics" class="clinic-location-row">
             <div class="clinic-loc-info">
               <strong class="clinic-title">{{ languageService.isArabic ? (cl.clinicNameAr || cl.clinicNameEn) : (cl.clinicNameEn || cl.clinicNameAr) }}</strong>
-              <span class="clinic-branch">📍 {{ languageService.isArabic ? (cl.branchNameAr || cl.branchNameEn) : (cl.branchNameEn || cl.branchNameAr) }}</span>
+              <span class="clinic-branch flex-align-center gap-1">
+                <svg class="pin-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                <span>{{ languageService.isArabic ? (cl.branchNameAr || cl.branchNameEn) : (cl.branchNameEn || cl.branchNameAr) }}</span>
+              </span>
             </div>
             <span class="badge" [class.badge-teal]="cl.isPrimary" [class.badge-light]="!cl.isPrimary">
               {{ cl.isPrimary ? ('Primary Clinic' | translate) : ('Secondary' | translate) }}
@@ -291,7 +374,14 @@
       <div class="row-flex-grid-details">
         <!-- Languages -->
         <div class="langs-col">
-          <h4 class="modal-section-title">🌐 {{ 'Spoken Languages' | translate }}</h4>
+          <h4 class="modal-section-title flex-align-center gap-2">
+            <svg class="modal-sec-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+            <span>{{ 'Spoken Languages' | translate }}</span>
+          </h4>
           <div class="d-flex flex-wrap gap-2 mt-2">
             <span class="badge badge-light" *ngFor="let lang of selectedDoctorDetail.languages">
               {{ lang | translateObj:'name' }}
@@ -301,11 +391,22 @@
 
         <!-- Qualifications -->
         <div class="quals-col">
-          <h4 class="modal-section-title">📜 {{ 'Qualifications' | translate }}</h4>
+          <h4 class="modal-section-title flex-align-center gap-2">
+            <svg class="modal-sec-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+            </svg>
+            <span>{{ 'Qualifications' | translate }}</span>
+          </h4>
           <div class="qualifications-list mt-2">
-            <div *ngFor="let q of selectedDoctorDetail.qualifications" class="qual-item">
-              🎓 <strong>{{ q.degree }}</strong>
-              <span class="qual-detail">({{ q.institution }}, {{ q.country }} - {{ q.yearObtained }})</span>
+            <div *ngFor="let q of selectedDoctorDetail.qualifications" class="qual-item flex-align-center gap-1">
+              <svg class="qual-item-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+              </svg>
+              <span><strong>{{ q.degree }}</strong> <span class="qual-detail">({{ q.institution }}, {{ q.country }} - {{ q.yearObtained }})</span></span>
             </div>
             <span *ngIf="!selectedDoctorDetail.qualifications || selectedDoctorDetail.qualifications.length === 0" class="qual-empty">
               {{ 'No qualifications recorded.' | translate }}
@@ -316,10 +417,17 @@
 
       <!-- Patient Reviews Section -->
       <div class="modal-reviews-section mt-4">
-        <h4 class="modal-section-title">💬 {{ 'Patient Reviews' | translate }}</h4>
+        <h4 class="modal-section-title flex-align-center gap-2">
+          <svg class="modal-sec-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span>{{ 'Patient Reviews' | translate }}</span>
+        </h4>
         <div class="reviews-list-scroll mt-2">
           <div *ngIf="doctorReviews.length === 0" class="no-reviews-state text-center p-3">
-            <span class="no-reviews-icon">💬</span>
+            <svg class="no-reviews-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
             <p class="no-reviews-text">{{ 'No patient reviews recorded yet.' | translate }}</p>
           </div>
 
@@ -348,7 +456,13 @@
             
             <!-- Doctor Reply -->
             <div class="doctor-reply-box mt-3 p-2 bg-light border-left-teal" *ngIf="rev.doctorReply">
-              <span class="reply-header block fs-xs font-bold text-teal">👨‍⚕️ {{ 'Doctor Response' | translate }}</span>
+              <span class="reply-header block fs-xs font-bold text-teal flex-align-center gap-1">
+                <svg class="reply-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M4.8 2.3A10 10 0 1 0 21.7 15.2M20 9A8 8 0 1 1 4 9"></path>
+                  <path d="M12 5v8M9 9h6"></path>
+                </svg>
+                <span>{{ 'Doctor Response' | translate }}</span>
+              </span>
               <p class="reply-text fs-xs m-0">{{ rev.doctorReply }}</p>
             </div>
           </div>
@@ -359,9 +473,15 @@
     <!-- Modal Footer -->
     <div class="modal-footer p-3 bg-light d-flex justify-between align-center">
       <button class="btn btn-outline" (click)="closeDetailModal()">{{ 'Close' | translate }}</button>
-      <button class="btn btn-primary bg-teal border-none"
+      <button class="btn btn-primary bg-teal border-none flex-align-center gap-2"
         (click)="closeDetailModal(); bookAppointment(selectedDoctorDetail.doctor.doctorId)">
-        📅 {{ 'Book Appointment' | translate }}
+        <svg class="btn-inline-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        <span>{{ 'Book Appointment' | translate }}</span>
       </button>
     </div>
   </div>

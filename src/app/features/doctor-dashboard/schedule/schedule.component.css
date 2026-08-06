@@ -112,3 +112,74 @@
     justify-content: center;
   }
 }
+
+/* Flex Alignment & Vector Icon Utility Classes */
+.flex-align-center {
+  display: inline-flex;
+  align-items: center;
+}
+
+.header-icon-svg {
+  width: 24px;
+  height: 24px;
+  stroke: var(--teal);
+  flex-shrink: 0;
+}
+
+.badge-mini-svg {
+  width: 12px;
+  height: 12px;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+.slot-clock-svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--teal);
+  flex-shrink: 0;
+}
+
+.avatar-user-svg {
+  width: 22px;
+  height: 22px;
+  stroke: var(--teal);
+}
+
+.meta-mini-svg {
+  width: 13px;
+  height: 13px;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+.btn-play-svg {
+  width: 12px;
+  height: 12px;
+  fill: #ffffff;
+  flex-shrink: 0;
+}
+
+[dir="rtl"] .btn-play-svg {
+  transform: scaleX(-1);
+}
+
+.btn-check-svg {
+  width: 13px;
+  height: 13px;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+.btn-noshow-svg {
+  width: 13px;
+  height: 13px;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+.empty-calendar-svg {
+  width: 44px;
+  height: 44px;
+  stroke: var(--teal);
+}

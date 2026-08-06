@@ -1,6 +1,13 @@
 <!-- EMR Records template -->
 <div *ngIf="needProfileInit" class="card p-6 text-center mb-5 border-0" style="border-left: 5px solid var(--warning); background-color: #fffbeb; animation: fadeIn 0.4s ease-out;">
-  <h3 class="mb-2" style="color: #b45309;">⚠️ {{ 'Registration Required' | translate }}</h3>
+  <div class="alert-icon-wrap mb-2">
+    <svg class="warning-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+      <line x1="12" y1="9" x2="12" y2="13"></line>
+      <line x1="12" y1="17" x2="12.01" y2="17"></line>
+    </svg>
+  </div>
+  <h3 class="mb-2" style="color: #b45309;">{{ 'Registration Required' | translate }}</h3>
   <p class="mb-4" style="color: #78350f;">{{ 'Please initialize your General Patient Profile before accessing your Electronic Medical Records (EMR).' | translate }}</p>
   <a routerLink="/patient/profile" class="btn btn-primary mx-auto shadow-sm" style="max-width: 200px;">{{ 'Setup Profile' | translate }}</a>
 </div>
@@ -14,21 +21,33 @@
       [class.active]="activeTab === 'prescriptions'"
       (click)="switchTab('prescriptions')"
     >
-      💊 {{ 'Prescriptions & Adherence' | translate }}
+      <svg class="tab-btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M10.5 20.5l10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7z"></path>
+        <path d="M8.5 8.5l7 7"></path>
+      </svg>
+      <span>{{ 'Prescriptions & Adherence' | translate }}</span>
     </button>
     <button 
       class="tab-btn" 
       [class.active]="activeTab === 'vitals'"
       (click)="switchTab('vitals')"
     >
-      📊 {{ 'Vitals History Log' | translate }}
+      <svg class="tab-btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+      </svg>
+      <span>{{ 'Vitals History Log' | translate }}</span>
     </button>
     <button 
       class="tab-btn" 
       [class.active]="activeTab === 'labs'"
       (click)="switchTab('labs')"
     >
-      🔬 {{ 'Lab Test Reports' | translate }}
+      <svg class="tab-btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55A2 2 0 0 0 6.516 23.5h10.968a2 2 0 0 0 1.796-2.95L14.21 10.423a2 2 0 0 1-.211-.896V2"></path>
+        <path d="M8.5 2h7"></path>
+        <path d="M7 16h10"></path>
+      </svg>
+      <span>{{ 'Lab Test Reports' | translate }}</span>
     </button>
   </div>
 
@@ -38,15 +57,38 @@
       <div class="emr-card-header">
         <div class="prescription-title-block">
           <div class="rx-ref-row">
-            <span class="rx-paper-icon">🧾</span>
+            <div class="rx-paper-icon-wrap">
+              <svg class="rx-paper-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+              </svg>
+            </div>
             <h3 class="m-0">{{ 'Prescription' | translate }} <span class="rx-code">{{ rx.naphiesReference || ('Local Record' | translate) }}</span></h3>
           </div>
           <div class="prescription-meta-line">
-            <span class="doc-badge" *ngIf="doctorsMap[rx.doctorId]">
-              👨‍⚕️ <strong>{{ 'Prescribed By:' | translate }}</strong> {{ getDoctorDisplayName(doctorsMap[rx.doctorId]) }}
+            <span class="doc-badge flex-align-center gap-1" *ngIf="doctorsMap[rx.doctorId]">
+              <svg class="meta-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4.8 2.3A10 10 0 1 0 21.7 15.2M20 9A8 8 0 1 1 4 9"></path>
+                <path d="M12 5v8M9 9h6"></path>
+              </svg>
+              <span><strong>{{ 'Prescribed By:' | translate }}</strong> {{ getDoctorDisplayName(doctorsMap[rx.doctorId]) }}</span>
             </span>
-            <span class="dates-range">
-              🗓️ <strong>{{ 'Issued:' | translate }}</strong> {{ rx.issuedDate | date:'mediumDate' }} &nbsp;•&nbsp; ⏳ <strong>{{ 'Valid Until:' | translate }}</strong> {{ rx.validUntil | date:'mediumDate' }}
+            <span class="dates-range flex-align-center gap-1">
+              <svg class="meta-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span><strong>{{ 'Issued:' | translate }}</strong> {{ rx.issuedDate | date:'mediumDate' }}</span>
+              <span>&nbsp;•&nbsp;</span>
+              <svg class="meta-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span><strong>{{ 'Valid Until:' | translate }}</strong> {{ rx.validUntil | date:'mediumDate' }}</span>
             </span>
           </div>
         </div>
@@ -56,20 +98,34 @@
       </div>
 
       <div class="diagnosis-callout-box" *ngIf="rx.diagnosisNotes">
-        <div class="callout-label">
-          <span class="callout-icon">📋</span>
-          {{ 'Clinical Summary & Diagnosis' | translate }}
+        <div class="callout-label flex-align-center gap-1">
+          <svg class="callout-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+          </svg>
+          <span>{{ 'Clinical Summary & Diagnosis' | translate }}</span>
         </div>
         <p class="callout-content">"{{ rx.diagnosisNotes }}"</p>
       </div>
 
       <!-- Medication Cards Grid -->
       <div>
-        <h4 class="fs-xs text-uppercase text-muted mb-3 fw-bold" style="letter-spacing: 0.05em;">💊 {{ 'Prescribed Medications' | translate }}</h4>
+        <h4 class="fs-xs text-uppercase text-muted mb-3 fw-bold flex-align-center gap-2" style="letter-spacing: 0.05em;">
+          <svg class="sec-title-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.5 20.5l10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7z"></path>
+            <path d="M8.5 8.5l7 7"></path>
+          </svg>
+          <span>{{ 'Prescribed Medications' | translate }}</span>
+        </h4>
         <div class="medication-card-grid">
           <div *ngFor="let item of selectedRxItems[rx.prescriptionId]" class="med-card">
             <div class="med-card-header">
-              <div class="med-icon-wrapper">💊</div>
+              <div class="med-icon-wrapper">
+                <svg class="med-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M10.5 20.5l10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7z"></path>
+                  <path d="M8.5 8.5l7 7"></path>
+                </svg>
+              </div>
               <div class="med-meta-details">
                 <span class="med-title">{{ item.drugName }}</span>
                 <span class="med-subtitle-dosage">{{ item.dosage }}</span>
@@ -78,32 +134,57 @@
 
             <div class="med-details-badges">
               <div class="detail-badge" title="{{ 'Route' | translate }}">
-                <span class="badge-icon">👄</span>
+                <svg class="badge-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                  <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                  <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                </svg>
                 <span class="badge-text">{{ item.route | translate }}</span>
               </div>
               <div class="detail-badge" title="{{ 'Frequency' | translate }}">
-                <span class="badge-icon">⏰</span>
+                <svg class="badge-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
                 <span class="badge-text">{{ item.frequency | translate }}</span>
               </div>
               <div class="detail-badge duration" title="{{ 'Duration' | translate }}">
-                <span class="badge-icon">📅</span>
+                <svg class="badge-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
                 <span class="badge-text">{{ item.durationDays }} {{ 'Days' | translate }}</span>
               </div>
               <div class="detail-badge refills" title="{{ 'Refills Allowed/Used' | translate }}">
-                <span class="badge-icon">🔄</span>
+                <svg class="badge-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+                </svg>
                 <span class="badge-text">{{ item.refillsUsed }} / {{ item.refillsAllowed }} {{ 'Refills' | translate }}</span>
               </div>
             </div>
 
-            <div *ngIf="item.specialInstructions" class="special-instructions-alert-box">
-              <span class="warning-icon">⚠️</span>
-              <p class="warning-text">{{ item.specialInstructions }}</p>
+            <div *ngIf="item.specialInstructions" class="special-instructions-alert-box flex-align-center gap-2">
+              <svg class="warning-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              <p class="warning-text m-0">{{ item.specialInstructions }}</p>
             </div>
 
             <!-- Adherence Tracking Section -->
             <div class="adherence-section">
               <div class="adherence-header">
-                <span class="adherence-title">📈 {{ 'Adherence Tracker' | translate }}</span>
+                <span class="adherence-title flex-align-center gap-1">
+                  <svg class="adherence-title-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                    <polyline points="17 6 23 6 23 12"></polyline>
+                  </svg>
+                  <span>{{ 'Adherence Tracker' | translate }}</span>
+                </span>
                 <span class="adherence-today-status" *ngIf="getAdherenceLogForToday(item.itemId) as todayLog" [class.taken]="todayLog.taken" [class.skipped]="!todayLog.taken">
                   {{ (todayLog.taken ? 'Taken Today' : 'Skipped Today') | translate }}
                 </span>
@@ -112,16 +193,23 @@
               <!-- Daily logger actions (if not logged yet) -->
               <div class="adherence-action-row" *ngIf="!getAdherenceLogForToday(item.itemId)">
                 <button 
-                  class="btn btn-adherence-action took" 
+                  class="btn btn-adherence-action took flex-align-center justify-center gap-1" 
                   (click)="logAdherence(item.itemId, true)"
                 >
-                  ✓ {{ 'Mark Taken' | translate }}
+                  <svg class="btn-check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>{{ 'Mark Taken' | translate }}</span>
                 </button>
                 <button 
-                  class="btn btn-adherence-action skip" 
+                  class="btn btn-adherence-action skip flex-align-center justify-center gap-1" 
                   (click)="logAdherence(item.itemId, false, 'Patient skipped')"
                 >
-                  ✕ {{ 'Mark Skipped' | translate }}
+                  <svg class="btn-check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                  <span>{{ 'Mark Skipped' | translate }}</span>
                 </button>
               </div>
 
@@ -140,8 +228,13 @@
                     [class.none]="day.status === 'none'"
                     [title]="day.date | date:'mediumDate'"
                   >
-                    <span class="dot-indicator-icon" *ngIf="day.status === 'taken'">✓</span>
-                    <span class="dot-indicator-icon" *ngIf="day.status === 'skipped'">✕</span>
+                    <svg class="dot-indicator-icon-svg" *ngIf="day.status === 'taken'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <svg class="dot-indicator-icon-svg" *ngIf="day.status === 'skipped'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
                     <span class="dot-indicator-icon" *ngIf="day.status === 'none'">•</span>
                   </div>
                 </div>
@@ -153,22 +246,47 @@
     </div>
     
     <div *ngIf="prescriptions.length === 0" class="empty-state-card">
-      <div class="empty-state-icon">💊</div>
+      <div class="empty-state-icon">
+        <svg class="empty-state-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M10.5 20.5l10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7z"></path>
+          <path d="M8.5 8.5l7 7"></path>
+        </svg>
+      </div>
       <div class="empty-state-title">{{ 'No Prescriptions Found' | translate }}</div>
       <p class="empty-state-text">{{ 'No prescriptions have been registered on your Electronic Medical Record file.' | translate }}</p>
     </div>
   </div>
+
   <!-- TAB 2: VITALS LOG -->
   <div *ngIf="activeTab === 'vitals'" class="tab-content-pane">
     <div class="vitals-header-row">
-      <h3>📈 {{ 'Vital Metrics History Log' | translate }}</h3>
-      <button class="btn btn-primary shadow-sm" (click)="openVitalModal()">+ {{ 'Log New Vitals' | translate }}</button>
+      <h3 class="flex-align-center gap-2">
+        <svg class="vitals-title-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+        </svg>
+        <span>{{ 'Vital Metrics History Log' | translate }}</span>
+      </h3>
+      <button class="btn btn-primary shadow-sm flex-align-center gap-2" (click)="openVitalModal()">
+        <svg class="btn-action-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        <span>{{ 'Log New Vitals' | translate }}</span>
+      </button>
     </div>
 
     <div class="vital-cards-grid" *ngIf="vitals.length > 0">
       <div *ngFor="let v of vitals" class="vital-card">
         <div class="vital-card-header">
-          <span class="vital-time">🗓️ {{ v.recordedAt | date:'medium' }}</span>
+          <span class="vital-time flex-align-center gap-1">
+            <svg class="vital-time-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <span>{{ v.recordedAt | date:'medium' }}</span>
+          </span>
           <span class="vital-source-tag" [class.patient]="v.source === 'PATIENT_APP'" [class.doctor]="v.source === 'DOCTOR_ENTRY'">
             {{ v.source === 'PATIENT_APP' ? ('Patient App' | translate) : ('Doctor' | translate) }}
           </span>
@@ -177,40 +295,61 @@
         <div class="vital-metrics-body">
           <div class="vital-metric-item">
             <span class="vital-metric-label">
-              <span class="vital-metric-icon">🩺</span>
-              {{ 'Blood Pressure:' | translate }}
+              <span class="vital-metric-icon">
+                <svg class="vital-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                </svg>
+              </span>
+              <span>{{ 'Blood Pressure:' | translate }}</span>
             </span>
             <span class="vital-metric-val">{{ v.bloodPressureSystolic }}/{{ v.bloodPressureDiastolic }} <span class="fs-xs fw-normal text-muted">mmHg</span></span>
           </div>
           
           <div class="vital-metric-item">
             <span class="vital-metric-label">
-              <span class="vital-metric-icon heartbeat-icon">❤️</span>
-              {{ 'Heart Rate:' | translate }}
+              <span class="vital-metric-icon heartbeat-icon">
+                <svg class="vital-svg heart-svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+              </span>
+              <span>{{ 'Heart Rate:' | translate }}</span>
             </span>
             <span class="vital-metric-val text-danger">{{ v.heartRateBpm }} <span class="fs-xs fw-normal text-muted">BPM</span></span>
           </div>
           
           <div class="vital-metric-item" *ngIf="v.bloodGlucoseMmol">
             <span class="vital-metric-label">
-              <span class="vital-metric-icon">🩸</span>
-              {{ 'Blood Glucose:' | translate }}
+              <span class="vital-metric-icon">
+                <svg class="vital-svg blood-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+                </svg>
+              </span>
+              <span>{{ 'Blood Glucose:' | translate }}</span>
             </span>
             <span class="vital-metric-val">{{ v.bloodGlucoseMmol }} <span class="fs-xs fw-normal text-muted">mmol/L</span></span>
           </div>
           
           <div class="vital-metric-item" *ngIf="v.weightKg">
             <span class="vital-metric-label">
-              <span class="vital-metric-icon">⚖️</span>
-              {{ 'Weight:' | translate }}
+              <span class="vital-metric-icon">
+                <svg class="vital-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="9"></circle>
+                  <path d="M12 7v5l3 3"></path>
+                </svg>
+              </span>
+              <span>{{ 'Weight:' | translate }}</span>
             </span>
             <span class="vital-metric-val">{{ v.weightKg }} <span class="fs-xs fw-normal text-muted">kg</span></span>
           </div>
           
           <div class="vital-metric-item" *ngIf="v.oxygenSaturation">
             <span class="vital-metric-label">
-              <span class="vital-metric-icon">🫁</span>
-              {{ 'O2 Saturation:' | translate }}
+              <span class="vital-metric-icon">
+                <svg class="vital-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9.59 4.59A5 5 0 1 1 11 8H2m10.59 11.41A5 5 0 1 0 14 16H2m15.73-8.27A5 5 0 1 1 18 12H2"></path>
+                </svg>
+              </span>
+              <span>{{ 'O2 Saturation:' | translate }}</span>
             </span>
             <span class="vital-metric-val text-primary">{{ v.oxygenSaturation }}%</span>
           </div>
@@ -219,7 +358,11 @@
     </div>
 
     <div *ngIf="vitals.length === 0" class="empty-state-card">
-      <div class="empty-state-icon">📊</div>
+      <div class="empty-state-icon">
+        <svg class="empty-state-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+        </svg>
+      </div>
       <div class="empty-state-title">{{ 'No Vitals Logged' | translate }}</div>
       <p class="empty-state-text">{{ 'You have not registered any vitals history log yet. Click "Log New Vitals" to add your first record.' | translate }}</p>
     </div>
@@ -230,9 +373,26 @@
     <div *ngFor="let lab of labResults" class="lab-card-item">
       <div class="lab-card-header">
         <div class="lab-title-block">
-          <h3 class="m-0">🔬 {{ lab.labName }}</h3>
-          <div class="lab-meta-line">
-            🧪 <strong>{{ 'Report Type:' | translate }}</strong> {{ lab.reportType | translate }} &nbsp;•&nbsp; 📅 <strong>{{ 'Date:' | translate }}</strong> {{ lab.reportDate | date:'longDate' }}
+          <h3 class="m-0 flex-align-center gap-2">
+            <svg class="lab-title-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55A2 2 0 0 0 6.516 23.5h10.968a2 2 0 0 0 1.796-2.95L14.21 10.423a2 2 0 0 1-.211-.896V2"></path>
+              <path d="M8.5 2h7"></path>
+            </svg>
+            <span>{{ lab.labName }}</span>
+          </h3>
+          <div class="lab-meta-line flex-align-center gap-1">
+            <svg class="lab-meta-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55A2 2 0 0 0 6.516 23.5h10.968a2 2 0 0 0 1.796-2.95L14.21 10.423a2 2 0 0 1-.211-.896V2"></path>
+            </svg>
+            <span><strong>{{ 'Report Type:' | translate }}</strong> {{ lab.reportType | translate }}</span>
+            <span>&nbsp;•&nbsp;</span>
+            <svg class="lab-meta-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <span><strong>{{ 'Date:' | translate }}</strong> {{ lab.reportDate | date:'longDate' }}</span>
           </div>
         </div>
         <div class="lab-badges-block">
@@ -244,23 +404,41 @@
       </div>
 
       <div class="annotation-section" *ngIf="lab.doctorAnnotation">
-        <div class="annotation-label">✍️ {{ 'Doctors Annotations' | translate }}</div>
+        <div class="annotation-label flex-align-center gap-1">
+          <svg class="annotation-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
+          <span>{{ 'Doctors Annotations' | translate }}</span>
+        </div>
         <p class="annotation-body">"{{ lab.doctorAnnotation }}"</p>
       </div>
 
       <div *ngIf="lab.fileId" class="lab-attachment-footer">
-        <div class="attachment-info">
-          <span class="attachment-icon">📎</span>
+        <div class="attachment-info flex-align-center gap-1">
+          <svg class="attachment-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+          </svg>
           <span><strong>{{ 'Report File' | translate }}</strong> (ID: {{ lab.fileId.substring(0, 8) }}...)</span>
         </div>
-        <button class="btn btn-primary btn-sm shadow-sm" (click)="downloadLabFile(lab.fileId)">
-          ⬇️ {{ 'Download Attachment' | translate }}
+        <button class="btn btn-primary btn-sm shadow-sm flex-align-center gap-1" (click)="downloadLabFile(lab.fileId)">
+          <svg class="download-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>{{ 'Download Attachment' | translate }}</span>
         </button>
       </div>
     </div>
 
     <div *ngIf="labResults.length === 0" class="empty-state-card">
-      <div class="empty-state-icon">🔬</div>
+      <div class="empty-state-icon">
+        <svg class="empty-state-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55A2 2 0 0 0 6.516 23.5h10.968a2 2 0 0 0 1.796-2.95L14.21 10.423a2 2 0 0 1-.211-.896V2"></path>
+          <path d="M8.5 2h7"></path>
+        </svg>
+      </div>
       <div class="empty-state-title">{{ 'No Lab Reports Found' | translate }}</div>
       <p class="empty-state-text">{{ 'There are no laboratory test reports uploaded to your health profile yet.' | translate }}</p>
     </div>
@@ -272,7 +450,12 @@
 <div *ngIf="isVitalModalOpen" class="modal-backdrop" (click)="closeVitalModal()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h3>📈 {{ 'Log New Vital Entry' | translate }}</h3>
+      <h3 class="flex-align-center gap-2">
+        <svg class="modal-title-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+        </svg>
+        <span>{{ 'Log New Vital Entry' | translate }}</span>
+      </h3>
       <button class="btn-close" (click)="closeVitalModal()">&times;</button>
     </div>
     

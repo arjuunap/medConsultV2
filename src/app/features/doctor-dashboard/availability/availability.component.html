@@ -1,6 +1,14 @@
 <div class="availability-container">
   <div class="page-header mb-4">
-    <h2 class="page-title fs-xl text-primary m-0 fw-bold">🗓️ {{ 'My Availability & Schedule' | translate }}</h2>
+    <h2 class="page-title fs-xl text-primary m-0 fw-bold flex-align-center gap-2">
+      <svg class="header-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+      </svg>
+      <span>{{ 'My Availability & Schedule' | translate }}</span>
+    </h2>
     <p class="page-subtitle text-muted fs-sm mt-1 m-0">{{ 'Manage clinic schedules, time off, and booking slots efficiently.' | translate }}</p>
   </div>
 
@@ -22,20 +30,36 @@
   <!-- Clinic Placement Details Card -->
   <div *ngIf="selectedDcId && selectedClinic" class="placement-info-card mb-4">
     <div class="placement-info-header">
-      <div class="placement-clinic-icon">🏥</div>
+      <div class="placement-clinic-icon">
+        <svg class="placement-hosp-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"></path>
+          <path d="M12 2v4M9 12h6M12 9v6"></path>
+        </svg>
+      </div>
       <div class="flex-1">
         <div class="d-flex align-center gap-2 flex-wrap mb-1">
           <h3 class="placement-clinic-name m-0">{{ selectedClinic.clinicNameEn || 'Clinic' }}</h3>
-          <span class="placement-role-badge" [class.badge-primary]="selectedClinic.isPrimary" [class.badge-secondary]="!selectedClinic.isPrimary">
-            {{ selectedClinic.isPrimary ? ('⭐ Primary Specialist' | translate) : ('👤 Consultant' | translate) }}
+          <span class="placement-role-badge flex-align-center gap-1" [class.badge-primary]="selectedClinic.isPrimary" [class.badge-secondary]="!selectedClinic.isPrimary">
+            <svg class="role-star-svg" *ngIf="selectedClinic.isPrimary" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            <svg class="role-user-svg" *ngIf="!selectedClinic.isPrimary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span>{{ selectedClinic.isPrimary ? ('Primary Specialist' | translate) : ('Consultant' | translate) }}</span>
           </span>
           <span class="placement-status-badge" [class.active-badge]="selectedClinic.isActive" [class.inactive-badge]="!selectedClinic.isActive">
             <span class="status-dot" [class.dot-on]="selectedClinic.isActive" [class.dot-off]="!selectedClinic.isActive"></span>
             {{ (selectedClinic.isActive ? 'Active' : 'Inactive') | translate }}
           </span>
         </div>
-        <div class="placement-branch-line">
-          📍 {{ selectedClinic.branchNameEn || 'Branch' }}
+        <div class="placement-branch-line flex-align-center gap-1">
+          <svg class="pin-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+          <span>{{ selectedClinic.branchNameEn || 'Branch' }}</span>
           <span class="placement-dept-chip">{{ selectedClinic.department || 'General Practice' }}</span>
         </div>
       </div>
@@ -66,18 +90,33 @@
     <div class="d-flex flex-wrap gap-3 border-bottom pb-3 mb-4">
       <button (click)="switchTab('schedule')" 
               [ngClass]="activeTab === 'schedule' ? 'btn btn-primary' : 'btn btn-outline'" 
-              class="flex-1">
-        🗓️ {{ 'Weekly Schedule Rules' | translate }}
+              class="flex-1 flex-align-center justify-center gap-2">
+        <svg class="tab-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        <span>{{ 'Weekly Schedule Rules' | translate }}</span>
       </button>
       <button (click)="switchTab('leaves')" 
               [ngClass]="activeTab === 'leaves' ? 'btn btn-primary' : 'btn btn-outline'" 
-              class="flex-1">
-        🏖️ {{ 'Time Off / Leaves' | translate }}
+              class="flex-1 flex-align-center justify-center gap-2">
+        <svg class="tab-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 22h14"></path>
+          <path d="M5 2h14"></path>
+          <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"></path>
+          <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"></path>
+        </svg>
+        <span>{{ 'Time Off / Leaves' | translate }}</span>
       </button>
       <button (click)="switchTab('slots')" 
               [ngClass]="activeTab === 'slots' ? 'btn btn-primary' : 'btn btn-outline'" 
-              class="flex-1">
-        ⚡ {{ 'Slots Generator' | translate }}
+              class="flex-1 flex-align-center justify-center gap-2">
+        <svg class="tab-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
+        <span>{{ 'Slots Generator' | translate }}</span>
       </button>
     </div>
 
@@ -85,7 +124,13 @@
       <!-- SCHEDULE TAB -->
       <div *ngIf="activeTab === 'schedule'">
         <div class="bg-light p-3 rounded mb-4 border d-flex align-center gap-3">
-          <div class="fs-xl text-primary">ℹ️</div>
+          <div class="info-icon-wrap">
+            <svg class="info-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+          </div>
           <div>
             <h3 class="fs-sm fw-bold text-primary m-0">{{ 'About Schedule Rules' | translate }}</h3>
             <p class="text-muted fs-xs m-0 mt-1">{{ 'Add weekly recurring schedules. The system uses these rules to automatically generate your bookable slots for future dates.' | translate }}</p>
@@ -126,7 +171,13 @@
             </app-custom-select>
           </div>
           <div>
-            <button type="submit" [disabled]="scheduleForm.invalid" class="btn btn-primary w-100">+ {{ 'Add Rule' | translate }}</button>
+            <button type="submit" [disabled]="scheduleForm.invalid" class="btn btn-primary w-100 flex-align-center justify-center gap-1">
+              <svg class="btn-sm-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>{{ 'Add Rule' | translate }}</span>
+            </button>
           </div>
         </form>
 
@@ -145,7 +196,15 @@
               <tr *ngFor="let s of schedules">
                 <td class="fw-bold">{{ getDayName(s.dayOfWeek) }}</td>
                 <td>{{ s.startTime }} - {{ s.endTime }}</td>
-                <td><span class="badge badge-secondary">⏱️ {{ s.slotDurationMin }} {{ 'min' | translate }}</span></td>
+                <td>
+                  <span class="badge badge-secondary flex-align-center gap-1">
+                    <svg class="badge-clock-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <span>{{ s.slotDurationMin }} {{ 'min' | translate }}</span>
+                  </span>
+                </td>
                 <td><span class="badge badge-primary">{{ s.sessionType | translate }}</span></td>
                 <td class="text-end">
                   <button (click)="removeSchedule(s.scheduleId)" class="btn btn-outline btn-danger btn-sm" title="Delete Rule">
@@ -209,8 +268,19 @@
                 <td class="fw-bold">{{ l.leaveType | translate }}</td>
                 <td>{{ l.startDate }} {{ 'to' | translate }} {{ l.endDate }}</td>
                 <td>
-                  <span *ngIf="l.isApproved" class="badge badge-success">✓ {{ 'Approved' | translate }}</span>
-                  <span *ngIf="!l.isApproved" class="badge badge-warning">⏳ {{ 'Pending' | translate }}</span>
+                  <span *ngIf="l.isApproved" class="badge badge-success flex-align-center gap-1">
+                    <svg class="badge-mini-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>{{ 'Approved' | translate }}</span>
+                  </span>
+                  <span *ngIf="!l.isApproved" class="badge badge-warning flex-align-center gap-1">
+                    <svg class="badge-mini-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <span>{{ 'Pending' | translate }}</span>
+                  </span>
                 </td>
                 <td class="text-muted">{{ l.notes || '-' }}</td>
                 <td class="text-end">
@@ -237,15 +307,27 @@
               <label class="form-label">{{ 'Manage Slots For Date' | translate }}</label>
               <input type="date" formControlName="date" class="form-control">
             </div>
-            <div>
-              <button type="button" (click)="loadSlots()" class="btn btn-outline mr-2">{{ 'Load Slots' | translate }}</button>
-              <button type="button" (click)="generateSlotsForDate()" class="btn btn-primary">⚡ {{ 'Auto-Generate' | translate }}</button>
+            <div class="d-flex gap-2">
+              <button type="button" (click)="loadSlots()" class="btn btn-outline">{{ 'Load Slots' | translate }}</button>
+              <button type="button" (click)="generateSlotsForDate()" class="btn btn-primary flex-align-center gap-1">
+                <svg class="btn-zap-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+                <span>{{ 'Auto-Generate' | translate }}</span>
+              </button>
             </div>
           </form>
         </div>
 
         <div class="bg-white p-4 rounded mb-4 border shadow-sm">
-          <h4 class="fs-md fw-bold mb-3 text-dark">+ {{ 'Add Manual Single Slot' | translate }}</h4>
+          <h4 class="fs-md fw-bold mb-3 text-dark flex-align-center gap-2">
+            <svg class="sec-plus-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="16"></line>
+              <line x1="8" y1="12" x2="16" y2="12"></line>
+            </svg>
+            <span>{{ 'Add Manual Single Slot' | translate }}</span>
+          </h4>
           <form [formGroup]="slotForm" (ngSubmit)="submitSlot()" class="d-flex flex-wrap gap-3 align-end">
             <div class="flex-1">
               <label class="form-label">{{ 'Start Time *' | translate }}</label>
@@ -300,8 +382,11 @@
         <div *ngIf="slots.length === 0" class="text-center p-5 border rounded bg-light mt-4">
           <h4 class="fw-bold mb-2">{{ 'No Slots Available for Selected Date' | translate }}</h4>
           <p class="text-muted fs-sm mb-4">{{ 'Click below to generate slots automatically from your weekly schedule rules.' | translate }}</p>
-          <button (click)="generateSlotsForDate()" class="btn btn-primary">
-            ⚡ {{ 'Auto-Generate Now' | translate }}
+          <button (click)="generateSlotsForDate()" class="btn btn-primary flex-align-center gap-1 mx-auto">
+            <svg class="btn-zap-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+            <span>{{ 'Auto-Generate Now' | translate }}</span>
           </button>
         </div>
       </div>

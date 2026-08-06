@@ -93,6 +93,7 @@ export interface DoctorClinicResponseDto {
   clinicNameAr?: string; // Appended by frontend
   branchNameEn?: string; // Appended by frontend
   branchNameAr?: string; // Appended by frontend
+  logoUrl?: string; // Appended by frontend
 }
 
 export interface DoctorLanguageRequestDto {

@@ -97,7 +97,7 @@ export class DoctorsComponent implements OnInit {
     return [
       { label: isAr ? 'جميع التقييمات' : 'All Ratings', value: 0 },
       { label: '★ ★ ★ ★ ★ (5.0)', value: 5 },
-      { label: '★ ★ ★ ★ ½ (4.5+)', value: 4.5 },
+      { label: '★ ★ ★ ★ ⯨ (4.5+)', value: 4.5 },
       { label: '★ ★ ★ ★ ☆ (4.0+)', value: 4 },
       { label: '★ ★ ★ ☆ ☆ (3.0+)', value: 3 }
     ];
@@ -296,64 +296,7 @@ export class DoctorsComponent implements OnInit {
   }
 
   viewDoctorDetails(doctorId: string): void {
-    this.uiService.showLoading();
-    forkJoin({
-      profile: this.doctorService.getDoctorProfile(doctorId),
-      specialties: this.referenceService.getAllSpecialties().pipe(catchError(() => of([]))),
-      languages: this.referenceService.getAllLanguages().pipe(catchError(() => of([]))),
-      reviews: this.reviewService.getDoctorReviews(doctorId).pipe(catchError(() => of({ content: [], totalElements: 0 } as any)))
-    }).subscribe({
-      next: (res) => {
-        this.selectedDoctorDetail = res.profile;
-        this.detailSpecialties = res.specialties;
-        this.detailLanguages = res.languages;
-        this.doctorReviews = res.reviews && res.reviews.content ? res.reviews.content : [];
-
-        // Enrich clinics assigned
-        if (this.selectedDoctorDetail && this.selectedDoctorDetail.clinics && this.selectedDoctorDetail.clinics.length > 0) {
-          const clinicCalls = this.selectedDoctorDetail.clinics.map(c => 
-            forkJoin({
-              clinic: this.clinicService.getClinicById(c.clinicId).pipe(catchError(() => of(null))),
-              branches: this.clinicService.getClinicBranches(c.clinicId).pipe(catchError(() => of([])))
-            }).pipe(catchError(() => of(null)))
-          );
-
-          forkJoin(clinicCalls).subscribe({
-            next: (clinicsRes) => {
-              if (this.selectedDoctorDetail && this.selectedDoctorDetail.clinics) {
-                this.selectedDoctorDetail.clinics.forEach((c, idx) => {
-                  const r = clinicsRes[idx];
-                  if (r && r.clinic) {
-                    (c as any).clinicNameEn = r.clinic.nameEn;
-                    (c as any).clinicNameAr = r.clinic.nameAr;
-                    if (r.branches) {
-                      const br = r.branches.find((b: any) => b.branchId === c.branchId);
-                      if (br) {
-                        (c as any).branchNameEn = br.branchNameEn;
-                        (c as any).branchNameAr = br.branchNameAr;
-                      }
-                    }
-                  }
-                });
-              }
-              this.uiService.hideLoading();
-              this.showDetailModal = true;
-            },
-            error: () => {
-              this.uiService.hideLoading();
-              this.showDetailModal = true;
-            }
-          });
-        } else {
-          this.uiService.hideLoading();
-          this.showDetailModal = true;
-        }
-      },
-      error: () => {
-        this.uiService.hideLoading();
-        this.uiService.showError('Failed to load profile details.');
-      }
-    });
+    this.router.navigate(['/doctors', doctorId]);
   }
 
   closeDetailModal(): void {
