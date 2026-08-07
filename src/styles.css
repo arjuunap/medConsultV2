@@ -1036,3 +1036,31 @@ input[type="file"]::-webkit-file-upload-button:hover {
   margin-right: 8px !important;
 }
 
+/* Global Modal Overlay Elevation & Backdrop Fix */
+.modal-backdrop,
+.modal-backdrop-overlay,
+.modal-backdrop-blur {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(15, 23, 42, 0.6) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 99999 !important;
+  padding: 16px !important;
+}
+
+.modal-backdrop .modal-content,
+.modal-backdrop-overlay .modal-content,
+.modal-backdrop-blur .modal-content {
+  z-index: 100000 !important;
+  position: relative !important;
+}
+

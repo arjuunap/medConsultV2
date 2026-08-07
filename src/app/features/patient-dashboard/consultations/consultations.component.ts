@@ -14,10 +14,12 @@ import { LanguageService } from '../../../core/services/language.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { ApiUrlPipe } from '../../../shared/pipes/api-url.pipe';
 
+import { RouterLink } from '@angular/router';
+
 @Component({
   selector: 'app-consultations',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, CustomSelectComponent, TranslatePipe, ApiUrlPipe],
+  imports: [CommonModule, ReactiveFormsModule, CustomSelectComponent, RouterLink, TranslatePipe, ApiUrlPipe],
   templateUrl: './consultations.component.html',
   styleUrls: ['./consultations.component.css']
 })
@@ -64,6 +66,7 @@ export class ConsultationsComponent implements OnInit, OnDestroy {
   public doctors: any[] = [];
   
   public patientId: string = '';
+  public needProfileInit: boolean = false;
 
   get doctorSelectOptions() {
     return this.doctors.map(d => ({
@@ -113,11 +116,12 @@ export class ConsultationsComponent implements OnInit, OnDestroy {
     this.patientService.getMyProfile().subscribe({
       next: (profile) => {
         this.patientId = profile.patientId;
+        this.needProfileInit = false;
         this.loadConsultations();
       },
       error: () => {
         this.uiService.hideLoading();
-        this.uiService.showError('Could not load patient profile.');
+        this.needProfileInit = true; // Silently set needProfileInit, no error toast
       }
     });
   }

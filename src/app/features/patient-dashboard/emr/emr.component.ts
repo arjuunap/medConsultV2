@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ClinicalRecordService } from '../../../core/services/clinical-record.service';
 import { PatientService } from '../../../core/services/patient.service';
@@ -29,6 +29,7 @@ export class EmrComponent implements OnInit {
   private fb = inject(FormBuilder);
   private doctorService = inject(DoctorService);
   public languageService = inject(LanguageService);
+  private router = inject(Router);
 
   public patientId = '';
   public needProfileInit = false;
@@ -117,20 +118,24 @@ export class EmrComponent implements OnInit {
     this.uiService.showLoading();
     this.patientService.getMyProfile().subscribe({
       next: (patient) => {
-        this.patientId = patient.patientId;
-        this.needProfileInit = false;
-        this.loadEMRData();
+        if (patient && patient.patientId) {
+          this.patientId = patient.patientId;
+          this.needProfileInit = false;
+          this.loadEMRData();
+        } else {
+          this.uiService.hideLoading();
+          this.needProfileInit = true;
+        }
       },
       error: (err) => {
         this.uiService.hideLoading();
-        if (err.status === 404) {
-          this.needProfileInit = true;
-        }
+        this.needProfileInit = true;
       }
     });
   }
 
   loadEMRData(): void {
+    if (this.needProfileInit) return;
     if (!this.patientId) {
       this.checkProfileAndLoad();
       return;
@@ -151,6 +156,7 @@ export class EmrComponent implements OnInit {
 
   // ── Prescriptions & Adherence ──────────────────────────────────────
   loadPrescriptions(): void {
+    if (this.needProfileInit) return;
     if (!this.patientId) {
       this.checkProfileAndLoad();
       return;
@@ -181,7 +187,7 @@ export class EmrComponent implements OnInit {
   }
 
   loadAdherenceLogs(itemId: string): void {
-    if (!this.patientId) return;
+    if (this.needProfileInit || !this.patientId) return;
     this.clinicalRecordService.searchAdherence({ patientId: this.patientId, rxItemId: itemId, page: 0, size: 10 }).subscribe({
       next: (page) => {
         this.adherenceLogs[itemId] = page?.content || [];
@@ -223,6 +229,7 @@ export class EmrComponent implements OnInit {
 
   // ── Vitals Log ─────────────────────────────────────────────────────
   loadVitals(): void {
+    if (this.needProfileInit) return;
     if (!this.patientId) {
       this.checkProfileAndLoad();
       return;
@@ -238,6 +245,11 @@ export class EmrComponent implements OnInit {
   }
 
   openVitalModal(): void {
+    if (this.needProfileInit || !this.patientId) {
+      this.uiService.showError('Patient Registration Required. Please complete your patient profile details before logging vitals.');
+      this.router.navigate(['/patient/profile']);
+      return;
+    }
     this.vitalForm.reset({
       bloodPressureSystolic: 120,
       bloodPressureDiastolic: 80,
@@ -257,6 +269,11 @@ export class EmrComponent implements OnInit {
   }
 
   submitVital(): void {
+    if (this.needProfileInit || !this.patientId) {
+      this.uiService.showError('Patient Registration Required. Please complete your patient profile details before logging vitals.');
+      this.router.navigate(['/patient/profile']);
+      return;
+    }
     if (this.vitalForm.invalid) {
       this.vitalForm.markAllAsTouched();
       return;
@@ -277,9 +294,15 @@ export class EmrComponent implements OnInit {
         this.closeVitalModal();
         this.loadVitals();
       },
-      error: () => {
+      error: (err) => {
         this.uiService.hideLoading();
-        this.uiService.showError('Failed to record vital metrics.');
+        if (err?.status === 404 || err?.error?.message?.includes('Patient not found')) {
+          this.needProfileInit = true;
+          this.uiService.showError('Patient profile not found. Please complete your registration first.');
+          this.router.navigate(['/patient/profile']);
+        } else {
+          this.uiService.showError('Failed to record vital metrics.');
+        }
       }
     });
   }

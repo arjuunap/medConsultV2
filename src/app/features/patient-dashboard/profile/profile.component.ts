@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PatientService } from '../../../core/services/patient.service';
 import { UserService } from '../../../core/services/user.service';
@@ -26,6 +26,7 @@ export class ProfileComponent implements OnInit {
   public authService = inject(AuthService);
   private fb = inject(FormBuilder);
   public languageService = inject(LanguageService);
+  private route = inject(ActivatedRoute);
 
   @ViewChild('avatarInput') avatarInput!: ElementRef<HTMLInputElement>;
   public stagedAvatarFile: File | null = null;
@@ -47,6 +48,31 @@ export class ProfileComponent implements OnInit {
 
   public bloodTypes = Object.values(BloodType);
   public maritalStatuses = Object.values(MaritalStatus);
+
+  ngOnInit(): void {
+    this.initAccountData();
+    this.loadProfile();
+
+    this.route.queryParams.subscribe(params => {
+      if (params['scrollTo'] === 'medical' || params['register'] === 'true') {
+        this.enableEdit();
+        setTimeout(() => this.scrollToMedicalSection(), 350);
+      }
+    });
+  }
+
+  scrollToMedicalSection(): void {
+    const element = document.getElementById('medical-profile-section');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  enableEdit(): void {
+    this.isEditMode = true;
+    this.profileForm.enable();
+    setTimeout(() => this.scrollToMedicalSection(), 100);
+  }
 
   get bloodTypeOptions() {
     return this.bloodTypes.map(bt => ({
@@ -299,11 +325,6 @@ export class ProfileComponent implements OnInit {
     notes: ['']
   });
 
-  ngOnInit(): void {
-    this.initAccountData();
-    this.loadProfile();
-  }
-
   initAccountData(): void {
     const user = this.authService.currentUser();
     if (user) {
@@ -393,7 +414,7 @@ export class ProfileComponent implements OnInit {
         const errorMessage = err.error?.message || '';
         if (err.status === 404 || errorMessage.includes('not found')) {
           this.profileExists = false;
-          this.isEditMode = true; // Automatically edit for creation
+          this.isEditMode = false; // Keep edit mode false initially so notification card is shown first
           this.profileForm.enable();
         } else {
           this.uiService.showError(this.languageService.translate('Could not load patient profile.', 'تعذر تحميل ملف المريض.'));
@@ -402,16 +423,13 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  enableEdit(): void {
-    this.isEditMode = true;
-    this.profileForm.enable();
-  }
-
   cancelEdit(): void {
     if (this.profileExists) {
       this.isEditMode = false;
       this.profileForm.disable();
       this.loadProfile(); // reload original values
+    } else {
+      this.isEditMode = false; // Hide create form, return to notification card
     }
   }
 

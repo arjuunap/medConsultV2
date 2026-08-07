@@ -14,6 +14,7 @@ import { VitalResponseDto } from '../../../core/models/clinical-record.model';
 import { AppConfigService } from '../../../core/services/app-config.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { ApiUrlPipe } from '../../../shared/pipes/api-url.pipe';
+import { LanguageService } from '../../../core/services/language.service';
 
 @Component({
   selector: 'app-home',
@@ -29,12 +30,14 @@ export class HomeComponent implements OnInit {
   private uiService = inject(UiService);
   private authService = inject(AuthService);
   public appConfigService = inject(AppConfigService);
+  public languageService = inject(LanguageService);
   private router = inject(Router);
   private fb = inject(FormBuilder);
 
   public currentUser = this.authService.currentUser;
   public patientProfile: PatientResponseDto | null = null;
   public needProfileInit = false;
+  public showRegistrationModal = false;
   public upcomingAppointments: AppointmentResponseDto[] = [];
   public latestVitals: VitalResponseDto | null = null;
 
@@ -43,7 +46,6 @@ export class HomeComponent implements OnInit {
   public cancelForm: FormGroup = this.fb.group({
     cancelReason: ['', [Validators.required, Validators.maxLength(255)]]
   });
-
 
   ngOnInit(): void {
     this.loadPatientDashboard();
@@ -60,14 +62,26 @@ export class HomeComponent implements OnInit {
       },
       error: (err) => {
         this.uiService.hideLoading();
-        const errorMessage = err.error?.message || '';
-        if (err.status === 404 || errorMessage.includes('not found')) {
-          this.needProfileInit = true;
-        } else {
-          this.uiService.showError('Failed to load patient profile.');
-        }
+        this.needProfileInit = true; // Handle missing profile silently without showing red error toast
       }
     });
+  }
+
+  navigateToSection(path: string): void {
+    if (this.needProfileInit) {
+      this.showRegistrationModal = true;
+      return;
+    }
+    this.router.navigate([path]);
+  }
+
+  closeRegistrationModal(): void {
+    this.showRegistrationModal = false;
+  }
+
+  proceedToRegistration(): void {
+    this.showRegistrationModal = false;
+    this.router.navigate(['/patient/profile'], { queryParams: { scrollTo: 'medical' } });
   }
 
   loadUpcomingAppointments(): void {
