@@ -131,6 +131,10 @@ export class EmrComponent implements OnInit {
   }
 
   loadEMRData(): void {
+    if (!this.patientId) {
+      this.checkProfileAndLoad();
+      return;
+    }
     if (this.activeTab === 'prescriptions') {
       this.loadPrescriptions();
     } else if (this.activeTab === 'vitals') {
@@ -147,10 +151,14 @@ export class EmrComponent implements OnInit {
 
   // ── Prescriptions & Adherence ──────────────────────────────────────
   loadPrescriptions(): void {
+    if (!this.patientId) {
+      this.checkProfileAndLoad();
+      return;
+    }
     this.uiService.showLoading();
     this.clinicalRecordService.searchPrescriptions({ patientId: this.patientId, page: 0, size: 20 }).subscribe({
       next: (page) => {
-        this.prescriptions = page.content;
+        this.prescriptions = page?.content || [];
         this.uiService.hideLoading();
         // Load items for each prescription
         for (const rx of this.prescriptions) {
@@ -173,9 +181,10 @@ export class EmrComponent implements OnInit {
   }
 
   loadAdherenceLogs(itemId: string): void {
+    if (!this.patientId) return;
     this.clinicalRecordService.searchAdherence({ patientId: this.patientId, rxItemId: itemId, page: 0, size: 10 }).subscribe({
       next: (page) => {
-        this.adherenceLogs[itemId] = page.content;
+        this.adherenceLogs[itemId] = page?.content || [];
       }
     });
   }
@@ -214,10 +223,14 @@ export class EmrComponent implements OnInit {
 
   // ── Vitals Log ─────────────────────────────────────────────────────
   loadVitals(): void {
+    if (!this.patientId) {
+      this.checkProfileAndLoad();
+      return;
+    }
     this.uiService.showLoading();
     this.clinicalRecordService.searchVitals({ patientId: this.patientId, page: 0, size: 30, sortBy: 'recordedAt', sortDir: 'desc' }).subscribe({
       next: (page) => {
-        this.vitals = page.content;
+        this.vitals = page?.content || [];
         this.uiService.hideLoading();
       },
       error: () => this.uiService.hideLoading()
@@ -273,10 +286,14 @@ export class EmrComponent implements OnInit {
 
   // ── Lab Results ────────────────────────────────────────────────────
   loadLabs(): void {
+    if (!this.patientId) {
+      this.checkProfileAndLoad();
+      return;
+    }
     this.uiService.showLoading();
     this.clinicalRecordService.searchLabResults({ patientId: this.patientId, page: 0, size: 20 }).subscribe({
       next: (page) => {
-        this.labResults = page.content;
+        this.labResults = page?.content || [];
         this.uiService.hideLoading();
       },
       error: () => this.uiService.hideLoading()

@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PatientService } from '../../../core/services/patient.service';
 import { ClinicalRecordService } from '../../../core/services/clinical-record.service';
 import { AppointmentService } from '../../../core/services/appointment.service';
@@ -41,6 +42,8 @@ export class PatientsComponent implements OnInit {
   private authService = inject(AuthService);
   private uiService = inject(UiService);
   private fb = inject(FormBuilder);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
   public languageService = inject(LanguageService);
 
   public patientList: PatientOption[] = [];
@@ -64,13 +67,17 @@ export class PatientsComponent implements OnInit {
     this.selectedPatientId = patientId;
     this.selectedPatientName = patientName;
     this.selectedPatientAvatarUrl = avatarUrl || '';
+    this.activeEmrTab = 'overview';
     this.loadPatientEMR();
   }
 
   backToDirectory(): void {
     this.selectedPatientId = '';
+    this.selectedPatientName = '';
     this.selectedPatientAvatarUrl = '';
+    this.activeEmrTab = 'overview';
     this.clearPatientDetails();
+    this.router.navigate([], { relativeTo: this.route, queryParams: { id: null, patientId: null }, queryParamsHandling: 'merge' });
   }
 
   get patientChartSelectOptions() {
@@ -96,6 +103,13 @@ export class PatientsComponent implements OnInit {
   public selectedRxItems: { [rxId: string]: PrescriptionItemResponseDto[] } = {};
   public vitals: VitalResponseDto[] = [];
   public labResults: LabResultResponseDto[] = [];
+
+  // EMR Tab Navigation
+  public activeEmrTab: 'overview' | 'prescriptions' | 'vitals' | 'labs' = 'overview';
+
+  setEmrTab(tab: 'overview' | 'prescriptions' | 'vitals' | 'labs'): void {
+    this.activeEmrTab = tab;
+  }
 
   // Add EMR overlays
   public activeModal: 'vital' | 'prescription' | 'lab' | null = null;
@@ -145,6 +159,32 @@ export class PatientsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadDoctorPatients();
+    this.route.queryParams.subscribe(params => {
+      const targetId = params['id'] || params['patientId'];
+      if (targetId) {
+        this.selectTargetPatient(targetId);
+      }
+    });
+  }
+
+  private selectTargetPatient(targetId: string): void {
+    const match = this.patientList.find(p => p.patientId === targetId);
+    if (match) {
+      this.selectPatient(match.patientId, match.patientName, match.avatarUrl);
+    } else {
+      this.selectedPatientId = targetId;
+      this.appointmentService.searchAppointments({ patientId: targetId, page: 0, size: 1 }).subscribe({
+        next: (res) => {
+          if (res && res.content && res.content.length > 0 && res.content[0].patientName) {
+            this.selectedPatientName = res.content[0].patientName;
+            this.selectedPatientAvatarUrl = res.content[0].patientAvatarUrl || '';
+          } else if (!this.selectedPatientName) {
+            this.selectedPatientName = 'Patient Chart';
+          }
+        }
+      });
+      this.loadPatientEMR();
+    }
   }
 
   loadDoctorPatients(): void {
@@ -158,6 +198,11 @@ export class PatientsComponent implements OnInit {
         avatarUrl: item.avatarUrl
       }));
       this.uiService.hideLoading();
+
+      const targetId = this.route.snapshot.queryParams['id'] || this.route.snapshot.queryParams['patientId'];
+      if (targetId) {
+        this.selectTargetPatient(targetId);
+      }
     };
 
     // 1. Fetch patients from appointments

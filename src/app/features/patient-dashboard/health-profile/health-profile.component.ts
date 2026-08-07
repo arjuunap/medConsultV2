@@ -5,7 +5,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { PatientService } from '../../../core/services/patient.service';
 import { UiService } from '../../../core/services/ui.service';
 import {
-  SmokingStatus, AlcoholStatus, AllergyType, Severity, ConditionStatus,
+  SmokingStatus, AllergyType, Severity, ConditionStatus,
   PatientHealthProfileResponseDto, PatientAllergyResponseDto, PatientChronicConditionResponseDto
 } from '../../../core/models/patient.model';
 import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
@@ -33,19 +33,11 @@ export class HealthProfileComponent implements OnInit {
   public profileExists = false;
   public isProfileEdit = false;
   public smokingStatuses = Object.values(SmokingStatus);
-  public alcoholStatuses = Object.values(AlcoholStatus);
 
   get smokingStatusOptions() {
     return this.smokingStatuses.map(s => ({
       label: this.languageService.translate(s, this.getSmokingStatusAr(s)),
       value: s
-    }));
-  }
-
-  get alcoholStatusOptions() {
-    return this.alcoholStatuses.map(a => ({
-      label: this.languageService.translate(a, this.getAlcoholStatusAr(a)),
-      value: a
     }));
   }
 
@@ -76,15 +68,6 @@ export class HealthProfileComponent implements OnInit {
       case SmokingStatus.FORMER: return 'مدخن سابق';
       case SmokingStatus.CURRENT: return 'مدخن حالياً';
       default: return s;
-    }
-  }
-
-  private getAlcoholStatusAr(a: string): string {
-    switch (a) {
-      case AlcoholStatus.NONE: return 'لا يوجد';
-      case AlcoholStatus.OCCASIONAL: return 'أحياناً';
-      case AlcoholStatus.REGULAR: return 'منتظم';
-      default: return a;
     }
   }
 
@@ -120,7 +103,6 @@ export class HealthProfileComponent implements OnInit {
     weightKg: [0, [Validators.required, Validators.min(1)]],
     heightCm: [0, [Validators.required, Validators.min(1)]],
     smokingStatus: [SmokingStatus.NEVER, [Validators.required]],
-    alcoholStatus: [AlcoholStatus.NONE, [Validators.required]],
     surgicalHistory: [''],
     familyHistory: [''],
     additionalNotes: ['']
@@ -215,7 +197,10 @@ export class HealthProfileComponent implements OnInit {
     }
 
     this.uiService.showLoading();
-    const payload = this.healthForm.value;
+    const payload = {
+      ...this.healthForm.value,
+      alcoholStatus: 'NONE'
+    };
 
     if (this.profileExists) {
       this.patientService.updateHealthProfile(payload).subscribe({

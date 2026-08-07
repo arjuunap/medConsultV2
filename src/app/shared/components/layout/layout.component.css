@@ -153,7 +153,7 @@
   padding: 0 28px;
   position: sticky;
   top: 0;
-  z-index: 99;
+  z-index: 1100;
   box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.05);
   transition: all 0.2s ease;
 }

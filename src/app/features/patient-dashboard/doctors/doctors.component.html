@@ -36,10 +36,12 @@
       <div class="filter-field">
         <label class="filter-label">{{ 'Medical Specialty' | translate }}</label>
         <app-custom-select 
-          [(ngModel)]="selectedSpecialtyId" 
+          [(ngModel)]="selectedSpecialtyIds" 
           (selectionChange)="applyFilters()" 
           [options]="specialtyOptions" 
+          [multiple]="true"
           [searchable]="true"
+          [placeholder]="'All Specialties' | translate"
           bindLabel="label"
           bindValue="value">
         </app-custom-select>
@@ -49,10 +51,12 @@
       <div class="filter-field">
         <label class="filter-label">{{ 'Location / City' | translate }}</label>
         <app-custom-select 
-          [(ngModel)]="selectedCityId" 
+          [(ngModel)]="selectedCityIds" 
           (selectionChange)="applyFilters()" 
           [options]="cityOptions" 
+          [multiple]="true"
           [searchable]="true"
+          [placeholder]="'All Cities' | translate"
           bindLabel="label"
           bindValue="value">
         </app-custom-select>

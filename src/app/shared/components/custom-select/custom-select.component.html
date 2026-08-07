@@ -1,3 +1,12 @@
+<svg style="width: 0; height: 0; position: absolute; overflow: hidden;" aria-hidden="true">
+  <defs>
+    <linearGradient id="halfStarGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="50%" stop-color="#f59e0b" />
+      <stop offset="50%" stop-color="#e5e7eb" />
+    </linearGradient>
+  </defs>
+</svg>
+
 <div class="custom-select-container" 
      [class.size-sm]="size === 'sm'" 
      [class.size-lg]="size === 'lg'" 
@@ -13,12 +22,31 @@
           [attr.aria-expanded]="isOpen">
     
     <div class="trigger-content">
-      <span *ngIf="icon || getOptionIcon(selectedOption)" class="trigger-icon">
+      <img *ngIf="getOptionFlagUrl(selectedOption)" 
+           [src]="getOptionFlagUrl(selectedOption)" 
+           class="option-flag-img" 
+           [alt]="selectedOption?.code || 'flag'" />
+
+      <span *ngIf="!getOptionFlagUrl(selectedOption) && (icon || getOptionIcon(selectedOption))" class="trigger-icon">
         {{ getOptionIcon(selectedOption) || icon }}
       </span>
-      <span class="trigger-text" [class.is-star-text]="displayLabel.includes('★')" [class.is-placeholder]="!selectedOption && (selectedValue === null || selectedValue === undefined || selectedValue === '')">
-        {{ displayLabel }}
-      </span>
+
+      <!-- Rating stars display for selected option -->
+      <ng-container *ngIf="selectedOption?.ratingStars; else standardTriggerText">
+        <div class="rating-stars-inline d-inline-flex align-center gap-1">
+          <svg *ngFor="let s of selectedOption.ratingStars" class="star-rating-svg" viewBox="0 0 24 24" width="15" height="15">
+            <polygon *ngIf="s === 1" points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="#f59e0b" />
+            <polygon *ngIf="s === 0.5" points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="url(#halfStarGradient)" />
+            <polygon *ngIf="s === 0" points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="#e5e7eb" />
+          </svg>
+          <span class="rating-subtext ms-1">{{ selectedOption.subText || '' }}</span>
+        </div>
+      </ng-container>
+      <ng-template #standardTriggerText>
+        <span class="trigger-text" [class.is-star-text]="displayLabel.includes('★')" [class.is-placeholder]="!selectedOption && (selectedValue === null || selectedValue === undefined || selectedValue === '')">
+          {{ displayLabel }}
+        </span>
+      </ng-template>
     </div>
 
     <svg class="chevron-icon" [class.rotate]="isOpen" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -35,7 +63,7 @@
       <input type="text" 
              class="search-input" 
              [(ngModel)]="searchQuery" 
-             placeholder="Search options..." 
+             [placeholder]="'Search options...' | translate" 
              (click)="$event.stopPropagation()">
     </div>
 
@@ -46,10 +74,27 @@
           [class.selected]="isSelected(option)"
           (click)="selectOption(option, $event)">
         
-        <span *ngIf="getOptionIcon(option)" class="option-icon">{{ getOptionIcon(option) }}</span>
+        <img *ngIf="getOptionFlagUrl(option)" 
+             [src]="getOptionFlagUrl(option)" 
+             class="option-flag-img" 
+             [alt]="option?.code || 'flag'" />
+
+        <span *ngIf="!getOptionFlagUrl(option) && getOptionIcon(option)" class="option-icon">{{ getOptionIcon(option) }}</span>
         
         <div class="option-text-group">
-          <span class="option-label" [class.is-star-text]="getOptionLabel(option).includes('★')">{{ getOptionLabel(option) }}</span>
+          <ng-container *ngIf="option.ratingStars; else standardOptionLabel">
+            <div class="rating-stars-inline d-inline-flex align-center gap-1">
+              <svg *ngFor="let s of option.ratingStars" class="star-rating-svg" viewBox="0 0 24 24" width="15" height="15">
+                <polygon *ngIf="s === 1" points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="#f59e0b" />
+                <polygon *ngIf="s === 0.5" points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="url(#halfStarGradient)" />
+                <polygon *ngIf="s === 0" points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="#e5e7eb" />
+              </svg>
+              <span class="rating-subtext ms-1">{{ option.subText || '' }}</span>
+            </div>
+          </ng-container>
+          <ng-template #standardOptionLabel>
+            <span class="option-label" [class.is-star-text]="getOptionLabel(option).includes('★')">{{ getOptionLabel(option) }}</span>
+          </ng-template>
           <span *ngIf="option.sublabel" class="option-sublabel">{{ option.sublabel }}</span>
         </div>
 

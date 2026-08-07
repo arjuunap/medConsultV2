@@ -1,376 +1,685 @@
-<!-- Top Header / Navigation -->
+<!-- ══════════════════════════════════════════════════
+     PATIENT DIRECTORY VIEW (No patient selected)
+══════════════════════════════════════════════════ -->
 <div class="patients-directory-card" *ngIf="!selectedPatientId">
-  <div class="d-flex justify-between align-center flex-wrap gap-3">
-    <div>
-      <h2 class="fs-xl text-primary m-0 fw-bold">📋 {{ 'Patient Medical Directory' | translate }}</h2>
-      <p class="text-muted fs-sm mt-1 m-0">{{ 'Select a registered patient from the list below to review their full EMR chart and profile' | translate }}</p>
+  <div class="directory-header">
+    <div class="directory-header-left">
+      <div class="directory-icon-wrap">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      </div>
+      <div>
+        <h2 class="directory-title">{{ 'Patient Medical Directory' | translate }}</h2>
+        <p class="directory-subtitle">{{ 'Select a registered patient from the list below to review their full EMR chart and profile' | translate }}</p>
+      </div>
     </div>
-    
-    <!-- Searchable Select patient dropdown with "View Chart" action -->
-    <div class="d-flex align-center gap-2 flex-wrap" style="min-width: 300px;">
-      <app-custom-select 
-        [options]="patientChartSelectOptions" 
-        bindLabel="label" 
-        bindValue="value" 
-        [searchable]="true" 
-        [ngModel]="selectedPatientId" 
+    <!-- Quick Search Dropdown -->
+    <div class="directory-search-dropdown">
+      <app-custom-select
+        [options]="patientChartSelectOptions"
+        bindLabel="label"
+        bindValue="value"
+        [searchable]="true"
+        [ngModel]="selectedPatientId"
         (selectionChange)="onPatientChartChange($event)"
         [placeholder]="'-- Quick Search Chart --' | translate">
       </app-custom-select>
     </div>
   </div>
 
-  <!-- Search Input filter -->
-  <div class="search-bar-wrapper mt-4">
-    <span class="search-icon-inside">🔍</span>
-    <input type="text" [(ngModel)]="searchTerm" [placeholder]="'Search patient name or ID...' | translate" class="form-control search-input" />
+  <!-- Search Input -->
+  <div class="directory-search-bar">
+    <div class="search-icon-wrap">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    </div>
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      [placeholder]="'Search patient name or ID...' | translate"
+      class="directory-search-input"
+    />
   </div>
 
-  <!-- Directory Cards Grid -->
-  <div class="patients-grid mt-4" *ngIf="filteredPatients.length > 0">
-    <div *ngFor="let p of filteredPatients" class="patient-profile-card">
-      <img *ngIf="p.avatarUrl" [src]="p.avatarUrl | apiUrl" (error)="p.avatarUrl = ''" class="patient-card-avatar-img" [alt]="p.patientName" style="width: 56px; height: 56px; border-radius: 50%; object-fit: cover; flex-shrink: 0; margin-bottom: 8px;">
-      <div *ngIf="!p.avatarUrl" class="patient-card-avatar">👤</div>
-      <div class="patient-card-info">
-        <h3>{{ p.patientName }}</h3>
-        <p class="patient-id-sub">{{ 'ID:' | translate }} {{ p.patientId }}</p>
+  <!-- Stats Bar -->
+  <div class="directory-stats-bar" *ngIf="filteredPatients.length > 0">
+    <span class="stat-chip">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      {{ filteredPatients.length }} {{ 'Patients' | translate }}
+    </span>
+  </div>
+
+  <!-- Patient Cards Grid -->
+  <div class="patients-grid" *ngIf="filteredPatients.length > 0">
+    <div *ngFor="let p of filteredPatients" class="patient-profile-card" (click)="selectPatient(p.patientId, p.patientName, p.avatarUrl)">
+      <div class="patient-card-accent-bar"></div>
+      <div class="patient-card-body">
+        <img *ngIf="p.avatarUrl" [src]="p.avatarUrl | apiUrl" (error)="p.avatarUrl = ''" class="patient-card-avatar-img" [alt]="p.patientName">
+        <div *ngIf="!p.avatarUrl" class="patient-card-avatar">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div class="patient-card-info">
+          <h3 class="patient-card-name">{{ p.patientName }}</h3>
+          <span class="patient-card-id">{{ 'ID:' | translate }} {{ p.patientId }}</span>
+        </div>
+        <button class="open-emr-btn" (click)="selectPatient(p.patientId, p.patientName, p.avatarUrl); $event.stopPropagation()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          {{ 'Open EMR & Profile Details' | translate }}
+        </button>
       </div>
-      <button class="btn btn-primary btn-sm w-100 mt-3" (click)="selectPatient(p.patientId, p.patientName, p.avatarUrl)">
-        📋 {{ 'Open EMR & Profile Details' | translate }}
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="filteredPatients.length === 0" class="directory-empty-state">
+    <div class="empty-icon-circle">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+    </div>
+    <strong>{{ 'No Patients Found' | translate }}</strong>
+    <span>{{ 'Try adjusting your search terms or verify patient list rosters.' | translate }}</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     EMR CHART VIEW — BACK NAV BAR
+══════════════════════════════════════════════════ -->
+<div class="chart-back-nav-bar" *ngIf="selectedPatientId">
+  <button class="back-directory-btn" (click)="backToDirectory()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19 12H5M12 19l-7-7 7-7"/>
+    </svg>
+    <span>{{ 'Back to Patient Directory' | translate }}</span>
+  </button>
+  <div class="nav-bar-switch">
+    <span class="nav-bar-switch-label">{{ 'Quick Switch:' | translate }}</span>
+    <div style="min-width: 240px;">
+      <app-custom-select
+        [options]="patientChartSelectOptions"
+        bindLabel="label"
+        bindValue="value"
+        [searchable]="true"
+        [ngModel]="selectedPatientId"
+        (selectionChange)="onPatientChartChange($event)"
+        [placeholder]="'-- Quick Switch Chart --' | translate">
+      </app-custom-select>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     EMR CHART DASHBOARD
+══════════════════════════════════════════════════ -->
+<div *ngIf="selectedPatientId" class="emr-chart-wrapper">
+
+  <!-- ── Patient Header Card ── -->
+  <div class="chart-header-card">
+    <div class="chart-header-inner">
+      <!-- Left: Identity -->
+      <div class="patient-identity-block">
+        <div class="patient-avatar-ring">
+          <img *ngIf="selectedPatientAvatarUrl" [src]="selectedPatientAvatarUrl | apiUrl" (error)="selectedPatientAvatarUrl = ''" class="patient-chart-avatar" [alt]="selectedPatientName">
+          <div *ngIf="!selectedPatientAvatarUrl" class="patient-chart-avatar-placeholder">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+          </div>
+          <span class="avatar-status-dot"></span>
+        </div>
+        <div class="patient-name-block">
+          <span class="emr-active-badge">
+            <span class="badge-dot"></span>
+            {{ 'Active EMR Chart' | translate }}
+          </span>
+          <h2 class="patient-chart-name">{{ selectedPatientName }}</h2>
+          <div class="patient-vitals-pills" *ngIf="healthProfile">
+            <span class="vital-pill pill-teal">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M8 6h8M8 12h8M8 18h8"/></svg>
+              {{ healthProfile.heightCm }} {{ 'cm' | translate }}
+            </span>
+            <span class="vital-pill pill-blue">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z"/></svg>
+              {{ healthProfile.weightKg }} {{ 'kg' | translate }}
+            </span>
+            <span class="vital-pill pill-amber">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+              {{ 'BMI:' | translate }} {{ healthProfile.bmi | number:'1.1-2' }}
+            </span>
+            <span class="vital-pill pill-purple">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              {{ 'Smoking:' | translate }} {{ healthProfile.smokingStatus | translate }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Quick Actions -->
+      <div class="chart-quick-actions">
+        <button class="qaction-btn qaction-vitals" (click)="openModal('vital')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          <span>{{ 'Record Vitals' | translate }}</span>
+        </button>
+        <button class="qaction-btn qaction-rx" (click)="openModal('prescription')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
+          <span>{{ 'Write Prescription' | translate }}</span>
+        </button>
+        <button class="qaction-btn qaction-lab" (click)="openModal('lab')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10 2v7.31L4.75 18.5a2 2 0 0 0 1.66 3h11.18a2 2 0 0 0 1.66-3L14 9.31V2"/><path d="M8.5 2h7"/></svg>
+          <span>{{ 'Upload Lab Report' | translate }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Allergy & Condition alerts strip (always visible) -->
+    <div class="chart-alerts-strip" *ngIf="allergies.length > 0 || chronicConditions.length > 0">
+      <div class="alert-strip-item alert-strip-allergy" *ngIf="allergies.length > 0">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <strong>{{ allergies.length }} {{ 'Known Allergies' | translate }}</strong>
+        <span class="alert-strip-names">{{ allergies[0]?.allergen }}{{ allergies[1] ? ', ' + allergies[1].allergen : '' }}{{ allergies[2] ? ', ...' : '' }}</span>
+      </div>
+      <div class="alert-strip-item alert-strip-condition" *ngIf="chronicConditions.length > 0">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4.8 2.3A.3.3 0 0 0 4.5 2.6V8A4.5 4.5 0 0 0 9 12.5h0A4.5 4.5 0 0 0 13.5 8V2.6a.3.3 0 0 0-.3-.3"/><path d="M9 12.5v4.5A4.5 4.5 0 0 0 13.5 21.5h1a4.5 4.5 0 0 0 4.5-4.5v-2"/></svg>
+        <strong>{{ chronicConditions.length }} {{ 'Chronic Conditions' | translate }}</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── EMR Tab Navigation Bar ── -->
+  <div class="emr-tab-bar">
+    <button class="emr-tab-btn" [class.active]="activeEmrTab === 'overview'" (click)="setEmrTab('overview')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      {{ 'Overview' | translate }}
+    </button>
+    <button class="emr-tab-btn" [class.active]="activeEmrTab === 'prescriptions'" (click)="setEmrTab('prescriptions')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
+      {{ 'Prescriptions' | translate }}
+      <span class="tab-count-badge" *ngIf="prescriptions.length > 0">{{ prescriptions.length }}</span>
+    </button>
+    <button class="emr-tab-btn" [class.active]="activeEmrTab === 'vitals'" (click)="setEmrTab('vitals')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      {{ 'Vitals' | translate }}
+      <span class="tab-count-badge" *ngIf="vitals.length > 0">{{ vitals.length }}</span>
+    </button>
+    <button class="emr-tab-btn" [class.active]="activeEmrTab === 'labs'" (click)="setEmrTab('labs')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10 2v7.31L4.75 18.5a2 2 0 0 0 1.66 3h11.18a2 2 0 0 0 1.66-3L14 9.31V2"/><path d="M8.5 2h7"/></svg>
+      {{ 'Lab Reports' | translate }}
+      <span class="tab-count-badge tab-count-lab" *ngIf="labResults.length > 0">{{ labResults.length }}</span>
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════
+       TAB PANEL: OVERVIEW
+  ══════════════════════════════ -->
+  <div class="emr-tab-panel" *ngIf="activeEmrTab === 'overview'">
+    <div class="overview-grid">
+
+      <!-- Allergies Card -->
+      <div class="overview-card overview-card-allergy">
+        <div class="overview-card-header">
+          <div class="overview-card-icon icon-danger">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div>
+            <h3 class="overview-card-title">{{ 'Known Allergies' | translate }}</h3>
+            <p class="overview-card-sub">{{ allergies.length }} {{ 'recorded' | translate }}</p>
+          </div>
+          <span class="overview-count-badge badge-danger">{{ allergies.length }}</span>
+        </div>
+        <div class="overview-card-list">
+          <div *ngFor="let al of allergies" class="allergy-entry">
+            <div class="allergy-entry-icon">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/></svg>
+            </div>
+            <div class="allergy-entry-info">
+              <span class="allergy-name">{{ al.allergen }}</span>
+              <span class="allergy-severity-badge" [class.severity-high]="al.severity === 'HIGH' || al.severity === 'SEVERE'" [class.severity-med]="al.severity === 'MODERATE'" [class.severity-low]="al.severity === 'LOW' || al.severity === 'MILD'">{{ al.severity | translate }}</span>
+            </div>
+            <span class="allergy-reaction">{{ al.reaction }}</span>
+          </div>
+          <div *ngIf="allergies.length === 0" class="overview-empty-state">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            {{ 'No allergies recorded on file.' | translate }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Chronic Conditions Card -->
+      <div class="overview-card overview-card-condition">
+        <div class="overview-card-header">
+          <div class="overview-card-icon icon-blue">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4.8 2.3A.3.3 0 0 0 4.5 2.6V8A4.5 4.5 0 0 0 9 12.5h0A4.5 4.5 0 0 0 13.5 8V2.6a.3.3 0 0 0-.3-.3"/><path d="M9 12.5v4.5A4.5 4.5 0 0 0 13.5 21.5h1a4.5 4.5 0 0 0 4.5-4.5v-2"/></svg>
+          </div>
+          <div>
+            <h3 class="overview-card-title">{{ 'Chronic Conditions' | translate }}</h3>
+            <p class="overview-card-sub">{{ chronicConditions.length }} {{ 'recorded' | translate }}</p>
+          </div>
+          <span class="overview-count-badge badge-blue">{{ chronicConditions.length }}</span>
+        </div>
+        <div class="overview-card-list">
+          <div *ngFor="let cc of chronicConditions" class="condition-entry">
+            <div class="condition-entry-left">
+              <span class="condition-name">{{ cc.conditionName }}</span>
+              <span class="condition-icd">{{ cc.icd10Code }}</span>
+            </div>
+            <span class="condition-status-badge" [class.status-active]="cc.status === 'ACTIVE'" [class.status-managed]="cc.status === 'MANAGED'" [class.status-resolved]="cc.status === 'RESOLVED'">{{ cc.status | translate }}</span>
+          </div>
+          <div *ngIf="chronicConditions.length === 0" class="overview-empty-state">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            {{ 'No chronic conditions recorded.' | translate }}
+          </div>
+        </div>
+      </div>
+
+      <!-- EMR Quick Stats -->
+      <div class="overview-stats-row">
+        <div class="emr-stat-card">
+          <span class="emr-stat-value">{{ prescriptions.length }}</span>
+          <span class="emr-stat-label">{{ 'Prescriptions' | translate }}</span>
+        </div>
+        <div class="emr-stat-card">
+          <span class="emr-stat-value">{{ vitals.length }}</span>
+          <span class="emr-stat-label">{{ 'Vital Readings' | translate }}</span>
+        </div>
+        <div class="emr-stat-card">
+          <span class="emr-stat-value">{{ labResults.length }}</span>
+          <span class="emr-stat-label">{{ 'Lab Reports' | translate }}</span>
+        </div>
+        <div class="emr-stat-card">
+          <span class="emr-stat-value">{{ allergies.length }}</span>
+          <span class="emr-stat-label">{{ 'Allergies' | translate }}</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       TAB PANEL: PRESCRIPTIONS
+  ══════════════════════════════ -->
+  <div class="emr-tab-panel" *ngIf="activeEmrTab === 'prescriptions'">
+    <div class="panel-header">
+      <div class="panel-header-left">
+        <div class="panel-header-icon icon-green">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
+        </div>
+        <div>
+          <h3 class="panel-title">{{ 'Prescription History' | translate }}</h3>
+          <p class="panel-sub">{{ prescriptions.length }} {{ 'Records' | translate }}</p>
+        </div>
+      </div>
+      <button class="panel-action-btn" (click)="openModal('prescription')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        {{ 'Write Prescription' | translate }}
       </button>
     </div>
+
+    <div class="rx-list" *ngIf="prescriptions.length > 0">
+      <div *ngFor="let rx of prescriptions; let i = index" class="rx-entry">
+        <div class="rx-timeline-dot">
+          <span class="rx-dot-inner"></span>
+        </div>
+        <div class="rx-entry-card">
+          <div class="rx-entry-header">
+            <div class="rx-entry-header-left">
+              <span class="rx-diagnosis">{{ rx.diagnosisNotes }}</span>
+              <span class="rx-badge" [class.rx-badge-active]="rx.status === 'ACTIVE'" [class.rx-badge-expired]="rx.status === 'EXPIRED'">{{ rx.status | translate }}</span>
+            </div>
+            <div class="rx-entry-meta">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              {{ 'Issued:' | translate }} {{ rx.issuedDate }}
+            </div>
+          </div>
+          <!-- Drug Items -->
+          <div class="rx-items-list" *ngIf="selectedRxItems[rx.prescriptionId] && selectedRxItems[rx.prescriptionId].length > 0">
+            <div class="rx-items-label">{{ 'Medications' | translate }}</div>
+            <div class="rx-drug-row" *ngFor="let item of selectedRxItems[rx.prescriptionId]">
+              <div class="rx-drug-icon">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/></svg>
+              </div>
+              <div class="rx-drug-info">
+                <span class="rx-drug-name">{{ item.drugName }}</span>
+                <span class="rx-drug-detail">{{ item.dosage }} · {{ item.frequency | translate }} · {{ item.durationDays }} {{ 'Days' | translate }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-empty-state" *ngIf="prescriptions.length === 0">
+      <div class="panel-empty-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/></svg>
+      </div>
+      <strong>{{ 'No prescription records found.' | translate }}</strong>
+      <span>{{ 'Click Write Prescription to create the first one.' | translate }}</span>
+    </div>
   </div>
 
-  <div *ngIf="filteredPatients.length === 0" class="text-center text-muted py-5 mt-4 border rounded-lg bg-light">
-    <span class="fs-lg d-block mb-1">🚫 {{ 'No Patients Found' | translate }}</span>
-    <span class="fs-xs">{{ 'Try adjusting your search terms or verify patient list rosters.' | translate }}</span>
+  <!-- ══════════════════════════════
+       TAB PANEL: VITALS
+  ══════════════════════════════ -->
+  <div class="emr-tab-panel" *ngIf="activeEmrTab === 'vitals'">
+    <div class="panel-header">
+      <div class="panel-header-left">
+        <div class="panel-header-icon icon-red">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <div>
+          <h3 class="panel-title">{{ 'Recorded Vitals History' | translate }}</h3>
+          <p class="panel-sub">{{ vitals.length }} {{ 'Entries' | translate }}</p>
+        </div>
+      </div>
+      <button class="panel-action-btn" (click)="openModal('vital')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        {{ 'Record Vitals' | translate }}
+      </button>
+    </div>
+
+    <div class="vitals-grid" *ngIf="vitals.length > 0">
+      <div *ngFor="let v of vitals" class="vital-card">
+        <div class="vital-card-date">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          {{ v.recordedAt | date:'mediumDate' }}
+        </div>
+        <div class="vital-metrics-row">
+          <div class="vital-metric vital-bp">
+            <span class="vital-metric-label">{{ 'BP' | translate }}</span>
+            <span class="vital-metric-value">{{ v.bloodPressureSystolic }}/{{ v.bloodPressureDiastolic }}</span>
+            <span class="vital-metric-unit">mmHg</span>
+          </div>
+          <div class="vital-divider"></div>
+          <div class="vital-metric vital-hr">
+            <span class="vital-metric-label">{{ 'Heart Rate' | translate }}</span>
+            <span class="vital-metric-value">{{ v.heartRateBpm }}</span>
+            <span class="vital-metric-unit">{{ 'BPM' | translate }}</span>
+          </div>
+          <div class="vital-divider"></div>
+          <div class="vital-metric vital-temp" *ngIf="v.temperatureC">
+            <span class="vital-metric-label">{{ 'Temp' | translate }}</span>
+            <span class="vital-metric-value">{{ v.temperatureC }}</span>
+            <span class="vital-metric-unit">°C</span>
+          </div>
+          <div class="vital-divider" *ngIf="v.bloodGlucoseMmol"></div>
+          <div class="vital-metric vital-glucose" *ngIf="v.bloodGlucoseMmol">
+            <span class="vital-metric-label">{{ 'Glucose' | translate }}</span>
+            <span class="vital-metric-value">{{ v.bloodGlucoseMmol }}</span>
+            <span class="vital-metric-unit">mmol/L</span>
+          </div>
+          <div class="vital-divider" *ngIf="v.oxygenSaturation"></div>
+          <div class="vital-metric vital-o2" *ngIf="v.oxygenSaturation">
+            <span class="vital-metric-label">{{ 'SpO₂' | translate }}</span>
+            <span class="vital-metric-value">{{ v.oxygenSaturation }}</span>
+            <span class="vital-metric-unit">%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-empty-state" *ngIf="vitals.length === 0">
+      <div class="panel-empty-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      </div>
+      <strong>{{ 'No vitals documented.' | translate }}</strong>
+      <span>{{ 'Click Record Vitals to log the first reading.' | translate }}</span>
+    </div>
   </div>
+
+  <!-- ══════════════════════════════
+       TAB PANEL: LAB REPORTS
+  ══════════════════════════════ -->
+  <div class="emr-tab-panel" *ngIf="activeEmrTab === 'labs'">
+    <div class="panel-header">
+      <div class="panel-header-left">
+        <div class="panel-header-icon icon-purple">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10 2v7.31L4.75 18.5a2 2 0 0 0 1.66 3h11.18a2 2 0 0 0 1.66-3L14 9.31V2"/><path d="M8.5 2h7"/></svg>
+        </div>
+        <div>
+          <h3 class="panel-title">{{ 'Lab Reports & Attachments' | translate }}</h3>
+          <p class="panel-sub">{{ labResults.length }} {{ 'Reports' | translate }}</p>
+        </div>
+      </div>
+      <button class="panel-action-btn" (click)="openModal('lab')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        {{ 'Upload Lab Report' | translate }}
+      </button>
+    </div>
+
+    <div class="labs-list" *ngIf="labResults.length > 0">
+      <div *ngFor="let lab of labResults" class="lab-entry" [class.lab-critical]="lab.overallFlag === 'CRITICAL'" [class.lab-abnormal]="lab.overallFlag === 'ABNORMAL'">
+        <div class="lab-entry-header">
+          <div class="lab-flag-icon" [class.flag-critical]="lab.overallFlag === 'CRITICAL'" [class.flag-abnormal]="lab.overallFlag === 'ABNORMAL'" [class.flag-normal]="lab.overallFlag === 'NORMAL'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10 2v7.31L4.75 18.5a2 2 0 0 0 1.66 3h11.18a2 2 0 0 0 1.66-3L14 9.31V2"/><path d="M8.5 2h7"/></svg>
+          </div>
+          <div class="lab-entry-title-block">
+            <span class="lab-name">{{ lab.labName }}</span>
+            <span class="lab-type">{{ lab.reportType }}</span>
+          </div>
+          <div class="lab-entry-meta-right">
+            <span class="lab-flag-badge" [class.flag-badge-critical]="lab.overallFlag === 'CRITICAL'" [class.flag-badge-abnormal]="lab.overallFlag === 'ABNORMAL'" [class.flag-badge-normal]="lab.overallFlag === 'NORMAL'">{{ lab.overallFlag | translate }}</span>
+            <span class="lab-date">{{ lab.reportDate }}</span>
+          </div>
+        </div>
+
+        <div class="lab-annotation" *ngIf="lab.doctorAnnotation">
+          <div class="annotation-icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <div>
+            <span class="annotation-label">{{ 'Clinical Note:' | translate }}</span>
+            <span class="annotation-text">{{ lab.doctorAnnotation }}</span>
+          </div>
+        </div>
+
+        <div class="lab-attachment-bar" *ngIf="lab.fileId">
+          <div class="lab-attach-left">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span>{{ 'Lab Attachment Document' | translate }}</span>
+          </div>
+          <button class="lab-download-btn" (click)="downloadLabFile(lab.fileId)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            {{ 'Download File' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-empty-state" *ngIf="labResults.length === 0">
+      <div class="panel-empty-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2v7.31L4.75 18.5a2 2 0 0 0 1.66 3h11.18a2 2 0 0 0 1.66-3L14 9.31V2"/><path d="M8.5 2h7"/></svg>
+      </div>
+      <strong>{{ 'No reports found.' | translate }}</strong>
+      <span>{{ 'Click Upload Lab Report to add the first lab result.' | translate }}</span>
+    </div>
+  </div>
+
 </div>
 
-<!-- Back header if a patient is selected -->
-<div class="chart-back-nav-bar mb-3 d-flex align-center justify-between" *ngIf="selectedPatientId">
-  <button class="btn btn-outline btn-sm d-flex align-center gap-1" (click)="backToDirectory()">
-    ⬅️ {{ 'Back to Patient Directory' | translate }}
-  </button>
-  <div style="min-width: 260px;">
-    <app-custom-select 
-      [options]="patientChartSelectOptions" 
-      bindLabel="label" 
-      bindValue="value" 
-      [searchable]="true" 
-      [ngModel]="selectedPatientId" 
-      (selectionChange)="onPatientChartChange($event)"
-      [placeholder]="'-- Quick Switch Chart --' | translate">
-    </app-custom-select>
-  </div>
-</div>
-
-<!-- EMR chart dashboard if patient is selected -->
-<div *ngIf="selectedPatientId" class="d-flex flex-col gap-4 mt-2">
-  <!-- Profile summary card -->
-  <div class="chart-header-card">
-    <div class="d-flex justify-between align-center flex-wrap gap-4">
-      <div>
-        <h3 class="fs-xl text-primary mb-2 fw-bold d-flex align-center gap-2">
-          <img *ngIf="selectedPatientAvatarUrl" [src]="selectedPatientAvatarUrl | apiUrl" (error)="selectedPatientAvatarUrl = ''" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex-shrink: 0;" [alt]="selectedPatientName">
-          <span *ngIf="!selectedPatientAvatarUrl">👤</span>
-          <span>{{ 'Patient Chart:' | translate }}</span>
-          <span>{{ selectedPatientName }}</span>
-        </h3>
-        <div class="d-flex gap-3 align-center flex-wrap mt-2" *ngIf="healthProfile">
-          <span class="patient-vital-pill">📏 {{ 'Height:' | translate }} {{ healthProfile.heightCm }} {{ 'cm' | translate }}</span>
-          <span class="patient-vital-pill">⚖️ {{ 'Weight:' | translate }} {{ healthProfile.weightKg }} {{ 'kg' | translate }}</span>
-          <span class="patient-vital-pill">📊 {{ 'BMI:' | translate }} {{ healthProfile.bmi | number:'1.1-2' }}</span>
-          <span class="badge badge-success">🚬 {{ 'Smoking:' | translate }} {{ healthProfile.smokingStatus | translate }}</span>
-          <span class="badge badge-info">🍷 {{ 'Alcohol:' | translate }} {{ healthProfile.alcoholStatus | translate }}</span>
-        </div>
-      </div>
-
-      <!-- Quick Action Buttons -->
-      <div class="d-flex gap-2 flex-wrap align-center">
-        <button class="btn btn-primary btn-sm d-flex align-center gap-1" (click)="openModal('vital')">
-          <span>+ {{ 'Record Vitals' | translate }}</span>
-        </button>
-        <button class="btn btn-accent btn-sm d-flex align-center gap-1" (click)="openModal('prescription')">
-          <span>💊 {{ 'Write Prescription' | translate }}</span>
-        </button>
-        <button class="btn btn-outline btn-sm d-flex align-center gap-1" (click)="openModal('lab')">
-          <span>🔬 {{ 'Upload Lab Report' | translate }}</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Allergies & Conditions Summary Grid -->
-    <div class="chart-summary-grid">
-      <div>
-        <h4 class="fs-xs text-uppercase text-muted mb-3 fw-bold tracking-wider">{{ 'Known Allergies' | translate }} ({{ allergies.length }})</h4>
-        <div class="d-flex flex-col gap-2">
-          <div *ngFor="let al of allergies" class="allergy-item-card d-flex align-center gap-2">
-            <span>🚨</span>
-            <div>
-              <strong>{{ al.allergen }}</strong>
-              <span class="ms-1">({{ al.severity | translate }}) — {{ al.reaction }}</span>
-            </div>
-          </div>
-          <div *ngIf="allergies.length === 0" class="fs-sm text-muted">{{ 'No allergies recorded on file.' | translate }}</div>
-        </div>
-      </div>
-      <div>
-        <h4 class="fs-xs text-uppercase text-muted mb-3 fw-bold tracking-wider">{{ 'Chronic Conditions' | translate }} ({{ chronicConditions.length }})</h4>
-        <div class="d-flex flex-col gap-2">
-          <div *ngFor="let cc of chronicConditions" class="condition-item-card d-flex align-center gap-2">
-            <span>🩺</span>
-            <div>
-              <strong>{{ cc.conditionName }}</strong>
-              <span class="ms-1">[{{ cc.icd10Code }}] — {{ 'Status:' | translate }} {{ cc.status | translate }}</span>
-            </div>
-          </div>
-          <div *ngIf="chronicConditions.length === 0" class="fs-sm text-muted">{{ 'No chronic conditions recorded.' | translate }}</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="emr-dashboard-grid">
-    <!-- Left column: Prescriptions list -->
-    <div class="emr-section-card">
-      <div class="d-flex justify-between align-center mb-4 border-bottom pb-3">
-        <h3 class="fs-md text-primary m-0 fw-bold d-flex align-center gap-2">
-          <span>📜 {{ 'Prescription History' | translate }}</span>
-        </h3>
-        <span class="badge badge-info">{{ prescriptions.length }} {{ 'Records' | translate }}</span>
-      </div>
-
-      <div *ngFor="let rx of prescriptions" class="emr-item-card">
-        <div class="d-flex justify-between align-center fs-sm text-muted mb-2">
-          <span class="fw-semibold">📅 {{ 'Issued:' | translate }} {{ rx.issuedDate }}</span>
-          <span class="badge badge-success">{{ rx.status | translate }}</span>
-        </div>
-        <div class="fs-sm fw-bold text-dark mb-2">🩺 {{ 'Diagnosis:' | translate }} {{ rx.diagnosisNotes }}</div>
-        
-        <!-- Nested Items -->
-        <div class="mt-3 pt-3 border-top" style="border-top-style: dashed !important;">
-          <div *ngFor="let item of selectedRxItems[rx.prescriptionId]" class="fs-sm text-dark mb-2 d-flex align-center gap-2">
-            <span>💊</span>
-            <span><strong>{{ item.drugName }}</strong> ({{ item.dosage }}) — {{ item.frequency | translate }} {{ 'for' | translate }} {{ item.durationDays }} {{ 'Days' | translate }}</span>
-          </div>
-        </div>
-      </div>
-      <div *ngIf="prescriptions.length === 0" class="text-center text-muted p-4 fs-sm">{{ 'No prescription records found.' | translate }}</div>
-    </div>
-
-    <!-- Right column: Vitals and Labs -->
-    <div class="d-flex flex-col gap-4">
-      <!-- Vitals log -->
-      <div class="emr-section-card">
-        <div class="d-flex justify-between align-center mb-4 border-bottom pb-3">
-          <h3 class="fs-md text-primary m-0 fw-bold d-flex align-center gap-2">
-            <span>🫀 {{ 'Recorded Vitals History' | translate }}</span>
-          </h3>
-          <span class="badge badge-info">{{ vitals.length }} {{ 'Entries' | translate }}</span>
-        </div>
-
-        <div class="d-flex flex-col gap-2 overflow-y-auto" style="max-height: 320px;">
-          <div *ngFor="let v of vitals" class="vitals-row-item">
-            <div class="d-flex justify-between align-center fw-bold text-dark">
-              <span>🩺 {{ 'BP:' | translate }} {{ v.bloodPressureSystolic }}/{{ v.bloodPressureDiastolic }} mmHg</span>
-              <span class="badge badge-success">❤️ {{ v.heartRateBpm }} {{ 'BPM' | translate }}</span>
-            </div>
-            <div class="d-flex justify-between align-center text-muted fs-xs mt-2">
-              <span>🩸 {{ 'Glucose:' | translate }} {{ v.bloodGlucoseMmol || 'N/A' }} | 🌡️ {{ 'Temp:' | translate }} {{ v.temperatureC || 'N/A' }}°C</span>
-              <span class="fw-semibold">{{ v.recordedAt | date:'mediumDate' }}</span>
-            </div>
-          </div>
-          <div *ngIf="vitals.length === 0" class="text-center text-muted py-4 fs-sm">{{ 'No vitals documented.' | translate }}</div>
-        </div>
-      </div>
-
-      <!-- Lab results -->
-      <div class="emr-section-card">
-        <div class="d-flex justify-between align-center mb-4 border-bottom pb-3">
-          <h3 class="fs-md text-primary m-0 fw-bold d-flex align-center gap-2">
-            <span>🔬 {{ 'Lab Reports & Attachments' | translate }}</span>
-          </h3>
-          <span class="badge badge-info">{{ labResults.length }} {{ 'Reports' | translate }}</span>
-        </div>
-
-        <div *ngFor="let lab of labResults" class="emr-item-card">
-          <div class="d-flex justify-between align-center fw-bold fs-sm">
-            <span>🧪 {{ lab.labName }} — {{ lab.reportType }}</span>
-            <span class="badge" [class.badge-danger]="lab.overallFlag === 'CRITICAL'" [class.badge-warning]="lab.overallFlag === 'ABNORMAL'" [class.badge-success]="lab.overallFlag === 'NORMAL'">{{ lab.overallFlag | translate }}</span>
-          </div>
-          <div class="text-muted fs-xs mt-1">📅 {{ 'Date:' | translate }} {{ lab.reportDate }} | {{ 'Status:' | translate }} {{ lab.status | translate }}</div>
-          
-          <div class="annotation-quote-box" *ngIf="lab.doctorAnnotation">
-            💬 <strong>{{ 'Clinical Note:' | translate }}</strong> {{ lab.doctorAnnotation }}
-          </div>
-
-          <div *ngIf="lab.fileId" class="lab-file-attachment-bar">
-            <span class="fs-xs text-primary fw-bold d-flex align-center gap-1">
-              <span>📄</span>
-              <span>{{ 'Lab Attachment Document' | translate }}</span>
-            </span>
-            <button class="btn btn-primary btn-sm d-flex align-center gap-1" (click)="downloadLabFile(lab.fileId)">
-              <span>⬇️ {{ 'Download File' | translate }}</span>
-            </button>
-          </div>
-        </div>
-        <div *ngIf="labResults.length === 0" class="text-center text-muted py-4 fs-sm">{{ 'No reports found.' | translate }}</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Log Vitals Modal -->
-<div *ngIf="activeModal === 'vital'" class="modal-backdrop">
-  <div class="modal-content">
+<!-- ══════════════════════════════════════════════════
+     MODAL: LOG VITALS
+══════════════════════════════════════════════════ -->
+<div *ngIf="activeModal === 'vital'" class="modal-backdrop" (click)="closeModal()">
+  <div class="modal-dialog" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h3 class="fs-xl text-primary m-0">{{ 'Document Vitals Metric' | translate }}</h3>
-      <button class="btn-close" (click)="closeModal()">&times;</button>
+      <div class="modal-header-icon icon-red">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      </div>
+      <h3 class="modal-title">{{ 'Document Vitals Metric' | translate }}</h3>
+      <button class="modal-close-btn" (click)="closeModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
     <div class="modal-body">
       <form [formGroup]="vitalForm" (ngSubmit)="submitVital()">
+        <div class="modal-section-label">{{ 'Blood Pressure & Heart' | translate }}</div>
         <div class="form-row">
-          <div class="form-group mb-3">
-            <label class="form-label">{{ 'Systolic BP (mmHg)' | translate }}</label>
-            <input type="number" formControlName="bloodPressureSystolic" class="form-control">
+          <div class="form-field">
+            <label class="field-label">{{ 'Systolic BP (mmHg)' | translate }}</label>
+            <input type="number" formControlName="bloodPressureSystolic" class="field-input">
           </div>
-          <div class="form-group mb-3">
-            <label class="form-label">{{ 'Diastolic BP (mmHg)' | translate }}</label>
-            <input type="number" formControlName="bloodPressureDiastolic" class="form-control">
+          <div class="form-field">
+            <label class="field-label">{{ 'Diastolic BP (mmHg)' | translate }}</label>
+            <input type="number" formControlName="bloodPressureDiastolic" class="field-input">
           </div>
         </div>
         <div class="form-row">
-          <div class="form-group mb-3">
-            <label class="form-label">{{ 'Heart Rate (BPM)' | translate }}</label>
-            <input type="number" formControlName="heartRateBpm" class="form-control">
+          <div class="form-field">
+            <label class="field-label">{{ 'Heart Rate (BPM)' | translate }}</label>
+            <input type="number" formControlName="heartRateBpm" class="field-input">
           </div>
-          <div class="form-group mb-3">
-            <label class="form-label">{{ 'Glucose (mmol/L)' | translate }}</label>
-            <input type="number" step="0.1" formControlName="bloodGlucoseMmol" class="form-control">
+          <div class="form-field">
+            <label class="field-label">{{ 'Oxygen Saturation (%)' | translate }}</label>
+            <input type="number" formControlName="oxygenSaturation" class="field-input">
+          </div>
+        </div>
+        <div class="modal-section-label mt-3">{{ 'Metabolic Indicators' | translate }}</div>
+        <div class="form-row">
+          <div class="form-field">
+            <label class="field-label">{{ 'Glucose (mmol/L)' | translate }}</label>
+            <input type="number" step="0.1" formControlName="bloodGlucoseMmol" class="field-input">
+          </div>
+          <div class="form-field">
+            <label class="field-label">{{ 'HbA1c (%)' | translate }}</label>
+            <input type="number" step="0.1" formControlName="hba1cPercent" class="field-input">
           </div>
         </div>
         <div class="form-row">
-          <div class="form-group mb-3">
-            <label class="form-label">{{ 'HbA1c (%)' | translate }}</label>
-            <input type="number" step="0.1" formControlName="hba1cPercent" class="form-control">
+          <div class="form-field">
+            <label class="field-label">{{ 'Weight (kg)' | translate }}</label>
+            <input type="number" formControlName="weightKg" class="field-input">
           </div>
-          <div class="form-group mb-3">
-            <label class="form-label">{{ 'Weight (kg)' | translate }}</label>
-            <input type="number" formControlName="weightKg" class="form-control">
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group mb-3">
-            <label class="form-label">{{ 'Temperature (°C)' | translate }}</label>
-            <input type="number" step="0.1" formControlName="temperatureC" class="form-control">
-          </div>
-          <div class="form-group mb-3">
-            <label class="form-label">{{ 'Oxygen Saturation (%)' | translate }}</label>
-            <input type="number" formControlName="oxygenSaturation" class="form-control">
+          <div class="form-field">
+            <label class="field-label">{{ 'Temperature (°C)' | translate }}</label>
+            <input type="number" step="0.1" formControlName="temperatureC" class="field-input">
           </div>
         </div>
-        <div class="form-group m-0">
-          <label class="form-label">{{ 'Notes' | translate }}</label>
-          <textarea formControlName="notes" class="form-control" rows="2"></textarea>
+        <div class="form-field mt-3">
+          <label class="field-label">{{ 'Notes' | translate }}</label>
+          <textarea formControlName="notes" class="field-input field-textarea" rows="2"></textarea>
         </div>
       </form>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-outline" (click)="closeModal()">{{ 'Cancel' | translate }}</button>
-      <button type="button" class="btn btn-accent" (click)="submitVital()" [disabled]="vitalForm.invalid">{{ 'Save Entry' | translate }}</button>
+      <button type="button" class="modal-btn-outline" (click)="closeModal()">{{ 'Cancel' | translate }}</button>
+      <button type="button" class="modal-btn-primary" (click)="submitVital()" [disabled]="vitalForm.invalid">{{ 'Save Entry' | translate }}</button>
     </div>
   </div>
 </div>
 
-<!-- Write Prescription Modal -->
-<div *ngIf="activeModal === 'prescription'" class="modal-backdrop">
-  <div class="modal-content" style="max-width: 600px;">
+<!-- ══════════════════════════════════════════════════
+     MODAL: WRITE PRESCRIPTION
+══════════════════════════════════════════════════ -->
+<div *ngIf="activeModal === 'prescription'" class="modal-backdrop" (click)="closeModal()">
+  <div class="modal-dialog modal-dialog-wide" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h3 class="fs-xl text-primary m-0">{{ 'Write E-Prescription' | translate }}</h3>
-      <button class="btn-close" (click)="closeModal()">&times;</button>
+      <div class="modal-header-icon icon-green">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
+      </div>
+      <h3 class="modal-title">{{ 'Write E-Prescription' | translate }}</h3>
+      <button class="modal-close-btn" (click)="closeModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
     <div class="modal-body">
-      <!-- Stage 1: Shell creation -->
+      <!-- Stage indicator -->
+      <div class="rx-stage-indicator">
+        <div class="rx-stage-step" [class.step-done]="createdRxId" [class.step-active]="!createdRxId">
+          <span class="step-num">1</span>
+          <span class="step-lbl">{{ 'Prescription Details' | translate }}</span>
+        </div>
+        <div class="rx-stage-line" [class.stage-line-done]="createdRxId"></div>
+        <div class="rx-stage-step" [class.step-active]="createdRxId" [class.step-inactive]="!createdRxId">
+          <span class="step-num">2</span>
+          <span class="step-lbl">{{ 'Add Medications' | translate }}</span>
+        </div>
+      </div>
+
+      <!-- Stage 1 -->
       <div *ngIf="!createdRxId">
         <form [formGroup]="rxForm" (ngSubmit)="submitPrescription()">
-          <div class="form-group mb-3">
-            <label class="form-label">{{ 'Valid Until Date' | translate }}</label>
-            <input type="date" formControlName="validUntil" class="form-control">
+          <div class="form-field">
+            <label class="field-label">{{ 'Valid Until Date' | translate }}</label>
+            <input type="date" formControlName="validUntil" class="field-input">
           </div>
-          <div class="form-group mb-3">
-            <label class="form-label">{{ 'Clinical Diagnosis Notes' | translate }}</label>
-            <textarea formControlName="diagnosisNotes" class="form-control" rows="3" [placeholder]="'Symptoms, diagnostic findings...' | translate"></textarea>
+          <div class="form-field mt-3">
+            <label class="field-label">{{ 'Clinical Diagnosis Notes' | translate }}</label>
+            <textarea formControlName="diagnosisNotes" class="field-input field-textarea" rows="3" [placeholder]="'Symptoms, diagnostic findings...' | translate"></textarea>
           </div>
-          <div class="form-group m-0">
-            <label class="form-label">{{ 'Pharmacist Instructions' | translate }}</label>
-            <textarea formControlName="pharmacistNotes" class="form-control" rows="2" [placeholder]="'Substitutions, warnings...' | translate"></textarea>
+          <div class="form-field mt-3">
+            <label class="field-label">{{ 'Pharmacist Instructions' | translate }}</label>
+            <textarea formControlName="pharmacistNotes" class="field-input field-textarea" rows="2" [placeholder]="'Substitutions, warnings...' | translate"></textarea>
           </div>
-          <div class="modal-footer px-0 pb-0 mt-4">
-            <button type="button" class="btn btn-outline" (click)="closeModal()">{{ 'Cancel' | translate }}</button>
-            <button type="submit" class="btn btn-accent" [disabled]="rxForm.invalid">{{ 'Create Shell' | translate }}</button>
+          <div class="modal-footer modal-footer-inline">
+            <button type="button" class="modal-btn-outline" (click)="closeModal()">{{ 'Cancel' | translate }}</button>
+            <button type="submit" class="modal-btn-primary" [disabled]="rxForm.invalid">{{ 'Create Shell' | translate }}</button>
           </div>
         </form>
       </div>
 
-      <!-- Stage 2: Adding Items -->
+      <!-- Stage 2 -->
       <div *ngIf="createdRxId">
-        <div class="mb-4 bg-light p-3 rounded-md border">
-          <h4 class="fs-sm text-primary mb-2 fw-bold">{{ 'Added Items' | translate }} ({{ rxItemsList.length }})</h4>
-          <div *ngFor="let item of rxItemsList" class="fs-sm border-bottom pb-1 mb-1">
-            💊 {{ item.drugName }} ({{ item.dosage }}) - {{ item.frequency }} {{ 'for' | translate }} {{ item.durationDays }} {{ 'Days' | translate }}
+        <div class="rx-items-preview" *ngIf="rxItemsList.length > 0">
+          <div class="rx-items-preview-header">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/></svg>
+            {{ 'Added Items' | translate }} ({{ rxItemsList.length }})
+          </div>
+          <div *ngFor="let item of rxItemsList" class="rx-preview-item">
+            <span class="rx-preview-drug">{{ item.drugName }}</span>
+            <span class="rx-preview-detail">{{ item.dosage }} · {{ item.frequency }} · {{ item.durationDays }} {{ 'Days' | translate }}</span>
           </div>
         </div>
 
         <form [formGroup]="rxItemForm" (ngSubmit)="addRxItem(); $event.preventDefault()">
-          <div class="form-group mb-3">
-            <label class="form-label">{{ 'Drug / Medicine Name' | translate }}</label>
-            <input type="text" formControlName="drugName" class="form-control" [placeholder]="'E.g. Amoxicillin 500mg' | translate">
+          <div class="form-field">
+            <label class="field-label">{{ 'Drug / Medicine Name' | translate }}</label>
+            <input type="text" formControlName="drugName" class="field-input" [placeholder]="'E.g. Amoxicillin 500mg' | translate">
           </div>
-          <div class="form-row">
-            <div class="form-group mb-3">
-              <label class="form-label">{{ 'Dosage' | translate }}</label>
-              <input type="text" formControlName="dosage" class="form-control" [placeholder]="'E.g. 1 tablet' | translate">
+          <div class="form-row mt-3">
+            <div class="form-field">
+              <label class="field-label">{{ 'Dosage' | translate }}</label>
+              <input type="text" formControlName="dosage" class="field-input" [placeholder]="'E.g. 1 tablet' | translate">
             </div>
-            <div class="form-group mb-3">
-              <label class="form-label">{{ 'Route' | translate }}</label>
-              <app-custom-select 
-                formControlName="route" 
-                [options]="localizedRxRouteOptions" 
-                bindLabel="label" 
-                bindValue="value" 
+            <div class="form-field">
+              <label class="field-label">{{ 'Route' | translate }}</label>
+              <app-custom-select
+                formControlName="route"
+                [options]="localizedRxRouteOptions"
+                bindLabel="label"
+                bindValue="value"
                 [placeholder]="'Select Route' | translate">
               </app-custom-select>
             </div>
           </div>
-          <div class="form-row">
-            <div class="form-group mb-3">
-              <label class="form-label">{{ 'Frequency' | translate }}</label>
-              <input type="text" formControlName="frequency" class="form-control" [placeholder]="'E.g. Twice daily' | translate">
+          <div class="form-row mt-3">
+            <div class="form-field">
+              <label class="field-label">{{ 'Frequency' | translate }}</label>
+              <input type="text" formControlName="frequency" class="field-input" [placeholder]="'E.g. Twice daily' | translate">
             </div>
-            <div class="form-group mb-3">
-              <label class="form-label">{{ 'Duration (Days)' | translate }}</label>
-              <input type="number" formControlName="durationDays" class="form-control">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group mb-3">
-              <label class="form-label">{{ 'Total Quantity' | translate }}</label>
-              <input type="number" formControlName="quantity" class="form-control">
-            </div>
-            <div class="form-group mb-3">
-              <label class="form-label">{{ 'Refills Allowed' | translate }}</label>
-              <input type="number" formControlName="refillsAllowed" class="form-control">
+            <div class="form-field">
+              <label class="field-label">{{ 'Duration (Days)' | translate }}</label>
+              <input type="number" formControlName="durationDays" class="field-input">
             </div>
           </div>
-          <div class="form-group m-0">
-            <label class="form-label">{{ 'Special Instructions' | translate }}</label>
-            <input type="text" formControlName="specialInstructions" class="form-control" [placeholder]="'E.g. Take after meal' | translate">
+          <div class="form-row mt-3">
+            <div class="form-field">
+              <label class="field-label">{{ 'Total Quantity' | translate }}</label>
+              <input type="number" formControlName="quantity" class="field-input">
+            </div>
+            <div class="form-field">
+              <label class="field-label">{{ 'Refills Allowed' | translate }}</label>
+              <input type="number" formControlName="refillsAllowed" class="field-input">
+            </div>
           </div>
-
-          <div class="d-flex justify-between gap-3 mt-4 pt-3 border-top">
-            <button type="submit" class="btn btn-outline" [disabled]="rxItemForm.invalid">+ {{ 'Add Item' | translate }}</button>
-            <button type="button" class="btn btn-accent" (click)="finishPrescription()">{{ 'Finish Prescription' | translate }}</button>
+          <div class="form-field mt-3">
+            <label class="field-label">{{ 'Special Instructions' | translate }}</label>
+            <input type="text" formControlName="specialInstructions" class="field-input" [placeholder]="'E.g. Take after meal' | translate">
+          </div>
+          <div class="modal-footer modal-footer-spread">
+            <button type="submit" class="modal-btn-outline" [disabled]="rxItemForm.invalid">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              {{ 'Add Item' | translate }}
+            </button>
+            <button type="button" class="modal-btn-primary" (click)="finishPrescription()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              {{ 'Finish Prescription' | translate }}
+            </button>
           </div>
         </form>
       </div>
@@ -378,48 +687,57 @@
   </div>
 </div>
 
-<!-- Upload Lab Result Modal -->
-<div *ngIf="activeModal === 'lab'" class="modal-backdrop">
-  <div class="modal-content">
+<!-- ══════════════════════════════════════════════════
+     MODAL: UPLOAD LAB REPORT
+══════════════════════════════════════════════════ -->
+<div *ngIf="activeModal === 'lab'" class="modal-backdrop" (click)="closeModal()">
+  <div class="modal-dialog" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h3 class="fs-xl text-primary m-0">{{ 'Upload Lab Report' | translate }}</h3>
-      <button class="btn-close" (click)="closeModal()">&times;</button>
+      <div class="modal-header-icon icon-purple">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10 2v7.31L4.75 18.5a2 2 0 0 0 1.66 3h11.18a2 2 0 0 0 1.66-3L14 9.31V2"/><path d="M8.5 2h7"/></svg>
+      </div>
+      <h3 class="modal-title">{{ 'Upload Lab Report' | translate }}</h3>
+      <button class="modal-close-btn" (click)="closeModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
     <div class="modal-body">
       <form [formGroup]="labForm" (ngSubmit)="submitLab()">
-        <div class="form-group mb-3">
-          <label class="form-label">{{ 'Lab Facility Name' | translate }}</label>
-          <input type="text" formControlName="labName" class="form-control" [placeholder]="'E.g. Al Borg Diagnostics' | translate">
+        <div class="form-field">
+          <label class="field-label">{{ 'Lab Facility Name' | translate }}</label>
+          <input type="text" formControlName="labName" class="field-input" [placeholder]="'E.g. Al Borg Diagnostics' | translate">
         </div>
-        <div class="form-row">
-          <div class="form-group mb-3">
-            <label class="form-label">{{ 'Report Type / Test Category' | translate }}</label>
-            <input type="text" formControlName="reportType" class="form-control" [placeholder]="'E.g. Lipid Profile' | translate">
+        <div class="form-row mt-3">
+          <div class="form-field">
+            <label class="field-label">{{ 'Report Type / Test Category' | translate }}</label>
+            <input type="text" formControlName="reportType" class="field-input" [placeholder]="'E.g. Lipid Profile' | translate">
           </div>
-          <div class="form-group mb-3">
-            <label class="form-label">{{ 'Report Date' | translate }}</label>
-            <input type="date" formControlName="reportDate" class="form-control">
-          </div>
-        </div>
-        
-        <!-- File Selector -->
-        <div class="form-group mb-3">
-          <label class="form-label">{{ 'Select Report Attachment (PDF/Image)' | translate }}</label>
-          <div class="file-upload-wrapper">
-            <span class="file-upload-icon">📎</span>
-            <input type="file" (change)="onFileSelected($event)" class="form-control file-input-styled">
+          <div class="form-field">
+            <label class="field-label">{{ 'Report Date' | translate }}</label>
+            <input type="date" formControlName="reportDate" class="field-input">
           </div>
         </div>
-
-        <div class="form-group m-0">
-          <label class="form-label">{{ 'Clinical Annotation Notes' | translate }}</label>
-          <textarea formControlName="doctorAnnotation" class="form-control" rows="2"></textarea>
+        <!-- File Upload -->
+        <div class="form-field mt-3">
+          <label class="field-label">{{ 'Select Report Attachment (PDF/Image)' | translate }}</label>
+          <div class="file-upload-zone" (click)="fileInput.click()">
+            <input #fileInput type="file" (change)="onFileSelected($event)" style="display:none">
+            <div class="file-upload-content">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <span *ngIf="!selectedFile">{{ 'Click to select a file or drag & drop' | translate }}</span>
+              <span *ngIf="selectedFile" class="file-selected-name">{{ selectedFile.name }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-field mt-3">
+          <label class="field-label">{{ 'Clinical Annotation Notes' | translate }}</label>
+          <textarea formControlName="doctorAnnotation" class="field-input field-textarea" rows="2"></textarea>
         </div>
       </form>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-outline" (click)="closeModal()">{{ 'Cancel' | translate }}</button>
-      <button type="button" class="btn btn-accent" (click)="submitLab()" [disabled]="labForm.invalid">{{ 'Upload Report' | translate }}</button>
+      <button type="button" class="modal-btn-outline" (click)="closeModal()">{{ 'Cancel' | translate }}</button>
+      <button type="button" class="modal-btn-primary" (click)="submitLab()" [disabled]="labForm.invalid">{{ 'Upload Report' | translate }}</button>
     </div>
   </div>
 </div>

@@ -64,8 +64,8 @@ export class DoctorsComponent implements OnInit {
 
   // Active filters state
   public searchQuery: string = '';
-  public selectedSpecialtyId: string = '';
-  public selectedCityId: string = '';
+  public selectedSpecialtyIds: string[] = [];
+  public selectedCityIds: string[] = [];
   public selectedRating: number = 0;
   public selectedLanguageId: string = '';
   public minExperience: number = 0;
@@ -73,33 +73,27 @@ export class DoctorsComponent implements OnInit {
   public showAdvancedFilters: boolean = false;
 
   get specialtyOptions() {
-    return [
-      { label: this.languageService.isArabic ? 'جميع التخصصات' : 'All Specialties', value: '' },
-      ...this.specialties.map(s => ({
-        label: this.languageService.isArabic && s.nameAr ? s.nameAr : s.nameEn || '',
-        value: s.specialtyId
-      }))
-    ];
+    return this.specialties.map(s => ({
+      label: this.languageService.isArabic && s.nameAr ? s.nameAr : s.nameEn || '',
+      value: s.specialtyId
+    }));
   }
 
   get cityOptions() {
-    return [
-      { label: this.languageService.isArabic ? 'جميع المدن' : 'All Cities', value: '' },
-      ...this.cities.map(c => ({
-        label: this.languageService.isArabic && c.nameAr ? c.nameAr : c.nameEn || '',
-        value: c.cityId
-      }))
-    ];
+    return this.cities.map(c => ({
+      label: this.languageService.isArabic && c.nameAr ? c.nameAr : c.nameEn || '',
+      value: c.cityId
+    }));
   }
 
   get ratingSelectOptions() {
     const isAr = this.languageService.isArabic;
     return [
       { label: isAr ? 'جميع التقييمات' : 'All Ratings', value: 0 },
-      { label: '★ ★ ★ ★ ★ (5.0)', value: 5 },
-      { label: '★ ★ ★ ★ ⯨ (4.5+)', value: 4.5 },
-      { label: '★ ★ ★ ★ ☆ (4.0+)', value: 4 },
-      { label: '★ ★ ★ ☆ ☆ (3.0+)', value: 3 }
+      { label: '★ ★ ★ ★ ★ (5.0)', value: 5, ratingStars: [1, 1, 1, 1, 1], subText: '(5.0)' },
+      { label: '★ ★ ★ ★ ½ (4.5+)', value: 4.5, ratingStars: [1, 1, 1, 1, 0.5], subText: '(4.5+)' },
+      { label: '★ ★ ★ ★ ☆ (4.0+)', value: 4, ratingStars: [1, 1, 1, 1, 0], subText: '(4.0+)' },
+      { label: '★ ★ ★ ☆ ☆ (3.0+)', value: 3, ratingStars: [1, 1, 1, 0, 0], subText: '(3.0+)' }
     ];
   }
 
@@ -251,14 +245,18 @@ export class DoctorsComponent implements OnInit {
       );
     }
 
-    // 2. Specialty Filter
-    if (this.selectedSpecialtyId) {
-      list = list.filter(d => d.specialtyIds.includes(this.selectedSpecialtyId));
+    // 2. Specialty Filter (Multi-select)
+    if (this.selectedSpecialtyIds && this.selectedSpecialtyIds.length > 0) {
+      list = list.filter(d => 
+        d.specialtyIds && d.specialtyIds.some(id => this.selectedSpecialtyIds.includes(id))
+      );
     }
 
-    // 3. City/Area Filter (Resolved from doctor's clinic branches)
-    if (this.selectedCityId) {
-      list = list.filter(d => d.cityIds.includes(this.selectedCityId));
+    // 3. City/Area Filter (Multi-select)
+    if (this.selectedCityIds && this.selectedCityIds.length > 0) {
+      list = list.filter(d => 
+        d.cityIds && d.cityIds.some(id => this.selectedCityIds.includes(id))
+      );
     }
 
     // 4. Rating Filter
@@ -286,8 +284,8 @@ export class DoctorsComponent implements OnInit {
 
   resetFilters(): void {
     this.searchQuery = '';
-    this.selectedSpecialtyId = '';
-    this.selectedCityId = '';
+    this.selectedSpecialtyIds = [];
+    this.selectedCityIds = [];
     this.selectedRating = 0;
     this.selectedLanguageId = '';
     this.minExperience = 0;

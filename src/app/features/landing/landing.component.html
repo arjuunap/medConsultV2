@@ -35,7 +35,7 @@
       </button>
 
       <ng-container *ngIf="authService.isLoggedIn(); else guestActions">
-        <a [routerLink]="getPortalDashboardRoute()" class="btn btn-white btn-sm fw-bold">
+        <a [routerLink]="getPortalDashboardRoute()" class="btn btn-primary btn-sm fw-bold">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect width="7" height="9" x="3" y="3" rx="1"></rect>
@@ -45,8 +45,7 @@
           </svg>
           <span class="desktop-only" style="margin-inline-start: 6px;">{{ 'Dashboard →' | translate }}</span>
         </a>
-        <button (click)="handleLogout()" class="btn btn-outline btn-sm text-white"
-          style="border-color:rgba(255,255,255,0.35);">
+        <button (click)="handleLogout()" class="btn btn-outline btn-sm text-dark nav-logout-btn">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
@@ -57,7 +56,7 @@
         </button>
       </ng-container>
       <ng-template #guestActions>
-        <a routerLink="/login" class="btn btn-outline btn-sm">
+        <a routerLink="/login" class="btn btn-outline btn-sm nav-login-btn">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="7.5" cy="15.5" r="5.5"></circle>
@@ -66,7 +65,7 @@
           </svg>
           <span class="desktop-only" style="margin-inline-start: 6px;">{{ 'Sign in' | translate }}</span>
         </a>
-        <a routerLink="/register" class="btn btn-white btn-sm fw-bold nav-register-btn">{{ 'Sign up / List Clinic' |
+        <a routerLink="/register" class="btn btn-primary btn-sm fw-bold nav-register-btn">{{ 'Sign up / List Clinic' |
           translate }}</a>
       </ng-template>
     </div>

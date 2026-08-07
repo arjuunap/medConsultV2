@@ -1,15 +1,17 @@
-import { 
-  Component, 
-  Input, 
-  Output, 
-  EventEmitter, 
-  forwardRef, 
-  ElementRef, 
-  HostListener, 
-  ChangeDetectorRef 
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  forwardRef,
+  ElementRef,
+  HostListener,
+  ChangeDetectorRef
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/forms';
+
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 export interface SelectOption {
   label: string;
@@ -21,7 +23,7 @@ export interface SelectOption {
 @Component({
   selector: 'app-custom-select',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './custom-select.component.html',
   styleUrls: ['./custom-select.component.css'],
   providers: [
@@ -52,10 +54,10 @@ export class CustomSelectComponent implements ControlValueAccessor {
   selectedOption: any = null;
   searchQuery: string = '';
 
-  private onChange: (value: any) => void = () => {};
-  private onTouched: () => void = () => {};
+  private onChange: (value: any) => void = () => { };
+  private onTouched: () => void = () => { };
 
-  constructor(private elementRef: ElementRef, private cdr: ChangeDetectorRef) {}
+  constructor(private elementRef: ElementRef, private cdr: ChangeDetectorRef) { }
 
   writeValue(value: any): void {
     if (this.multiple) {
@@ -128,10 +130,13 @@ export class CustomSelectComponent implements ControlValueAccessor {
     if (!this.searchable || !this.searchQuery.trim()) {
       return this.options;
     }
-    const query = this.searchQuery.toLowerCase();
+    const query = this.searchQuery.toLowerCase().trim();
     return this.options.filter(opt => {
       const label = this.getOptionLabel(opt).toLowerCase();
-      return label.includes(query);
+      const nameEn = (opt?.nameEn || opt?.rawOption?.nameEn || '').toLowerCase();
+      const nameAr = (opt?.nameAr || opt?.rawOption?.nameAr || '').toLowerCase();
+      const code = (opt?.code || opt?.value || opt?.rawOption?.code || '').toString().toLowerCase();
+      return label.includes(query) || nameEn.includes(query) || nameAr.includes(query) || code.includes(query);
     });
   }
 
@@ -163,6 +168,17 @@ export class CustomSelectComponent implements ControlValueAccessor {
   getOptionIcon(option: any): string {
     if (!option || typeof option !== 'object') return '';
     return option.icon || '';
+  }
+
+  getOptionFlagUrl(option: any): string {
+    if (!option) return '';
+    if (typeof option === 'object') {
+      if (option.flagUrl) return option.flagUrl;
+      if (option.code && typeof option.code === 'string' && option.code.length === 2 && option.code !== 'OT') {
+        return `https://flagcdn.com/w40/${option.code.toLowerCase()}.png`;
+      }
+    }
+    return '';
   }
 
   get displayLabel(): string {
@@ -216,6 +232,18 @@ export class CustomSelectComponent implements ControlValueAccessor {
   onDocumentClick(event: MouseEvent): void {
     if (!this.elementRef.nativeElement.contains(event.target)) {
       this.close();
+    }
+  }
+
+  @HostListener('window:scroll', ['$event'])
+  onWindowScroll(event: Event): void {
+    if (this.isOpen) {
+      const target = event.target as HTMLElement;
+      if (target && this.elementRef.nativeElement.contains(target)) {
+        return;
+      }
+      this.close();
+      this.cdr.markForCheck();
     }
   }
 }

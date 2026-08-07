@@ -148,12 +148,12 @@ export class LandingComponent implements OnInit {
   get ratingOptions() {
     return [
       { label: this.languageService.translate('All Ratings', 'جميع التقييمات'), value: 0 },
-      { label: '5.0 ⭐', value: 5 },
-      { label: '4.5+ ⭐', value: 4.5 },
-      { label: '4.0+ ⭐', value: 4 },
-      { label: '3.0+ ⭐', value: 3 },
-      { label: '2.0+ ⭐', value: 2 },
-      { label: '1.0+ ⭐', value: 1 }
+      { label: '★ ★ ★ ★ ★ (5.0)', value: 5, ratingStars: [1, 1, 1, 1, 1], subText: '(5.0)' },
+      { label: '★ ★ ★ ★ ½ (4.5+)', value: 4.5, ratingStars: [1, 1, 1, 1, 0.5], subText: '(4.5+)' },
+      { label: '★ ★ ★ ★ ☆ (4.0+)', value: 4, ratingStars: [1, 1, 1, 1, 0], subText: '(4.0+)' },
+      { label: '★ ★ ★ ☆ ☆ (3.0+)', value: 3, ratingStars: [1, 1, 1, 0, 0], subText: '(3.0+)' },
+      { label: '★ ★ ☆ ☆ ☆ (2.0+)', value: 2, ratingStars: [1, 1, 0, 0, 0], subText: '(2.0+)' },
+      { label: '★ ☆ ☆ ☆ ☆ (1.0+)', value: 1, ratingStars: [1, 0, 0, 0, 0], subText: '(1.0+)' }
     ];
   }
 
@@ -304,12 +304,79 @@ export class LandingComponent implements OnInit {
           return this.buildClinicDisplayCard(c, detail, idx);
         });
         this.applyFilters();
+        this.fetchRealSlotsForLandingDoctors();
       },
       error: () => {
         this.clinics = this.rawClinics.map((c, idx) => this.buildClinicDisplayCard(c, null, idx));
         this.applyFilters();
+        this.fetchRealSlotsForLandingDoctors();
       }
     });
+  }
+
+  private fetchRealSlotsForLandingDoctors(): void {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toISOString().split('T')[0];
+
+    const allDoctors: DoctorCardDisplay[] = [];
+    this.clinics.forEach(c => {
+      if (c.doctors) {
+        c.doctors.forEach(d => allDoctors.push(d));
+      }
+    });
+
+    if (allDoctors.length === 0) return;
+
+    allDoctors.forEach(doc => {
+      if (!doc.dcId) return;
+
+      this.doctorService.getAvailableSlots(doc.dcId).pipe(
+        catchError(() => of([]))
+      ).subscribe(slots => {
+        const availableSlots = (slots || []).filter(s => s.status === SlotStatus.AVAILABLE || s.status === ('AVAILABLE' as any));
+
+        if (availableSlots.length > 0) {
+          availableSlots.sort((a, b) => {
+            const dateCmp = (a.slotDate || '').localeCompare(b.slotDate || '');
+            if (dateCmp !== 0) return dateCmp;
+            return (a.startTime || '').localeCompare(b.startTime || '');
+          });
+
+          const firstSlot = availableSlots[0];
+          const timeFormatted = this.formatSlotTime(firstSlot.startTime);
+
+          if (firstSlot.slotDate === todayStr) {
+            doc.nextSlot = this.languageService.translate(`Today ${timeFormatted}`, `اليوم ${timeFormatted}`);
+            doc.avail = 'today';
+          } else if (firstSlot.slotDate === tomorrowStr) {
+            doc.nextSlot = this.languageService.translate(`Tomorrow ${timeFormatted}`, `غداً ${timeFormatted}`);
+            doc.avail = 'tomorrow';
+          } else {
+            const d = new Date(firstSlot.slotDate);
+            const dateFormatted = d.toLocaleDateString(this.languageService.isArabic ? 'ar-SA' : 'en-US', { day: 'numeric', month: 'short' });
+            doc.nextSlot = `${dateFormatted} ${timeFormatted}`;
+            doc.avail = 'tomorrow';
+          }
+        } else {
+          doc.nextSlot = this.languageService.translate('No open slots', 'لا توجد مواعيد متاحة');
+          doc.avail = 'busy';
+        }
+      });
+    });
+  }
+
+  private formatSlotTime(timeStr: string): string {
+    if (!timeStr) return '';
+    const parts = timeStr.split(':');
+    if (parts.length < 2) return timeStr;
+    let hours = parseInt(parts[0], 10);
+    const minutes = parts[1];
+    const ampm = hours >= 12 ? (this.languageService.isArabic ? 'م' : 'PM') : (this.languageService.isArabic ? 'ص' : 'AM');
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    return `${hours}:${minutes} ${ampm}`;
   }
 
   private buildClinicDisplayCard(c: ClinicResponseDto, detail: ClinicDetailResponse | null, idx: number = 0): ClinicCardDisplay {
@@ -360,7 +427,7 @@ export class LandingComponent implements OnInit {
 
           const docTitle = this.languageService.translate((doc.title as string) || 'Dr', doc.title === 'DR' ? 'د.' : 'طبيب');
           const specName = specNames[0] || this.languageService.translate('Specialist Doctor', 'طبيب أخصائي');
-          const nextSlot = dIdx % 2 === 0 ? this.languageService.translate('Today 2:00 PM', 'اليوم ٢:٠٠ م') : this.languageService.translate('Tomorrow 10:00 AM', 'غداً ١٠:٠٠ ص');
+          const nextSlot = this.languageService.translate('Checking slots...', 'جاري التحقق من المواعيد...');
 
           // Resolve branch name
           let branchName = '';
@@ -379,8 +446,8 @@ export class LandingComponent implements OnInit {
             spec: specName,
             rating: doc.overallRating || 0,
             reviews: doc.reviewCount || 0,
-            exp: doc.experienceYears || 5,
-            avail: dIdx % 2 === 0 ? 'today' : 'tomorrow',
+            exp: doc.experienceYears || 0,
+            avail: 'busy',
             nextSlot: nextSlot,
             langs: langNames.length > 0 ? langNames.map(l => l.substring(0, 2).toUpperCase()) : ['AR', 'EN'],
             initials,
