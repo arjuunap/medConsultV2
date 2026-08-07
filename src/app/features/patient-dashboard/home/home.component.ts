@@ -16,6 +16,8 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { ApiUrlPipe } from '../../../shared/pipes/api-url.pipe';
 import { LanguageService } from '../../../core/services/language.service';
 
+import { of, catchError } from 'rxjs';
+
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -53,16 +55,19 @@ export class HomeComponent implements OnInit {
 
   loadPatientDashboard(): void {
     this.uiService.showLoading();
-    this.patientService.getMyProfile().subscribe({
+    this.patientService.getMyProfile().pipe(
+      catchError(() => of(null))
+    ).subscribe({
       next: (profile) => {
-        this.patientProfile = profile;
-        this.needProfileInit = false;
-        this.loadUpcomingAppointments();
-        this.loadLatestVitals(profile.patientId);
-      },
-      error: (err) => {
         this.uiService.hideLoading();
-        this.needProfileInit = true; // Handle missing profile silently without showing red error toast
+        if (profile && profile.patientId) {
+          this.patientProfile = profile;
+          this.needProfileInit = false;
+          this.loadUpcomingAppointments();
+          this.loadLatestVitals(profile.patientId);
+        } else {
+          this.needProfileInit = true;
+        }
       }
     });
   }

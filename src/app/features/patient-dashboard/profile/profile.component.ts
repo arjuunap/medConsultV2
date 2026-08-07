@@ -12,6 +12,8 @@ import { LanguageService } from '../../../core/services/language.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { ApiUrlPipe } from '../../../shared/pipes/api-url.pipe';
 
+import { of, catchError } from 'rxjs';
+
 @Component({
   selector: 'app-profile',
   standalone: true,
@@ -402,22 +404,19 @@ export class ProfileComponent implements OnInit {
 
   loadProfile(): void {
     this.uiService.showLoading();
-    this.patientService.getMyProfile().subscribe({
+    this.patientService.getMyProfile().pipe(
+      catchError(() => of(null))
+    ).subscribe({
       next: (profile) => {
         this.uiService.hideLoading();
-        this.profileExists = true;
-        this.profileForm.patchValue(profile);
-        this.profileForm.disable(); // Read-only by default
-      },
-      error: (err) => {
-        this.uiService.hideLoading();
-        const errorMessage = err.error?.message || '';
-        if (err.status === 404 || errorMessage.includes('not found')) {
-          this.profileExists = false;
-          this.isEditMode = false; // Keep edit mode false initially so notification card is shown first
-          this.profileForm.enable();
+        if (profile && profile.patientId) {
+          this.profileExists = true;
+          this.profileForm.patchValue(profile);
+          this.profileForm.disable(); // Read-only by default
         } else {
-          this.uiService.showError(this.languageService.translate('Could not load patient profile.', 'تعذر تحميل ملف المريض.'));
+          this.profileExists = false;
+          this.isEditMode = false; // Silently set profileExists = false so clean creation card is shown
+          this.profileForm.enable();
         }
       }
     });

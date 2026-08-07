@@ -97,15 +97,16 @@ export class BookAppointmentComponent implements OnInit {
 
   checkProfileAndLoad(): void {
     this.uiService.showLoading();
-    this.patientService.getMyProfile().subscribe({
+    this.patientService.getMyProfile().pipe(
+      catchError(() => of(null))
+    ).subscribe({
       next: (patient) => {
-        this.patientId = patient.patientId;
-        this.needProfileInit = false;
-        this.loadExistingAppointments();
-      },
-      error: (err) => {
-        this.uiService.hideLoading();
-        if (err.status === 404) {
+        if (patient && patient.patientId) {
+          this.patientId = patient.patientId;
+          this.needProfileInit = false;
+          this.loadExistingAppointments();
+        } else {
+          this.uiService.hideLoading();
           this.needProfileInit = true;
         }
       }

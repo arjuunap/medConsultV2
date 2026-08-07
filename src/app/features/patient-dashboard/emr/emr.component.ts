@@ -14,6 +14,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { DoctorService } from '../../../core/services/doctor.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { DoctorResponseDto } from '../../../core/models/doctor.model';
+import { of, catchError } from 'rxjs';
 
 @Component({
   selector: 'app-emr',
@@ -116,7 +117,9 @@ export class EmrComponent implements OnInit {
 
   checkProfileAndLoad(): void {
     this.uiService.showLoading();
-    this.patientService.getMyProfile().subscribe({
+    this.patientService.getMyProfile().pipe(
+      catchError(() => of(null))
+    ).subscribe({
       next: (patient) => {
         if (patient && patient.patientId) {
           this.patientId = patient.patientId;
@@ -126,10 +129,6 @@ export class EmrComponent implements OnInit {
           this.uiService.hideLoading();
           this.needProfileInit = true;
         }
-      },
-      error: (err) => {
-        this.uiService.hideLoading();
-        this.needProfileInit = true;
       }
     });
   }

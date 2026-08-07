@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of, catchError } from 'rxjs';
 import { ConsultationService } from '../../../core/services/consultation.service';
 import { DoctorService } from '../../../core/services/doctor.service';
 import { PatientService } from '../../../core/services/patient.service';
@@ -113,15 +113,18 @@ export class ConsultationsComponent implements OnInit, OnDestroy {
 
   loadPatientProfile(): void {
     this.uiService.showLoading();
-    this.patientService.getMyProfile().subscribe({
+    this.patientService.getMyProfile().pipe(
+      catchError(() => of(null))
+    ).subscribe({
       next: (profile) => {
-        this.patientId = profile.patientId;
-        this.needProfileInit = false;
-        this.loadConsultations();
-      },
-      error: () => {
-        this.uiService.hideLoading();
-        this.needProfileInit = true; // Silently set needProfileInit, no error toast
+        if (profile && profile.patientId) {
+          this.patientId = profile.patientId;
+          this.needProfileInit = false;
+          this.loadConsultations();
+        } else {
+          this.uiService.hideLoading();
+          this.needProfileInit = true;
+        }
       }
     });
   }
