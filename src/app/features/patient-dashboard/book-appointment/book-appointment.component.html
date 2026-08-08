@@ -129,66 +129,88 @@
 
         </div>
 
-        <!-- Active Filter Status & Reset -->
-        <div class="filter-actions-row d-flex align-items-center justify-content-between mt-3 pt-3 border-top" *ngIf="doctorSearchQuery || selectedSpecialtyId || selectedMinExperience > 0 || selectedSortOption !== 'rating'">
-          <span class="text-muted fs-xs fw-medium">{{ filteredDoctors.length }} {{ 'doctors found matching criteria' | translate }}</span>
-          <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none text-danger" (click)="resetDoctorFilters()">
-            ✕ {{ 'Reset Filters' | translate }}
+        <!-- Active Filter Status & Reset Row -->
+        <div class="filter-actions-row d-flex align-items-center justify-content-between">
+          <span class="text-muted fs-xs fw-medium">
+            {{ filteredDoctors.length }} {{ 'doctors found matching criteria' | translate }}
+          </span>
+          <button 
+            *ngIf="doctorSearchQuery || selectedSpecialtyId || selectedMinExperience > 0 || selectedSortOption !== 'rating'"
+            type="button" 
+            class="btn-reset-filters" 
+            (click)="resetDoctorFilters()">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+              <path d="M3 3v5h5"></path>
+            </svg>
+            <span>{{ 'Reset Filters' | translate }}</span>
           </button>
         </div>
       </div>
 
       <div class="doctors-list-select-view d-flex flex-column gap-2" *ngIf="filteredDoctors.length > 0">
-        <div class="doctor-selection-item p-3 border rounded-lg d-flex align-items-center justify-content-between gap-3 cursor-pointer" 
+        <div class="doctor-selection-item" 
              *ngFor="let doc of filteredDoctors" 
              [class.selected]="wizardForm.get('doctorId')?.value === doc.doctorId" 
              [class.already-booked]="activeBookedDoctorIds.includes(doc.doctorId)"
              (click)="!activeBookedDoctorIds.includes(doc.doctorId) && selectDoctor(doc.doctorId)">
           
-          <div class="d-flex align-items-center gap-3 min-w-0 flex-grow-1">
-            <!-- Doctor Avatar -->
-            <img *ngIf="doc.avatarUrl" [src]="doc.avatarUrl | apiUrl" (error)="doc.avatarUrl = ''" class="doctor-avatar-img" [alt]="doc.fullName">
-            <div *ngIf="!doc.avatarUrl" class="doctor-avatar-circle" [style.background-color]="activeBookedDoctorIds.includes(doc.doctorId) ? '#F3F4F6' : getAvatarBg(doc.fullName)" [style.color]="activeBookedDoctorIds.includes(doc.doctorId) ? '#9CA3AF' : getAvatarColor(doc.fullName)">
-              {{ getInitials(doc.fullName) }}
+          <!-- Left Identity Group -->
+          <div class="doc-card-main-info">
+            <div class="doctor-avatar-wrapper">
+              <img *ngIf="doc.avatarUrl" [src]="doc.avatarUrl | apiUrl" (error)="doc.avatarUrl = ''" class="doctor-avatar-img" [alt]="doc.fullName">
+              <div *ngIf="!doc.avatarUrl" class="doctor-avatar-circle" [style.background-color]="activeBookedDoctorIds.includes(doc.doctorId) ? '#F3F4F6' : getAvatarBg(doc.fullName)" [style.color]="activeBookedDoctorIds.includes(doc.doctorId) ? '#9CA3AF' : getAvatarColor(doc.fullName)">
+                {{ getInitials(doc.fullName) }}
+              </div>
             </div>
 
-            <!-- Doctor Summary Info -->
-            <div class="doctor-summary-info min-w-0 flex-grow-1">
-              <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
-                <h4 class="name m-0">{{ getDoctorDisplayName(doc) }}</h4>
+            <div class="doc-details-col">
+              <div class="doc-name-row">
+                <h4 class="doc-name">{{ getDoctorDisplayName(doc) }}</h4>
+                <span class="specialty-pill">{{ getDoctorPrimarySpecialtyName(doc.doctorId) }}</span>
+              </div>
 
-                <div class="ratings d-inline-flex align-items-center gap-1" *ngIf="!activeBookedDoctorIds.includes(doc.doctorId)">
-                  <span class="text-warning">★</span>
-                  <span class="val fw-semibold fs-xs">{{ doc.overallRating || 0 }}</span>
-                  <span class="count text-muted fs-xs">({{ doc.reviewCount || 0 }} {{ 'reviews' | translate }})</span>
+              <div class="doc-submeta-row" *ngIf="!activeBookedDoctorIds.includes(doc.doctorId)">
+                <span class="exp-text">{{ doc.experienceYears }} {{ 'Yrs Exp' | translate }}</span>
+                <span class="dot-separator">•</span>
+                <div class="rating-inline">
+                  <span class="star-icon">★</span>
+                  <span class="rating-val">{{ doc.overallRating || 0 }}</span>
+                  <span class="review-cnt">({{ doc.reviewCount || 0 }} {{ 'reviews' | translate }})</span>
                 </div>
               </div>
-              
-              <div *ngIf="activeBookedDoctorIds.includes(doc.doctorId)" class="already-booked-warning mt-1 d-inline-flex align-items-center gap-1 text-muted fs-xs">
-                <svg class="warning-mini-svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+
+              <div *ngIf="activeBookedDoctorIds.includes(doc.doctorId)" class="already-booked-tag">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
                   <circle cx="12" cy="12" r="10"></circle>
                   <line x1="12" y1="8" x2="12" y2="12"></line>
                   <line x1="12" y1="16" x2="12.01" y2="16"></line>
                 </svg>
                 <span>{{ 'Active booking exists with this doctor' | translate }}</span>
               </div>
-
-              <div class="meta-row d-flex align-items-center gap-2" *ngIf="!activeBookedDoctorIds.includes(doc.doctorId)">
-                <span class="badge badge-blue d-inline-flex align-items-center gap-1">
-                  <span>{{ doc.experienceYears }} {{ 'Yrs Exp' | translate }}</span>
-                </span>
-                <span class="badge badge-green d-inline-flex align-items-center gap-1">
-                  <span>SAR {{ doc.consultationFeeSar || 150 }}</span>
-                </span>
-              </div>
             </div>
           </div>
 
-          <!-- Selection Radio Check Indicator -->
-          <div class="selection-check-col flex-shrink-0">
-            <span class="radio-indicator" [class.checked]="wizardForm.get('doctorId')?.value === doc.doctorId">
-              <span class="radio-dot" *ngIf="wizardForm.get('doctorId')?.value === doc.doctorId"></span>
-            </span>
+          <!-- Right Actions Side -->
+          <div class="doc-card-actions-side">
+            <div class="fee-tag" *ngIf="!activeBookedDoctorIds.includes(doc.doctorId)">
+              <span class="fee-label">{{ 'Fee' | translate }}:</span>
+              <span class="fee-amount">SAR {{ doc.consultationFeeSar || 150 }}</span>
+            </div>
+
+            <div class="action-buttons-group">
+              <button type="button" class="btn-view-profile" (click)="viewDoctorProfile(doc.doctorId, $event)">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <span>{{ 'View Profile' | translate }}</span>
+              </button>
+
+              <span class="radio-indicator" [class.checked]="wizardForm.get('doctorId')?.value === doc.doctorId">
+                <span class="radio-dot" *ngIf="wizardForm.get('doctorId')?.value === doc.doctorId"></span>
+              </span>
+            </div>
           </div>
 
         </div>

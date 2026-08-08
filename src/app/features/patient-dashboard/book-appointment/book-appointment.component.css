@@ -238,50 +238,283 @@
   box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
 }
 
-/* STEP 1: Doctor Choice List View */
+.filter-actions-row {
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px dashed #e2e8f0;
+}
+
+.btn-reset-filters {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #dc2626;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.btn-reset-filters:hover {
+  background-color: #fee2e2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
+
+.specialty-chip {
+  background-color: #f0fdf4;
+  color: #0d9488;
+  border: 1px solid #99f6e4;
+  padding: 0.15rem 0.55rem;
+  border-radius: 6px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.btn-view-profile-sm {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #0f766e;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+.btn-view-profile-sm:hover {
+  background-color: #0d9488;
+  color: #ffffff;
+  border-color: #0d9488;
+  box-shadow: 0 2px 4px rgba(13, 148, 136, 0.15);
+}
+
+/* STEP 1: Doctor Choice List View - Modern Balanced Layout */
 .doctors-list-select-view {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .doctor-selection-item {
   background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 14px 18px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1.1rem 1.35rem;
   cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
-  position: relative;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
 }
 
 .doctor-selection-item:hover:not(.already-booked) {
   border-color: var(--teal, #0d9488);
-  background-color: #f8fafc;
+  box-shadow: 0 4px 14px rgba(13, 148, 136, 0.09);
+  background-color: #ffffff;
+  transform: translateY(-1px);
 }
 
 .doctor-selection-item.selected {
   border-color: var(--teal, #0d9488);
-  border-width: 2px;
-  background-color: #E1F5EE;
+  background-color: #f0fdf4;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
 }
 
 .doctor-selection-item.already-booked {
-  opacity: 0.65;
   background-color: #f8fafc;
   border-color: #e2e8f0;
+  opacity: 0.7;
   cursor: not-allowed;
 }
 
+/* Left Main Identity Info */
+.doc-card-main-info {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.doctor-avatar-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.doctor-avatar-img,
+.doctor-avatar-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.15rem;
+}
+
+.doc-details-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.doc-name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.doc-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.specialty-pill {
+  background-color: #ccfbf1;
+  color: #0f766e;
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 0.22rem 0.65rem;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.doc-submeta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.83rem;
+  color: #64748b;
+  flex-wrap: wrap;
+}
+
+.exp-text {
+  font-weight: 600;
+  color: #334155;
+}
+
+.dot-separator {
+  color: #cbd5e1;
+}
+
+.rating-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.star-icon {
+  color: #f59e0b;
+  font-size: 0.88rem;
+}
+
+.rating-val {
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.review-cnt {
+  color: #64748b;
+  font-size: 0.78rem;
+}
+
+.already-booked-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #94a3b8;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+/* Right Actions Side */
+.doc-card-actions-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.55rem;
+  flex-shrink: 0;
+}
+
+[dir="rtl"] .doc-card-actions-side {
+  align-items: flex-start;
+}
+
+.fee-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.84rem;
+}
+
+.fee-label {
+  color: #64748b;
+}
+
+.fee-amount {
+  font-weight: 700;
+  color: #0d9488;
+  font-size: 0.95rem;
+}
+
+.action-buttons-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btn-view-profile {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #0f766e;
+  background-color: #f8fafc;
+  border: 1px solid #cbd5e1;
+  padding: 0.4rem 0.85rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+.btn-view-profile:hover {
+  background-color: #0d9488;
+  color: #ffffff;
+  border-color: #0d9488;
+  box-shadow: 0 2px 6px rgba(13, 148, 136, 0.2);
+}
+
 .radio-indicator {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   border: 2px solid #cbd5e1;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  transition: all 0.2s ease;
+  background-color: #ffffff;
 }
 
 .radio-indicator.checked {
@@ -294,28 +527,6 @@
   height: 8px;
   border-radius: 50%;
   background-color: #ffffff;
-}
-
-.doctor-avatar-img {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  object-fit: cover;
-  object-position: center;
-  flex-shrink: 0;
-  display: block;
-}
-
-.doctor-avatar-circle {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  font-size: 1.15rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
 }
 
 .doctor-summary-info {

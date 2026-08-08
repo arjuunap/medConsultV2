@@ -839,6 +839,14 @@ export class LandingComponent implements OnInit {
     });
   }
 
+  viewDoctorProfile(doctorId: string, event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.router.navigate(['/doctors', doctorId]);
+  }
+
   closeBooking(): void {
     this.bookingModalOpen = false;
     this.bookingDoctor = null;

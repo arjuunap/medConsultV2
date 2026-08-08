@@ -228,6 +228,23 @@ export class BookAppointmentComponent implements OnInit {
     });
   }
 
+  public doctorPrimarySpecialtyMap: { [doctorId: string]: { nameEn: string, nameAr: string } } = {};
+
+  getDoctorPrimarySpecialtyName(doctorId: string): string {
+    const isAr = this.langService.isArabic;
+    const specObj = this.doctorPrimarySpecialtyMap[doctorId];
+    if (specObj) {
+      return isAr ? specObj.nameAr : specObj.nameEn;
+    }
+    return isAr ? 'طبيب عام' : 'General Practitioner';
+  }
+
+  viewDoctorProfile(doctorId: string, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.router.navigate(['/doctors', doctorId]);
+  }
+
   loadDoctors(): void {
     forkJoin({
       doctors: this.doctorService.getAllDoctors().pipe(catchError(() => of([]))),
@@ -247,6 +264,17 @@ export class BookAppointmentComponent implements OnInit {
           forkJoin(specCalls).subscribe(resList => {
             resList.forEach(item => {
               this.doctorSpecialtiesMap[item.doctorId] = item.specs.map(s => s.specialtyId);
+              
+              const primarySpec = item.specs.find(s => s.isPrimary) || item.specs[0];
+              if (primarySpec) {
+                const specDetails = this.specialties.find(s => s.specialtyId === primarySpec.specialtyId);
+                if (specDetails) {
+                  this.doctorPrimarySpecialtyMap[item.doctorId] = {
+                    nameEn: specDetails.nameEn,
+                    nameAr: specDetails.nameAr
+                  };
+                }
+              }
             });
           });
         }

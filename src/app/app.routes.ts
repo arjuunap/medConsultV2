@@ -54,6 +54,10 @@ export const routes: Routes = [
       {
         path: 'patient/doctors',
         loadComponent: () => import('./features/patient-dashboard/doctors/doctors.component').then(m => m.DoctorsComponent)
+      },
+      {
+        path: 'patient/doctors/:id',
+        loadComponent: () => import('./features/doctor-detail/doctor-detail.component').then(m => m.DoctorDetailComponent)
       }
     ]
   },
