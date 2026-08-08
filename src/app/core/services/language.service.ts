@@ -114,6 +114,20 @@ const translations: { [lang in Lang]: { [key: string]: string } } = {
     'No prescription records found.': 'No prescription records found.',
     'Prescription History': 'Prescription History',
 
+    // Step 1 Filtering & Sorting
+    'Any Experience': 'Any Experience',
+    'Highest Rating': 'Highest Rating',
+    'Most Experienced': 'Most Experienced',
+    'Fee: Low to High': 'Fee: Low to High',
+    'Fee: High to Low': 'Fee: High to Low',
+    'Name (A-Z)': 'Name (A-Z)',
+    '3+ Years': '3+ Years',
+    '5+ Years': '5+ Years',
+    '10+ Years': '10+ Years',
+    'Years of Experience': 'Years of Experience',
+    'Sort By': 'Sort By',
+    'doctors found matching criteria': 'doctors found matching criteria',
+
     // Menu
     'Home Dashboard': 'Home Dashboard',
     'Clinics & Branches': 'Clinics & Branches',
@@ -1332,6 +1346,20 @@ const translations: { [lang in Lang]: { [key: string]: string } } = {
     // Database Specialties fixes
     'SFB': 'طب الأسرة',
     'SPOFE': 'الطب الرياضي',
+
+    // Step 1 Filtering & Sorting
+    'Any Experience': 'جميع الخبرات',
+    'Highest Rating': 'الأعلى تقييماً',
+    'Most Experienced': 'الأكثر خبرة',
+    'Fee: Low to High': 'السعر: من الأقل إلى الأعلى',
+    'Fee: High to Low': 'السعر: من الأعلى إلى الأقل',
+    'Name (A-Z)': 'الاسم (أ - ي)',
+    '3+ Years': '+3 سنوات',
+    '5+ Years': '+5 سنوات',
+    '10+ Years': '+10 سنوات',
+    'Years of Experience': 'سنوات الخبرة',
+    'Sort By': 'الفرز حسب',
+    'doctors found matching criteria': 'أطباء مطبقون لمعايير البحث',
 
     // Menu
     'Home Dashboard': 'لوحة التحكم الرئيسية',

@@ -10,16 +10,20 @@ import { UiService } from '../../../core/services/ui.service';
 import { DoctorResponseDto, DoctorClinicResponseDto, AppointmentSlotResponseDto } from '../../../core/models/doctor.model';
 import { AppointmentType, SessionType } from '../../../core/models/appointment.model';
 import { ClinicService } from '../../../core/services/clinic.service';
-import { forkJoin, map, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { ReferenceService } from '../../../core/services/reference.service';
+import { SpecialtyResponseDto } from '../../../core/models/reference.model';
 import { LanguageService } from '../../../core/services/language.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { ApiUrlPipe } from '../../../shared/pipes/api-url.pipe';
+import { forkJoin, map, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+
+import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
 
 @Component({
   selector: 'app-book-appointment',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterLink, TranslatePipe, ApiUrlPipe],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterLink, TranslatePipe, ApiUrlPipe, CustomSelectComponent],
   templateUrl: './book-appointment.component.html',
   styleUrls: ['./book-appointment.component.css']
 })
@@ -27,6 +31,7 @@ export class BookAppointmentComponent implements OnInit {
   private doctorService = inject(DoctorService);
   private patientService = inject(PatientService);
   private appointmentService = inject(AppointmentService);
+  private referenceService = inject(ReferenceService);
   private uiService = inject(UiService);
   private fb = inject(FormBuilder);
   private router = inject(Router);
@@ -41,6 +46,45 @@ export class BookAppointmentComponent implements OnInit {
   public currentStep = 1;
   public nextDays: any[] = [];
   public doctorSearchQuery = '';
+
+  // Step 1 Filtering & Sorting state
+  public selectedSpecialtyId = '';
+  public selectedMinExperience = 0;
+  public selectedSortOption = 'rating';
+  public specialties: SpecialtyResponseDto[] = [];
+  public doctorSpecialtiesMap: { [doctorId: string]: string[] } = {};
+
+  get specialtyOptions() {
+    const isAr = this.langService.isArabic;
+    return [
+      { label: isAr ? 'جميع التخصصات' : 'All Specialties', value: '' },
+      ...this.specialties.map(s => ({
+        label: isAr ? s.nameAr : s.nameEn,
+        value: s.specialtyId
+      }))
+    ];
+  }
+
+  get experienceOptions() {
+    const isAr = this.langService.isArabic;
+    return [
+      { label: isAr ? 'جميع الخبرات' : 'Any Experience', value: 0 },
+      { label: isAr ? '+3 سنوات' : '3+ Years', value: 3 },
+      { label: isAr ? '+5 سنوات' : '5+ Years', value: 5 },
+      { label: isAr ? '+10 سنوات' : '10+ Years', value: 10 }
+    ];
+  }
+
+  get sortOptions() {
+    const isAr = this.langService.isArabic;
+    return [
+      { label: isAr ? 'الأعلى تقييماً' : 'Highest Rating', value: 'rating' },
+      { label: isAr ? 'الأكثر خبرة' : 'Most Experienced', value: 'experience' },
+      { label: isAr ? 'السعر: من الأقل إلى الأعلى' : 'Fee: Low to High', value: 'fee_asc' },
+      { label: isAr ? 'السعر: من الأعلى إلى الأقل' : 'Fee: High to Low', value: 'fee_desc' },
+      { label: isAr ? 'الاسم (أ - ي)' : 'Name (A-Z)', value: 'name' }
+    ];
+  }
 
   // Data lists
   public doctors: DoctorResponseDto[] = [];
@@ -62,13 +106,55 @@ export class BookAppointmentComponent implements OnInit {
   });
 
   get filteredDoctors() {
-    if (!this.doctorSearchQuery) return this.doctors;
-    const q = this.doctorSearchQuery.toLowerCase().trim();
-    return this.doctors.filter(d => 
-      d.fullName.toLowerCase().includes(q) || 
-      (d.bioEn && d.bioEn.toLowerCase().includes(q)) ||
-      (d.bioAr && d.bioAr.toLowerCase().includes(q))
-    );
+    let result = [...this.doctors];
+
+    // Text search query filter (Name, Bio)
+    if (this.doctorSearchQuery) {
+      const q = this.doctorSearchQuery.toLowerCase().trim();
+      result = result.filter(d => 
+        d.fullName.toLowerCase().includes(q) || 
+        (d.bioEn && d.bioEn.toLowerCase().includes(q)) ||
+        (d.bioAr && d.bioAr.toLowerCase().includes(q))
+      );
+    }
+
+    // Specialty filter
+    if (this.selectedSpecialtyId) {
+      result = result.filter(d => {
+        const docSpecs = this.doctorSpecialtiesMap[d.doctorId] || [];
+        return docSpecs.includes(this.selectedSpecialtyId);
+      });
+    }
+
+    // Min Experience filter
+    if (this.selectedMinExperience > 0) {
+      result = result.filter(d => (d.experienceYears || 0) >= Number(this.selectedMinExperience));
+    }
+
+    // Sorting
+    result.sort((a, b) => {
+      if (this.selectedSortOption === 'rating') {
+        return (b.overallRating || 0) - (a.overallRating || 0);
+      } else if (this.selectedSortOption === 'experience') {
+        return (b.experienceYears || 0) - (a.experienceYears || 0);
+      } else if (this.selectedSortOption === 'fee_asc') {
+        return (a.consultationFeeSar || 0) - (b.consultationFeeSar || 0);
+      } else if (this.selectedSortOption === 'fee_desc') {
+        return (b.consultationFeeSar || 0) - (a.consultationFeeSar || 0);
+      } else if (this.selectedSortOption === 'name') {
+        return a.fullName.localeCompare(b.fullName);
+      }
+      return 0;
+    });
+
+    return result;
+  }
+
+  resetDoctorFilters(): void {
+    this.doctorSearchQuery = '';
+    this.selectedSpecialtyId = '';
+    this.selectedMinExperience = 0;
+    this.selectedSortOption = 'rating';
   }
 
   ngOnInit(): void {
@@ -143,9 +229,27 @@ export class BookAppointmentComponent implements OnInit {
   }
 
   loadDoctors(): void {
-    this.doctorService.getAllDoctors().subscribe({
-      next: (data) => {
-        this.doctors = data;
+    forkJoin({
+      doctors: this.doctorService.getAllDoctors().pipe(catchError(() => of([]))),
+      specialties: this.referenceService.getAllSpecialties().pipe(catchError(() => of([])))
+    }).subscribe({
+      next: (res) => {
+        this.doctors = res.doctors;
+        this.specialties = res.specialties;
+
+        if (this.doctors.length > 0) {
+          const specCalls = this.doctors.map(doc =>
+            this.doctorService.getDoctorSpecialties(doc.doctorId).pipe(
+              catchError(() => of([])),
+              map(specs => ({ doctorId: doc.doctorId, specs }))
+            )
+          );
+          forkJoin(specCalls).subscribe(resList => {
+            resList.forEach(item => {
+              this.doctorSpecialtiesMap[item.doctorId] = item.specs.map(s => s.specialtyId);
+            });
+          });
+        }
         
         // Read optional doctorId & dcId query parameters
         this.route.queryParams.subscribe(params => {
@@ -201,6 +305,7 @@ export class BookAppointmentComponent implements OnInit {
               if (res.clinic) {
                 dc.clinicNameEn = res.clinic.nameEn;
                 dc.clinicNameAr = res.clinic.nameAr;
+                dc.logoUrl = res.clinic.logoUrl;
               }
               const branch = res.branches.find((b: any) => b.branchId === dc.branchId);
               dc.branchNameEn = branch ? branch.branchNameEn : 'Unknown Branch';

@@ -120,87 +120,180 @@
   margin: 0.25rem 0 0 0;
 }
 
-/* Search Box */
-.search-filter-input {
-  position: relative;
+/* Step 1 Search & Filter Controls Panel */
+.filters-card-wrapper {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
-.doctor-search-box {
-  width: 100%;
-  padding: 0.75rem 1rem 0.75rem 2.5rem;
-  border: 1px solid #D1D5DB;
-  border-radius: 10px;
-  background-color: #F9FAFB;
-  font-size: 0.95rem;
-  color: #1F2937;
-  transition: all 0.2s ease;
-}
-
-.doctor-search-box:focus {
-  outline: none;
-  border-color: var(--teal);
-  box-shadow: 0 0 0 3px rgba(8, 80, 65, 0.1);
-  background-color: white;
-}
-
-.search-filter-input .search-icon {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #9CA3AF;
-  font-size: 0.95rem;
-}
-
-/* STEP 1: Doctor Choice cards */
-.doctors-cards-select-grid {
+.filters-main-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+@media (max-width: 1024px) {
+  .filters-main-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 640px) {
-  .doctors-cards-select-grid {
+  .filters-main-grid {
     grid-template-columns: 1fr;
   }
 }
 
-.doctor-selection-card {
-  background: white;
-  border: 1px solid #E5E7EB;
-  border-radius: 12px;
-  padding: 1.25rem;
-  cursor: pointer;
+.filter-field {
   display: flex;
-  gap: 12px;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.filter-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #475569;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
+}
+
+.search-input-container {
   position: relative;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
 }
 
-.doctor-selection-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.04);
-  border-color: #cbd5e1;
+.filter-input-text {
+  width: 100%;
+  height: 42px;
+  padding: 0 0.95rem 0 2.4rem;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background-color: #f8fafc;
+  font-size: 0.88rem;
+  color: #1e293b;
+  transition: all 0.2s ease;
 }
 
-.doctor-selection-card.selected {
-  border-color: var(--teal);
+[dir="rtl"] .filter-input-text {
+  padding: 0 2.4rem 0 0.95rem;
+}
+
+.filter-input-text:focus {
+  outline: none;
+  border-color: var(--teal, #0d9488);
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
+  background-color: #ffffff;
+}
+
+.search-input-icon-svg {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+
+[dir="rtl"] .search-input-icon-svg {
+  left: auto;
+  right: 12px;
+}
+
+.filter-select {
+  width: 100%;
+  height: 42px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background-color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #1e293b;
+  padding: 0 2rem 0 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 14px;
+}
+
+[dir="rtl"] .filter-select {
+  padding: 0 0.85rem 0 2rem;
+  background-position: left 0.75rem center;
+}
+
+.filter-select:focus {
+  border-color: var(--teal, #0d9488);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
+}
+
+/* STEP 1: Doctor Choice List View */
+.doctors-list-select-view {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.doctor-selection-item {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 18px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  position: relative;
+}
+
+.doctor-selection-item:hover:not(.already-booked) {
+  border-color: var(--teal, #0d9488);
+  background-color: #f8fafc;
+}
+
+.doctor-selection-item.selected {
+  border-color: var(--teal, #0d9488);
   border-width: 2px;
-  background: #E1F5EE;
+  background-color: #E1F5EE;
 }
 
-.doctor-selection-card.already-booked {
-  opacity: 0.7;
-  background-color: #F9FAFB;
-  border-color: #E5E7EB;
+.doctor-selection-item.already-booked {
+  opacity: 0.65;
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
   cursor: not-allowed;
 }
 
-.doctor-selection-card.already-booked:hover {
-  transform: none;
-  box-shadow: none;
-  border-color: #E5E7EB;
+.radio-indicator {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.radio-indicator.checked {
+  border-color: var(--teal, #0d9488);
+  background-color: var(--teal, #0d9488);
+}
+
+.radio-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #ffffff;
 }
 
 .doctor-avatar-img {
@@ -328,6 +421,18 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.clinic-logo-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid #E5E7EB;
+  flex-shrink: 0;
+  background-color: #ffffff;
+  padding: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .location-icon-wrapper {

@@ -70,66 +70,127 @@
         <p>{{ 'Browse our verified doctors panel and select a specialist to check clinic locations' | translate }}</p>
       </div>
 
-      <!-- Search Bar -->
-      <div class="search-filter-input mb-3">
-        <input type="text" [(ngModel)]="doctorSearchQuery" [ngModelOptions]="{standalone: true}" [placeholder]="'Search doctor name...' | translate" class="doctor-search-box">
-        <svg class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
+      <!-- Search & Filter Controls Card -->
+      <div class="filters-card-wrapper mb-4">
+        <div class="filters-main-grid">
+          
+          <!-- Search Doctor Name -->
+          <div class="filter-field">
+            <label class="filter-label">{{ 'Search Doctor Name' | translate }}</label>
+            <div class="search-input-container">
+              <input type="text" [(ngModel)]="doctorSearchQuery" [ngModelOptions]="{standalone: true}"
+                [placeholder]="'Type to search...' | translate" class="filter-input-text">
+              <svg class="search-input-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Specialty Select -->
+          <div class="filter-field">
+            <label class="filter-label">{{ 'Medical Specialty' | translate }}</label>
+            <app-custom-select 
+              [(ngModel)]="selectedSpecialtyId" 
+              [ngModelOptions]="{standalone: true}"
+              [options]="specialtyOptions" 
+              [searchable]="true"
+              [placeholder]="'All Specialties' | translate"
+              bindLabel="label"
+              bindValue="value">
+            </app-custom-select>
+          </div>
+
+          <!-- Experience Select -->
+          <div class="filter-field">
+            <label class="filter-label">{{ 'Years of Experience' | translate }}</label>
+            <app-custom-select 
+              [(ngModel)]="selectedMinExperience" 
+              [ngModelOptions]="{standalone: true}"
+              [options]="experienceOptions" 
+              [placeholder]="'Any Experience' | translate"
+              bindLabel="label"
+              bindValue="value">
+            </app-custom-select>
+          </div>
+
+          <!-- Sort Select -->
+          <div class="filter-field">
+            <label class="filter-label">{{ 'Sort By' | translate }}</label>
+            <app-custom-select 
+              [(ngModel)]="selectedSortOption" 
+              [ngModelOptions]="{standalone: true}"
+              [options]="sortOptions" 
+              [placeholder]="'Highest Rating' | translate"
+              bindLabel="label"
+              bindValue="value">
+            </app-custom-select>
+          </div>
+
+        </div>
+
+        <!-- Active Filter Status & Reset -->
+        <div class="filter-actions-row d-flex align-items-center justify-content-between mt-3 pt-3 border-top" *ngIf="doctorSearchQuery || selectedSpecialtyId || selectedMinExperience > 0 || selectedSortOption !== 'rating'">
+          <span class="text-muted fs-xs fw-medium">{{ filteredDoctors.length }} {{ 'doctors found matching criteria' | translate }}</span>
+          <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none text-danger" (click)="resetDoctorFilters()">
+            ✕ {{ 'Reset Filters' | translate }}
+          </button>
+        </div>
       </div>
 
-      <div class="doctors-cards-select-grid" *ngIf="filteredDoctors.length > 0">
-        <div class="doctor-selection-card" 
+      <div class="doctors-list-select-view d-flex flex-column gap-2" *ngIf="filteredDoctors.length > 0">
+        <div class="doctor-selection-item p-3 border rounded-lg d-flex align-items-center justify-content-between gap-3 cursor-pointer" 
              *ngFor="let doc of filteredDoctors" 
              [class.selected]="wizardForm.get('doctorId')?.value === doc.doctorId" 
              [class.already-booked]="activeBookedDoctorIds.includes(doc.doctorId)"
              (click)="!activeBookedDoctorIds.includes(doc.doctorId) && selectDoctor(doc.doctorId)">
-          <img *ngIf="doc.avatarUrl" [src]="doc.avatarUrl | apiUrl" (error)="doc.avatarUrl = ''" class="doctor-avatar-img" [alt]="doc.fullName">
-          <div *ngIf="!doc.avatarUrl" class="doctor-avatar-circle" [style.background-color]="activeBookedDoctorIds.includes(doc.doctorId) ? '#F3F4F6' : getAvatarBg(doc.fullName)" [style.color]="activeBookedDoctorIds.includes(doc.doctorId) ? '#9CA3AF' : getAvatarColor(doc.fullName)">
-            {{ getInitials(doc.fullName) }}
-          </div>
-          <div class="doctor-summary-info">
-            <h4 class="name">{{ getDoctorDisplayName(doc) }}</h4>
-            
-            <div *ngIf="activeBookedDoctorIds.includes(doc.doctorId)" class="already-booked-warning mt-1 flex-align-center gap-1">
-              <svg class="warning-mini-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="8" x2="12" y2="12"></line>
-                <line x1="12" y1="16" x2="12.01" y2="16"></line>
-              </svg>
-              <span>{{ 'Active booking exists with this doctor' | translate }}</span>
+          
+          <div class="d-flex align-items-center gap-3 min-w-0 flex-grow-1">
+            <!-- Doctor Avatar -->
+            <img *ngIf="doc.avatarUrl" [src]="doc.avatarUrl | apiUrl" (error)="doc.avatarUrl = ''" class="doctor-avatar-img" [alt]="doc.fullName">
+            <div *ngIf="!doc.avatarUrl" class="doctor-avatar-circle" [style.background-color]="activeBookedDoctorIds.includes(doc.doctorId) ? '#F3F4F6' : getAvatarBg(doc.fullName)" [style.color]="activeBookedDoctorIds.includes(doc.doctorId) ? '#9CA3AF' : getAvatarColor(doc.fullName)">
+              {{ getInitials(doc.fullName) }}
             </div>
 
-            <div class="meta-row mt-1" *ngIf="!activeBookedDoctorIds.includes(doc.doctorId)">
-              <span class="badge badge-blue flex-align-center gap-1">
-                <svg class="badge-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            <!-- Doctor Summary Info -->
+            <div class="doctor-summary-info min-w-0 flex-grow-1">
+              <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                <h4 class="name m-0">{{ getDoctorDisplayName(doc) }}</h4>
+
+                <div class="ratings d-inline-flex align-items-center gap-1" *ngIf="!activeBookedDoctorIds.includes(doc.doctorId)">
+                  <span class="text-warning">★</span>
+                  <span class="val fw-semibold fs-xs">{{ doc.overallRating || 0 }}</span>
+                  <span class="count text-muted fs-xs">({{ doc.reviewCount || 0 }} {{ 'reviews' | translate }})</span>
+                </div>
+              </div>
+              
+              <div *ngIf="activeBookedDoctorIds.includes(doc.doctorId)" class="already-booked-warning mt-1 d-inline-flex align-items-center gap-1 text-muted fs-xs">
+                <svg class="warning-mini-svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
                 </svg>
-                <span>{{ doc.experienceYears }} {{ 'Yrs Exp' | translate }}</span>
-              </span>
-              <span class="badge badge-green flex-align-center gap-1">
-                <svg class="badge-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <line x1="12" y1="1" x2="12" y2="23"></line>
-                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                </svg>
-                <span>SAR {{ doc.consultationFeeSar || 150 }}</span>
-              </span>
-            </div>
-            <div class="ratings mt-1 flex-align-center gap-1" *ngIf="!activeBookedDoctorIds.includes(doc.doctorId)">
-              <svg class="star-svg" viewBox="0 0 24 24" fill="currentColor">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-              </svg>
-              <span class="val">{{ doc.overallRating || 0 }}</span>
-              <span class="count">({{ doc.reviewCount || 0 }} {{ 'reviews' | translate }})</span>
+                <span>{{ 'Active booking exists with this doctor' | translate }}</span>
+              </div>
+
+              <div class="meta-row d-flex align-items-center gap-2" *ngIf="!activeBookedDoctorIds.includes(doc.doctorId)">
+                <span class="badge badge-blue d-inline-flex align-items-center gap-1">
+                  <span>{{ doc.experienceYears }} {{ 'Yrs Exp' | translate }}</span>
+                </span>
+                <span class="badge badge-green d-inline-flex align-items-center gap-1">
+                  <span>SAR {{ doc.consultationFeeSar || 150 }}</span>
+                </span>
+              </div>
             </div>
           </div>
-          <span class="checked-circle" *ngIf="wizardForm.get('doctorId')?.value === doc.doctorId">
-            <svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-              <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-          </span>
+
+          <!-- Selection Radio Check Indicator -->
+          <div class="selection-check-col flex-shrink-0">
+            <span class="radio-indicator" [class.checked]="wizardForm.get('doctorId')?.value === doc.doctorId">
+              <span class="radio-dot" *ngIf="wizardForm.get('doctorId')?.value === doc.doctorId"></span>
+            </span>
+          </div>
+
         </div>
       </div>
 
@@ -163,11 +224,14 @@
              [class.selected]="wizardForm.get('dcId')?.value === dc.dcId"
              (click)="selectClinic(dc.dcId)">
           <div class="card-top-row">
-            <div class="location-icon-wrapper">
-              <svg class="location-pin-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
-                <circle cx="12" cy="10" r="3"></circle>
-              </svg>
+            <div class="d-flex align-items-center gap-2">
+              <img *ngIf="dc.logoUrl" [src]="dc.logoUrl | apiUrl" class="clinic-logo-thumb" (error)="dc.logoUrl = ''" [alt]="dc.clinicNameEn">
+              <div *ngIf="!dc.logoUrl" class="location-icon-wrapper">
+                <svg class="location-pin-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+              </div>
             </div>
             <span *ngIf="dc.isPrimary" class="primary-badge">{{ 'Primary Branch' | translate }}</span>
           </div>
