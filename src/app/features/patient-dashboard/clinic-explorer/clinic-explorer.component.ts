@@ -325,52 +325,7 @@ export class ClinicExplorerComponent implements OnInit {
   }
 
   selectClinic(clinic: ClinicResponseDto): void {
-    this.uiService.showLoading();
-    this.selectedBranch = null;
-    this.branchDoctors = [];
-    this.branchOperatingHours = [];
-    this.clinicReviews = [];
-    this.showClinicReviews = false;
-
-    this.clinicService.getClinicDetail(clinic.clinicId).subscribe({
-      next: (detail) => {
-        this.selectedClinic = detail;
-        this.viewStep = 'CLINIC_DETAIL';
-        
-        // Fetch real reviews from backend API
-        this.reviewService.getClinicReviews(clinic.clinicId).pipe(
-          catchError(() => of(null))
-        ).subscribe({
-          next: (res: any) => {
-            if (res) {
-              if (Array.isArray(res)) {
-                this.clinicReviews = res;
-              } else if (Array.isArray(res.content)) {
-                this.clinicReviews = res.content;
-              } else if (res.data && Array.isArray(res.data)) {
-                this.clinicReviews = res.data;
-              } else {
-                this.clinicReviews = [];
-              }
-            } else {
-              this.clinicReviews = [];
-            }
-            if (this.clinicReviews.length > 0) {
-              this.showClinicReviews = true;
-            }
-          },
-          error: () => {
-            this.clinicReviews = [];
-          }
-        });
-        
-        this.uiService.hideLoading();
-      },
-      error: () => {
-        this.uiService.hideLoading();
-        this.uiService.showError('Failed to load clinic details.');
-      }
-    });
+    this.router.navigate(['/patient/clinics', clinic.clinicId]);
   }
 
   toggleClinicReviews(): void {
