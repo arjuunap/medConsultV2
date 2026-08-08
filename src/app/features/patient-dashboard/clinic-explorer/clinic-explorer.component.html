@@ -1,20 +1,5 @@
 <div class="explorer-container">
   
-  <!-- Header Title Section -->
-  <div class="explorer-header-section mb-4">
-    <div class="header-content">
-      <span class="eyebrow-badge">
-        <svg class="eyebrow-badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-        </svg>
-        {{ 'SA MOH Verified Network' | translate }}
-      </span>
-      <h1 class="page-title">{{ 'Clinics & Branches Directory' | translate }}</h1>
-      <p class="page-subtitle">
-        {{ 'Search verified private clinics across Saudi Arabia. Filter by specialty, location, and insurance — explore branches, browse doctors, and book appointments online.' | translate }}
-      </p>
-    </div>
-  </div>
 
   <!-- Global Filters Control Panel (Visible in Clinic Listing step) -->
   <div class="filters-card card shadow-sm p-4 mb-4" *ngIf="viewStep === 'CLINICS_LIST'">
