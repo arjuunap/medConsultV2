@@ -147,9 +147,10 @@ export class BookAppointmentComponent implements OnInit {
       next: (data) => {
         this.doctors = data;
         
-        // Read optional doctorId query parameter
+        // Read optional doctorId & dcId query parameters
         this.route.queryParams.subscribe(params => {
           const docId = params['doctorId'];
+          const dcId = params['dcId'];
           if (docId && this.doctors.some(d => d.doctorId === docId)) {
             // Early prevent pre-selected duplicate active booking
             if (this.activeBookedDoctorIds.includes(docId)) {
@@ -158,7 +159,7 @@ export class BookAppointmentComponent implements OnInit {
               this.currentStep = 1;
             } else {
               this.wizardForm.patchValue({ doctorId: docId });
-              this.onDoctorChange();
+              this.onDoctorChange(dcId);
               this.currentStep = 2; // Auto advance to step 2 directly
             }
           }
@@ -172,7 +173,7 @@ export class BookAppointmentComponent implements OnInit {
     });
   }
 
-  onDoctorChange(): void {
+  onDoctorChange(preselectDcId?: string): void {
     const docId = this.wizardForm.value.doctorId;
     this.doctorClinics = [];
     this.slots = [];
@@ -212,10 +213,16 @@ export class BookAppointmentComponent implements OnInit {
         forkJoin(nameRequests).subscribe({
           next: (updatedClinics) => {
             this.doctorClinics = updatedClinics;
+            if (preselectDcId && this.doctorClinics.some(c => c.dcId === preselectDcId)) {
+              this.selectClinic(preselectDcId);
+            }
             this.uiService.hideLoading();
           },
           error: () => {
             this.doctorClinics = activeClinics;
+            if (preselectDcId && this.doctorClinics.some(c => c.dcId === preselectDcId)) {
+              this.selectClinic(preselectDcId);
+            }
             this.uiService.hideLoading();
           }
         });

@@ -16,7 +16,7 @@ export const APP_CONFIG: AppConfig = {
   version: 'V2',
   title: 'MedConsult V2 - Smart Telehealth & EMR Portal',
   tagline: 'Smart Telehealth & Clinical Portal',
-  logoIcon: 'tabtab/tabtabLogo.png',
+  logoIcon: 'tabtab/tabtabLogo_600px.png',
   logoUrl: '',
   icon: 'tabtab/tabtabicon.png',
   copyrightOwner: 'MedConsult',

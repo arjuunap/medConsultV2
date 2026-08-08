@@ -38,6 +38,7 @@ export class AppointmentsComponent implements OnInit {
 
   public apiUrl = environment.apiUrl;
   public patientId = '';
+  public needProfileInit = false;
   public appointments: any[] = [];
   public filteredAppointments: any[] = [];
   
@@ -132,19 +133,17 @@ export class AppointmentsComponent implements OnInit {
   loadPatientProfile(): void {
     if (this.authService.isLoggedIn() && this.authService.currentUser()?.role === 'PATIENT') {
       this.uiService.showLoading();
-      this.patientService.getMyProfile().subscribe({
+      this.patientService.getMyProfile().pipe(
+        catchError(() => of(null))
+      ).subscribe({
         next: (p) => {
-          this.patientId = p.patientId;
-          this.loadAppointments();
-        },
-        error: (err) => {
-          this.uiService.hideLoading();
-          const msg = err.error?.message || '';
-          if (err.status === 404 || msg.includes('not found')) {
-            this.uiService.showWarning('Please initialize your Patient Profile first.');
-            this.router.navigate(['/patient/profile']);
+          if (p && p.patientId) {
+            this.patientId = p.patientId;
+            this.needProfileInit = false;
+            this.loadAppointments();
           } else {
-            this.uiService.showError('Failed to load Patient Profile.');
+            this.uiService.hideLoading();
+            this.needProfileInit = true;
           }
         }
       });

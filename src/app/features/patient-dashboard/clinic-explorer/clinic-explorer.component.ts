@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -12,20 +12,19 @@ import { AuthService } from '../../../core/services/auth.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { UiService } from '../../../core/services/ui.service';
 import { TranslatePipe, TranslateObjPipe } from '../../../shared/pipes/translate.pipe';
-import { ClinicResponseDto, ClinicDetailResponse, ClinicBranchResponseDto, ClinicOperatingHourResponseDto } from '../../../core/models/clinic.model';
+import { ClinicResponseDto, ClinicDetailResponse, ClinicBranchResponseDto, ClinicOperatingHourResponseDto, ClinicSpecialtyResponseDto, ClinicInsuranceResponseDto } from '../../../core/models/clinic.model';
 import { DoctorResponseDto, DoctorClinicResponseDto, AppointmentSlotResponseDto } from '../../../core/models/doctor.model';
 import { AppointmentType, SessionType } from '../../../core/models/appointment.model';
 import { ReferenceService } from '../../../core/services/reference.service';
-import { LanguageResponseDto } from '../../../core/models/reference.model';
+import { LanguageResponseDto, SpecialtyResponseDto, CityResponseDto, InsuranceProviderResponseDto } from '../../../core/models/reference.model';
 import { ReviewService, ClinicReviewResponse } from '../../../core/services/review.service';
 import { environment } from '../../../../environments/environment';
 import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
-import { ApiUrlPipe } from "../../../shared/pipes/api-url.pipe";
 
 @Component({
   selector: 'app-clinic-explorer',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, TranslateObjPipe, CustomSelectComponent, ApiUrlPipe],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, TranslatePipe, TranslateObjPipe, CustomSelectComponent],
   templateUrl: './clinic-explorer.component.html',
   styleUrls: ['./clinic-explorer.component.css']
 })
@@ -43,24 +42,46 @@ export class ClinicExplorerComponent implements OnInit {
   private reviewService = inject(ReviewService);
   public apiUrl = environment.apiUrl;
 
+  // View Step Navigation State ('CLINICS_LIST' | 'CLINIC_DETAIL' | 'BRANCH_DOCTORS')
+  public viewStep: 'CLINICS_LIST' | 'CLINIC_DETAIL' | 'BRANCH_DOCTORS' = 'CLINICS_LIST';
 
-
-  // General State
+  // General Data State
   public patientId = '';
   public clinics: ClinicResponseDto[] = [];
   public filteredClinics: ClinicResponseDto[] = [];
   public allDoctors: DoctorResponseDto[] = [];
   public doctorToBranchesMap: { [doctorId: string]: DoctorClinicResponseDto[] } = {};
+
+  // Reference Data for Filters
+  public specialties: SpecialtyResponseDto[] = [];
+  public cities: CityResponseDto[] = [];
+  public insuranceProviders: InsuranceProviderResponseDto[] = [];
   public globalLanguages: LanguageResponseDto[] = [];
 
-  // Selected State
+  // Filter State
+  public searchQuery = '';
+  public selectedSpecialtyId = '';
+  public selectedCityId = '';
+  public selectedInsuranceProviderId = '';
+  public showAdvancedFilters = false;
+
+  // Clinic Enrichment Cache (branches, specialties, insurance, cityIds per clinic)
+  public clinicEnrichmentMap: {
+    [clinicId: string]: {
+      branches: ClinicBranchResponseDto[];
+      specialties: ClinicSpecialtyResponseDto[];
+      insurance: ClinicInsuranceResponseDto[];
+      cityIds: string[];
+    }
+  } = {};
+
+  // Selected Clinic & Branch State
   public selectedClinic: ClinicDetailResponse | null = null;
   public clinicReviews: ClinicReviewResponse[] = [];
   public showClinicReviews = false;
   public selectedBranch: ClinicBranchResponseDto | null = null;
   public branchOperatingHours: ClinicOperatingHourResponseDto[] = [];
   public branchDoctors: { doctor: DoctorResponseDto; dcLink: DoctorClinicResponseDto; qualifications: any[]; languages: any[] }[] = [];
-  public showMobileDetail = false;
 
   // Search Filter Form
   public searchForm: FormGroup = this.fb.group({
@@ -78,6 +99,39 @@ export class ClinicExplorerComponent implements OnInit {
 
   public appointmentTypes = Object.values(AppointmentType);
   public sessionTypes = Object.values(SessionType);
+
+  get specialtyOptions() {
+    const isAr = this.languageService.isArabic;
+    return [
+      { label: this.languageService.translate('All Specialties', 'جميع التخصصات'), value: '' },
+      ...this.specialties.map(s => ({
+        label: isAr ? s.nameAr : s.nameEn,
+        value: s.specialtyId
+      }))
+    ];
+  }
+
+  get cityOptions() {
+    const isAr = this.languageService.isArabic;
+    return [
+      { label: this.languageService.translate('All Cities', 'جميع المدن'), value: '' },
+      ...this.cities.map(c => ({
+        label: isAr ? c.nameAr : c.nameEn,
+        value: c.cityId
+      }))
+    ];
+  }
+
+  get insuranceOptions() {
+    const isAr = this.languageService.isArabic;
+    return [
+      { label: this.languageService.translate('All Insurance Providers', 'جميع شركات التأمين'), value: '' },
+      ...this.insuranceProviders.map(i => ({
+        label: isAr ? i.nameAr : i.nameEn,
+        value: i.providerId
+      }))
+    ];
+  }
 
   get appointmentTypeOptions() {
     return this.appointmentTypes.map(t => ({
@@ -108,8 +162,12 @@ export class ClinicExplorerComponent implements OnInit {
 
   loadPatientProfile(): void {
     if (this.authService.isLoggedIn() && this.authService.currentUser()?.role === 'PATIENT') {
-      this.patientService.getMyProfile().subscribe({
-        next: (p) => this.patientId = p.patientId,
+      this.patientService.getMyProfile().pipe(catchError(() => of(null))).subscribe({
+        next: (p) => {
+          if (p) {
+            this.patientId = p.patientId;
+          }
+        },
         error: () => { }
       });
     }
@@ -120,30 +178,48 @@ export class ClinicExplorerComponent implements OnInit {
     forkJoin({
       clinics: this.clinicService.getAllClinics().pipe(catchError(() => of([]))),
       doctors: this.doctorService.getAllDoctors().pipe(catchError(() => of([]))),
+      specialties: this.referenceService.getAllSpecialties().pipe(catchError(() => of([]))),
+      cities: this.referenceService.getAllCities().pipe(catchError(() => of([]))),
+      insurance: this.referenceService.getAllInsuranceProviders().pipe(catchError(() => of([]))),
       languages: this.referenceService.getAllLanguages().pipe(catchError(() => of([])))
     }).subscribe({
       next: (res) => {
         this.clinics = res.clinics || [];
         this.filteredClinics = [...this.clinics];
         this.allDoctors = res.doctors || [];
+        this.specialties = res.specialties || [];
+        this.cities = res.cities || [];
+        this.insuranceProviders = res.insurance || [];
         this.globalLanguages = res.languages || [];
 
-        // Preload doctor clinic assignments in parallel
-        if (this.allDoctors.length > 0) {
-          const linksRequests = this.allDoctors.map(doc =>
-            this.doctorService.getDoctorClinics(doc.doctorId).pipe(catchError(() => of([])))
+        // Parallel enrich each clinic with its branches, specialties, and insurance
+        if (this.clinics.length > 0) {
+          const enrichRequests = this.clinics.map(c =>
+            forkJoin({
+              branches: this.clinicService.getClinicBranches(c.clinicId).pipe(catchError(() => of([]))),
+              specialties: this.clinicService.getClinicSpecialties(c.clinicId).pipe(catchError(() => of([]))),
+              insurance: this.clinicService.getClinicInsurances(c.clinicId).pipe(catchError(() => of([])))
+            }).pipe(
+              map(res => ({
+                clinicId: c.clinicId,
+                branches: res.branches || [],
+                specialties: res.specialties || [],
+                insurance: res.insurance || [],
+                cityIds: (res.branches || []).map((b: any) => b.cityId).filter(Boolean)
+              }))
+            )
           );
 
-          forkJoin(linksRequests).subscribe({
-            next: (allLinks) => {
-              this.doctorToBranchesMap = {};
-              this.allDoctors.forEach((doc, idx) => {
-                this.doctorToBranchesMap[doc.doctorId] = allLinks[idx] || [];
+          forkJoin(enrichRequests).subscribe({
+            next: (enrichResults) => {
+              this.clinicEnrichmentMap = {};
+              enrichResults.forEach(item => {
+                this.clinicEnrichmentMap[item.clinicId] = item;
               });
-              this.uiService.hideLoading();
+              this.preloadDoctorLinks();
             },
             error: () => {
-              this.uiService.hideLoading();
+              this.preloadDoctorLinks();
             }
           });
         } else {
@@ -156,18 +232,89 @@ export class ClinicExplorerComponent implements OnInit {
     });
   }
 
-  onSearch(): void {
-    const query = (this.searchForm.value.query || '').toLowerCase().trim();
-    if (!query) {
-      this.filteredClinics = [...this.clinics];
-    } else {
-      this.filteredClinics = this.clinics.filter(c =>
-        c.nameEn.toLowerCase().includes(query) ||
-        c.nameAr.toLowerCase().includes(query) ||
-        (c.descriptionEn && c.descriptionEn.toLowerCase().includes(query)) ||
-        (c.descriptionAr && c.descriptionAr.toLowerCase().includes(query))
+  preloadDoctorLinks(): void {
+    if (this.allDoctors.length > 0) {
+      const linksRequests = this.allDoctors.map(doc =>
+        this.doctorService.getDoctorClinics(doc.doctorId).pipe(catchError(() => of([])))
       );
+
+      forkJoin(linksRequests).subscribe({
+        next: (allLinks) => {
+          this.doctorToBranchesMap = {};
+          this.allDoctors.forEach((doc, idx) => {
+            this.doctorToBranchesMap[doc.doctorId] = allLinks[idx] || [];
+          });
+          this.applyFilters();
+          this.uiService.hideLoading();
+        },
+        error: () => {
+          this.applyFilters();
+          this.uiService.hideLoading();
+        }
+      });
+    } else {
+      this.applyFilters();
+      this.uiService.hideLoading();
     }
+  }
+
+  applyFilters(): void {
+    const q = (this.searchQuery || '').toLowerCase().trim();
+
+    this.filteredClinics = this.clinics.filter(c => {
+      // 1. Search Query
+      if (q) {
+        const matchesName = (c.nameEn && c.nameEn.toLowerCase().includes(q)) || (c.nameAr && c.nameAr.toLowerCase().includes(q));
+        const matchesDesc = (c.descriptionEn && c.descriptionEn.toLowerCase().includes(q)) || (c.descriptionAr && c.descriptionAr.toLowerCase().includes(q));
+        if (!matchesName && !matchesDesc) return false;
+      }
+
+      const enrich = this.clinicEnrichmentMap[c.clinicId];
+      if (!enrich) return true;
+
+      // 2. Specialty Filter
+      if (this.selectedSpecialtyId) {
+        const hasSpec = enrich.specialties && enrich.specialties.some((s: any) => s.specialtyId === this.selectedSpecialtyId);
+        if (!hasSpec) return false;
+      }
+
+      // 3. City Filter
+      if (this.selectedCityId) {
+        const hasCity = enrich.cityIds && enrich.cityIds.includes(this.selectedCityId);
+        if (!hasCity) return false;
+      }
+
+      // 4. Insurance Filter
+      if (this.selectedInsuranceProviderId) {
+        const hasIns = enrich.insurance && enrich.insurance.some((i: any) => i.providerId === this.selectedInsuranceProviderId);
+        if (!hasIns) return false;
+      }
+
+      return true;
+    });
+  }
+
+  clearFilters(): void {
+    this.searchQuery = '';
+    this.selectedSpecialtyId = '';
+    this.selectedCityId = '';
+    this.selectedInsuranceProviderId = '';
+    this.applyFilters();
+  }
+
+  getBranchCityName(branch: ClinicBranchResponseDto | null): string {
+    if (!branch || !branch.cityId) return 'Saudi Arabia';
+    const city = this.cities.find(c => c.cityId === branch.cityId);
+    return city ? (this.languageService.isArabic ? city.nameAr : city.nameEn) : 'Saudi Arabia';
+  }
+
+  getBranchAddress(branch: ClinicBranchResponseDto | null): string {
+    if (!branch) return '';
+    return branch.addressLine1 || branch.addressLine2 || 'Street address available upon booking';
+  }
+
+  toggleAdvancedFilters(): void {
+    this.showAdvancedFilters = !this.showAdvancedFilters;
   }
 
   selectClinic(clinic: ClinicResponseDto): void {
@@ -175,20 +322,38 @@ export class ClinicExplorerComponent implements OnInit {
     this.selectedBranch = null;
     this.branchDoctors = [];
     this.branchOperatingHours = [];
-    this.showMobileDetail = true;
     this.clinicReviews = [];
     this.showClinicReviews = false;
 
     this.clinicService.getClinicDetail(clinic.clinicId).subscribe({
       next: (detail) => {
         this.selectedClinic = detail;
+        this.viewStep = 'CLINIC_DETAIL';
         
-        // Fetch reviews
+        // Fetch real reviews from backend API
         this.reviewService.getClinicReviews(clinic.clinicId).pipe(
-          catchError(() => of({ content: [], totalElements: 0 } as any))
+          catchError(() => of(null))
         ).subscribe({
-          next: (res) => {
-            this.clinicReviews = res && res.content ? res.content : [];
+          next: (res: any) => {
+            if (res) {
+              if (Array.isArray(res)) {
+                this.clinicReviews = res;
+              } else if (Array.isArray(res.content)) {
+                this.clinicReviews = res.content;
+              } else if (res.data && Array.isArray(res.data)) {
+                this.clinicReviews = res.data;
+              } else {
+                this.clinicReviews = [];
+              }
+            } else {
+              this.clinicReviews = [];
+            }
+            if (this.clinicReviews.length > 0) {
+              this.showClinicReviews = true;
+            }
+          },
+          error: () => {
+            this.clinicReviews = [];
           }
         });
         
@@ -205,9 +370,16 @@ export class ClinicExplorerComponent implements OnInit {
     this.showClinicReviews = !this.showClinicReviews;
   }
 
-  goBackToList(): void {
-    this.showMobileDetail = false;
+  goBackToClinics(): void {
+    this.viewStep = 'CLINICS_LIST';
     this.selectedClinic = null;
+    this.selectedBranch = null;
+    this.branchDoctors = [];
+    this.branchOperatingHours = [];
+  }
+
+  goBackToBranches(): void {
+    this.viewStep = 'CLINIC_DETAIL';
     this.selectedBranch = null;
     this.branchDoctors = [];
     this.branchOperatingHours = [];
@@ -215,6 +387,7 @@ export class ClinicExplorerComponent implements OnInit {
 
   selectBranch(branch: ClinicBranchResponseDto): void {
     this.selectedBranch = branch;
+    this.viewStep = 'BRANCH_DOCTORS';
     this.branchDoctors = [];
     this.branchOperatingHours = [];
     this.uiService.showLoading();
@@ -226,30 +399,62 @@ export class ClinicExplorerComponent implements OnInit {
       next: (hours) => {
         this.branchOperatingHours = hours || [];
 
-        // Find assigned doctors for this branch
-        const matched: { doctor: DoctorResponseDto; dcLink: DoctorClinicResponseDto; qualifications: any[] }[] = [];
-        const qualRequests: any[] = [];
+        // Fetch/ensure doctor clinic links for all doctors dynamically
+        const docLinkCalls = this.allDoctors.map(doc => 
+          this.doctorService.getDoctorClinics(doc.doctorId).pipe(
+            catchError(() => of([])),
+            map(links => ({ doctor: doc, links: links || [] }))
+          )
+        );
 
-        this.allDoctors.forEach(doc => {
-          const links = this.doctorToBranchesMap[doc.doctorId] || [];
-          const matchedLink = links.find(l => l.branchId === branch.branchId && l.isActive);
-          if (matchedLink) {
-            // Store query for qualifications and languages
-            const req = forkJoin({
-              quals: this.doctorService.getDoctorQualifications(doc.doctorId).pipe(catchError(() => of([]))),
-              langs: this.doctorService.getDoctorLanguages(doc.doctorId).pipe(catchError(() => of([])))
-            }).pipe(
-              map(res => ({ doctor: doc, dcLink: matchedLink, qualifications: res.quals, languages: res.langs }))
-            );
-            qualRequests.push(req);
-          }
-        });
+        if (docLinkCalls.length > 0) {
+          forkJoin(docLinkCalls).subscribe({
+            next: (allDocLinks) => {
+              const matchedRequests: any[] = [];
 
-        if (qualRequests.length > 0) {
-          forkJoin(qualRequests).subscribe({
-            next: (results: any[]) => {
-              this.branchDoctors = results;
-              this.uiService.hideLoading();
+              allDocLinks.forEach(item => {
+                const doc = item.doctor;
+                const links = item.links;
+                // Also update local cache for helper counts
+                this.doctorToBranchesMap[doc.doctorId] = links;
+
+                // Strict match by branchId (or fallback to clinicId ONLY if link has no branchId & clinic has 1 branch)
+                const matchedLink = links.find(l => {
+                  if (!l || l.isActive === false) return false;
+                  if (l.branchId && l.branchId === branch.branchId) return true;
+                  if (!l.branchId && l.clinicId === branch.clinicId && (this.selectedClinic?.branches?.length || 0) <= 1) return true;
+                  return false;
+                });
+
+                if (matchedLink) {
+                  const req = forkJoin({
+                    quals: this.doctorService.getDoctorQualifications(doc.doctorId).pipe(catchError(() => of([]))),
+                    langs: this.doctorService.getDoctorLanguages(doc.doctorId).pipe(catchError(() => of([])))
+                  }).pipe(
+                    map(res => ({
+                      doctor: doc,
+                      dcLink: matchedLink,
+                      qualifications: res.quals || [],
+                      languages: res.langs || []
+                    }))
+                  );
+                  matchedRequests.push(req);
+                }
+              });
+
+              if (matchedRequests.length > 0) {
+                forkJoin(matchedRequests).subscribe({
+                  next: (results: any[]) => {
+                    this.branchDoctors = results;
+                    this.uiService.hideLoading();
+                  },
+                  error: () => {
+                    this.uiService.hideLoading();
+                  }
+                });
+              } else {
+                this.uiService.hideLoading();
+              }
             },
             error: () => {
               this.uiService.hideLoading();
@@ -263,6 +468,21 @@ export class ClinicExplorerComponent implements OnInit {
         this.uiService.hideLoading();
       }
     });
+  }
+
+  getBranchDoctorCount(branchId: string): number {
+    let count = 0;
+    this.allDoctors.forEach(doc => {
+      const links = this.doctorToBranchesMap[doc.doctorId] || [];
+      const hasLink = links.some(l => {
+        if (!l || l.isActive === false) return false;
+        if (l.branchId && l.branchId === branchId) return true;
+        if (!l.branchId && l.clinicId === this.selectedClinic?.clinicId && (this.selectedClinic?.branches?.length || 0) <= 1) return true;
+        return false;
+      });
+      if (hasLink) count++;
+    });
+    return count;
   }
 
   // Helper translations and getters
@@ -314,24 +534,17 @@ export class ClinicExplorerComponent implements OnInit {
 
     if (!this.patientId) {
       this.uiService.showWarning('Please complete your Patient Profile before booking.');
-      this.router.navigate(['/patient/profile']);
+      this.router.navigate(['/patient/profile'], { queryParams: { scrollTo: 'medical' } });
       return;
     }
 
-    this.bookingDoctor = doctor;
-    this.bookingDcLink = dcLink;
-    this.bookingDate = new Date().toISOString().split('T')[0];
-    this.availableSlots = [];
-    this.selectedSlot = null;
-    this.nextDays = [];
-    this.bookingForm.reset({
-      appointmentType: AppointmentType.NEW_PATIENT,
-      sessionType: SessionType.IN_CLINIC,
-      reason: ''
+    // Redirect directly to the Book Appointment tab with pre-filled doctor & clinic!
+    this.router.navigate(['/patient/book-appointment'], {
+      queryParams: {
+        doctorId: doctor.doctorId,
+        dcId: dcLink.dcId
+      }
     });
-
-    this.bookingModalOpen = true;
-    this.checkAvailabilityForNext7Days(dcLink.dcId);
   }
 
   onDateChange(event: Event): void {
@@ -399,7 +612,7 @@ export class ClinicExplorerComponent implements OnInit {
 
   fetchSlots(dcId: string, date: string): void {
     this.uiService.showLoading();
-    this.doctorService.getAvailableSlots(dcId, date).subscribe({
+    this.doctorService.getAvailableSlots(dcId, date).pipe(catchError(() => of([]))).subscribe({
       next: (slots) => {
         this.availableSlots = slots || [];
         const firstAvail = this.availableSlots.find(s => s.status === 'AVAILABLE');

@@ -1,5 +1,5 @@
 /* =============================================================
-   Clinics & Branches Explorer — Premium Design System
+   Clinics & Branches Explorer — Clean Executive Design System
    ============================================================= */
 
 :host {
@@ -12,22 +12,23 @@
   --ce-teal-glow: rgba(13, 148, 136, 0.12);
 }
 
-/* ── Outer Container ────────────────────────────────────── */
+/* ── Outer Main Container ───────────────────────────────── */
 .explorer-container {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - var(--header-height, 70px));
+  min-height: 100%;
   padding: 1.5rem;
   box-sizing: border-box;
   font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-  color: var(--text);
-  background-color: var(--off);
+  color: var(--text, #1e293b);
+  background-color: var(--off, #f8fafc);
   gap: 1.25rem;
+  overflow-y: visible;
 }
 
 /* ── Page Header Banner ─────────────────────────────────── */
 .explorer-header-section {
-  background: linear-gradient(135deg, var(--teal-d) 0%, var(--teal-m, var(--teal)) 100%);
+  background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
   padding: 1.75rem 2rem;
   border-radius: var(--ce-radius-lg);
   color: #fff;
@@ -78,2167 +79,277 @@
   margin: 0 0 0.4rem;
   letter-spacing: -0.025em;
   line-height: 1.15;
+  color: #ffffff;
 }
 
 .page-subtitle {
   font-size: 0.92rem;
   margin: 0;
-  color: rgba(255, 255, 255, 0.82);
-  max-width: 700px;
+  color: rgba(255, 255, 255, 0.88);
+  max-width: 750px;
   line-height: 1.65;
 }
 
-/* ── 2-Column Grid ──────────────────────────────────────── */
-.explorer-grid {
-  display: grid;
-  grid-template-columns: 340px 1fr;
-  gap: 1.25rem;
-  flex: 1;
-  min-height: 0;
-}
-
-.grid-column {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
-
-/* ── Base Column Card ───────────────────────────────────── */
-.column-card {
-  background: #fff;
-  border: 1px solid var(--border);
+/* ── Executive Filters Control Panel ─────────────────────── */
+.filters-card {
   border-radius: var(--ce-radius-lg);
-  box-shadow: var(--ce-shadow-card);
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  min-height: 0;
-  overflow: hidden;
-  transition: box-shadow 0.2s ease;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
 }
 
-.column-card:hover {
-  box-shadow: var(--ce-shadow-hover);
+.filters-grid {
+  display: grid;
+  grid-template-columns: 2fr repeat(3, 1fr);
+  gap: 16px;
+  align-items: flex-end;
 }
 
-/* ── Sticky Column Header ───────────────────────────────── */
-.card-header-sticky {
-  padding: 1.15rem 1.4rem;
-  border-bottom: 1px solid var(--border);
-  background: #fff;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  flex-shrink: 0;
+@media (max-width: 992px) {
+  .filters-grid {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
-.column-title {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.15rem;
-  font-weight: 700;
-  margin: 0 0 0.9rem;
-  color: var(--gray-900);
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  letter-spacing: -0.01em;
+@media (max-width: 576px) {
+  .filters-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
-.title-icon {
-  width: 18px;
-  height: 18px;
-  color: var(--teal);
+.filter-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 6px;
+  display: block;
 }
 
-/* ── Search Input ───────────────────────────────────────── */
-.search-form-wrapper .input-wrapper {
+.search-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.search-icon {
+.search-icon-svg {
   position: absolute;
-  left: 0.9rem;
-  color: var(--t3);
-  width: 15px;
-  height: 15px;
+  left: 12px;
+  width: 18px;
+  height: 18px;
+  color: #64748b;
   pointer-events: none;
 }
 
+.rtl-mode .search-icon-svg {
+  left: auto;
+  right: 12px;
+}
+
 .search-input {
-  width: 100%;
-  padding: 0.65rem 1rem 0.65rem 2.4rem;
-  border: 1.5px solid var(--border2);
+  padding-left: 38px !important;
+  border-radius: var(--ce-radius-sm);
+  border: 1px solid #cbd5e1;
+  height: 42px;
+  font-size: 0.9rem;
+}
+
+.rtl-mode .search-input {
+  padding-left: 12px !important;
+  padding-right: 38px !important;
+}
+
+/* ── Executive Clinics Cards Grid ────────────────────────── */
+.clinics-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 20px;
+}
+
+.executive-clinic-card {
   border-radius: var(--ce-radius-md);
-  font-size: 0.88rem;
-  font-family: inherit;
-  color: var(--text);
-  background: var(--off);
-  transition: var(--ce-transition);
-  outline: none;
-}
-
-.search-input:focus {
-  border-color: var(--teal);
-  background: #fff;
-  box-shadow: 0 0 0 3px var(--ce-teal-glow);
-}
-
-.search-input::placeholder {
-  color: var(--t4);
-}
-
-/* ── Scrollable Content Area ────────────────────────────── */
-.scroll-content {
-  padding: 1.15rem 1.4rem;
-  overflow-y: auto;
-  flex: 1;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
 }
 
-.detail-scroll-wrapper {
-  padding: 1.15rem;
-  gap: 1rem;
-  background: var(--off);
+.executive-clinic-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px -6px rgba(15, 23, 42, 0.08);
+  border-color: #0d9488;
 }
 
-/* Thin custom scrollbar */
-.scroll-content::-webkit-scrollbar,
-.detail-scroll-wrapper::-webkit-scrollbar,
-.modal-body-content::-webkit-scrollbar {
-  width: 5px;
-}
-
-.scroll-content::-webkit-scrollbar-track,
-.detail-scroll-wrapper::-webkit-scrollbar-track,
-.modal-body-content::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.scroll-content::-webkit-scrollbar-thumb,
-.detail-scroll-wrapper::-webkit-scrollbar-thumb,
-.modal-body-content::-webkit-scrollbar-thumb {
-  background: var(--border2);
-  border-radius: 99px;
-}
-
-/* ── Empty / Placeholder States ─────────────────────────── */
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 2rem 1rem;
-  gap: 0.65rem;
-  color: var(--t3);
-  font-size: 0.88rem;
-}
-
-.empty-icon-wrapper {
+.clinic-logo-avatar {
   width: 52px;
   height: 52px;
-  background: var(--off2);
-  border-radius: 50%;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.empty-icon {
-  width: 24px;
-  height: 24px;
-  color: var(--t4);
-}
-
-.placeholder-card {
-  justify-content: center;
-  align-items: center;
-  background: #fff;
-  border: 2px dashed var(--border2);
-}
-
-.centered-placeholder {
-  text-align: center;
-  padding: 3rem 2rem;
-  max-width: 380px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.85rem;
-}
-
-.placeholder-icon-bg {
-  width: 76px;
-  height: 76px;
-  background: var(--teal-p);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 0.25rem;
-}
-
-.placeholder-icon {
-  width: 34px;
-  height: 34px;
-  color: var(--teal);
-}
-
-.pulse-animation {
-  animation: pulseCE 3s infinite ease-in-out;
-}
-
-@keyframes pulseCE {
-  0% {
-    transform: scale(1);
-    opacity: 0.85;
-  }
-
-  50% {
-    transform: scale(1.07);
-    opacity: 1;
-    box-shadow: 0 0 18px var(--ce-teal-glow);
-  }
-
-  100% {
-    transform: scale(1);
-    opacity: 0.85;
-  }
-}
-
-.centered-placeholder h3 {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.25rem;
   font-weight: 700;
-  margin: 0;
-  color: var(--gray-900);
-}
-
-.centered-placeholder p {
-  font-size: 0.9rem;
-  color: var(--t3);
-  line-height: 1.6;
-  margin: 0;
-}
-
-/* ── Clinic List Cards ──────────────────────────────────── */
-.clinic-list-card {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: var(--ce-radius-md);
-  padding: 1rem 1.1rem;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 0.7rem;
-  transition: var(--ce-transition);
-  position: relative;
-}
-
-.clinic-list-card:hover {
-  border-color: var(--border2);
-  box-shadow: var(--ce-shadow-hover);
-  transform: translateY(-2px);
-}
-
-.clinic-list-card.active {
-  border-color: var(--teal);
-  background: var(--teal-p);
-  box-shadow: 0 0 0 3px var(--ce-teal-glow);
-  border-left: 4px solid var(--teal);
-}
-
-.card-main-info {
-  display: flex;
-  gap: 0.9rem;
-  align-items: center;
-}
-
-.logo-placeholder-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--ce-radius-sm);
-  background: var(--off2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  color: #0d9488;
   overflow: hidden;
-  flex-shrink: 0;
-  border: 1px solid var(--border);
 }
 
-.clinic-logo-img {
+.clinic-logo-avatar .logo-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
-.logo-initial {
-  font-family: 'Outfit', sans-serif;
-  font-weight: 700;
-  color: var(--teal-d);
-  font-size: 1.05rem;
-}
-
-.info-text {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.clinic-name {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.98rem;
-  font-weight: 700;
-  margin: 0;
-  color: var(--gray-900);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.rating-reviews-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.28rem;
-  background: var(--amber-l, #fef9c3);
-  padding: 2px 7px;
-  border-radius: 9999px;
-  width: fit-content;
-}
-
-.star-icon {
-  width: 10px;
-  height: 10px;
-  color: var(--amber-d, #b45309);
-}
-
-.rating-val {
-  font-size: 0.73rem;
-  font-weight: 700;
-  color: var(--amber-d, #b45309);
-}
-
-.reviews-count {
-  font-size: 0.7rem;
-  color: var(--amber-d, #b45309);
-  opacity: 0.8;
-}
-
-.meta-row {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.78rem;
-  color: var(--t3);
-}
-
-.meta-icon {
-  width: 11px;
-  height: 11px;
-  color: var(--t4);
-}
-
-.card-banner-status {
-  display: flex;
-  gap: 0.45rem;
-  flex-wrap: wrap;
-}
-
-/* ── Status Tags (shared) ───────────────────────────────── */
-.verified-tag {
-  background: var(--teal-l);
-  color: var(--teal-d);
-  font-size: 0.66rem;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.2rem;
-}
-
-.tag-check {
-  width: 9px;
-  height: 9px;
-}
-
-.active-tag {
-  background: var(--green-l);
-  color: var(--green-d);
-  font-size: 0.66rem;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.status-dot {
-  width: 5px;
-  height: 5px;
-  background: var(--green);
-  border-radius: 50%;
-  display: inline-block;
-}
-
-.primary-badge {
-  background: var(--teal-l);
-  color: var(--teal-d);
-  font-size: 0.62rem;
-  font-weight: 750;
-  padding: 2px 7px;
-  border-radius: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-/* ── Mobile Back Bar ────────────────────────────────────── */
-.mobile-back-bar {
-  display: none;
-  background: #fff;
-  padding: 0.85rem 1.25rem;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-
-.btn-back-to-list {
-  background: var(--off);
-  color: var(--text);
-  border: 1px solid var(--border);
-  padding: 0.5rem 1rem;
-  font-size: 0.86rem;
-  font-weight: 600;
-  border-radius: var(--ce-radius-sm);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  transition: var(--ce-transition);
-}
-
-.btn-back-to-list:hover {
-  background: var(--off2);
-}
-
-.back-arrow-icon {
-  width: 14px;
-  height: 14px;
-}
-
-/* ── Detail Viewport Wrapper ────────────────────────────── */
-.detail-active-card {
-  background: var(--off);
-  border: none;
-  box-shadow: none;
-}
-
-/* ── Section Subtitle Header ────────────────────────────── */
-.section-subtitle {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1rem;
-  font-weight: 700;
-  margin: 0;
-  color: var(--gray-900);
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.subtitle-icon {
-  width: 16px;
-  height: 16px;
-  color: var(--teal);
-}
-
-/* ══════════════════════════════════════════════════════════
-   CLINIC DETAIL HEADER CARD
-   ══════════════════════════════════════════════════════════ */
-.clinic-detail-header-card {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: var(--ce-radius-lg);
-  padding: 1.5rem;
-  box-shadow: var(--ce-shadow-card);
-  display: flex;
-  flex-direction: column;
-  gap: 1.1rem;
-}
-
-.logo-title-row {
-  display: flex;
-  gap: 1.15rem;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.detail-logo-avatar {
-  width: 62px;
-  height: 62px;
-  border-radius: var(--ce-radius-md);
-  background: var(--off2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  flex-shrink: 0;
-  border: 1px solid var(--border);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.detail-logo-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.detail-logo-avatar span {
-  font-family: 'Outfit', sans-serif;
-  font-weight: 800;
-  color: var(--teal-d);
-  font-size: 1.3rem;
-}
-
-.title-meta-block {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  flex: 1;
-  min-width: 0;
-}
-
-.detail-clinic-name {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.4rem;
-  font-weight: 800;
-  margin: 0;
-  color: var(--gray-900);
-  letter-spacing: -0.025em;
-  line-height: 1.2;
-}
-
-.badge-status-row {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.license-number {
-  font-size: 0.73rem;
-  color: var(--t3);
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.license-icon {
-  width: 12px;
-  height: 12px;
-  color: var(--t4);
-}
-
-.detail-description {
-  font-size: 0.9rem;
-  line-height: 1.65;
-  color: var(--t2);
-  margin: 0;
-}
-
-/* Contact Pills Grid */
-.detail-contact-strip {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 0.75rem;
-  border-top: 1px solid var(--border);
-  padding-top: 1.1rem;
-}
-
-.contact-pill {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  background: var(--off);
-  border: 1px solid var(--border);
-  padding: 0.6rem 0.8rem;
-  border-radius: var(--ce-radius-md);
-  text-decoration: none;
-  transition: var(--ce-transition);
-  min-width: 0;
-}
-
-.contact-pill:hover {
-  background: #fff;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-}
-
-.web-pill:hover {
-  border-color: var(--teal);
-}
-
-.email-pill:hover {
-  border-color: #6366f1;
-}
-
-.phone-pill:hover {
-  border-color: #10b981;
-}
-
-.pill-icon-wrapper {
-  width: 30px;
-  height: 30px;
-  border-radius: var(--ce-radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  background: #fff;
-  border: 1px solid var(--border);
-  transition: var(--ce-transition);
-}
-
-.contact-pill:hover .pill-icon-wrapper {
-  transform: scale(1.05);
-}
-
-.chip-icon {
-  width: 13px;
-  height: 13px;
-}
-
-.web-pill .pill-icon-wrapper svg {
-  color: var(--teal);
-}
-
-.email-pill .pill-icon-wrapper svg {
-  color: #6366f1;
-}
-
-.phone-pill .pill-icon-wrapper svg {
-  color: #10b981;
-}
-
-.pill-info {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.pill-label {
-  font-size: 0.65rem;
-  font-weight: 750;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--t4);
-  line-height: 1;
-  margin-bottom: 2px;
-}
-
-.pill-value {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--t1);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* ══════════════════════════════════════════════════════════
-   REVIEWS SECTION
-   ══════════════════════════════════════════════════════════ */
-.reviews-section-wrapper {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: var(--ce-radius-lg);
-  box-shadow: var(--ce-shadow-card);
-  /* No overflow: hidden — it would clip the expanding accordion */
-}
-
-.reviews-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 1.35rem;
-  cursor: pointer;
-  user-select: none;
-  border-radius: var(--ce-radius-lg);
-  transition: background 0.15s, border-radius 0.22s;
-}
-
-/* Show separator when accordion is open */
-.reviews-section-wrapper:has(.reviews-list-container.expanded) .reviews-header {
-  border-bottom: 1px solid var(--border);
-  border-radius: var(--ce-radius-lg) var(--ce-radius-lg) 0 0;
-}
-
-.reviews-header:hover {
-  background: var(--off);
-}
-
-.reviews-count-badge {
+.badge-verified {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+  border-radius: 20px;
+  padding: 3px 10px;
   font-size: 0.72rem;
-  font-weight: 700;
-  background: var(--teal-l);
-  color: var(--teal-d);
-  padding: 1px 6px;
-  border-radius: 9999px;
-  margin-left: 0.35rem;
+  font-weight: 600;
 }
 
-[dir="rtl"] .reviews-count-badge {
-  margin-left: 0;
-  margin-right: 0.35rem;
-}
-
-.expand-caret {
-  font-size: 0.65rem;
-  color: var(--t4);
-  transition: transform 0.22s ease;
-  display: inline-block;
-}
-
-.expand-caret.rotated {
-  transform: rotate(180deg);
-}
-
-.reviews-list-container {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.38s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 0 0 var(--ce-radius-lg) var(--ce-radius-lg);
-}
-
-.reviews-list-container.expanded {
-  /* Large enough for any realistic review count, transition finishes fast */
-  max-height: 4000px;
-}
-
-.no-reviews-state {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  padding: 1.25rem 1.35rem;
-  color: var(--t3);
-  font-size: 0.87rem;
-}
-
-.no-reviews-icon {
-  font-size: 1.2rem;
-}
-
-.no-reviews-text {
-  margin: 0;
-}
-
-.review-comment-card {
-  padding: 1.1rem 1.35rem;
-  border-top: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-}
-
-.review-comment-card:first-child {
-  border-top: none;
-}
-
-.review-comment-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.reviewer-meta {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-}
-
-.reviewer-avatar-wrapper {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.reviewer-avatar-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.reviewer-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: var(--teal-p);
-  color: var(--teal-d);
+.rating-badge {
+  background: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fef3c7;
+  border-radius: 20px;
+  padding: 3px 10px;
   font-size: 0.75rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Outfit', sans-serif;
 }
 
-.reviewer-name {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--gray-900);
-  display: block;
-}
-
-.review-date {
-  font-size: 0.75rem;
-  color: var(--t4);
-  display: block;
-  margin-top: 1px;
-}
-
-.my-review-tag {
-  color: var(--teal);
-  font-weight: 700;
-  font-size: 0.78rem;
-  margin-left: 4px;
-}
-
-[dir="rtl"] .my-review-tag {
-  margin-left: 0;
-  margin-right: 4px;
-}
-
-.review-rating-stars {
-  display: flex;
-  gap: 2px;
-}
-
-.review-rating-stars .star {
-  font-size: 0.9rem;
-  color: var(--border2);
-}
-
-.review-rating-stars .star.filled {
-  color: #f59e0b;
-}
-
-.review-text-content {
-  font-size: 0.86rem;
-  color: var(--t2);
-  line-height: 1.55;
-  margin: 0;
-}
-
-.review-subratings {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-}
-
-.subrating-tag {
-  font-size: 0.68rem;
-  font-weight: 700;
+.info-pill {
+  background: #f1f5f9;
+  color: #475569;
+  border-radius: 6px;
   padding: 3px 8px;
-  background: var(--off);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--t2);
+  font-size: 0.75rem;
+  font-weight: 500;
 }
 
-/* ══════════════════════════════════════════════════════════
-   BRANCHES SELECTOR SECTION
-   ══════════════════════════════════════════════════════════ */
-.branches-section-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
+.info-pill.branch-pill {
+  background: #f0fdfa;
+  color: #0f766e;
+  border: 1px solid #ccfbf1;
 }
 
-.branches-selector-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 0.85rem;
+.info-pill.spec-pill {
+  background: #f8fafc;
+  color: #334155;
+  border: 1px solid #e2e8f0;
 }
 
-.branch-selector-card {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: var(--ce-radius-md);
-  padding: 1.1rem 1.2rem;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-  transition: var(--ce-transition);
-  position: relative;
-  overflow: hidden;
-}
-
-.branch-selector-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 3px;
-  height: 0;
-  background: var(--teal);
-  transition: height 0.22s ease;
-  border-radius: 0 0 3px 0;
-}
-
-.branch-selector-card:hover {
-  transform: translateY(-2px);
-  border-color: var(--teal-p);
-  box-shadow: var(--ce-shadow-hover);
-}
-
-.branch-selector-card.active {
-  border-color: var(--teal);
-  background: var(--teal-p);
-  box-shadow: 0 0 0 3px var(--ce-teal-glow);
-}
-
-.branch-selector-card.active::before {
-  height: 100%;
-}
-
-[dir="rtl"] .branch-selector-card::before {
-  left: auto;
-  right: 0;
-}
-
-.branch-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.branch-name {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--gray-900);
-  margin: 0;
-}
-
-.branch-address {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.4rem;
-  font-size: 0.82rem;
-  color: var(--t2);
-  line-height: 1.45;
-  margin: 0;
-}
-
-.branch-pin-icon {
-  width: 13px;
-  height: 13px;
-  color: var(--teal);
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.branch-contact-line {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.55rem;
-  border-top: 1px dashed var(--border);
-  padding-top: 0.65rem;
-  margin-top: 0.1rem;
-}
-
-.branch-contact-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: 0.74rem;
-  color: var(--t3);
-  font-weight: 600;
-}
-
-.branch-contact-item svg {
-  width: 11px;
-  height: 11px;
-  color: var(--t4);
-}
-
-/* ══════════════════════════════════════════════════════════
-   BRANCH WORKSPACE (HOURS + DOCTORS)
-   ══════════════════════════════════════════════════════════ */
-.branch-workspace-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 1.1rem;
-  animation: fadeSlide 0.3s ease;
-}
-
-@keyframes fadeSlide {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ── Operating Hours Card ───────────────────────────────── */
-.operating-hours-card {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: var(--ce-radius-lg);
-  box-shadow: var(--ce-shadow-card);
-  overflow: hidden;
-}
-
-.hours-card-header {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 1.1rem 1.35rem;
-  border-bottom: 1px solid var(--border);
-}
-
-.hours-header-icon-wrap {
-  width: 34px;
-  height: 34px;
-  background: var(--teal-l);
-  border-radius: var(--ce-radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.hours-header-icon-wrap svg {
-  width: 16px;
-  height: 16px;
-  stroke: var(--teal-d);
-}
-
-.hours-card-title {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--gray-900);
-  margin: 0;
-}
-
-.hours-card-branch {
-  font-size: 0.73rem;
-  color: var(--t3);
-  font-weight: 600;
-  margin: 2px 0 0;
-}
-
-.hours-days-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 0.6rem;
-  padding: 1.1rem 1.35rem;
-}
-
-.hours-day-cell {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 0.45rem;
-  padding: 0.85rem 0.5rem;
-  border-radius: var(--ce-radius-sm);
-  background: var(--off);
-  border: 1px solid var(--border);
-  transition: var(--ce-transition);
-}
-
-.hours-day-cell.is-open {
-  background: #fff;
-}
-
-.hours-day-cell.is-open:hover {
-  border-color: var(--teal);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px var(--ce-teal-glow);
-}
-
-.hours-day-cell.is-closed {
-  opacity: 0.5;
-}
-
-.day-label {
-  font-size: 0.72rem;
-  font-weight: 750;
-  color: var(--gray-900);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.hours-day-cell.is-closed .day-label {
-  color: var(--t3);
-  text-decoration: line-through;
-}
-
-.time-range-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.2rem;
-  background: var(--teal-l);
-  color: var(--teal-d);
-  font-size: 0.68rem;
-  font-weight: 750;
-  padding: 3px 7px;
-  border-radius: 9999px;
-  white-space: nowrap;
-  border: 1px solid rgba(13, 148, 136, 0.1);
-}
-
-.pill-clock {
-  width: 9px;
-  height: 9px;
-  color: var(--teal);
-  flex-shrink: 0;
-}
-
-.closed-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  background: var(--off2);
-  color: var(--t3);
-  font-size: 0.68rem;
-  font-weight: 700;
-  padding: 3px 7px;
-  border-radius: 9999px;
-  text-transform: uppercase;
-  border: 1px solid var(--border);
-}
-
-.closed-dot {
-  width: 5px;
-  height: 5px;
-  background: var(--t4);
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.hours-empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 2rem;
-  gap: 0.6rem;
-  color: var(--t3);
-  font-size: 0.85rem;
-}
-
-.hours-empty-icon {
-  width: 32px;
-  height: 32px;
-  color: var(--t4);
-}
-
-/* ── Doctors Roster Panel ───────────────────────────────── */
-.branch-doctors-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-}
-
-.doctors-roster-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1rem;
-}
-
-.doctor-profile-card {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: var(--ce-radius-lg);
-  padding: 1.35rem;
-  box-shadow: var(--ce-shadow-card);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  transition: var(--ce-transition);
-}
-
-.doctor-profile-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--ce-shadow-hover);
-  border-color: var(--teal-p);
-}
-
-.doctor-card-main {
-  display: flex;
-  gap: 1.1rem;
-  align-items: flex-start;
-}
-
-.doctor-avatar-circle {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Outfit', sans-serif;
-  font-weight: 700;
-  font-size: 1.2rem;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-  flex-shrink: 0;
-  border: 2px solid #fff;
-}
-
-.doctor-avatar-circle-img {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-  display: block;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
-  border: 2px solid #fff;
-}
-
-.doctor-primary-details {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.22rem;
-}
-
-.doctor-name {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.05rem;
-  font-weight: 800;
-  margin: 0;
-  color: var(--gray-900);
-  line-height: 1.2;
-}
-
-.doctor-department {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--teal);
-  margin: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.dept-icon {
-  width: 12px;
-  height: 12px;
-}
-
-.doctor-badge-row {
-  display: flex;
-  gap: 0.4rem;
-  flex-wrap: wrap;
-  margin: 0.1rem 0;
-}
-
-.exp-badge,
-.fee-badge {
-  font-size: 0.68rem;
-  font-weight: 750;
-  padding: 2px 7px;
-  border-radius: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.badge-icon-svg {
-  width: 10px;
-  height: 10px;
-}
-
-.exp-badge {
-  background: var(--blue-l);
-  color: var(--blue-d);
-}
-
-.fee-badge {
-  background: var(--teal-l);
-  color: var(--teal-d);
-}
-
-.doctor-rating {
-  margin-top: 2px;
-}
-
-/* Doctor Card Body */
-.doctor-card-body {
-  border-top: 1px dashed var(--border);
-  padding-top: 0.9rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-}
-
-.body-sub-title {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.7rem;
-  font-weight: 750;
-  color: var(--t4);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin: 0 0 0.3rem;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.qual-icon-title {
-  width: 12px;
-  height: 12px;
-  color: var(--t3);
-}
-
-.doctor-bio {
-  font-size: 0.84rem;
-  color: var(--t2);
-  line-height: 1.55;
-  margin: 0;
-}
-
-.languages-line {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
-.lang-title-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.2rem;
-  font-size: 0.7rem;
-  font-weight: 750;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--t4);
-}
-
-.lang-icon {
-  width: 11px;
-  height: 11px;
-}
-
-.lang-pills-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-}
-
-.lang-pill {
-  background: var(--off);
-  color: var(--t2);
-  font-size: 0.7rem;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 5px;
-  border: 1px solid var(--border);
-}
-
-.qualifications-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
-.qual-items-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.qual-item {
-  font-size: 0.8rem;
-  color: var(--t2);
-  line-height: 1.4;
-  position: relative;
-  padding-left: 0.7rem;
-}
-
-[dir="rtl"] .qual-item {
-  padding-left: 0;
-  padding-right: 0.7rem;
-}
-
-.qual-item::before {
-  content: '•';
-  position: absolute;
-  left: 0;
-  color: var(--teal);
-  font-weight: 700;
-}
-
-[dir="rtl"] .qual-item::before {
-  left: auto;
-  right: 0;
-}
-
-.qual-degree {
-  font-weight: 700;
-  color: var(--gray-900);
-}
-
-.qual-inst {
-  color: var(--t3);
-  margin-left: 0.2rem;
-}
-
-[dir="rtl"] .qual-inst {
-  margin-left: 0;
-  margin-right: 0.2rem;
-}
-
-/* Doctor Card Action */
-.doctor-card-action {
-  border-top: 1px solid var(--border);
-  padding-top: 0.9rem;
-}
-
-.btn-book-now {
-  background: linear-gradient(135deg, var(--teal) 0%, var(--teal-d) 100%);
-  color: #fff;
-  border: none;
-  width: 100%;
-  padding: 0.7rem 1rem;
-  font-size: 0.85rem;
-  font-weight: 700;
-  border-radius: var(--ce-radius-md);
-  cursor: pointer;
-  box-shadow: 0 4px 14px var(--ce-teal-glow);
-  transition: var(--ce-transition);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-}
-
-.btn-book-now:hover {
-  box-shadow: 0 6px 20px var(--ce-teal-glow);
-  transform: translateY(-1px);
-  filter: brightness(1.06);
-}
-
-.book-btn-icon {
-  width: 14px;
-  height: 14px;
-}
-
-/* ── Select Branch Placeholder ──────────────────────────── */
-.select-branch-placeholder-card {
-  background: #fff;
-  border: 1.5px dashed var(--border2);
-  border-radius: var(--ce-radius-lg);
-  padding: 2.75rem 1.5rem;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-}
-
-.placeholder-icon-small-bg {
-  width: 46px;
-  height: 46px;
-  background: var(--teal-l);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--teal-d);
-}
-
-.placeholder-icon-small {
-  width: 20px;
-  height: 20px;
-}
-
-.select-branch-placeholder-card h4 {
-  font-family: 'Outfit', sans-serif;
-  margin: 0;
-  font-size: 1.05rem;
-  font-weight: 750;
-  color: var(--gray-900);
-}
-
-.select-branch-placeholder-card p {
-  margin: 0;
-  font-size: 0.84rem;
-  color: var(--t3);
-  max-width: 300px;
-  line-height: 1.55;
-}
-
-/* ══════════════════════════════════════════════════════════
-   BOOKING MODAL
-   ══════════════════════════════════════════════════════════ */
-.booking-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem;
-  animation: overlayIn 0.2s ease;
-}
-
-@keyframes overlayIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-.booking-modal-card {
-  background: #fff;
-  border-radius: var(--ce-radius-lg);
-  width: 100%;
-  max-width: 620px;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18);
-  animation: modalIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow: hidden;
-}
-
-@keyframes modalIn {
-  from {
-    opacity: 0;
-    transform: translateY(16px) scale(0.97);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* Modal Header */
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.2rem 1.5rem;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-
-.modal-title {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin: 0;
-  color: var(--gray-900);
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-}
-
-.modal-title-icon {
-  width: 18px;
-  height: 18px;
-  color: var(--teal);
-}
-
-.btn-close-modal {
-  width: 30px;
-  height: 30px;
-  border: 1px solid var(--border);
-  border-radius: var(--ce-radius-sm);
-  background: var(--off);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: var(--ce-transition);
-  color: var(--t3);
-}
-
-.btn-close-modal:hover {
-  background: var(--off2);
-  color: var(--gray-900);
-}
-
-.close-icon-svg {
-  width: 13px;
-  height: 13px;
-}
-
-/* Modal Body */
-.modal-body-content {
-  overflow-y: auto;
-  flex: 1;
-  padding: 1.35rem 1.5rem;
+/* ── Clinic Detail Viewport ─────────────────────────────── */
+.clinic-detail-wrapper,
+.branch-doctors-wrapper {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  overflow: visible;
 }
 
-/* Summary card inside modal */
-.selected-details-summary {
-  background: var(--teal-p);
-  border: 1px solid rgba(13, 148, 136, 0.15);
-  border-radius: var(--ce-radius-md);
-  padding: 1rem 1.1rem;
+.clinic-hero-card {
+  border-radius: var(--ce-radius-lg);
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  overflow: visible;
 }
 
-.summary-doctor-profile {
-  display: flex;
-  gap: 0.9rem;
-  align-items: center;
-}
-
-.modal-doctor-avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Outfit', sans-serif;
-  font-weight: 700;
-  font-size: 1rem;
-  flex-shrink: 0;
-  border: 2px solid #fff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.07);
-}
-
-.summary-doctor-text {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  min-width: 0;
-}
-
-.summary-doc-name {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1rem;
-  font-weight: 700;
-  margin: 0;
-  color: var(--gray-900);
-}
-
-.summary-doc-subtitle {
+.contact-pill {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 6px 14px;
   font-size: 0.8rem;
-  color: var(--t2);
-  margin: 0;
+  color: #334155;
+  font-weight: 500;
 }
 
-.summary-fee-line {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin-top: 0.2rem;
-  font-size: 0.82rem;
-}
-
-.fee-label {
-  color: var(--t3);
-  font-weight: 600;
-}
-
-.fee-amount {
-  font-weight: 700;
-  color: var(--teal-d);
-  background: var(--teal-l);
-  padding: 1px 6px;
-  border-radius: 4px;
-  font-size: 0.8rem;
-}
-
-/* Section labels */
-.section-label {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--gray-900);
-  margin: 0 0 0.65rem;
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.label-icon {
-  width: 14px;
-  height: 14px;
-  color: var(--teal);
-}
-
-.section-label-sub {
-  font-size: 0.78rem;
-  color: var(--t3);
-  margin: 0;
-}
-
-/* Date chip scroller */
-.date-chips-scroll-container {
-  display: flex;
-  gap: 0.5rem;
-  overflow-x: auto;
-  padding-bottom: 0.35rem;
-  scrollbar-width: none;
-}
-
-.date-chips-scroll-container::-webkit-scrollbar {
-  display: none;
-}
-
-.date-chip {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.2rem;
-  padding: 0.55rem 0.75rem;
-  min-width: 58px;
-  border-radius: var(--ce-radius-md);
-  background: var(--off);
-  border: 1.5px solid var(--border);
-  cursor: pointer;
-  transition: var(--ce-transition);
-  flex-shrink: 0;
-  position: relative;
-}
-
-.date-chip:hover {
-  border-color: var(--teal);
-  background: var(--teal-p);
-}
-
-.date-chip.selected {
-  border-color: var(--teal);
-  background: var(--teal-p);
-  box-shadow: 0 0 0 3px var(--ce-teal-glow);
-}
-
-.date-chip.no-slots {
-  opacity: 0.5;
-  cursor: default;
-}
-
-.chip-day-name {
-  font-size: 0.67rem;
-  font-weight: 700;
-  color: var(--t3);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.chip-date-label {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--gray-900);
-}
-
-.slots-badge {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--border2);
-  position: absolute;
-  bottom: 5px;
-}
-
-.slots-badge.badge-active {
-  background: var(--teal);
-}
-
-/* Custom date picker row */
-.custom-date-picker-row {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  background: var(--off);
-  padding: 0.6rem 0.85rem;
-  border-radius: var(--ce-radius-sm);
-  border: 1px solid var(--border);
-}
-
-.date-input-wrapper {
-  flex: 1;
-}
-
-.modal-date-picker-input {
+/* ── Reviews & Ratings Section ──────────────────────────── */
+.reviews-section-wrapper {
   width: 100%;
-  padding: 0.5rem 0.75rem;
-  border: 1.5px solid var(--border2);
-  border-radius: var(--ce-radius-sm);
-  font-size: 0.86rem;
-  font-family: inherit;
-  color: var(--text);
-  background: #fff;
-  outline: none;
-  transition: var(--ce-transition);
+  overflow: visible;
 }
 
-.modal-date-picker-input:focus {
-  border-color: var(--teal);
-  box-shadow: 0 0 0 3px var(--ce-teal-glow);
+.reviews-header {
+  transition: all 0.2s ease;
+  background: #f8fafc !important;
 }
 
-/* Slots grid */
-.available-slots-container {
+.reviews-header:hover {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+}
+
+.reviews-list-container {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 12px;
+  overflow: visible;
 }
 
-.no-slots-warning-card {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  background: var(--off);
-  border: 1px solid var(--border);
-  padding: 0.85rem 1rem;
-  border-radius: var(--ce-radius-sm);
-  font-size: 0.86rem;
-  color: var(--t2);
+.review-item {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
 }
 
-.warning-icon {
-  width: 16px;
-  height: 16px;
-  color: var(--t4);
-  flex-shrink: 0;
-}
-
-.slots-grid-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-}
-
-.slot-time-btn {
-  background: var(--off);
-  border: 1.5px solid var(--border);
-  border-radius: var(--ce-radius-sm);
-  padding: 0.45rem 0.75rem;
-  font-size: 0.82rem;
+.reviewer-avatar-circle {
   font-weight: 700;
-  font-family: 'Outfit', sans-serif;
-  color: var(--gray-900);
-  cursor: pointer;
-  transition: var(--ce-transition);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
+  color: #0f766e;
 }
 
-.slot-time-btn:hover:not(:disabled) {
-  border-color: var(--teal);
-  background: var(--teal-p);
-}
-
-.slot-time-btn.selected {
-  border-color: var(--teal);
-  background: var(--teal);
-  color: #fff;
-}
-
-.slot-time-btn.booked,
-.slot-time-btn.blocked {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.slot-time {
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-
-.slot-status-label {
-  font-size: 0.62rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-/* Booking form */
-.booking-wizard-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.9rem;
-}
-
-.form-row-grid {
+/* ── Executive Branch Cards Grid ─────────────────────────── */
+.branches-cards-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.85rem;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 18px;
 }
 
-.form-control-wrapper {
+.executive-branch-card {
+  border-radius: var(--ce-radius-md);
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  transition: all 0.22s ease;
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
-  position: relative;
 }
 
-.modal-select-input {
-  width: 100%;
-  padding: 0.6rem 2rem 0.6rem 0.85rem;
-  border: 1.5px solid var(--border2);
+.executive-branch-card:hover {
+  transform: translateY(-3px);
+  border-color: #0d9488;
+  box-shadow: 0 10px 24px -4px rgba(15, 23, 42, 0.08);
+}
+
+/* ── Executive Doctor Cards Grid ─────────────────────────── */
+.branch-doctors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 20px;
+}
+
+.doctor-card-executive {
   border-radius: var(--ce-radius-md);
-  font-size: 0.86rem;
-  font-family: inherit;
-  color: var(--text);
-  background: #fff;
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2364748b%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.75rem center;
-  background-size: 0.85rem;
-  outline: none;
-  transition: var(--ce-transition);
-}
-
-.modal-select-input:focus {
-  border-color: var(--teal);
-  box-shadow: 0 0 0 3px var(--ce-teal-glow);
-}
-
-.modal-textarea-input {
-  width: 100%;
-  height: 80px;
-  padding: 0.65rem 0.85rem;
-  border: 1.5px solid var(--border2);
-  border-radius: var(--ce-radius-md);
-  font-size: 0.86rem;
-  font-family: inherit;
-  color: var(--text);
-  resize: none;
-  outline: none;
-  transition: var(--ce-transition);
-}
-
-.modal-textarea-input:focus {
-  border-color: var(--teal);
-  box-shadow: 0 0 0 3px var(--ce-teal-glow);
-}
-
-.char-counter {
-  position: absolute;
-  bottom: -1rem;
-  right: 0.25rem;
-  font-size: 0.62rem;
-  color: var(--t4);
-}
-
-/* Modal Footer */
-.modal-footer {
-  padding: 1rem 1.5rem;
-  border-top: 1px solid var(--border);
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.65rem;
-  background: var(--off);
-  flex-shrink: 0;
-}
-
-.btn-modal-action {
-  padding: 0.6rem 1.25rem;
-  font-size: 0.86rem;
-  font-weight: 700;
-  border-radius: var(--ce-radius-md);
-  cursor: pointer;
-  transition: var(--ce-transition);
-  border: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-  font-family: inherit;
-}
-
-.btn-cancel-booking {
-  background: var(--border);
-  color: var(--t2);
-}
-
-.btn-cancel-booking:hover {
-  background: var(--border2);
-  color: var(--gray-900);
-}
-
-.btn-confirm-booking {
-  background: linear-gradient(135deg, var(--teal) 0%, var(--teal-d) 100%);
-  color: #fff;
-  box-shadow: 0 4px 14px var(--ce-teal-glow);
-}
-
-.btn-confirm-booking:hover:not(:disabled) {
-  filter: brightness(1.06);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px var(--ce-teal-glow);
-}
-
-.btn-confirm-booking:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-.submitting-state,
-.normal-state {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.spinner-icon {
-  width: 14px;
-  height: 14px;
-  animation: spinCE 0.85s linear infinite;
-}
-
-@keyframes spinCE {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.send-icon {
-  width: 13px;
-  height: 13px;
-}
-
-/* modal_form_section spacing helper */
-.modal-form-section {
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  transition: all 0.22s ease;
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
 }
 
-/* ══════════════════════════════════════════════════════════
-   RESPONSIVE BREAKPOINTS
-   ══════════════════════════════════════════════════════════ */
-
-/* Tablet / Nest Hub landscape (≤ 1200px) */
-@media (max-width: 1200px) {
-  .logo-title-row {
-    flex-wrap: wrap;
-  }
-
-  .detail-contact-strip {
-    grid-template-columns: 1fr;
-  }
-
-  .hours-days-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  .doctors-roster-list {
-    grid-template-columns: 1fr;
-  }
+.doctor-card-executive:hover {
+  transform: translateY(-3px);
+  border-color: #0d9488;
+  box-shadow: 0 12px 28px -6px rgba(15, 23, 42, 0.08);
 }
 
-/* Mobile / Tablet portrait (≤ 1024px) */
-@media (max-width: 1024px) {
-  .explorer-container {
-    height: auto;
-    min-height: calc(100vh - var(--header-height, 70px));
-    padding: 0.85rem;
-  }
-
-  .explorer-grid {
-    grid-template-columns: 1fr;
-    height: auto;
-  }
-
-  .grid-column.clinic-column {
-    display: block;
-  }
-
-  .grid-column.detail-viewport-column {
-    display: none;
-  }
-
-  .explorer-container.mobile-show-detail .grid-column.clinic-column {
-    display: none;
-  }
-
-  .explorer-container.mobile-show-detail .grid-column.detail-viewport-column {
-    display: flex;
-  }
-
-  .mobile-back-bar {
-    display: flex;
-  }
-
-  .explorer-header-section {
-    padding: 1.35rem 1.25rem;
-  }
-
-  .page-title {
-    font-size: 1.7rem;
-  }
-
-  .hours-days-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  .form-row-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .branches-selector-grid {
-    grid-template-columns: 1fr;
-  }
+.cursor-pointer {
+  cursor: pointer !important;
 }
 
-/* Small mobile (≤ 640px) */
 @media (max-width: 640px) {
   .explorer-container {
-    padding: 0.65rem;
-  }
-
-  .detail-clinic-name {
-    font-size: 1.2rem;
-  }
-
-  .hours-days-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .booking-modal-card {
-    border-radius: var(--ce-radius-md);
+    padding: 0.75rem;
   }
 }

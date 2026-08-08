@@ -11,6 +11,7 @@ import {
 import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
 import { LanguageService } from '../../../core/services/language.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { of, catchError } from 'rxjs';
 
 @Component({
   selector: 'app-health-profile',
@@ -139,17 +140,18 @@ export class HealthProfileComponent implements OnInit {
 
   loadAllHealthData(): void {
     this.uiService.showLoading();
-    this.patientService.getMyProfile().subscribe({
+    this.patientService.getMyProfile().pipe(
+      catchError(() => of(null))
+    ).subscribe({
       next: (patient) => {
-        this.patientId = patient.patientId;
-        this.needProfileInit = false;
-        this.loadHealthProfile();
-        this.loadAllergies();
-        this.loadChronicConditions();
-      },
-      error: (err) => {
-        this.uiService.hideLoading();
-        if (err.status === 404) {
+        if (patient && patient.patientId) {
+          this.patientId = patient.patientId;
+          this.needProfileInit = false;
+          this.loadHealthProfile();
+          this.loadAllergies();
+          this.loadChronicConditions();
+        } else {
+          this.uiService.hideLoading();
           this.needProfileInit = true;
         }
       }
@@ -158,17 +160,17 @@ export class HealthProfileComponent implements OnInit {
 
   // ── Health Profile ─────────────────────────────────────────────────
   loadHealthProfile(): void {
-    this.patientService.getMyHealthProfile().subscribe({
+    this.patientService.getMyHealthProfile().pipe(
+      catchError(() => of(null))
+    ).subscribe({
       next: (profile) => {
-        this.healthProfile = profile;
-        this.profileExists = true;
-        this.healthForm.patchValue(profile);
-        this.healthForm.disable();
         this.uiService.hideLoading();
-      },
-      error: (err) => {
-        this.uiService.hideLoading();
-        if (err.status === 404) {
+        if (profile) {
+          this.healthProfile = profile;
+          this.profileExists = true;
+          this.healthForm.patchValue(profile);
+          this.healthForm.disable();
+        } else {
           this.profileExists = false;
           this.isProfileEdit = true; // Automatically edit for creation
           this.healthForm.enable();

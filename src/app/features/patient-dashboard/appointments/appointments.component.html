@@ -1,4 +1,21 @@
-<div class="appointments-container">
+<div *ngIf="needProfileInit" class="registration-warning-card text-center p-5 mb-5 border-none shadow-sm" style="background: linear-gradient(135deg, #ffffff 0%, #fffbf0 100%); border-radius: 16px; border: 1.5px dashed #fcd34d;">
+  <div class="alert-icon-wrap mb-3" style="width: 56px; height: 56px; background: #fef3c7; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: #d97706;">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+      <line x1="12" y1="9" x2="12" y2="13"></line>
+      <line x1="12" y1="17" x2="12.01" y2="17"></line>
+    </svg>
+  </div>
+  <h3 class="mb-2 text-warning fw-bold" style="color: #b45309;">{{ 'Patient Profile Registration Required' | translate }}</h3>
+  <p class="mb-4 text-muted fs-sm mx-auto" style="max-width: 520px; line-height: 1.6;">
+    {{ 'Welcome! Please complete your Patient Details registration to unlock booking appointments, viewing appointment history, and managing scheduled visits.' | translate }}
+  </p>
+  <a [routerLink]="['/patient/profile']" [queryParams]="{ scrollTo: 'medical' }" class="btn btn-primary px-4 py-2 mx-auto" style="border-radius: 8px; font-weight: 600;">
+    <span>{{ 'Complete Patient Details Now' | translate }}</span>
+  </a>
+</div>
+
+<div *ngIf="!needProfileInit" class="appointments-container">
   <!-- Header Banner -->
   <div class="page-header-banner d-flex justify-between align-center flex-wrap gap-3">
     <div>
