@@ -165,19 +165,28 @@
 }
 
 .executive-clinic-card {
-  border-radius: var(--ce-radius-md);
+  border-radius: var(--ce-radius-md, 12px);
   padding: 20px;
   border: 1px solid #e2e8f0;
   background: #ffffff;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .executive-clinic-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 28px -6px rgba(15, 23, 42, 0.08);
   border-color: #0d9488;
+}
+
+.clinic-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
 }
 
 .clinic-logo-avatar {
@@ -192,12 +201,13 @@
   font-weight: 700;
   color: #0d9488;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .clinic-logo-avatar .logo-img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
 }
 
 .badge-verified {
@@ -208,6 +218,7 @@
   padding: 3px 10px;
   font-size: 0.72rem;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .rating-badge {
@@ -217,15 +228,36 @@
   border-radius: 20px;
   padding: 3px 10px;
   font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.clinic-title {
+  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 6px;
+  line-height: 1.35;
+}
+
+.clinic-desc {
+  color: #64748b;
+  font-size: 0.825rem;
+  line-height: 1.5;
+  margin-bottom: 12px;
 }
 
 .info-pill {
   background: #f1f5f9;
   color: #475569;
   border-radius: 6px;
-  padding: 3px 8px;
+  padding: 4px 9px;
   font-size: 0.75rem;
   font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .info-pill.branch-pill {
@@ -238,6 +270,59 @@
   background: #f8fafc;
   color: #334155;
   border: 1px solid #e2e8f0;
+}
+
+.clinic-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 1px solid #f1f5f9;
+  margin-top: auto;
+  flex-wrap: wrap;
+}
+
+.contact-phone {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.contact-phone .phone-text {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.explore-btn {
+  margin-left: auto;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.explore-btn:hover {
+  background-color: #0d9488;
+  border-color: #0d9488;
+  color: #ffffff;
+}
+
+.rtl-mode .explore-btn {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.rtl-mode .explore-btn .arrow-icon {
+  transform: rotate(180deg);
+  display: inline-block;
 }
 
 /* ── Clinic Detail Viewport ─────────────────────────────── */

@@ -720,6 +720,26 @@ export class ClinicExplorerComponent implements OnInit {
     }, 100);
   }
 
+  private createCustomMarkerIcon(isDraggable = false): L.DivIcon {
+    return L.divIcon({
+      className: 'custom-leaflet-marker-wrapper',
+      html: `
+        <div class="custom-leaflet-pin ${isDraggable ? 'is-draggable' : ''}">
+          <div class="pin-ring-pulse"></div>
+          <div class="pin-badge">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+            </svg>
+          </div>
+          <div class="pin-shadow"></div>
+        </div>
+      `,
+      iconSize: [36, 46],
+      iconAnchor: [18, 46],
+      popupAnchor: [0, -42]
+    });
+  }
+
   private initBranchLocationMap(branch: ClinicBranchResponseDto): void {
     this.cleanupBranchLocationMap();
 
@@ -730,22 +750,19 @@ export class ClinicExplorerComponent implements OnInit {
     const lng = Number(branch.longitude);
 
     try {
-      this.branchLocationMap = L.map(container).setView([lat, lng], 15);
+      this.branchLocationMap = L.map(container, {
+        zoomControl: true,
+        fadeAnimation: true,
+        zoomAnimation: true
+      }).setView([lat, lng], 15);
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
         maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'
+        subdomains: 'abcd',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank">CARTO</a>'
       }).addTo(this.branchLocationMap);
 
-      const customIcon = L.icon({
-        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-        iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41]
-      });
+      const customIcon = this.createCustomMarkerIcon(false);
 
       this.branchLocationMarker = L.marker([lat, lng], {
         draggable: false, // Read-only marker

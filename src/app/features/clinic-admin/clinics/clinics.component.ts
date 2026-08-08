@@ -383,6 +383,26 @@ export class ClinicsComponent implements OnInit {
     }
   }
 
+  private createCustomMarkerIcon(isDraggable = true): L.DivIcon {
+    return L.divIcon({
+      className: 'custom-leaflet-marker-wrapper',
+      html: `
+        <div class="custom-leaflet-pin ${isDraggable ? 'is-draggable' : ''}">
+          <div class="pin-ring-pulse"></div>
+          <div class="pin-badge">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+            </svg>
+          </div>
+          <div class="pin-shadow"></div>
+        </div>
+      `,
+      iconSize: [36, 46],
+      iconAnchor: [18, 46],
+      popupAnchor: [0, -42]
+    });
+  }
+
   private initLeafletMap(): void {
     this.destroyLeafletMap();
 
@@ -399,23 +419,20 @@ export class ClinicsComponent implements OnInit {
     const initialLat = (currentLat !== null && currentLat !== undefined) ? currentLat : defaultLat;
     const initialLng = (currentLng !== null && currentLng !== undefined) ? currentLng : defaultLng;
 
-    this.map = L.map(mapContainer).setView([initialLat, initialLng], 12);
+    this.map = L.map(mapContainer, {
+      zoomControl: true,
+      fadeAnimation: true,
+      zoomAnimation: true
+    }).setView([initialLat, initialLng], 13);
 
-    // Requirement 13: OpenStreetMap tile attribution
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // High-definition CartoDB Voyager tiles for executive modern UI
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'
+      subdomains: 'abcd',
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank">CARTO</a>'
     }).addTo(this.map);
 
-    const customIcon = L.icon({
-      iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-      iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-      shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41]
-    });
+    const customIcon = this.createCustomMarkerIcon(true);
 
     if (currentLat !== null && currentLng !== null && currentLat !== undefined && currentLng !== undefined) {
       this.marker = L.marker([currentLat, currentLng], {
@@ -435,7 +452,6 @@ export class ClinicsComponent implements OnInit {
       this.updateMarkerPosition(e.latlng.lat, e.latlng.lng);
     });
 
-    // Requirement 9: Invalidate size after modal renders
     setTimeout(() => {
       if (this.map) {
         this.map.invalidateSize();
@@ -455,19 +471,10 @@ export class ClinicsComponent implements OnInit {
     this.branchForm.markAsTouched();
 
     if (this.map) {
+      const customIcon = this.createCustomMarkerIcon(true);
       if (this.marker) {
         this.marker.setLatLng([roundedLat, roundedLng]);
       } else {
-        const customIcon = L.icon({
-          iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-          iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-          shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-          iconSize: [25, 41],
-          iconAnchor: [12, 41],
-          popupAnchor: [1, -34],
-          shadowSize: [41, 41]
-        });
-
         this.marker = L.marker([roundedLat, roundedLng], {
           draggable: true,
           icon: customIcon
@@ -549,15 +556,19 @@ export class ClinicsComponent implements OnInit {
       },
       (error) => {
         this.uiService.hideLoading();
-        let msg = 'Failed to get current location.';
+        let msgEn = 'Failed to get current location.';
+        let msgAr = 'فشل في الحصول على الموقع الحالي.';
         if (error.code === error.PERMISSION_DENIED) {
-          msg = 'Location permission denied by user.';
+          msgEn = 'Location permission denied by user.';
+          msgAr = 'تم رفض إذن الوصول إلى الموقع من قبل المستخدم.';
         } else if (error.code === error.POSITION_UNAVAILABLE) {
-          msg = 'Location information is unavailable.';
+          msgEn = 'Location information is unavailable.';
+          msgAr = 'معلومات الموقع غير متوفرة.';
         } else if (error.code === error.TIMEOUT) {
-          msg = 'Location request timed out.';
+          msgEn = 'Location request timed out.';
+          msgAr = 'انتهت مهلة طلب تحديد الموقع.';
         }
-        this.uiService.showError(this.languageService.translate(msg, msg));
+        this.uiService.showError(this.languageService.translate(msgEn, msgAr));
       },
       {
         enableHighAccuracy: true,
@@ -590,13 +601,13 @@ export class ClinicsComponent implements OnInit {
         if (this.selectedClinic) {
           this.selectedClinic.vatNumber = payload.vatNumber;
         }
-        this.uiService.showSuccess('Clinic profile updated successfully.');
+        this.uiService.showSuccess(this.languageService.translate('Clinic profile updated successfully.', 'تم تحديث الملف الشخصي للعيادة بنجاح.'));
         this.closeModal();
         this.loadClinics();
       },
       error: () => {
         this.uiService.hideLoading();
-        this.uiService.showError('already exists.');
+        this.uiService.showError(this.languageService.translate('Failed to update clinic profile.', 'فشل تحديث ملف العيادة.'));
       }
     });
   }
@@ -608,13 +619,13 @@ export class ClinicsComponent implements OnInit {
     this.clinicService.createClinic(this.clinicForm.value, this.selectedLogoFile || undefined).subscribe({
       next: () => {
         this.uiService.hideLoading();
-        this.uiService.showSuccess('Clinic created successfully.');
+        this.uiService.showSuccess(this.languageService.translate('Clinic created successfully.', 'تم إنشاء العيادة بنجاح.'));
         this.closeModal();
         this.loadClinics();
       },
       error: () => {
         this.uiService.hideLoading();
-        this.uiService.showError('Failed to create clinic.');
+        this.uiService.showError(this.languageService.translate('Failed to create clinic.', 'فشل إنشاء العيادة.'));
       }
     });
   }
@@ -627,26 +638,26 @@ export class ClinicsComponent implements OnInit {
       this.clinicService.updateClinicBranch(this.selectedBranchToEdit.branchId, this.branchForm.value).subscribe({
         next: () => {
           this.uiService.hideLoading();
-          this.uiService.showSuccess('Branch updated successfully.');
+          this.uiService.showSuccess(this.languageService.translate('Branch updated successfully.', 'تم تحديث الفرع بنجاح.'));
           this.closeModal();
           this.loadClinicDetails();
         },
         error: () => {
           this.uiService.hideLoading();
-          this.uiService.showError('Failed to update branch.');
+          this.uiService.showError(this.languageService.translate('Failed to update branch.', 'فشل تحديث الفرع.'));
         }
       });
     } else {
       this.clinicService.createClinicBranch(this.selectedClinic.clinicId, this.branchForm.value).subscribe({
         next: () => {
           this.uiService.hideLoading();
-          this.uiService.showSuccess('Branch created successfully.');
+          this.uiService.showSuccess(this.languageService.translate('Branch created successfully.', 'تم إنشاء الفرع بنجاح.'));
           this.closeModal();
           this.loadClinicDetails();
         },
         error: () => {
           this.uiService.hideLoading();
-          this.uiService.showError('Failed to create branch.');
+          this.uiService.showError(this.languageService.translate('Failed to create branch.', 'فشل إنشاء الفرع.'));
         }
       });
     }
