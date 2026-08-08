@@ -1,15 +1,19 @@
 /* =============================================================
-   Clinics & Branches Explorer — Clean Executive Design System
+   Clinics & Branches Explorer — Ultra-Premium Executive UI/UX
    ============================================================= */
 
 :host {
-  --ce-transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-  --ce-radius-sm: 8px;
-  --ce-radius-md: 12px;
-  --ce-radius-lg: 16px;
-  --ce-shadow-card: 0 1px 4px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.03);
-  --ce-shadow-hover: 0 6px 24px rgba(0, 0, 0, 0.06);
-  --ce-teal-glow: rgba(13, 148, 136, 0.12);
+  --ce-transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  --ce-radius-sm: 10px;
+  --ce-radius-md: 14px;
+  --ce-radius-lg: 18px;
+  --ce-shadow-subtle: 0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.03);
+  --ce-shadow-hover: 0 14px 32px -6px rgba(15, 23, 42, 0.1), 0 4px 12px rgba(13, 148, 136, 0.06);
+  --ce-teal-primary: #0d9488;
+  --ce-teal-dark: #0f766e;
+  --ce-teal-light: #f0fdfa;
+  --ce-teal-border: #ccfbf1;
+  --ce-slate-dark: #0f172a;
 }
 
 /* ── Outer Main Container ───────────────────────────────── */
@@ -17,77 +21,82 @@
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  padding: 1.5rem;
+  padding: 1.75rem;
   box-sizing: border-box;
-  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-  color: var(--text, #1e293b);
-  background-color: var(--off, #f8fafc);
-  gap: 1.25rem;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #1e293b;
+  background-color: #f8fafc;
+  gap: 1.5rem;
   overflow-y: visible;
 }
 
 /* ── Page Header Banner ─────────────────────────────────── */
 .explorer-header-section {
-  background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
-  padding: 1.75rem 2rem;
+  background: linear-gradient(135deg, #0f766e 0%, #0d9488 60%, #0f766e 100%);
+  padding: 2rem 2.25rem;
   border-radius: var(--ce-radius-lg);
   color: #fff;
-  box-shadow: 0 8px 32px var(--ce-teal-glow);
+  box-shadow: 0 10px 30px -5px rgba(13, 148, 136, 0.25);
   position: relative;
   overflow: hidden;
   flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .explorer-header-section::after {
   content: '';
   position: absolute;
   top: -50%;
-  right: -15%;
-  width: 320px;
-  height: 320px;
+  right: -10%;
+  width: 380px;
+  height: 380px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.07) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, transparent 70%);
   pointer-events: none;
 }
 
 .eyebrow-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-  background: rgba(255, 255, 255, 0.13);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  padding: 0.4rem 0.9rem;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 0.45rem 0.95rem;
   border-radius: 9999px;
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
-  margin-bottom: 0.75rem;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.85rem;
   color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .eyebrow-badge-icon {
-  width: 12px;
-  height: 12px;
+  width: 13px;
+  height: 13px;
   stroke: #fff;
 }
 
 .page-title {
-  font-family: 'Outfit', sans-serif;
-  font-size: 2rem;
+  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  font-size: 2.15rem;
   font-weight: 800;
-  margin: 0 0 0.4rem;
-  letter-spacing: -0.025em;
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.02em;
   line-height: 1.15;
   color: #ffffff;
 }
 
 .page-subtitle {
-  font-size: 0.92rem;
+  font-size: 0.94rem;
   margin: 0;
-  color: rgba(255, 255, 255, 0.88);
-  max-width: 750px;
+  color: rgba(255, 255, 255, 0.92);
+  max-width: 780px;
   line-height: 1.65;
+  font-weight: 400;
 }
 
 /* ── Executive Filters Control Panel ─────────────────────── */
@@ -95,6 +104,9 @@
   border-radius: var(--ce-radius-lg);
   border: 1px solid #e2e8f0;
   background: #ffffff;
+  box-shadow: var(--ce-shadow-subtle);
+  padding: 1.5rem;
+  transition: var(--ce-transition);
 }
 
 .filters-grid {
@@ -117,11 +129,13 @@
 }
 
 .filter-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #475569;
-  margin-bottom: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #334155;
+  margin-bottom: 7px;
   display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .search-input-wrapper {
@@ -132,7 +146,7 @@
 
 .search-icon-svg {
   position: absolute;
-  left: 12px;
+  left: 14px;
   width: 18px;
   height: 18px;
   color: #64748b;
@@ -141,67 +155,83 @@
 
 .rtl-mode .search-icon-svg {
   left: auto;
-  right: 12px;
+  right: 14px;
 }
 
 .search-input {
-  padding-left: 38px !important;
+  padding-left: 42px !important;
   border-radius: var(--ce-radius-sm);
   border: 1px solid #cbd5e1;
-  height: 42px;
+  height: 44px;
   font-size: 0.9rem;
+  transition: var(--ce-transition);
+  background-color: #f8fafc;
+}
+
+.search-input:focus {
+  background-color: #ffffff;
+  border-color: var(--ce-teal-primary);
+  box-shadow: 0 0 0 3.5px rgba(13, 148, 136, 0.15);
 }
 
 .rtl-mode .search-input {
-  padding-left: 12px !important;
-  padding-right: 38px !important;
+  padding-left: 14px !important;
+  padding-right: 42px !important;
+}
+
+.filter-actions-row {
+  border-top-color: #f1f5f9 !important;
 }
 
 /* ── Executive Clinics Cards Grid ────────────────────────── */
 .clinics-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 22px;
 }
 
 .executive-clinic-card {
-  border-radius: var(--ce-radius-md, 12px);
-  padding: 20px;
+  border-radius: var(--ce-radius-md);
+  padding: 22px;
   border: 1px solid #e2e8f0;
   background: #ffffff;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: var(--ce-transition);
   display: flex;
   flex-direction: column;
   height: 100%;
+  box-shadow: var(--ce-shadow-subtle);
+  position: relative;
 }
 
 .executive-clinic-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 28px -6px rgba(15, 23, 42, 0.08);
-  border-color: #0d9488;
+  transform: translateY(-5px);
+  box-shadow: var(--ce-shadow-hover);
+  border-color: rgba(13, 148, 136, 0.5);
 }
 
 .clinic-card-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
+  gap: 14px;
   margin-bottom: 14px;
 }
 
 .clinic-logo-avatar {
-  width: 52px;
-  height: 52px;
-  border-radius: 12px;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  color: #0d9488;
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--ce-teal-primary);
   overflow: hidden;
   flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .clinic-logo-avatar .logo-img {
@@ -211,59 +241,61 @@
 }
 
 .badge-verified {
-  background: #f0fdf4;
-  color: #166534;
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  color: #15803d;
   border: 1px solid #bbf7d0;
   border-radius: 20px;
-  padding: 3px 10px;
+  padding: 4px 11px;
   font-size: 0.72rem;
-  font-weight: 600;
+  font-weight: 700;
   white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(22, 163, 74, 0.08);
 }
 
 .rating-badge {
-  background: #fffbeb;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
   color: #b45309;
-  border: 1px solid #fef3c7;
+  border: 1px solid #fde68a;
   border-radius: 20px;
-  padding: 3px 10px;
+  padding: 4px 11px;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(180, 83, 9, 0.08);
 }
 
 .clinic-title {
   font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: #0f172a;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--ce-slate-dark);
   margin-bottom: 6px;
   line-height: 1.35;
+  letter-spacing: -0.015em;
 }
 
 .clinic-desc {
   color: #64748b;
-  font-size: 0.825rem;
-  line-height: 1.5;
-  margin-bottom: 12px;
+  font-size: 0.835rem;
+  line-height: 1.55;
+  margin-bottom: 14px;
 }
 
 .info-pill {
-  background: #f1f5f9;
-  color: #475569;
-  border-radius: 6px;
-  padding: 4px 9px;
+  border-radius: 8px;
+  padding: 4px 10px;
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: 600;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
+  transition: var(--ce-transition);
 }
 
 .info-pill.branch-pill {
-  background: #f0fdfa;
-  color: #0f766e;
-  border: 1px solid #ccfbf1;
+  background: var(--ce-teal-light);
+  color: var(--ce-teal-dark);
+  border: 1px solid var(--ce-teal-border);
 }
 
 .info-pill.spec-pill {
@@ -276,7 +308,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 10px;
   padding-top: 14px;
   border-top: 1px solid #f1f5f9;
   margin-top: auto;
@@ -301,18 +333,29 @@
 
 .explore-btn {
   margin-left: auto;
-  padding: 6px 14px;
-  border-radius: 8px;
+  padding: 7px 16px;
+  border-radius: 10px;
   font-size: 0.8rem;
-  transition: all 0.2s ease;
+  font-weight: 700;
+  transition: var(--ce-transition);
   white-space: nowrap;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 3px rgba(13, 148, 136, 0.1);
+  border-color: #cbd5e1;
 }
 
-.explore-btn:hover {
-  background-color: #0d9488;
-  border-color: #0d9488;
+.executive-clinic-card:hover .explore-btn {
+  background-color: var(--ce-teal-primary);
+  border-color: var(--ce-teal-primary);
   color: #ffffff;
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25);
+}
+
+.executive-clinic-card:hover .explore-btn .arrow-icon {
+  transform: translateX(4px);
+}
+
+.rtl-mode .executive-clinic-card:hover .explore-btn .arrow-icon {
+  transform: translateX(-4px) rotate(180deg);
 }
 
 .rtl-mode .explore-btn {
@@ -330,8 +373,15 @@
 .branch-doctors-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.5rem;
   overflow: visible;
+}
+
+.step-nav-bar {
+  border-radius: var(--ce-radius-md);
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  box-shadow: var(--ce-shadow-subtle);
 }
 
 .clinic-hero-card {
@@ -339,6 +389,11 @@
   border: 1px solid #e2e8f0;
   background: #ffffff;
   overflow: visible;
+  box-shadow: var(--ce-shadow-subtle);
+}
+
+.detail-logo-avatar {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
 }
 
 .contact-pill {
@@ -348,7 +403,14 @@
   padding: 6px 14px;
   font-size: 0.8rem;
   color: #334155;
-  font-weight: 500;
+  font-weight: 600;
+  transition: var(--ce-transition);
+}
+
+.contact-pill:hover {
+  background: var(--ce-teal-light);
+  border-color: var(--ce-teal-border);
+  color: var(--ce-teal-dark);
 }
 
 /* ── Reviews & Ratings Section ──────────────────────────── */
@@ -358,75 +420,89 @@
 }
 
 .reviews-header {
-  transition: all 0.2s ease;
+  transition: var(--ce-transition);
   background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
 }
 
 .reviews-header:hover {
-  background: #f1f5f9 !important;
-  border-color: #cbd5e1 !important;
+  background: var(--ce-teal-light) !important;
+  border-color: var(--ce-teal-border) !important;
 }
 
 .reviews-list-container {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   overflow: visible;
 }
 
 .review-item {
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: var(--ce-radius-md);
   background: #ffffff;
+  transition: var(--ce-transition);
+}
+
+.review-item:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
 }
 
 .reviewer-avatar-circle {
-  font-weight: 700;
-  color: #0f766e;
+  font-weight: 800;
+  color: var(--ce-teal-dark);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 /* ── Executive Branch Cards Grid ─────────────────────────── */
 .branches-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 20px;
 }
 
 .executive-branch-card {
   border-radius: var(--ce-radius-md);
   border: 1px solid #e2e8f0;
   background: #ffffff;
-  transition: all 0.22s ease;
+  transition: var(--ce-transition);
   display: flex;
   flex-direction: column;
+  box-shadow: var(--ce-shadow-subtle);
 }
 
 .executive-branch-card:hover {
-  transform: translateY(-3px);
-  border-color: #0d9488;
-  box-shadow: 0 10px 24px -4px rgba(15, 23, 42, 0.08);
+  transform: translateY(-4px);
+  border-color: var(--ce-teal-primary);
+  box-shadow: var(--ce-shadow-hover);
 }
 
 /* ── Executive Doctor Cards Grid ─────────────────────────── */
 .branch-doctors-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-  gap: 20px;
+  gap: 22px;
 }
 
 .doctor-card-executive {
   border-radius: var(--ce-radius-md);
   border: 1px solid #e2e8f0;
   background: #ffffff;
-  transition: all 0.22s ease;
+  transition: var(--ce-transition);
   display: flex;
   flex-direction: column;
+  box-shadow: var(--ce-shadow-subtle);
 }
 
 .doctor-card-executive:hover {
-  transform: translateY(-3px);
-  border-color: #0d9488;
-  box-shadow: 0 12px 28px -6px rgba(15, 23, 42, 0.08);
+  transform: translateY(-4px);
+  border-color: var(--ce-teal-primary);
+  box-shadow: var(--ce-shadow-hover);
+}
+
+.doctor-avatar-circle {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 .cursor-pointer {
@@ -435,7 +511,7 @@
 
 @media (max-width: 640px) {
   .explorer-container {
-    padding: 0.75rem;
+    padding: 0.85rem;
   }
 }
 
@@ -443,7 +519,8 @@
 .branch-location-map {
   width: 100%;
   height: 380px;
-  border-radius: var(--ce-radius-md, 12px);
+  border-radius: var(--ce-radius-md, 14px);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.06);
 }
 
 @media (max-width: 640px) {
