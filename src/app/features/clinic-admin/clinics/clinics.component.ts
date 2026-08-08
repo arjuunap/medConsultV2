@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
+import * as L from 'leaflet';
 import { ClinicService } from '../../../core/services/clinic.service';
 import { ReferenceService } from '../../../core/services/reference.service';
 import { UiService } from '../../../core/services/ui.service';
@@ -24,6 +25,14 @@ export class ClinicsComponent implements OnInit {
   private uiService = inject(UiService);
   private fb = inject(FormBuilder);
   public languageService = inject(LanguageService);
+
+  // Leaflet Map state for Branch Location Picker
+  private map: L.Map | null = null;
+  private marker: L.Marker | null = null;
+  public mapSearchQuery: string = '';
+  public isSearchingLocation: boolean = false;
+  public searchResults: any[] = [];
+  public searchError: string | null = null;
 
   public apiUrl = environment.apiUrl;
   public clinics: ClinicResponseDto[] = [];
@@ -89,7 +98,8 @@ export class ClinicsComponent implements OnInit {
 
   // Editing states / Modals
   public activeSubTab: 'branches' | 'specialties' | 'insurances' | 'languages' = 'branches';
-  public activeModal: 'addClinic' | 'editClinic' | 'addBranch' | 'addSpecialty' | 'addInsurance' | 'addLanguage' | 'editBranchHours' | null = null;
+  public activeModal: 'addClinic' | 'editClinic' | 'addBranch' | 'editBranch' | 'addSpecialty' | 'addInsurance' | 'addLanguage' | 'editBranchHours' | null = null;
+  public selectedBranchToEdit: ClinicBranchResponseDto | null = null;
 
   // Forms
   public clinicForm: FormGroup = this.fb.group({
@@ -112,10 +122,10 @@ export class ClinicsComponent implements OnInit {
     localityId: ['', [Validators.required]],
     addressLine1: ['', [Validators.required]],
     addressLine2: [''],
-    latitude: [0],
-    longitude: [0],
+    latitude: [null as number | null, [Validators.required, Validators.min(-90), Validators.max(90)]],
+    longitude: [null as number | null, [Validators.required, Validators.min(-180), Validators.max(180)]],
     phone: [''],
-    email: [''],
+    email: ['', [Validators.email]],
     isPrimary: [false],
   });
 
@@ -284,7 +294,7 @@ export class ClinicsComponent implements OnInit {
   }
 
   // ── Modal Actions ──────────────────────────────────────────────────
-  openModal(type: 'addClinic' | 'editClinic' | 'addBranch' | 'addSpecialty' | 'addInsurance' | 'addLanguage'): void {
+  openModal(type: 'addClinic' | 'editClinic' | 'addBranch' | 'editBranch' | 'addSpecialty' | 'addInsurance' | 'addLanguage'): void {
     this.activeModal = type;
     this.selectedLogoFile = null;
 
@@ -303,8 +313,15 @@ export class ClinicsComponent implements OnInit {
         vatNumber: this.selectedClinic.vatNumber || (this.selectedClinic as any).vat_number || ''
       });
     } else if (type === 'addBranch') {
-      this.branchForm.reset({ isPrimary: false });
+      this.selectedBranchToEdit = null;
+      this.branchForm.reset({ isPrimary: false, latitude: null, longitude: null, phone: '', email: '' });
       this.branchLocalities = [];
+      this.mapSearchQuery = '';
+      this.searchResults = [];
+      this.searchError = null;
+      setTimeout(() => {
+        this.initLeafletMap();
+      }, 100);
     } else if (type === 'addSpecialty') {
       this.specialtyForm.reset();
     } else if (type === 'addInsurance') {
@@ -314,8 +331,240 @@ export class ClinicsComponent implements OnInit {
     }
   }
 
+  openEditBranchModal(branch: ClinicBranchResponseDto): void {
+    this.selectedBranchToEdit = branch;
+    this.activeModal = 'editBranch';
+
+    this.branchForm.patchValue({
+      branchNameEn: branch.branchNameEn || '',
+      branchNameAr: branch.branchNameAr || '',
+      cityId: branch.cityId || '',
+      localityId: branch.localityId || '',
+      addressLine1: branch.addressLine1 || '',
+      addressLine2: branch.addressLine2 || '',
+      latitude: (branch.latitude !== null && branch.latitude !== undefined) ? Number(branch.latitude) : null,
+      longitude: (branch.longitude !== null && branch.longitude !== undefined) ? Number(branch.longitude) : null,
+      phone: branch.phone || '',
+      email: branch.email || '',
+      isPrimary: branch.isPrimary || false
+    });
+
+    if (branch.cityId) {
+      this.referenceService.getLocalities(branch.cityId).subscribe({
+        next: (data) => this.branchLocalities = data,
+        error: () => this.branchLocalities = []
+      });
+    } else {
+      this.branchLocalities = [];
+    }
+
+    this.mapSearchQuery = '';
+    this.searchResults = [];
+    this.searchError = null;
+
+    setTimeout(() => {
+      this.initLeafletMap();
+    }, 100);
+  }
+
   closeModal(): void {
+    this.destroyLeafletMap();
+    this.selectedBranchToEdit = null;
     this.activeModal = null;
+  }
+
+  // ── Leaflet Interactive Map Logic ──────────────────────────────
+  private destroyLeafletMap(): void {
+    if (this.map) {
+      this.map.off();
+      this.map.remove();
+      this.map = null;
+      this.marker = null;
+    }
+  }
+
+  private initLeafletMap(): void {
+    this.destroyLeafletMap();
+
+    const mapContainer = document.getElementById('branchMapDiv');
+    if (!mapContainer) return;
+
+    // Default center for Saudi Arabia (Riyadh: 24.7136, 46.6753)
+    const defaultLat = 24.7136;
+    const defaultLng = 46.6753;
+
+    const currentLat = this.branchForm.get('latitude')?.value;
+    const currentLng = this.branchForm.get('longitude')?.value;
+
+    const initialLat = (currentLat !== null && currentLat !== undefined) ? currentLat : defaultLat;
+    const initialLng = (currentLng !== null && currentLng !== undefined) ? currentLng : defaultLng;
+
+    this.map = L.map(mapContainer).setView([initialLat, initialLng], 12);
+
+    // Requirement 13: OpenStreetMap tile attribution
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'
+    }).addTo(this.map);
+
+    const customIcon = L.icon({
+      iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+      iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+      shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+
+    if (currentLat !== null && currentLng !== null && currentLat !== undefined && currentLng !== undefined) {
+      this.marker = L.marker([currentLat, currentLng], {
+        draggable: true,
+        icon: customIcon
+      }).addTo(this.map);
+
+      this.marker.on('dragend', () => {
+        const pos = this.marker?.getLatLng();
+        if (pos) {
+          this.updateMarkerPosition(pos.lat, pos.lng);
+        }
+      });
+    }
+
+    this.map.on('click', (e: L.LeafletMouseEvent) => {
+      this.updateMarkerPosition(e.latlng.lat, e.latlng.lng);
+    });
+
+    // Requirement 9: Invalidate size after modal renders
+    setTimeout(() => {
+      if (this.map) {
+        this.map.invalidateSize();
+      }
+    }, 200);
+  }
+
+  private updateMarkerPosition(lat: number, lng: number): void {
+    const roundedLat = parseFloat(lat.toFixed(6));
+    const roundedLng = parseFloat(lng.toFixed(6));
+
+    this.branchForm.patchValue({
+      latitude: roundedLat,
+      longitude: roundedLng
+    });
+    this.branchForm.markAsDirty();
+    this.branchForm.markAsTouched();
+
+    if (this.map) {
+      if (this.marker) {
+        this.marker.setLatLng([roundedLat, roundedLng]);
+      } else {
+        const customIcon = L.icon({
+          iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+          iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+          shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowSize: [41, 41]
+        });
+
+        this.marker = L.marker([roundedLat, roundedLng], {
+          draggable: true,
+          icon: customIcon
+        }).addTo(this.map);
+
+        this.marker.on('dragend', () => {
+          const pos = this.marker?.getLatLng();
+          if (pos) {
+            this.updateMarkerPosition(pos.lat, pos.lng);
+          }
+        });
+      }
+      this.map.panTo([roundedLat, roundedLng]);
+    }
+  }
+
+  public searchMapLocation(): void {
+    if (!this.mapSearchQuery || !this.mapSearchQuery.trim()) return;
+
+    this.isSearchingLocation = true;
+    this.searchError = null;
+    this.searchResults = [];
+
+    const query = encodeURIComponent(this.mapSearchQuery.trim());
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=5&countrycodes=sa`;
+
+    fetch(url, {
+      headers: {
+        'Accept-Language': this.languageService.isArabic ? 'ar' : 'en'
+      }
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('Search request failed');
+        return res.json();
+      })
+      .then((data: any[]) => {
+        this.isSearchingLocation = false;
+        if (data && data.length > 0) {
+          this.searchResults = data;
+          const top = data[0];
+          this.selectSearchResult(parseFloat(top.lat), parseFloat(top.lon));
+        } else {
+          this.searchError = this.languageService.translate('No locations found matching your query.', 'لم يتم العثور على موقع مطابق للبحث.');
+        }
+      })
+      .catch(() => {
+        this.isSearchingLocation = false;
+        this.searchError = this.languageService.translate('Failed to search location. Please try again.', 'فشل البحث عن الموقع. يرجى المحاولة مرة أخرى.');
+      });
+  }
+
+  public selectSearchResult(lat: number, lng: number): void {
+    this.searchResults = [];
+    if (this.map) {
+      this.map.setView([lat, lng], 15);
+    }
+    this.updateMarkerPosition(lat, lng);
+  }
+
+  public useCurrentLocation(): void {
+    if (!navigator.geolocation) {
+      this.uiService.showError(this.languageService.translate('Geolocation is not supported by your browser.', 'خدمة تحديد الموقع غير مدعومة في متصفحك.'));
+      return;
+    }
+
+    this.uiService.showLoading();
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        this.uiService.hideLoading();
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+
+        if (this.map) {
+          this.map.setView([lat, lng], 16);
+        }
+        this.updateMarkerPosition(lat, lng);
+        this.uiService.showSuccess(this.languageService.translate('Location set to your current position.', 'تم تحديد الموقع الحالي بنجاح.'));
+      },
+      (error) => {
+        this.uiService.hideLoading();
+        let msg = 'Failed to get current location.';
+        if (error.code === error.PERMISSION_DENIED) {
+          msg = 'Location permission denied by user.';
+        } else if (error.code === error.POSITION_UNAVAILABLE) {
+          msg = 'Location information is unavailable.';
+        } else if (error.code === error.TIMEOUT) {
+          msg = 'Location request timed out.';
+        }
+        this.uiService.showError(this.languageService.translate(msg, msg));
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
   }
 
   // ── Forms Submission ────────────────────────────────────────────────
@@ -374,20 +623,33 @@ export class ClinicsComponent implements OnInit {
     if (this.branchForm.invalid || !this.selectedClinic) return;
     this.uiService.showLoading();
 
-    console.log("dfdf", this.selectedClinic.clinicId)
-    console.log("dfdfercfrfc", this.branchForm.value)
-    this.clinicService.createClinicBranch(this.selectedClinic.clinicId, this.branchForm.value).subscribe({
-      next: () => {
-        this.uiService.hideLoading();
-        this.uiService.showSuccess('Branch created successfully.');
-        this.closeModal();
-        this.loadClinicDetails();
-      },
-      error: () => {
-        this.uiService.hideLoading();
-        this.uiService.showError('Failed to create branch.');
-      }
-    });
+    if (this.activeModal === 'editBranch' && this.selectedBranchToEdit) {
+      this.clinicService.updateClinicBranch(this.selectedBranchToEdit.branchId, this.branchForm.value).subscribe({
+        next: () => {
+          this.uiService.hideLoading();
+          this.uiService.showSuccess('Branch updated successfully.');
+          this.closeModal();
+          this.loadClinicDetails();
+        },
+        error: () => {
+          this.uiService.hideLoading();
+          this.uiService.showError('Failed to update branch.');
+        }
+      });
+    } else {
+      this.clinicService.createClinicBranch(this.selectedClinic.clinicId, this.branchForm.value).subscribe({
+        next: () => {
+          this.uiService.hideLoading();
+          this.uiService.showSuccess('Branch created successfully.');
+          this.closeModal();
+          this.loadClinicDetails();
+        },
+        error: () => {
+          this.uiService.hideLoading();
+          this.uiService.showError('Failed to create branch.');
+        }
+      });
+    }
   }
 
   submitSpecialty(): void {

@@ -168,6 +168,9 @@
                   </td>
                   <td class="text-end">
                     <div class="d-flex justify-end gap-2">
+                      <button class="btn btn-outline btn-sm" (click)="openEditBranchModal(b)">
+                        ✏️ {{ 'Edit' | translate }}
+                      </button>
                       <button class="btn btn-outline btn-sm" (click)="openEditHoursModal(b)">
                         ⏰ {{ 'Hours' | translate }}
                       </button>
@@ -355,16 +358,18 @@
   </div>
 </div>
 
-<!-- Modal 2: Add Branch -->
-<div *ngIf="activeModal === 'addBranch'" class="modal-backdrop" (click)="closeModal()">
-  <div class="modal-content admin-modal-card" style="max-width: 540px;" (click)="$event.stopPropagation()">
+<!-- Modal 2: Add / Edit Branch -->
+<div *ngIf="activeModal === 'addBranch' || activeModal === 'editBranch'" class="modal-backdrop" (click)="closeModal()">
+  <div class="modal-content admin-modal-card" style="max-width: 680px;" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h3 class="fs-md text-primary m-0 fw-bold">{{ 'Add Clinic Branch Location' | translate }}</h3>
+      <h3 class="fs-md text-primary m-0 fw-bold">{{ (activeModal === 'addBranch' ? 'Add Clinic Branch Location' : 'Edit Clinic Branch Location') | translate }}</h3>
       <button class="btn-close" (click)="closeModal()">&times;</button>
     </div>
 
     <form [formGroup]="branchForm" (ngSubmit)="submitBranch()">
-      <div class="modal-body">
+      <div class="modal-body" style="max-height: 78vh; overflow-y: auto;">
+        
+        <!-- Branch Names -->
         <div class="form-row mb-3">
           <div class="form-group flex-1">
             <label class="form-label">{{ 'Branch Name (EN) *' | translate }}</label>
@@ -376,6 +381,7 @@
           </div>
         </div>
         
+        <!-- City & Locality -->
         <div class="form-row mb-3">
           <div class="form-group flex-1">
             <label class="form-label">{{ 'City *' | translate }}</label>
@@ -402,6 +408,7 @@
           </div>
         </div>
 
+        <!-- Address Lines -->
         <div class="form-group mb-3">
           <label class="form-label">{{ 'Address Line 1 *' | translate }}</label>
           <input type="text" formControlName="addressLine1" class="form-control" [placeholder]="'King Fahd Road, Building 10' | translate">
@@ -411,6 +418,87 @@
           <input type="text" formControlName="addressLine2" class="form-control" [placeholder]="'Floor 2, Suite 204' | translate">
         </div>
 
+        <!-- Phone & Email (Preserved fields) -->
+        <div class="form-row mb-3">
+          <div class="form-group flex-1">
+            <label class="form-label">{{ 'Branch Phone' | translate }}</label>
+            <input type="text" formControlName="phone" class="form-control" [placeholder]="'+966 11 123 4567' | translate">
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label">{{ 'Branch Email' | translate }}</label>
+            <input type="email" formControlName="email" class="form-control" [placeholder]="'branch@clinic.com' | translate">
+          </div>
+        </div>
+
+        <!-- Interactive Map Section -->
+        <div class="map-picker-section mb-3 p-3 bg-light rounded border">
+          <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+            <label class="form-label fw-bold m-0 d-flex align-items-center gap-1" style="color: #0f172a;">
+              <span>📍 {{ 'Branch Location on Map *' | translate }}</span>
+            </label>
+
+            <button type="button" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-xs fw-semibold" (click)="useCurrentLocation()">
+              <span>🎯 {{ 'Use My Current Location' | translate }}</span>
+            </button>
+          </div>
+
+          <!-- Search Location Bar -->
+          <div class="map-search-bar mb-2 position-relative">
+            <div class="input-group">
+              <input 
+                type="text" 
+                class="form-control form-control-sm" 
+                [(ngModel)]="mapSearchQuery" 
+                [ngModelOptions]="{standalone: true}"
+                [placeholder]="'Search location on map (e.g., Al Olaya, Riyadh)...' | translate" 
+                (keyup.enter)="searchMapLocation()">
+              <button type="button" class="btn btn-sm btn-secondary px-3" (click)="searchMapLocation()" [disabled]="isSearchingLocation">
+                <span *ngIf="!isSearchingLocation">🔍 {{ 'Search' | translate }}</span>
+                <span *ngIf="isSearchingLocation">⏳...</span>
+              </button>
+            </div>
+
+            <!-- Search Error -->
+            <div *ngIf="searchError" class="text-danger fs-xs mt-1">
+              {{ searchError }}
+            </div>
+
+            <!-- Search Results Dropdown -->
+            <div *ngIf="searchResults.length > 0" class="search-results-dropdown shadow-sm border bg-white rounded position-absolute w-100 mt-1" style="z-index: 1050; max-height: 180px; overflow-y: auto;">
+              <div 
+                *ngFor="let res of searchResults" 
+                class="search-result-item p-2 border-bottom cursor-pointer hover-bg-light fs-xs text-dark" 
+                (click)="selectSearchResult(+res.lat, +res.lon)">
+                📍 {{ res.display_name }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Leaflet Map Canvas Container -->
+          <div id="branchMapDiv" class="leaflet-map-canvas rounded border" style="height: 320px; width: 100%; z-index: 1;"></div>
+
+          <!-- Coordinates Read-only Display -->
+          <div class="coordinates-bar d-flex align-items-center justify-content-between mt-2 pt-2 border-top fs-xs text-muted">
+            <div>
+              <span class="fw-semibold text-dark">{{ 'Latitude:' | translate }}</span>
+              <code class="ms-1 px-2 py-0.5 bg-white border rounded text-primary fw-bold">
+                {{ branchForm.get('latitude')?.value !== null ? branchForm.get('latitude')?.value : ('Not Selected' | translate) }}
+              </code>
+            </div>
+            <div>
+              <span class="fw-semibold text-dark">{{ 'Longitude:' | translate }}</span>
+              <code class="ms-1 px-2 py-0.5 bg-white border rounded text-primary fw-bold">
+                {{ branchForm.get('longitude')?.value !== null ? branchForm.get('longitude')?.value : ('Not Selected' | translate) }}
+              </code>
+            </div>
+          </div>
+
+          <div *ngIf="branchForm.get('latitude')?.invalid && (branchForm.get('latitude')?.touched || branchForm.touched)" class="text-danger fs-xs mt-1">
+            ⚠️ {{ 'Please select a location on the map before submitting.' | translate }}
+          </div>
+        </div>
+
+        <!-- Primary Branch Checkbox -->
         <div class="form-group m-0 d-flex align-center gap-2">
           <input type="checkbox" id="branchIsPrimary" formControlName="isPrimary" class="form-check-input">
           <label for="branchIsPrimary" class="form-label m-0 cursor-pointer fw-semibold">{{ 'Set as Primary Branch' | translate }}</label>
@@ -419,7 +507,7 @@
 
       <div class="modal-footer">
         <button type="button" class="btn btn-outline" (click)="closeModal()">{{ 'Cancel' | translate }}</button>
-        <button type="submit" class="btn btn-primary" [disabled]="branchForm.invalid">{{ 'Add Branch' | translate }}</button>
+        <button type="submit" class="btn btn-primary" [disabled]="branchForm.invalid">{{ (activeModal === 'addBranch' ? 'Add Branch' : 'Save Branch') | translate }}</button>
       </div>
     </form>
   </div>

@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } 
 import { Router } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import * as L from 'leaflet';
 import { ClinicService } from '../../../core/services/clinic.service';
 import { DoctorService } from '../../../core/services/doctor.service';
 import { PatientService } from '../../../core/services/patient.service';
@@ -44,6 +45,12 @@ export class ClinicExplorerComponent implements OnInit {
 
   // View Step Navigation State ('CLINICS_LIST' | 'CLINIC_DETAIL' | 'BRANCH_DOCTORS')
   public viewStep: 'CLINICS_LIST' | 'CLINIC_DETAIL' | 'BRANCH_DOCTORS' = 'CLINICS_LIST';
+
+  // Branch Location Modal State
+  public locationModalOpen = false;
+  public selectedLocationBranch: ClinicBranchResponseDto | null = null;
+  private branchLocationMap: L.Map | null = null;
+  private branchLocationMarker: L.Marker | null = null;
 
   // General Data State
   public patientId = '';
@@ -684,5 +691,104 @@ export class ClinicExplorerComponent implements OnInit {
     const isAr = this.languageService.isArabic;
     const prefix = isAr ? 'د.' : 'Dr.';
     return `${prefix} ${name}`;
+  }
+
+  // ── Branch Location Viewer Methods ─────────────────────────────
+  hasBranchLocation(branch: ClinicBranchResponseDto | null | undefined): boolean {
+    if (!branch) return false;
+    const lat = branch.latitude;
+    const lng = branch.longitude;
+    if (lat === null || lat === undefined || lng === null || lng === undefined) return false;
+    const numLat = Number(lat);
+    const numLng = Number(lng);
+    if (isNaN(numLat) || isNaN(numLng)) return false;
+    if (numLat === 0 && numLng === 0) return false; // Avoid 0,0 default location
+    return numLat >= -90 && numLat <= 90 && numLng >= -180 && numLng <= 180;
+  }
+
+  viewBranchLocation(branch: ClinicBranchResponseDto): void {
+    if (!this.hasBranchLocation(branch)) {
+      this.uiService.showWarning(this.languageService.translate('Location coordinates are not available for this branch.', 'إحداثيات الموقع غير متوفرة لهذا الفرع.'));
+      return;
+    }
+
+    this.selectedLocationBranch = branch;
+    this.locationModalOpen = true;
+
+    setTimeout(() => {
+      this.initBranchLocationMap(branch);
+    }, 100);
+  }
+
+  private initBranchLocationMap(branch: ClinicBranchResponseDto): void {
+    this.cleanupBranchLocationMap();
+
+    const container = document.getElementById('viewBranchMapDiv');
+    if (!container) return;
+
+    const lat = Number(branch.latitude);
+    const lng = Number(branch.longitude);
+
+    try {
+      this.branchLocationMap = L.map(container).setView([lat, lng], 15);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'
+      }).addTo(this.branchLocationMap);
+
+      const customIcon = L.icon({
+        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+        iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      });
+
+      this.branchLocationMarker = L.marker([lat, lng], {
+        draggable: false, // Read-only marker
+        icon: customIcon
+      }).addTo(this.branchLocationMap);
+
+      const branchName = this.languageService.isArabic ? (branch.branchNameAr || branch.branchNameEn) : (branch.branchNameEn || branch.branchNameAr);
+      if (branchName) {
+        this.branchLocationMarker.bindPopup(`<b>${branchName}</b>`).openPopup();
+      }
+
+      setTimeout(() => {
+        if (this.branchLocationMap) {
+          this.branchLocationMap.invalidateSize();
+        }
+      }, 200);
+    } catch (err) {
+      console.error('Failed to initialize branch location map', err);
+      this.uiService.showError(this.languageService.translate('Unable to load branch location map.', 'تعذر تحميل خريطة موقع الفرع.'));
+      this.closeBranchLocation();
+    }
+  }
+
+  closeBranchLocation(): void {
+    this.cleanupBranchLocationMap();
+    this.selectedLocationBranch = null;
+    this.locationModalOpen = false;
+  }
+
+  private cleanupBranchLocationMap(): void {
+    if (this.branchLocationMap) {
+      this.branchLocationMap.off();
+      this.branchLocationMap.remove();
+      this.branchLocationMap = null;
+    }
+    this.branchLocationMarker = null;
+  }
+
+  openInGoogleMaps(): void {
+    if (!this.selectedLocationBranch || !this.hasBranchLocation(this.selectedLocationBranch)) return;
+    const lat = Number(this.selectedLocationBranch.latitude);
+    const lng = Number(this.selectedLocationBranch.longitude);
+    const url = `https://www.google.com/maps?q=${lat},${lng}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 }

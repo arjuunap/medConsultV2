@@ -322,13 +322,29 @@
           {{ getBranchAddress(branch) }}
         </p>
 
-        <div class="branch-footer d-flex align-items-center justify-content-between pt-3 border-top mt-auto">
+        <div class="branch-footer d-flex align-items-center justify-content-between pt-3 border-top mt-auto flex-wrap gap-2">
           <span class="branch-phone text-muted fs-xs">📞 {{ branch.phone || selectedClinic.phonePrimary }}</span>
 
-          <button type="button" class="btn btn-primary btn-sm px-3 font-semibold d-inline-flex align-items-center gap-1" style="border-radius: 6px;">
-            <span>{{ 'View Doctors & Book' | translate }}</span>
-            <span>→</span>
-          </button>
+          <div class="d-flex align-items-center gap-2">
+            <button 
+              type="button" 
+              class="btn btn-outline-primary btn-sm px-3 font-semibold d-inline-flex align-items-center gap-1" 
+              style="border-radius: 6px;"
+              [disabled]="!hasBranchLocation(branch)"
+              [title]="!hasBranchLocation(branch) ? ('Location not available' | translate) : ''"
+              (click)="$event.stopPropagation(); viewBranchLocation(branch)">
+              <span>📍 {{ 'View Location' | translate }}</span>
+            </button>
+
+            <button 
+              type="button" 
+              class="btn btn-primary btn-sm px-3 font-semibold d-inline-flex align-items-center gap-1" 
+              style="border-radius: 6px;"
+              (click)="selectBranch(branch)">
+              <span>{{ 'View Doctors & Book' | translate }}</span>
+              <span>→</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -545,4 +561,58 @@
     </div>
   </div>
 
+</div>
+
+<!-- Branch Location Viewer Modal -->
+<div *ngIf="locationModalOpen && selectedLocationBranch" class="modal-backdrop" (click)="closeBranchLocation()">
+  <div class="modal-content admin-modal-card shadow-lg border-0" style="max-width: 650px;" (click)="$event.stopPropagation()">
+    <div class="modal-header bg-light border-bottom p-3 px-4">
+      <h3 class="fs-md text-primary m-0 fw-bold d-flex align-items-center gap-2">
+        <span>📍 {{ 'Branch Location' | translate }}</span>
+      </h3>
+      <button type="button" class="btn-close" (click)="closeBranchLocation()">&times;</button>
+    </div>
+
+    <div class="modal-body p-4">
+      <div class="mb-3">
+        <h4 class="fw-bold m-0 text-dark fs-sm" style="font-size: 1.15rem;">
+          {{ selectedLocationBranch | translateObj:'branchName' }}
+        </h4>
+        <div class="d-flex align-items-center gap-2 mt-1">
+          <span class="badge bg-light text-primary border rounded-pill px-2.5 py-1 fs-xs fw-semibold">
+            📍 {{ getBranchCityName(selectedLocationBranch) }} — {{ getBranchAddress(selectedLocationBranch) }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Leaflet Map Container -->
+      <div id="viewBranchMapDiv" class="branch-location-map rounded border mb-3 shadow-inner" style="height: 380px; width: 100%; z-index: 1;"></div>
+
+      <!-- Read-only Coordinates Bar -->
+      <div class="coordinates-bar d-flex align-items-center justify-content-between p-2.5 bg-light rounded border fs-xs text-muted">
+        <div>
+          <span class="fw-semibold text-dark">{{ 'Latitude:' | translate }}</span>
+          <code class="ms-1 px-2 py-0.5 bg-white border rounded text-primary fw-bold">
+            {{ selectedLocationBranch.latitude }}
+          </code>
+        </div>
+        <div>
+          <span class="fw-semibold text-dark">{{ 'Longitude:' | translate }}</span>
+          <code class="ms-1 px-2 py-0.5 bg-white border rounded text-primary fw-bold">
+            {{ selectedLocationBranch.longitude }}
+          </code>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer p-3 px-4 bg-light border-top d-flex align-items-center justify-content-between">
+      <button type="button" class="btn btn-outline-primary btn-sm px-3 py-1.5 font-semibold d-inline-flex align-items-center gap-1.5" (click)="openInGoogleMaps()">
+        <span>🗺️ {{ 'Open in Google Maps' | translate }}</span>
+      </button>
+
+      <button type="button" class="btn btn-secondary btn-sm px-4 py-1.5 font-semibold" (click)="closeBranchLocation()">
+        {{ 'Close' | translate }}
+      </button>
+    </div>
+  </div>
 </div>
