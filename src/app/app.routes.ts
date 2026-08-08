@@ -22,6 +22,41 @@ export const routes: Routes = [
     path: 'oauth-success',
     loadComponent: () => import('./features/auth/oauth-success/oauth-success.component').then(m => m.OauthSuccessComponent)
   },
+  // PUBLIC BROWSING ROUTES (No Auth Required for Searching & Viewing Clinics / Doctors)
+  {
+    path: '',
+    component: LayoutComponent,
+    children: [
+      {
+        path: 'clinics',
+        loadComponent: () => import('./features/patient-dashboard/clinic-explorer/clinic-explorer.component').then(m => m.ClinicExplorerComponent)
+      },
+      {
+        path: 'clinics/:id',
+        loadComponent: () => import('./features/patient-dashboard/clinic-detail/clinic-detail.component').then(m => m.ClinicDetailComponent)
+      },
+      {
+        path: 'doctors',
+        loadComponent: () => import('./features/patient-dashboard/doctors/doctors.component').then(m => m.DoctorsComponent)
+      },
+      {
+        path: 'doctors/:id',
+        loadComponent: () => import('./features/doctor-detail/doctor-detail.component').then(m => m.DoctorDetailComponent)
+      },
+      {
+        path: 'patient/clinics',
+        loadComponent: () => import('./features/patient-dashboard/clinic-explorer/clinic-explorer.component').then(m => m.ClinicExplorerComponent)
+      },
+      {
+        path: 'patient/clinics/:id',
+        loadComponent: () => import('./features/patient-dashboard/clinic-detail/clinic-detail.component').then(m => m.ClinicDetailComponent)
+      },
+      {
+        path: 'patient/doctors',
+        loadComponent: () => import('./features/patient-dashboard/doctors/doctors.component').then(m => m.DoctorsComponent)
+      }
+    ]
+  },
   {
     path: 'patient',
     component: LayoutComponent,
@@ -57,14 +92,6 @@ export const routes: Routes = [
         loadComponent: () => import('./features/patient-dashboard/book-appointment/book-appointment.component').then(m => m.BookAppointmentComponent)
       },
       {
-        path: 'clinics',
-        loadComponent: () => import('./features/patient-dashboard/clinic-explorer/clinic-explorer.component').then(m => m.ClinicExplorerComponent)
-      },
-      {
-        path: 'clinics/:id',
-        loadComponent: () => import('./features/patient-dashboard/clinic-detail/clinic-detail.component').then(m => m.ClinicDetailComponent)
-      },
-      {
         path: 'appointments',
         loadComponent: () => import('./features/patient-dashboard/appointments/appointments.component').then(m => m.AppointmentsComponent)
       },
@@ -75,21 +102,6 @@ export const routes: Routes = [
       {
         path: 'consultations',
         loadComponent: () => import('./features/patient-dashboard/consultations/consultations.component').then(m => m.ConsultationsComponent)
-      },
-      {
-        path: 'doctors',
-        loadComponent: () => import('./features/patient-dashboard/doctors/doctors.component').then(m => m.DoctorsComponent)
-      }
-    ]
-  },
-  {
-    path: '',
-    component: LayoutComponent,
-    canActivate: [authGuard],
-    children: [
-      {
-        path: 'doctors/:id',
-        loadComponent: () => import('./features/doctor-detail/doctor-detail.component').then(m => m.DoctorDetailComponent)
       }
     ]
   },

@@ -943,56 +943,9 @@ export class LandingComponent implements OnInit {
   }
 
   selectClinic(clinic: ClinicCardDisplay): void {
-    this.selectedClinicDetail = {
-      clinicId: clinic.clinicId,
-      nameEn: clinic.nameEn,
-      nameAr: clinic.nameAr || '',
-      descriptionEn: clinic.descriptionEn || 'Premier healthcare provider delivering specialized medical services.',
-      descriptionAr: clinic.descriptionAr || '',
-      logoUrl: clinic.logoUrl || '',
-      website: clinic.website || '',
-      email: clinic.email || '',
-      phonePrimary: clinic.phonePrimary || '+966 11 400 0000',
-      phoneSecondary: clinic.phoneSecondary || '',
-      mohLicenseNumber: clinic.mohLicenseNumber || 'MOH-SA-10023',
-      mohVerified: clinic.mohVerified ?? true,
-      isActive: clinic.isActive ?? true,
-      overallRating: clinic.overallRating || 0,
-      reviewCount: clinic.reviewCount || 0,
-      createdAt: '',
-      updatedAt: '',
-      branches: [
-        {
-          branchId: 'b-1',
-          clinicId: clinic.clinicId,
-          branchNameEn: `${clinic.nameEn} Main Branch`,
-          branchNameAr: clinic.nameAr || '',
-          cityId: clinic.cityId || '',
-          localityId: '',
-          addressLine1: clinic.addressLine1 || clinic.cityName || 'Riyadh, Saudi Arabia',
-          addressLine2: '',
-          latitude: 24.7136,
-          longitude: 46.6753,
-          phone: clinic.phonePrimary || '+966 11 400 0000',
-          email: clinic.email || '',
-          isPrimary: true,
-          isActive: true,
-          createdAt: ''
-        }
-      ],
-      specialties: [],
-      insurances: [],
-      languages: []
-    } as unknown as ClinicDetailResponse;
-
-    this.clinicService.getClinicDetail(clinic.clinicId).subscribe({
-      next: (detail) => {
-        if (detail) {
-          this.selectedClinicDetail = detail;
-        }
-      },
-      error: () => { }
-    });
+    if (clinic && clinic.clinicId) {
+      this.router.navigate(['/patient/clinics', clinic.clinicId]);
+    }
   }
 
   closeDetail(): void {

@@ -234,7 +234,7 @@
               <path d="M12 13v8"></path>
             </svg>
           </div>
-          <div class="clinic-info">
+          <div class="clinic-info" (click)="selectClinic(clinic)" style="cursor: pointer;">
             <div class="clinic-name">{{ clinic | translateObj:'name' }}</div>
             <div class="clinic-addr">
               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
