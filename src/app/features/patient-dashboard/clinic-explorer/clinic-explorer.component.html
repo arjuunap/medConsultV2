@@ -89,65 +89,70 @@
       </button>
     </div>
 
-    <div class="clinics-cards-grid" *ngIf="filteredClinics.length > 0">
+    <div class="clinics-list-view d-flex flex-column gap-3" *ngIf="filteredClinics.length > 0">
       <div 
         *ngFor="let clinic of filteredClinics" 
-        class="executive-clinic-card card shadow-sm hover-lift cursor-pointer"
+        class="executive-clinic-list-item card p-3 shadow-sm hover-lift cursor-pointer"
         (click)="selectClinic(clinic)">
         
-        <div class="clinic-card-header d-flex justify-content-between align-items-start mb-3">
-          <div class="clinic-logo-avatar flex-shrink-0">
-            <img *ngIf="clinic.logoUrl" [src]="apiUrl + '/' + clinic.logoUrl" [alt]="clinic | translateObj:'name'" class="logo-img" />
-            <span *ngIf="!clinic.logoUrl" class="logo-initials">{{ (clinic.nameEn || '').substring(0, 2).toUpperCase() }}</span>
-          </div>
+        <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap flex-md-nowrap">
+          <!-- Left: Logo Avatar & Info -->
+          <div class="d-flex align-items-center gap-3 min-w-0 flex-grow-1">
+            <div class="clinic-logo-avatar flex-shrink-0">
+              <img *ngIf="clinic.logoUrl" [src]="apiUrl + '/' + clinic.logoUrl" [alt]="clinic | translateObj:'name'" class="logo-img" />
+              <span *ngIf="!clinic.logoUrl" class="logo-initials">{{ (clinic.nameEn || '').substring(0, 2).toUpperCase() }}</span>
+            </div>
 
-          <div class="card-badges-row d-flex align-items-center justify-content-end gap-2 flex-wrap ms-auto">
-            <span *ngIf="clinic.mohVerified" class="badge-verified d-inline-flex align-items-center gap-1">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3">
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-              <span>{{ 'MOH Verified' | translate }}</span>
-            </span>
+            <div class="clinic-list-info min-w-0 flex-grow-1">
+              <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                <h3 class="clinic-title m-0">{{ clinic | translateObj:'name' }}</h3>
 
-            <div class="rating-badge d-inline-flex align-items-center gap-1">
-              <span class="star-icon text-warning">★</span>
-              <span class="fw-bold">{{ clinic.overallRating || 0 }}</span>
-              <span class="text-muted fs-xs">({{ clinic.reviewCount || 0 }})</span>
+                <span *ngIf="clinic.mohVerified" class="badge-verified d-inline-flex align-items-center gap-1">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>{{ 'MOH Verified' | translate }}</span>
+                </span>
+
+                <div class="rating-badge d-inline-flex align-items-center gap-1">
+                  <span class="star-icon text-warning">★</span>
+                  <span class="fw-bold">{{ clinic.overallRating || 0 }}</span>
+                  <span class="text-muted fs-xs">({{ clinic.reviewCount || 0 }})</span>
+                </div>
+              </div>
+
+              <p class="clinic-desc text-muted fs-xs m-0 mb-1 line-clamp-1" *ngIf="clinic.descriptionEn || clinic.descriptionAr">
+                {{ (clinic | translateObj:'description') }}
+              </p>
+
+              <!-- Enrichment Tags (Specialties & Branches) -->
+              <div class="enrichment-info-row d-flex flex-wrap align-items-center gap-2 mt-1" *ngIf="clinicEnrichmentMap[clinic.clinicId]">
+                <span class="info-pill branch-pill">
+                  🏢 {{ clinicEnrichmentMap[clinic.clinicId].branches.length }} {{ 'Branches' | translate }}
+                </span>
+                <ng-container *ngFor="let spec of clinicEnrichmentMap[clinic.clinicId].specialties.slice(0, 2)">
+                  <span class="info-pill spec-pill" *ngIf="spec && (spec | translateObj:'name')">
+                    ⚕️ {{ spec | translateObj:'name' }}
+                  </span>
+                </ng-container>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="clinic-card-body flex-grow-1">
-          <h3 class="clinic-title mb-2">{{ clinic | translateObj:'name' }}</h3>
-          <p class="clinic-desc text-muted fs-xs mb-3 line-clamp-2">
-            {{ (clinic | translateObj:'description') || ('Premier medical facility providing state of the art therapeutic healthcare.' | translate) }}
-          </p>
-
-          <!-- Enrichment Tags (Specialties & Branches) -->
-          <div class="enrichment-info-row d-flex flex-wrap align-items-center gap-2 mb-3" *ngIf="clinicEnrichmentMap[clinic.clinicId]">
-            <span class="info-pill branch-pill">
-              🏢 {{ clinicEnrichmentMap[clinic.clinicId].branches.length }} {{ 'Branches' | translate }}
+          <!-- Right: Phone & Action Button -->
+          <div class="clinic-list-action d-flex align-items-center gap-3 flex-shrink-0 ms-md-auto">
+            <span class="contact-phone text-muted fs-xs d-inline-flex align-items-center gap-1.5" *ngIf="clinic.phonePrimary">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="flex-shrink-0">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+              </svg>
+              <span class="phone-text">{{ clinic.phonePrimary }}</span>
             </span>
-            <ng-container *ngFor="let spec of clinicEnrichmentMap[clinic.clinicId].specialties.slice(0, 2)">
-              <span class="info-pill spec-pill" *ngIf="spec && (spec | translateObj:'name')">
-                ⚕️ {{ spec | translateObj:'name' }}
-              </span>
-            </ng-container>
+
+            <button type="button" class="btn btn-outline-primary btn-sm fw-semibold d-inline-flex align-items-center gap-1.5 explore-btn">
+              <span>{{ 'Explore Clinic & Branches' | translate }}</span>
+              <span class="arrow-icon">→</span>
+            </button>
           </div>
-        </div>
-
-        <div class="clinic-card-footer d-flex align-items-center justify-content-between pt-3 border-top mt-auto flex-wrap gap-2">
-          <span class="contact-phone text-muted fs-xs d-inline-flex align-items-center gap-1.5">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="flex-shrink-0">
-              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-            </svg>
-            <span class="phone-text">{{ clinic.phonePrimary || 'N/A' }}</span>
-          </span>
-
-          <button type="button" class="btn btn-outline-primary btn-sm fw-semibold d-inline-flex align-items-center gap-1.5 explore-btn ms-auto">
-            <span>{{ 'Explore Clinic & Branches' | translate }}</span>
-            <span class="arrow-icon">→</span>
-          </button>
         </div>
       </div>
     </div>

@@ -17,84 +17,21 @@
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  padding: 1.5rem;
+  padding: 0;
   box-sizing: border-box;
   font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
   color: var(--text, #1e293b);
-  background-color: var(--off, #f8fafc);
-  gap: 1.25rem;
+  background-color: transparent;
+  gap: 1rem;
   overflow-y: visible;
-}
-
-/* ── Page Header Banner ─────────────────────────────────── */
-.explorer-header-section {
-  background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
-  padding: 1.75rem 2rem;
-  border-radius: var(--ce-radius-lg);
-  color: #fff;
-  box-shadow: 0 8px 32px var(--ce-teal-glow);
-  position: relative;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.explorer-header-section::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  right: -15%;
-  width: 320px;
-  height: 320px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.07) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-.eyebrow-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  background: rgba(255, 255, 255, 0.13);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  padding: 0.4rem 0.9rem;
-  border-radius: 9999px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  margin-bottom: 0.75rem;
-  color: #fff;
-}
-
-.eyebrow-badge-icon {
-  width: 12px;
-  height: 12px;
-  stroke: #fff;
-}
-
-.page-title {
-  font-family: 'Outfit', sans-serif;
-  font-size: 2rem;
-  font-weight: 800;
-  margin: 0 0 0.4rem;
-  letter-spacing: -0.025em;
-  line-height: 1.15;
-  color: #ffffff;
-}
-
-.page-subtitle {
-  font-size: 0.92rem;
-  margin: 0;
-  color: rgba(255, 255, 255, 0.88);
-  max-width: 750px;
-  line-height: 1.65;
 }
 
 /* ── Executive Filters Control Panel ─────────────────────── */
 .filters-card {
-  border-radius: var(--ce-radius-lg);
+  border-radius: var(--ce-radius-md, 12px);
   border: 1px solid #e2e8f0;
   background: #ffffff;
+  padding: 1.25rem 1.5rem;
 }
 
 .filters-grid {
@@ -157,36 +94,26 @@
   padding-right: 38px !important;
 }
 
-/* ── Executive Clinics Cards Grid ────────────────────────── */
-.clinics-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 20px;
-}
-
-.executive-clinic-card {
-  border-radius: var(--ce-radius-md, 12px);
-  padding: 20px;
-  border: 1px solid #e2e8f0;
-  background: #ffffff;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+/* ── Executive Clinics Responsive Listing Row View ────────── */
+.clinics-list-view {
   display: flex;
   flex-direction: column;
-  height: 100%;
-}
-
-.executive-clinic-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 28px -6px rgba(15, 23, 42, 0.08);
-  border-color: #0d9488;
-}
-
-.clinic-card-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
   gap: 12px;
-  margin-bottom: 14px;
+}
+
+.executive-clinic-list-item {
+  border-radius: var(--ce-radius-md, 12px);
+  padding: 14px 20px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.executive-clinic-list-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -4px rgba(15, 23, 42, 0.08);
+  border-color: #0d9488;
 }
 
 .clinic-logo-avatar {
@@ -215,7 +142,7 @@
   color: #166534;
   border: 1px solid #bbf7d0;
   border-radius: 20px;
-  padding: 3px 10px;
+  padding: 2px 9px;
   font-size: 0.72rem;
   font-weight: 600;
   white-space: nowrap;
@@ -226,7 +153,7 @@
   color: #b45309;
   border: 1px solid #fef3c7;
   border-radius: 20px;
-  padding: 3px 10px;
+  padding: 2px 9px;
   font-size: 0.75rem;
   font-weight: 600;
   white-space: nowrap;
@@ -234,26 +161,32 @@
 
 .clinic-title {
   font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: #0f172a;
-  margin-bottom: 6px;
-  line-height: 1.35;
+  line-height: 1.3;
 }
 
 .clinic-desc {
   color: #64748b;
   font-size: 0.825rem;
-  line-height: 1.5;
-  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .info-pill {
   background: #f1f5f9;
   color: #475569;
   border-radius: 6px;
-  padding: 4px 9px;
-  font-size: 0.75rem;
+  padding: 3px 8px;
+  font-size: 0.73rem;
   font-weight: 500;
   display: inline-flex;
   align-items: center;
@@ -272,15 +205,11 @@
   border: 1px solid #e2e8f0;
 }
 
-.clinic-card-footer {
+.clinic-list-action {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding-top: 14px;
-  border-top: 1px solid #f1f5f9;
-  margin-top: auto;
-  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .contact-phone {
@@ -291,7 +220,7 @@
 }
 
 .contact-phone .phone-text {
-  max-width: 140px;
+  max-width: 150px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -300,7 +229,6 @@
 }
 
 .explore-btn {
-  margin-left: auto;
   padding: 6px 14px;
   border-radius: 8px;
   font-size: 0.8rem;
@@ -309,20 +237,27 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
-.explore-btn:hover {
+.executive-clinic-list-item:hover .explore-btn {
   background-color: #0d9488;
   border-color: #0d9488;
   color: #ffffff;
 }
 
-.rtl-mode .explore-btn {
-  margin-left: 0;
-  margin-right: auto;
-}
-
 .rtl-mode .explore-btn .arrow-icon {
   transform: rotate(180deg);
   display: inline-block;
+}
+
+@media (max-width: 767px) {
+  .clinic-list-action {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 10px;
+    margin-top: 6px;
+    border-top: 1px solid #f1f5f9;
+  }
 }
 
 /* ── Clinic Detail Viewport ─────────────────────────────── */
