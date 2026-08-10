@@ -46,17 +46,17 @@
 
       <!-- Executive Reviews & Ratings Section -->
       <div class="reviews-section-wrapper mt-4 pt-3 border-top">
-        <div class="reviews-header cursor-pointer d-flex align-items-center justify-content-between p-3 rounded-lg bg-light border mb-3" (click)="toggleClinicReviews()" style="user-select: none; border-radius: 12px;">
+        <div class="reviews-header cursor-pointer d-flex align-items-center justify-content-between p-3 bg-light border" (click)="toggleClinicReviews()">
           <div class="d-flex align-items-center gap-3">
-            <div class="overall-rating-box bg-white border p-2 px-3 rounded-lg text-center" style="border-radius: 10px;">
+            <div class="overall-rating-box bg-white border p-2 px-3 text-center">
               <div class="rating-num fw-bold text-warning fs-md m-0">★ {{ selectedClinic.overallRating || 0 }}</div>
               <span class="text-muted fs-xs font-medium">{{ 'Rating' | translate }}</span>
             </div>
 
             <div>
-              <h4 class="m-0 fw-bold fs-sm text-dark d-flex align-items-center gap-2">
+              <h4 class="m-0 fw-bold fs-sm text-dark d-flex align-items-center gap-2 flex-wrap">
                 <span>{{ 'Patient Reviews & Network Ratings' | translate }}</span>
-                <span class="badge bg-primary text-white rounded-pill px-2 py-1 fs-xs" *ngIf="clinicReviews.length > 0">{{ clinicReviews.length }} {{ 'Verified Reviews' | translate }}</span>
+                <span class="badge bg-primary text-white rounded-pill px-2.5 py-1 fs-xs" *ngIf="clinicReviews.length > 0">{{ clinicReviews.length }} {{ 'Verified Reviews' | translate }}</span>
               </h4>
               <p class="text-muted fs-xs m-0 mt-1">
                 {{ 'Ratings and verified feedback submitted by patients who completed visits at this facility.' | translate }}
@@ -64,7 +64,7 @@
             </div>
           </div>
 
-          <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-3 fs-xs fw-semibold d-inline-flex align-items-center gap-1" style="border-radius: 8px;">
+          <button type="button" class="btn btn-sm btn-outline-secondary py-1.5 px-3 fs-xs fw-semibold d-inline-flex align-items-center gap-1.5 flex-shrink-0">
             <span>{{ showClinicReviews ? ('Hide Reviews' | translate) : ('Show Reviews' | translate) }}</span>
             <span>{{ showClinicReviews ? '▲' : '▼' }}</span>
           </button>
@@ -76,37 +76,37 @@
             <p class="m-0 font-medium">{{ 'No reviews recorded for this clinic yet.' | translate }}</p>
           </div>
 
-          <div class="review-item card p-4 mb-3 bg-white border rounded-lg shadow-sm hover-lift" *ngFor="let rev of clinicReviews" style="border-radius: 12px;">
-            <div class="d-flex align-items-start justify-content-between mb-2">
+          <div class="review-item card p-4 mb-3 bg-white border shadow-sm hover-lift" *ngFor="let rev of clinicReviews">
+            <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
               <div class="d-flex align-items-center gap-3">
-                <div class="reviewer-avatar-circle" [style.background-color]="getAvatarBg(rev.patientName)" [style.color]="getAvatarColor(rev.patientName)" style="width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.95rem; flex-shrink: 0;">
+                <div class="reviewer-avatar-circle" [style.background-color]="getAvatarBg(rev.patientName)" [style.color]="getAvatarColor(rev.patientName)">
                   <span>{{ getInitials(rev.isAnonymous ? 'Anonymous' : rev.patientName) }}</span>
                 </div>
                 <div>
-                  <div class="d-flex align-items-center gap-2">
+                  <div class="d-flex align-items-center gap-2 flex-wrap">
                     <strong class="fs-xs text-dark fw-bold">{{ rev.isAnonymous ? ('Anonymous Patient' | translate) : rev.patientName }}</strong>
-                    <span class="badge bg-success-light text-success border border-success-subtle rounded-pill px-2 py-0 fs-xs" style="font-size: 0.7rem;">✓ {{ 'Verified Patient' | translate }}</span>
+                    <span class="badge bg-success-light text-success border border-success-subtle rounded-pill px-2 py-0.5 fs-xs">✓ {{ 'Verified Patient' | translate }}</span>
                   </div>
                   <span class="text-muted fs-xs d-block mt-0.5">{{ rev.createdAt | date:'mediumDate' }}</span>
                 </div>
               </div>
 
-              <div class="rating-stars-badge bg-light text-warning border px-3 py-1 rounded-pill fs-xs fw-bold">
+              <div class="rating-stars-badge">
                 ★ {{ rev.rating }}.0 / 5.0
               </div>
             </div>
 
             <!-- Subratings Row -->
-            <div class="subratings-row d-flex flex-wrap gap-2 mb-2 pt-2 border-top" *ngIf="rev.ratingCleanliness || rev.ratingStaff || rev.ratingWait">
-              <span class="badge bg-light text-secondary border fs-xs" *ngIf="rev.ratingCleanliness">✨ {{ 'Cleanliness:' | translate }} {{ rev.ratingCleanliness }}/5</span>
-              <span class="badge bg-light text-secondary border fs-xs" *ngIf="rev.ratingStaff">👩‍⚕️ {{ 'Staff:' | translate }} {{ rev.ratingStaff }}/5</span>
-              <span class="badge bg-light text-secondary border fs-xs" *ngIf="rev.ratingWait">🕒 {{ 'Wait Time:' | translate }} {{ rev.ratingWait }}/5</span>
+            <div class="subratings-row d-flex flex-wrap gap-2 pt-2.5 border-top" *ngIf="rev.ratingCleanliness || rev.ratingStaff || rev.ratingWait">
+              <span class="subrating-chip" *ngIf="rev.ratingCleanliness">✨ {{ 'Cleanliness:' | translate }} {{ rev.ratingCleanliness }}/5</span>
+              <span class="subrating-chip" *ngIf="rev.ratingStaff">👩‍⚕️ {{ 'Staff:' | translate }} {{ rev.ratingStaff }}/5</span>
+              <span class="subrating-chip" *ngIf="rev.ratingWait">🕒 {{ 'Wait Time:' | translate }} {{ rev.ratingWait }}/5</span>
             </div>
 
             <!-- Review Text Block -->
-            <p class="text-secondary fs-xs m-0 mt-2 p-3 bg-light rounded-lg font-normal" *ngIf="rev.reviewText" style="line-height: 1.6; border-left: 3px solid var(--teal, #0d9488);">
+            <div class="review-text-quote" *ngIf="rev.reviewText">
               "{{ rev.reviewText }}"
-            </p>
+            </div>
           </div>
         </div>
       </div>

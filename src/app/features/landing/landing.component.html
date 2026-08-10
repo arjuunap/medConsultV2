@@ -23,19 +23,20 @@
 
     <div class="nav-actions d-flex align-center gap-2">
       <!-- Language Switcher on Landing Page -->
-      <button class="btn btn-outline btn-sm lang-landing-btn" (click)="languageService.toggleLanguage()">
+      <button class="lang-landing-btn" (click)="languageService.toggleLanguage()" [title]="'Switch Language' | translate">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-          class="desktop-icon-margin">
+          class="lang-globe-icon">
           <circle cx="12" cy="12" r="10"></circle>
           <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
           <path d="M2 12h20"></path>
         </svg>
-        <span class="desktop-only">{{ languageService.currentLang() === 'en' ? 'العربية' : 'English' }}</span>
+        <span class="lang-text-desktop">{{ languageService.currentLang() === 'en' ? 'العربية' : 'English' }}</span>
+        <span class="lang-text-mobile">{{ languageService.currentLang() === 'en' ? 'عربي' : 'EN' }}</span>
       </button>
 
       <ng-container *ngIf="authService.isLoggedIn(); else guestActions">
-        <a [routerLink]="getPortalDashboardRoute()" class="btn btn-primary btn-sm fw-bold">
+        <a [routerLink]="getPortalDashboardRoute()" class="nav-dash-btn">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect width="7" height="9" x="3" y="3" rx="1"></rect>
@@ -45,7 +46,7 @@
           </svg>
           <span class="desktop-only" style="margin-inline-start: 6px;">{{ 'Dashboard →' | translate }}</span>
         </a>
-        <button (click)="handleLogout()" class="btn btn-outline btn-sm text-dark nav-logout-btn">
+        <button (click)="handleLogout()" class="nav-logout-btn">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
@@ -56,17 +57,19 @@
         </button>
       </ng-container>
       <ng-template #guestActions>
-        <a routerLink="/login" class="btn btn-outline btn-sm nav-login-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+        <a routerLink="/login" class="nav-login-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="7.5" cy="15.5" r="5.5"></circle>
             <path d="m21 2-9.6 9.6"></path>
             <path d="m15.5 7.5 3 3L22 7l-3-3"></path>
           </svg>
-          <span class="desktop-only" style="margin-inline-start: 6px;">{{ 'Sign in' | translate }}</span>
+          <span class="nav-btn-text">{{ 'Sign in' | translate }}</span>
         </a>
-        <a routerLink="/register" class="btn btn-primary btn-sm fw-bold nav-register-btn">{{ 'Sign up / List Clinic' |
-          translate }}</a>
+        <a routerLink="/register" class="nav-register-btn">
+          <span class="nav-btn-text-desktop">{{ 'Sign up / List Clinic' | translate }}</span>
+          <span class="nav-btn-text-mobile">{{ 'Sign up' | translate }}</span>
+        </a>
       </ng-template>
     </div>
   </nav>

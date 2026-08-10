@@ -16,8 +16,63 @@
     </div>
   </div>
 
-  <!-- Premium Filters Panel -->
-  <div class="filters-card-wrapper mb-4">
+  <!-- Mobile Search Bar & Filter Toggle Row (Visible on Mobile) -->
+  <div class="mobile-filter-header-bar mb-3">
+    <div class="d-flex align-items-center gap-2">
+      <div class="mobile-search-input-wrapper flex-grow-1">
+        <input 
+          type="text" 
+          [(ngModel)]="searchQuery" 
+          (input)="applyFilters()" 
+          [placeholder]="'Search doctor name...' | translate" 
+          class="form-control mobile-search-input" />
+        <span class="mobile-search-icon">🔍</span>
+      </div>
+
+      <button 
+        type="button" 
+        class="btn btn-outline-primary btn-mobile-filter-trigger d-inline-flex align-items-center gap-1.5 flex-shrink-0" 
+        (click)="toggleMobileFilterDrawer()">
+        <span>⚙️</span>
+        <span>{{ 'Filter' | translate }}</span>
+        <span class="badge bg-primary text-white rounded-pill px-1.5 py-0.5 fs-xs" *ngIf="activeFilterCount > 0">{{ activeFilterCount }}</span>
+      </button>
+    </div>
+
+    <!-- Active Filter Chips Carousel (Mobile Horizontal Scroll) -->
+    <div class="active-chips-scroll-bar d-flex gap-2 overflow-x-auto pt-2" *ngIf="activeFilterCount > 0">
+      <ng-container *ngFor="let sId of selectedSpecialtyIds">
+        <span class="active-filter-chip">
+          <span>🩺 {{ getSpecialtyName(sId) }}</span>
+          <button type="button" class="chip-remove-btn" (click)="removeSpecialtyFilter(sId)">✕</button>
+        </span>
+      </ng-container>
+      
+      <ng-container *ngFor="let cId of selectedCityIds">
+        <span class="active-filter-chip">
+          <span>📍 {{ getCityName(cId) }}</span>
+          <button type="button" class="chip-remove-btn" (click)="removeCityFilter(cId)">✕</button>
+        </span>
+      </ng-container>
+
+      <span class="active-filter-chip" *ngIf="selectedRating > 0">
+        <span>★ {{ selectedRating }}+</span>
+        <button type="button" class="chip-remove-btn" (click)="selectedRating = 0; applyFilters()">✕</button>
+      </span>
+
+      <span class="active-filter-chip" *ngIf="selectedLanguageId">
+        <span>🗣️ {{ getLanguageName(selectedLanguageId) }}</span>
+        <button type="button" class="chip-remove-btn" (click)="selectedLanguageId = ''; applyFilters()">✕</button>
+      </span>
+
+      <button type="button" class="btn-clear-all-chips" (click)="resetFilters()">
+        {{ 'Clear All' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Desktop Filters Panel (Visible on Desktop) -->
+  <div class="filters-card-wrapper desktop-filters-wrapper mb-4">
     <div class="filters-main-grid">
       <!-- Search Query -->
       <div class="filter-field">
@@ -158,6 +213,109 @@
             <span>{{ 'Reset Filters' | translate }}</span>
           </button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Bottom Sheet Filter Drawer Modal -->
+  <div class="mobile-filter-drawer-backdrop" *ngIf="mobileFilterDrawerOpen" (click)="closeMobileFilterDrawer()">
+    <div class="mobile-filter-drawer-card" (click)="$event.stopPropagation()">
+      <div class="drawer-header d-flex align-items-center justify-content-between p-3 border-bottom">
+        <h3 class="fs-md fw-bold m-0 text-dark d-flex align-items-center gap-2">
+          <span>⚙️</span>
+          <span>{{ 'Filter Specialists' | translate }}</span>
+        </h3>
+        <button type="button" class="btn-close-drawer" (click)="closeMobileFilterDrawer()">✕</button>
+      </div>
+
+      <div class="drawer-body p-4">
+        <!-- Search Field -->
+        <div class="filter-field mb-3">
+          <label class="filter-label">{{ 'Search Doctor Name' | translate }}</label>
+          <input type="text" [(ngModel)]="searchQuery" (input)="applyFilters()" [placeholder]="'Type doctor name...' | translate" class="form-control" />
+        </div>
+
+        <!-- Specialty Select -->
+        <div class="filter-field mb-3">
+          <label class="filter-label">{{ 'Medical Specialty' | translate }}</label>
+          <app-custom-select 
+            [(ngModel)]="selectedSpecialtyIds" 
+            (selectionChange)="applyFilters()" 
+            [options]="specialtyOptions" 
+            [multiple]="true"
+            [searchable]="true"
+            [placeholder]="'All Specialties' | translate"
+            bindLabel="label"
+            bindValue="value">
+          </app-custom-select>
+        </div>
+
+        <!-- City Select -->
+        <div class="filter-field mb-3">
+          <label class="filter-label">{{ 'Location / City' | translate }}</label>
+          <app-custom-select 
+            [(ngModel)]="selectedCityIds" 
+            (selectionChange)="applyFilters()" 
+            [options]="cityOptions" 
+            [multiple]="true"
+            [searchable]="true"
+            [placeholder]="'All Cities' | translate"
+            bindLabel="label"
+            bindValue="value">
+          </app-custom-select>
+        </div>
+
+        <!-- Rating Select -->
+        <div class="filter-field mb-3">
+          <label class="filter-label">{{ 'Minimum Rating' | translate }}</label>
+          <app-custom-select 
+            [(ngModel)]="selectedRating" 
+            (selectionChange)="applyFilters()" 
+            [options]="ratingSelectOptions"
+            bindLabel="label"
+            bindValue="value">
+          </app-custom-select>
+        </div>
+
+        <!-- Language Select -->
+        <div class="filter-field mb-3">
+          <label class="filter-label">{{ 'Spoken Language' | translate }}</label>
+          <app-custom-select 
+            [(ngModel)]="selectedLanguageId" 
+            (selectionChange)="applyFilters()" 
+            [options]="languageSelectOptions" 
+            [searchable]="true"
+            bindLabel="label"
+            bindValue="value">
+          </app-custom-select>
+        </div>
+
+        <!-- Experience Slider -->
+        <div class="filter-field mb-3">
+          <div class="d-flex align-items-center justify-content-between mb-1">
+            <label class="filter-label m-0">🎓 {{ 'Min Experience' | translate }}</label>
+            <span class="fw-bold text-primary fs-xs">{{ minExperience }} {{ 'Years' | translate }}</span>
+          </div>
+          <input type="range" min="0" max="30" [(ngModel)]="minExperience" (input)="applyFilters()" class="w-100" />
+        </div>
+
+        <!-- Fee Slider -->
+        <div class="filter-field mb-3">
+          <div class="d-flex align-items-center justify-content-between mb-1">
+            <label class="filter-label m-0">💰 {{ 'Max Consultation Fee' | translate }}</label>
+            <span class="fw-bold text-primary fs-xs">{{ maxFee }} SAR</span>
+          </div>
+          <input type="range" min="50" max="500" step="10" [(ngModel)]="maxFee" (input)="applyFilters()" class="w-100" />
+        </div>
+      </div>
+
+      <div class="drawer-footer p-3 border-top d-flex align-items-center justify-content-between gap-2">
+        <button type="button" class="btn btn-outline-secondary py-2 px-3 fw-semibold" (click)="resetFilters()">
+          {{ 'Reset All' | translate }}
+        </button>
+        <button type="button" class="btn btn-primary py-2 px-4 fw-semibold flex-grow-1" (click)="closeMobileFilterDrawer()">
+          {{ 'Show Doctors' | translate }} ({{ filteredDoctors.length }})
+        </button>
       </div>
     </div>
   </div>

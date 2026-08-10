@@ -51,7 +51,6 @@ export class CustomSelectComponent implements ControlValueAccessor {
 
   isOpen = false;
   selectedValue: any = null;
-  selectedOption: any = null;
   searchQuery: string = '';
 
   private onChange: (value: any) => void = () => { };
@@ -181,6 +180,26 @@ export class CustomSelectComponent implements ControlValueAccessor {
     return '';
   }
 
+  private _selectedOption: any = null;
+
+  get selectedOption(): any {
+    if (this.multiple) {
+      if (Array.isArray(this.selectedValue) && this.options) {
+        return this.options.find(opt => this.selectedValue.includes(this.getOptionValue(opt))) || null;
+      }
+      return null;
+    }
+    if (this.options && this.options.length > 0) {
+      const found = this.options.find(opt => this.getOptionValue(opt) === this.selectedValue);
+      if (found !== undefined) return found;
+    }
+    return this._selectedOption || null;
+  }
+
+  set selectedOption(val: any) {
+    this._selectedOption = val;
+  }
+
   get displayLabel(): string {
     if (this.multiple) {
       if (!Array.isArray(this.selectedValue) || this.selectedValue.length === 0) {
@@ -193,13 +212,9 @@ export class CustomSelectComponent implements ControlValueAccessor {
       return labels.length > 0 ? labels.join(', ') : this.placeholder;
     }
 
-    const found = this.options?.find(opt => this.getOptionValue(opt) === this.selectedValue);
-    if (found) {
-      this.selectedOption = found;
-      return this.getOptionLabel(found);
-    }
-    if (this.selectedOption !== null && this.selectedOption !== undefined) {
-      return this.getOptionLabel(this.selectedOption);
+    const currentOpt = this.selectedOption;
+    if (currentOpt) {
+      return this.getOptionLabel(currentOpt);
     }
     return this.placeholder;
   }
@@ -209,7 +224,7 @@ export class CustomSelectComponent implements ControlValueAccessor {
     if (this.multiple) {
       return Array.isArray(this.selectedValue) && this.selectedValue.includes(val);
     }
-    return this.selectedValue === val || (this.selectedValue == val && val !== '');
+    return this.selectedValue === val || (this.selectedValue == val && val !== '' && val !== null && val !== undefined);
   }
 
   private updateSelectedOption(): void {

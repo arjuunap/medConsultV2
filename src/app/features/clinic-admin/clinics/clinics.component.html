@@ -455,8 +455,9 @@
                 class="form-control form-control-sm" 
                 [(ngModel)]="mapSearchQuery" 
                 [ngModelOptions]="{standalone: true}"
-                [placeholder]="'Search location on map (e.g., Al Olaya, Riyadh)...' | translate" 
-                (keyup.enter)="searchMapLocation()">
+                (input)="onMapSearchInputChange()"
+                (keyup.enter)="searchMapLocation()"
+                [placeholder]="'Search location on map (e.g., Al Olaya, Riyadh)...' | translate">
               <button type="button" class="btn btn-sm btn-secondary px-3" (click)="searchMapLocation()" [disabled]="isSearchingLocation">
                 <span *ngIf="!isSearchingLocation">🔍 {{ 'Search' | translate }}</span>
                 <span *ngIf="isSearchingLocation">⏳...</span>
@@ -468,13 +469,14 @@
               {{ searchError }}
             </div>
 
-            <!-- Search Results Dropdown -->
-            <div *ngIf="searchResults.length > 0" class="search-results-dropdown shadow-sm border bg-white rounded position-absolute w-100 mt-1" style="z-index: 1050; max-height: 180px; overflow-y: auto;">
+            <!-- Live Search Results Dropdown -->
+            <div *ngIf="searchResults.length > 0" class="search-results-dropdown shadow-sm border bg-white rounded position-absolute w-100 mt-1" style="z-index: 1050; max-height: 220px; overflow-y: auto;">
               <div 
                 *ngFor="let res of searchResults" 
-                class="search-result-item p-2 border-bottom cursor-pointer hover-bg-light fs-xs text-dark" 
+                class="search-result-item p-2.5 border-bottom cursor-pointer hover-bg-light fs-xs text-dark d-flex align-items-center gap-2" 
                 (click)="selectSearchResult(+res.lat, +res.lon)">
-                📍 {{ res.display_name }}
+                <span>📍</span>
+                <span class="fw-semibold">{{ res.display_name }}</span>
               </div>
             </div>
           </div>

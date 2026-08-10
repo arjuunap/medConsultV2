@@ -71,6 +71,36 @@ export class DoctorsComponent implements OnInit {
   public minExperience: number = 0;
   public maxFee: number = 500;
   public showAdvancedFilters: boolean = false;
+  public mobileFilterDrawerOpen: boolean = false;
+
+  get activeFilterCount(): number {
+    let count = 0;
+    if (this.selectedSpecialtyIds && this.selectedSpecialtyIds.length > 0) count += this.selectedSpecialtyIds.length;
+    if (this.selectedCityIds && this.selectedCityIds.length > 0) count += this.selectedCityIds.length;
+    if (this.selectedRating > 0) count++;
+    if (this.selectedLanguageId) count++;
+    if (this.minExperience > 0) count++;
+    if (this.maxFee < 500) count++;
+    return count;
+  }
+
+  toggleMobileFilterDrawer(): void {
+    this.mobileFilterDrawerOpen = !this.mobileFilterDrawerOpen;
+  }
+
+  closeMobileFilterDrawer(): void {
+    this.mobileFilterDrawerOpen = false;
+  }
+
+  removeSpecialtyFilter(id: string): void {
+    this.selectedSpecialtyIds = this.selectedSpecialtyIds.filter(s => s !== id);
+    this.applyFilters();
+  }
+
+  removeCityFilter(id: string): void {
+    this.selectedCityIds = this.selectedCityIds.filter(c => c !== id);
+    this.applyFilters();
+  }
 
   get specialtyOptions() {
     return this.specialties.map(s => ({

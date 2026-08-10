@@ -72,12 +72,12 @@ import { CustomSelectComponent } from '../../shared/components/custom-select/cus
   selector: 'app-landing',
   standalone: true,
   imports: [
-    CommonModule, 
-    ReactiveFormsModule, 
-    FormsModule, 
-    RouterLink, 
-    CustomSelectComponent, 
-    TranslatePipe, 
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    RouterLink,
+    CustomSelectComponent,
+    TranslatePipe,
     TranslateObjPipe,
     ApiUrlPipe
   ],
@@ -682,7 +682,7 @@ export class LandingComponent implements OnInit {
       }
 
       // 3. Specialty Filter (Multi-select)
-      const specMatch = this.activeSpecialtyIds.length === 0 || 
+      const specMatch = this.activeSpecialtyIds.length === 0 ||
         c.specialtyIds?.some(id => this.activeSpecialtyIds.includes(id));
 
       // 4. Rating Filter
@@ -692,11 +692,11 @@ export class LandingComponent implements OnInit {
       const todayMatch = !this.filterTodayOnly || c.doctors?.some(d => d.avail === 'today');
 
       // 6. Insurance Filter (Multi-select)
-      const insuranceMatch = this.selectedInsIds.length === 0 || 
+      const insuranceMatch = this.selectedInsIds.length === 0 ||
         c.insuranceProviderIds?.some(id => this.selectedInsIds.includes(id));
 
       // 7. Language Filter (Multi-select)
-      const langMatch = this.selectedLangIds.length === 0 || 
+      const langMatch = this.selectedLangIds.length === 0 ||
         c.languageIds?.some(id => this.selectedLangIds.includes(id));
 
       return queryMatch && locMatch && specMatch && ratingMatch && todayMatch && insuranceMatch && langMatch;
@@ -799,7 +799,7 @@ export class LandingComponent implements OnInit {
         this.nextDays = dates.map((dateStr, idx) => {
           const slotsForDay = results[idx] || [];
           const availableSlots = slotsForDay.filter(s => s.status === SlotStatus.AVAILABLE);
-          
+
           const d = new Date(dateStr);
           const label = d.toLocaleDateString(this.languageService.isArabic ? 'ar-SA' : 'en-US', { day: 'numeric', month: 'short' });
           const dayName = d.toLocaleDateString(this.languageService.isArabic ? 'ar-SA' : 'en-US', { weekday: 'short' });

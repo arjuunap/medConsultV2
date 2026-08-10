@@ -491,39 +491,108 @@ export class ClinicsComponent implements OnInit {
     }
   }
 
-  public searchMapLocation(): void {
+  private searchDebounceTimeout: any = null;
+
+  public onMapSearchInputChange(): void {
+    if (this.searchDebounceTimeout) {
+      clearTimeout(this.searchDebounceTimeout);
+    }
+    if (!this.mapSearchQuery || this.mapSearchQuery.trim().length < 2) {
+      this.searchResults = [];
+      this.searchError = null;
+      this.isSearchingLocation = false;
+      return;
+    }
+    this.searchDebounceTimeout = setTimeout(() => {
+      this.performLiveMapSearch(this.mapSearchQuery);
+    }, 350);
+  }
+
+  public async performLiveMapSearch(queryText: string): Promise<void> {
+    if (!queryText || !queryText.trim()) return;
+    this.isSearchingLocation = true;
+    this.searchError = null;
+
+    const rawQuery = queryText.trim();
+    const encodedQuery = encodeURIComponent(rawQuery);
+    const lang = this.languageService.isArabic ? 'ar' : 'en';
+
+    const primaryUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodedQuery}&limit=10&addressdetails=1&countrycodes=sa`;
+
+    try {
+      const res = await fetch(primaryUrl, { headers: { 'Accept-Language': lang } });
+      const data: any[] = await res.json();
+      if (data && data.length > 0) {
+        this.isSearchingLocation = false;
+        this.searchResults = data;
+        return;
+      }
+
+      // Fallback search without countrycodes=sa restriction for global/flexible matches
+      const fallbackUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodedQuery}&limit=10&addressdetails=1`;
+      const fallbackRes = await fetch(fallbackUrl, { headers: { 'Accept-Language': lang } });
+      const fallbackData: any[] = await fallbackRes.json();
+
+      this.isSearchingLocation = false;
+      if (fallbackData && fallbackData.length > 0) {
+        this.searchResults = fallbackData;
+      } else {
+        this.searchResults = [];
+        this.searchError = this.languageService.translate('No locations found matching your query. Try searching by city or landmark name.', 'لم يتم العثور على موقع. جرب البحث باسم المدينة أو المعلم.');
+      }
+    } catch (e) {
+      this.isSearchingLocation = false;
+      this.searchResults = [];
+      this.searchError = this.languageService.translate('Failed to search location. Please try again.', 'فشل البحث عن الموقع. يرجى المحاولة مرة أخرى.');
+    }
+  }
+
+  public async searchMapLocation(): Promise<void> {
+    if (this.searchDebounceTimeout) {
+      clearTimeout(this.searchDebounceTimeout);
+    }
     if (!this.mapSearchQuery || !this.mapSearchQuery.trim()) return;
 
     this.isSearchingLocation = true;
     this.searchError = null;
-    this.searchResults = [];
 
-    const query = encodeURIComponent(this.mapSearchQuery.trim());
-    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=5&countrycodes=sa`;
+    const rawQuery = this.mapSearchQuery.trim();
+    const encodedQuery = encodeURIComponent(rawQuery);
+    const lang = this.languageService.isArabic ? 'ar' : 'en';
 
-    fetch(url, {
-      headers: {
-        'Accept-Language': this.languageService.isArabic ? 'ar' : 'en'
+    const primaryUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodedQuery}&limit=10&addressdetails=1&countrycodes=sa`;
+
+    try {
+      const res = await fetch(primaryUrl, { headers: { 'Accept-Language': lang } });
+      const data: any[] = await res.json();
+
+      if (data && data.length > 0) {
+        this.isSearchingLocation = false;
+        this.searchResults = data;
+        const top = data[0];
+        this.selectSearchResult(parseFloat(top.lat), parseFloat(top.lon));
+        return;
       }
-    })
-      .then(res => {
-        if (!res.ok) throw new Error('Search request failed');
-        return res.json();
-      })
-      .then((data: any[]) => {
-        this.isSearchingLocation = false;
-        if (data && data.length > 0) {
-          this.searchResults = data;
-          const top = data[0];
-          this.selectSearchResult(parseFloat(top.lat), parseFloat(top.lon));
-        } else {
-          this.searchError = this.languageService.translate('No locations found matching your query.', 'لم يتم العثور على موقع مطابق للبحث.');
-        }
-      })
-      .catch(() => {
-        this.isSearchingLocation = false;
-        this.searchError = this.languageService.translate('Failed to search location. Please try again.', 'فشل البحث عن الموقع. يرجى المحاولة مرة أخرى.');
-      });
+
+      // Fallback search without country restriction
+      const fallbackUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodedQuery}&limit=10&addressdetails=1`;
+      const fallbackRes = await fetch(fallbackUrl, { headers: { 'Accept-Language': lang } });
+      const fallbackData: any[] = await fallbackRes.json();
+
+      this.isSearchingLocation = false;
+      if (fallbackData && fallbackData.length > 0) {
+        this.searchResults = fallbackData;
+        const top = fallbackData[0];
+        this.selectSearchResult(parseFloat(top.lat), parseFloat(top.lon));
+      } else {
+        this.searchResults = [];
+        this.searchError = this.languageService.translate('No locations found matching your query. Try searching by city or landmark name.', 'لم يتم العثور على موقع. جرب البحث باسم المدينة أو المعلم.');
+      }
+    } catch (e) {
+      this.isSearchingLocation = false;
+      this.searchResults = [];
+      this.searchError = this.languageService.translate('Failed to search location. Please try again.', 'فشل البحث عن الموقع. يرجى المحاولة مرة أخرى.');
+    }
   }
 
   public selectSearchResult(lat: number, lng: number): void {
