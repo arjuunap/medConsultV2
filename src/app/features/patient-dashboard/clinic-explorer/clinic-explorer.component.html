@@ -1,8 +1,71 @@
 <div class="explorer-container">
   
 
-  <!-- Global Filters Control Panel (Visible in Clinic Listing step) -->
-  <div class="filters-card card shadow-sm p-4 mb-4" *ngIf="viewStep === 'CLINICS_LIST'">
+  <!-- Mobile Search Bar & Filter Toggle Row (Visible on Mobile) -->
+  <div class="mobile-filter-header-bar mb-3" *ngIf="viewStep === 'CLINICS_LIST'">
+    <div class="d-flex align-items-center gap-2">
+      <div class="mobile-search-input-wrapper flex-grow-1">
+        <svg class="mobile-search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input 
+          type="text" 
+          [(ngModel)]="searchQuery" 
+          (input)="applyFilters()" 
+          [placeholder]="'Search clinic name or description...' | translate" 
+          class="form-control mobile-search-input" />
+      </div>
+
+      <button 
+        type="button" 
+        class="btn btn-mobile-filter-trigger d-inline-flex align-items-center gap-1.5 flex-shrink-0" 
+        (click)="toggleMobileFilterDrawer()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+        </svg>
+        <span>{{ 'Filter' | translate }}</span>
+        <span class="active-badge" *ngIf="activeFilterCount > 0">{{ activeFilterCount }}</span>
+      </button>
+    </div>
+
+    <!-- Active Filter Chips Carousel (Mobile Horizontal Scroll) -->
+    <div class="active-chips-scroll-bar d-flex gap-2 overflow-x-auto pt-2" *ngIf="activeFilterCount > 0">
+      <span class="active-filter-chip" *ngIf="selectedSpecialtyId">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4.8 2.3A.3.3 0 0 0 4.5 2h-1a.3.3 0 0 0-.3.3v4.4a5.5 5.5 0 0 0 11 0V2.3a.3.3 0 0 0-.3-.3h-1a.3.3 0 0 0-.3.3v4.4a3.5 3.5 0 0 1-7 0V2.3z"></path>
+          <path d="M8.7 12.1a6.5 6.5 0 0 0 6.5 6.5h1a4.5 4.5 0 0 0 4.5-4.5v-2.6a.3.3 0 0 0-.3-.3h-1a.3.3 0 0 0-.3.3v2.6a2.5 2.5 0 0 1-2.5 2.5h-1a4.5 4.5 0 0 1-4.5-4.5v-.5"></path>
+          <circle cx="20.7" cy="11.2" r="1.3"></circle>
+        </svg>
+        <span>{{ getSpecialtyName(selectedSpecialtyId) }}</span>
+        <button type="button" class="chip-remove-btn" (click)="clearSpecialtyFilter()">✕</button>
+      </span>
+      
+      <span class="active-filter-chip" *ngIf="selectedCityId">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+          <circle cx="12" cy="10" r="3"></circle>
+        </svg>
+        <span>{{ getCityName(selectedCityId) }}</span>
+        <button type="button" class="chip-remove-btn" (click)="clearCityFilter()">✕</button>
+      </span>
+
+      <span class="active-filter-chip" *ngIf="selectedInsuranceProviderId">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        </svg>
+        <span>{{ getInsuranceName(selectedInsuranceProviderId) }}</span>
+        <button type="button" class="chip-remove-btn" (click)="clearInsuranceFilter()">✕</button>
+      </span>
+
+      <button type="button" class="btn-clear-all-chips" (click)="clearFilters()">
+        {{ 'Clear All' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Global Filters Control Panel (Visible on Desktop) -->
+  <div class="filters-card desktop-filters-wrapper card shadow-sm p-4 mb-4" *ngIf="viewStep === 'CLINICS_LIST'">
     <div class="filters-grid">
       <!-- Search Query Input -->
       <div class="filter-field search-field">
@@ -72,6 +135,74 @@
     </div>
   </div>
 
+  <!-- Mobile Bottom Sheet Filter Drawer Modal -->
+  <div class="mobile-filter-drawer-backdrop" *ngIf="mobileFilterDrawerOpen" (click)="closeMobileFilterDrawer()">
+    <div class="mobile-filter-drawer-card" (click)="$event.stopPropagation()">
+      <div class="drawer-header d-flex align-items-center justify-content-between p-3 border-bottom">
+        <h3 class="fs-md fw-bold m-0 text-dark d-flex align-items-center gap-2">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+          </svg>
+          <span>{{ 'Filter Clinics' | translate }}</span>
+        </h3>
+        <button type="button" class="btn-close-drawer" (click)="closeMobileFilterDrawer()">✕</button>
+      </div>
+
+      <div class="drawer-body p-4">
+        <!-- Search Field -->
+        <div class="filter-field mb-3">
+          <label class="filter-label">{{ 'Search Clinic Name' | translate }}</label>
+          <input type="text" [(ngModel)]="searchQuery" (input)="applyFilters()" [placeholder]="'Type clinic name...' | translate" class="form-control" />
+        </div>
+
+        <!-- Specialty Select -->
+        <div class="filter-field mb-3">
+          <label class="filter-label">{{ 'Medical Specialty' | translate }}</label>
+          <app-custom-select 
+            [(ngModel)]="selectedSpecialtyId" 
+            (selectionChange)="applyFilters()" 
+            [options]="specialtyOptions" 
+            [searchable]="true"
+            [placeholder]="'All Specialties' | translate">
+          </app-custom-select>
+        </div>
+
+        <!-- City Select -->
+        <div class="filter-field mb-3">
+          <label class="filter-label">{{ 'Location / City' | translate }}</label>
+          <app-custom-select 
+            [(ngModel)]="selectedCityId" 
+            (selectionChange)="applyFilters()" 
+            [options]="cityOptions" 
+            [searchable]="true"
+            [placeholder]="'All Cities' | translate">
+          </app-custom-select>
+        </div>
+
+        <!-- Insurance Network Select -->
+        <div class="filter-field mb-3">
+          <label class="filter-label">{{ 'Insurance Network' | translate }}</label>
+          <app-custom-select 
+            [(ngModel)]="selectedInsuranceProviderId" 
+            (selectionChange)="applyFilters()" 
+            [options]="insuranceOptions" 
+            [searchable]="true"
+            [placeholder]="'All Insurance Providers' | translate">
+          </app-custom-select>
+        </div>
+      </div>
+
+      <div class="drawer-footer p-3 border-top d-flex align-items-center justify-content-between gap-2">
+        <button type="button" class="btn btn-outline-secondary py-2 px-3 fw-semibold" (click)="clearFilters()">
+          {{ 'Reset All' | translate }}
+        </button>
+        <button type="button" class="btn btn-primary py-2 px-4 fw-semibold flex-grow-1" (click)="closeMobileFilterDrawer()">
+          {{ 'Show Clinics' | translate }} ({{ filteredClinics.length }})
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- STEP 1: CLINICS LISTING GRID -->
   <div *ngIf="viewStep === 'CLINICS_LIST'" class="clinics-listing-wrapper">
     <div *ngIf="filteredClinics.length === 0" class="empty-state-card text-center p-5 card shadow-sm">
@@ -128,11 +259,21 @@
               <!-- Enrichment Tags (Specialties & Branches) -->
               <div class="enrichment-info-row d-flex flex-wrap align-items-center gap-2 mt-1" *ngIf="clinicEnrichmentMap[clinic.clinicId]">
                 <span class="info-pill branch-pill">
-                  🏢 {{ clinicEnrichmentMap[clinic.clinicId].branches.length }} {{ 'Branches' | translate }}
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" class="flex-shrink-0">
+                    <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+                    <line x1="9" y1="6" x2="9.01" y2="6"></line>
+                    <line x1="15" y1="6" x2="15.01" y2="6"></line>
+                    <line x1="9" y1="10" x2="9.01" y2="10"></line>
+                    <line x1="15" y1="10" x2="15.01" y2="10"></line>
+                    <line x1="9" y1="14" x2="9.01" y2="14"></line>
+                    <line x1="15" y1="14" x2="15.01" y2="14"></line>
+                    <line x1="9" y1="18" x2="15" y2="18"></line>
+                  </svg>
+                  <span>{{ clinicEnrichmentMap[clinic.clinicId].branches.length }} {{ 'Branches' | translate }}</span>
                 </span>
                 <ng-container *ngFor="let spec of clinicEnrichmentMap[clinic.clinicId].specialties.slice(0, 2)">
                   <span class="info-pill spec-pill" *ngIf="spec && (spec | translateObj:'name')">
-                    ⚕️ {{ spec | translateObj:'name' }}
+                    <span>⚕️ {{ spec | translateObj:'name' }}</span>
                   </span>
                 </ng-container>
               </div>
@@ -150,7 +291,7 @@
 
             <button type="button" class="btn btn-outline-primary btn-sm fw-semibold d-inline-flex align-items-center gap-1.5 explore-btn">
               <span>{{ 'Explore Clinic & Branches' | translate }}</span>
-              <span class="arrow-icon">→</span>
+              <span class="arrow-icon">{{ languageService.isArabic ? '←' : '→' }}</span>
             </button>
           </div>
         </div>

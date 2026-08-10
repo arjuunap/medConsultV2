@@ -44,7 +44,7 @@ export class BookAppointmentComponent implements OnInit {
 
   // Active step flow navigation state
   public currentStep = 1;
-  public nextDays: any[] = [];
+  public nextDays: { date: string; dayNum: string; dayName: string; monthName: string; hasSlots?: boolean }[] = [];
   public doctorSearchQuery = '';
 
   // Step 1 Filtering & Sorting state
@@ -173,7 +173,8 @@ export class BookAppointmentComponent implements OnInit {
         date: dateStr,
         dayNum: d.getDate().toString(),
         dayName: d.toLocaleDateString(isAr ? 'ar-SA' : 'en-US', { weekday: 'short' }),
-        monthName: d.toLocaleDateString(isAr ? 'ar-SA' : 'en-US', { month: 'short' })
+        monthName: d.toLocaleDateString(isAr ? 'ar-SA' : 'en-US', { month: 'short' }),
+        hasSlots: true
       });
     }
     this.nextDays = days;
@@ -395,8 +396,38 @@ export class BookAppointmentComponent implements OnInit {
 
   selectClinic(dcId: string): void {
     this.wizardForm.patchValue({ dcId });
+    this.checkSlotsForNextDays(dcId);
     this.onClinicOrDateChange();
     this.currentStep = 3;
+  }
+
+  checkSlotsForNextDays(dcId: string): void {
+    if (!dcId) return;
+    const dayCalls = this.nextDays.map(d =>
+      this.doctorService.getAvailableSlots(dcId, d.date).pipe(
+        catchError(() => of([]))
+      )
+    );
+
+    forkJoin(dayCalls).subscribe((results) => {
+      this.nextDays = this.nextDays.map((dayItem, idx) => {
+        const slotsForDay = results[idx] || [];
+        const availableSlots = slotsForDay.filter(s => s.status === 'AVAILABLE');
+        return {
+          ...dayItem,
+          hasSlots: availableSlots.length > 0
+        };
+      });
+
+      const currentSelectedHasSlots = this.nextDays.find(d => d.date === this.wizardForm.value.scheduledDate)?.hasSlots;
+      if (currentSelectedHasSlots === false) {
+        const firstAvailable = this.nextDays.find(d => d.hasSlots);
+        if (firstAvailable) {
+          this.wizardForm.patchValue({ scheduledDate: firstAvailable.date });
+          this.onClinicOrDateChange();
+        }
+      }
+    });
   }
 
   selectDate(dateStr: string): void {

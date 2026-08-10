@@ -71,6 +71,53 @@ export class ClinicExplorerComponent implements OnInit {
   public selectedCityId = '';
   public selectedInsuranceProviderId = '';
   public showAdvancedFilters = false;
+  public mobileFilterDrawerOpen = false;
+
+  get activeFilterCount(): number {
+    let count = 0;
+    if (this.selectedSpecialtyId) count++;
+    if (this.selectedCityId) count++;
+    if (this.selectedInsuranceProviderId) count++;
+    return count;
+  }
+
+  toggleMobileFilterDrawer(): void {
+    this.mobileFilterDrawerOpen = !this.mobileFilterDrawerOpen;
+  }
+
+  closeMobileFilterDrawer(): void {
+    this.mobileFilterDrawerOpen = false;
+  }
+
+  clearSpecialtyFilter(): void {
+    this.selectedSpecialtyId = '';
+    this.applyFilters();
+  }
+
+  clearCityFilter(): void {
+    this.selectedCityId = '';
+    this.applyFilters();
+  }
+
+  clearInsuranceFilter(): void {
+    this.selectedInsuranceProviderId = '';
+    this.applyFilters();
+  }
+
+  getSpecialtyName(id: string): string {
+    const s = this.specialties.find(x => x.specialtyId === id);
+    return s ? (this.languageService.isArabic && s.nameAr ? s.nameAr : s.nameEn) : '';
+  }
+
+  getCityName(id: string): string {
+    const c = this.cities.find(x => x.cityId === id);
+    return c ? (this.languageService.isArabic && c.nameAr ? c.nameAr : c.nameEn) : '';
+  }
+
+  getInsuranceName(id: string): string {
+    const i = this.insuranceProviders.find(x => x.providerId === id);
+    return i ? (this.languageService.isArabic && i.nameAr ? i.nameAr : i.nameEn) : '';
+  }
 
   // Clinic Enrichment Cache (branches, specialties, insurance, cityIds per clinic)
   public clinicEnrichmentMap: {

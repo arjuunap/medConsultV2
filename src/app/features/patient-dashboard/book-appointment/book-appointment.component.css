@@ -815,6 +815,34 @@
   color: white;
 }
 
+.date-chip-item.no-slots {
+  opacity: 0.45;
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+  cursor: pointer;
+  filter: grayscale(80%);
+}
+
+.date-chip-item.no-slots:hover {
+  opacity: 0.7;
+  border-color: #cbd5e1;
+}
+
+.date-chip-item.no-slots .day-name,
+.date-chip-item.no-slots .day-num,
+.date-chip-item.no-slots .month-name {
+  color: #94a3b8;
+}
+
+.no-slots-badge {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #94a3b8;
+  display: block;
+  margin-top: 2px;
+  text-transform: uppercase;
+}
+
 .date-chip-item .day-name {
   font-size: 0.65rem;
   font-weight: 700;

@@ -11,7 +11,10 @@ import { ApiUrlPipe } from '../../shared/pipes/api-url.pipe';
 import { DoctorDetailResponse } from '../../core/models/doctor.model';
 import { SpecialtyResponseDto, LanguageResponseDto } from '../../core/models/reference.model';
 import { forkJoin, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
+import { ReviewService, DoctorReviewResponse } from '../../core/services/review.service';
+import { AuthService } from '../../core/services/auth.service';
+import { PatientService } from '../../core/services/patient.service';
 
 @Component({
   selector: 'app-doctor-detail',
@@ -27,15 +30,26 @@ export class DoctorDetailComponent implements OnInit {
   private uiService = inject(UiService);
   public languageService = inject(LanguageService);
   private clinicService = inject(ClinicService);
+  private reviewService = inject(ReviewService);
+  private authService = inject(AuthService);
+  private patientService = inject(PatientService);
 
   public doctorDetail: DoctorDetailResponse | null = null;
   public doctorId: string | null = null;
+  public doctorReviews: DoctorReviewResponse[] = [];
+  public patientId = '';
 
   public globalSpecialties: SpecialtyResponseDto[] = [];
   public globalLanguages: LanguageResponseDto[] = [];
 
   ngOnInit(): void {
     this.doctorId = this.route.snapshot.paramMap.get('id');
+    if (this.authService.isLoggedIn() && this.authService.currentUser()?.role === 'PATIENT') {
+      this.patientService.getMyProfile().subscribe({
+        next: (p) => this.patientId = p.patientId,
+        error: () => {}
+      });
+    }
     if (this.doctorId) {
       this.loadReferencesAndProfile(this.doctorId);
     }
@@ -46,11 +60,13 @@ export class DoctorDetailComponent implements OnInit {
     
     forkJoin({
       profile: this.doctorService.getDoctorProfile(id),
+      reviews: this.reviewService.getDoctorReviews(id).pipe(catchError(() => of({ content: [] } as any))),
       specialties: this.referenceService.getAllSpecialties().pipe(catchError(() => of([]))),
       languages: this.referenceService.getAllLanguages().pipe(catchError(() => of([])))
     }).subscribe({
       next: (res) => {
         this.doctorDetail = res.profile;
+        this.doctorReviews = (res.reviews && res.reviews.content) ? res.reviews.content : [];
         this.globalSpecialties = res.specialties;
         this.globalLanguages = res.languages;
         
@@ -123,13 +139,28 @@ export class DoctorDetailComponent implements OnInit {
 
   get doctorDisplayName(): string {
     if (!this.doctorDetail?.doctor) return '';
-    const title = this.doctorDetail.doctor.title || '';
-    const name = this.doctorDetail.doctor.fullName || '';
-    const nameLower = name.toLowerCase().trim();
-    if (nameLower.startsWith('dr') || nameLower.startsWith('prof') || nameLower.startsWith('consultant')) {
-      return name;
+    const d = this.doctorDetail.doctor;
+    const isAr = this.languageService.isArabic;
+    const name = isAr && (d as any).fullNameAr ? (d as any).fullNameAr : d.fullName || '';
+    const nameTrimmed = name.trim();
+    const nameLower = nameTrimmed.toLowerCase();
+    if (nameLower.startsWith('dr') || nameLower.startsWith('doctor') || nameLower.startsWith('prof') || nameLower.startsWith('consultant') || nameLower.startsWith('د.')) {
+      return nameTrimmed;
     }
-    return `${title ? title + '. ' : ''}${name}`;
+    const prefix = isAr ? 'د.' : 'Dr.';
+    return `${prefix} ${nameTrimmed}`;
+  }
+
+  get doctorInitials(): string {
+    if (!this.doctorDetail?.doctor) return 'DR';
+    const d = this.doctorDetail.doctor;
+    const name = ((d as any).fullNameAr || d.fullName || '').trim();
+    if (!name) return 'DR';
+    const parts = name.split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
   }
 
   getSpecialtyName(specialtyId: string): string {
@@ -140,5 +171,14 @@ export class DoctorDetailComponent implements OnInit {
   getLanguageName(languageId: string): string {
     const lang = this.globalLanguages.find(l => l.languageId === languageId);
     return lang ? this.languageService.translate(lang.nameEn, lang.nameAr) : 'Unknown Language';
+  }
+
+  getInitials(name: string): string {
+    if (!name) return 'PT';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
   }
 }

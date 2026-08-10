@@ -3,7 +3,7 @@
   <!-- Back Button Navigation -->
   <div class="navigation-bar">
     <a routerLink="/patient/doctors" class="back-nav-link flex-align-center gap-2">
-      <svg class="nav-arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <svg class="nav-arrow-svg" [style.transform]="languageService.isArabic ? 'rotate(180deg)' : 'none'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <line x1="19" y1="12" x2="5" y2="12"></line>
         <polyline points="12 19 5 12 12 5"></polyline>
       </svg>
@@ -17,11 +17,8 @@
       <div class="avatar-column">
         <div class="doctor-profile-avatar-wrap">
           <img *ngIf="doctorDetail.doctor.avatarUrl" [src]="doctorDetail.doctor.avatarUrl | apiUrl" (error)="doctorDetail.doctor.avatarUrl = ''" class="doctor-profile-avatar-img" [alt]="doctorDisplayName">
-          <div *ngIf="!doctorDetail.doctor.avatarUrl" class="doctor-profile-avatar-fallback flex-align-center justify-center">
-            <svg class="doctor-fallback-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
+          <div *ngIf="!doctorDetail.doctor.avatarUrl" class="doctor-profile-avatar-fallback">
+            <span class="doctor-avatar-initials">{{ doctorInitials }}</span>
           </div>
         </div>
       </div>
@@ -281,7 +278,7 @@
 
         <div class="cta-fee-summary mt-3">
           <span class="cta-fee-label">{{ 'Consultation Fee' | translate }}</span>
-          <span class="cta-fee-amount">SAR {{ doctorDetail.doctor.consultationFeeSar || 150 }}</span>
+          <span class="cta-fee-amount">{{ doctorDetail.doctor.consultationFeeSar || 150 }} {{ 'SAR' | translate }}</span>
         </div>
 
         <p class="cta-description text-muted fs-sm mt-2">
@@ -332,6 +329,79 @@
 
     </div>
 
+  </div>
+
+  <!-- YouTube-Style Bottom Patient Reviews & Ratings Section -->
+  <div class="youtube-comments-section mt-4">
+    <div class="detail-card comments-card">
+      <div class="comments-card-header d-flex flex-wrap justify-content-between align-items-center gap-3 pb-3 border-bottom mb-4">
+        <div class="d-flex align-items-center gap-2">
+          <svg class="comments-icon-svg" viewBox="0 0 24 24" fill="currentColor" style="width: 24px; height: 24px; color: #f59e0b;">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          <h2 class="comments-title m-0 fs-4 fw-bold">
+            {{ 'Patient Reviews & Ratings' | translate }}
+          </h2>
+          <span class="comments-count-badge text-muted fs-6 fw-normal">({{ doctorReviews.length }})</span>
+        </div>
+
+        <!-- Overall Score Box -->
+        <div class="overall-rating-summary-pill d-flex align-items-center gap-2 px-3 py-1.5 rounded-pill bg-amber-light border border-amber-soft">
+          <span class="text-amber fw-bold fs-5" style="color: #d97706; font-weight: 800;">★ {{ doctorDetail.doctor.overallRating || 5.0 }}</span>
+          <span class="text-secondary fs-xs" style="color: #92400e; font-size: 0.8rem;">/ 5.0 ({{ doctorDetail.doctor.reviewCount || doctorReviews.length }} {{ 'reviews' | translate }})</span>
+        </div>
+      </div>
+
+      <!-- Comments List -->
+      <div class="youtube-comments-list d-flex flex-column gap-3">
+        <div *ngIf="doctorReviews.length === 0" class="empty-info-box text-muted text-center p-4 rounded-4">
+          <svg class="empty-icon-svg mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width: 38px; height: 38px; margin: 0 auto; display: block; color: #94a3b8;">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <div class="fw-semibold fs-6 text-dark mt-2">{{ 'No patient reviews recorded yet for this doctor.' | translate }}</div>
+          <p class="fs-xs text-muted m-0 mt-1">{{ 'Be the first patient to complete an appointment and submit a review.' | translate }}</p>
+        </div>
+
+        <div *ngFor="let rev of doctorReviews" class="yt-comment-row border rounded-3 p-3 bg-light">
+          <div class="yt-comment-header-group d-flex gap-3 align-items-start">
+            <div class="yt-comment-avatar flex-shrink-0">
+              <img *ngIf="!rev.isAnonymous && rev.patientAvatarUrl" [src]="rev.patientAvatarUrl | apiUrl" (error)="rev.patientAvatarUrl = ''" class="w-100 h-100 object-fit-cover" [alt]="rev.patientName">
+              <span *ngIf="rev.isAnonymous || !rev.patientAvatarUrl" class="fw-bold fs-6 text-teal">
+                {{ getInitials(rev.isAnonymous ? 'Anonymous' : rev.patientName) }}
+              </span>
+            </div>
+
+            <div class="yt-comment-main flex-grow-1 min-w-0">
+              <div class="yt-comment-meta d-flex flex-wrap align-items-center gap-2 mb-1">
+                <strong class="yt-author-name text-dark fs-sm fw-bold">
+                  {{ rev.isAnonymous ? ('Anonymous' | translate) : rev.patientName }}
+                </strong>
+                <span class="badge bg-teal-light text-teal fs-xs px-2 py-0.5 rounded-pill" *ngIf="rev.patientId === patientId">{{ 'You' | translate }}</span>
+                <span class="yt-comment-time text-muted fs-xs">• {{ rev.createdAt | date:'mediumDate' }}</span>
+
+                <div class="yt-comment-stars fs-xs">
+                  <span *ngFor="let star of [1, 2, 3, 4, 5]" [style.color]="(rev.rating || 5) >= star ? '#f59e0b' : '#cbd5e1'" style="font-size: 1.15rem; margin: 0 1px;">★</span>
+                </div>
+              </div>
+
+              <p class="yt-comment-text text-dark fs-sm m-0 lh-base" *ngIf="rev.reviewText">{{ rev.reviewText }}</p>
+
+              <!-- Nested Doctor Reply Box -->
+              <div class="yt-doctor-reply-nested mt-2 p-2.5 rounded-3 bg-white border-start border-3 border-teal" *ngIf="rev.doctorReply">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                  <div class="doctor-reply-avatar flex-shrink-0">
+                    DR
+                  </div>
+                  <span class="fs-xs fw-bold text-teal">{{ doctorDisplayName }}</span>
+                  <span class="badge bg-secondary text-white fs-xs px-1.5 py-0.2">{{ 'Doctor Response' | translate }}</span>
+                </div>
+                <p class="fs-xs text-secondary m-0 ps-4 me-0">{{ rev.doctorReply }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
 </div>

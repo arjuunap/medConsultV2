@@ -1319,7 +1319,16 @@ const translations: { [lang in Lang]: { [key: string]: string } } = {
     'Branch Email': 'Branch Email',
     'Save Branch': 'Save Branch',
     'Edit': 'Edit',
-    'Manage': 'Manage'
+    'Manage': 'Manage',
+
+    // Doctor Profile & Reviews Module
+    'Patient Reviews & Ratings': 'Patient Reviews & Ratings',
+    'Select an available clinic branch, date, and appointment slot.': 'Select an available clinic branch, date, and appointment slot.',
+    'Book Appointment Now': 'Book Appointment Now',
+    'No patient reviews recorded yet for this doctor.': 'No patient reviews recorded yet for this doctor.',
+    'Be the first patient to complete an appointment and submit a review.': 'Be the first patient to complete an appointment and submit a review.',
+    'Patient 1': 'Patient 1',
+    'Patient 2': 'Patient 2'
   },
   ar: {
     'Upload Avatar Photo': 'رفع صورة البروفايل',
@@ -2539,6 +2548,15 @@ const translations: { [lang in Lang]: { [key: string]: string } } = {
     'Branch Email': 'البريد الإلكتروني للفرع',
     'Save Branch': 'حفظ الفرع',
     'Edit': 'تعديل',
-    'Manage': 'إدارة'
+    'Manage': 'إدارة',
+
+    // Doctor Profile & Reviews Module - Arabic
+    'Patient Reviews & Ratings': 'تقييمات وآراء المرضى',
+    'Select an available clinic branch, date, and appointment slot.': 'اختر فرع العيادة المناسب، التاريخ، وموعد الاستشارة المتاح.',
+    'Book Appointment Now': 'احجز موعد الآن',
+    'No patient reviews recorded yet for this doctor.': 'لا توجد تقييمات مسجلة لهذا الطبيب حتى الآن.',
+    'Be the first patient to complete an appointment and submit a review.': 'كن أول مريض يكمل موعداً ويترك تقييمه.',
+    'Patient 1': 'المريض 1',
+    'Patient 2': 'المريض 2'
   }
 };

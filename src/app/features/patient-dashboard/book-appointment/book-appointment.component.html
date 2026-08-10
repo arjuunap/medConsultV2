@@ -346,10 +346,12 @@
         <div class="date-chip-item"
              *ngFor="let day of nextDays"
              [class.selected]="wizardForm.get('scheduledDate')?.value === day.date"
+             [class.no-slots]="day.hasSlots === false"
              (click)="selectDate(day.date)">
           <span class="day-name">{{ day.dayName }}</span>
           <span class="day-num">{{ day.dayNum }}</span>
           <span class="month-name">{{ day.monthName }}</span>
+          <span class="no-slots-badge" *ngIf="day.hasSlots === false">{{ 'No Slots' | translate }}</span>
         </div>
       </div>
 

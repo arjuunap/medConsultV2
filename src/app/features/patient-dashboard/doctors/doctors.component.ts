@@ -11,12 +11,11 @@ import { UiService } from '../../../core/services/ui.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { PatientService } from '../../../core/services/patient.service';
-import { TranslatePipe, TranslateObjPipe } from '../../../shared/pipes/translate.pipe';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { ApiUrlPipe } from '../../../shared/pipes/api-url.pipe';
 import { SpecialtyResponseDto, LanguageResponseDto, CityResponseDto } from '../../../core/models/reference.model';
-import { DoctorResponseDto, DoctorDetailResponse } from '../../../core/models/doctor.model';
+import { DoctorResponseDto } from '../../../core/models/doctor.model';
 import { ClinicResponseDto } from '../../../core/models/clinic.model';
-import { ReviewService, DoctorReviewResponse } from '../../../core/services/review.service';
 
 import { CustomSelectComponent } from '../../../shared/components/custom-select/custom-select.component';
 
@@ -33,7 +32,7 @@ export interface EnrichedDoctor extends DoctorResponseDto {
 @Component({
   selector: 'app-doctors',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, TranslatePipe, TranslateObjPipe, ApiUrlPipe, CustomSelectComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, TranslatePipe, ApiUrlPipe, CustomSelectComponent],
   templateUrl: './doctors.component.html',
   styleUrls: ['./doctors.component.css']
 })
@@ -44,7 +43,6 @@ export class DoctorsComponent implements OnInit {
   private uiService = inject(UiService);
   public languageService = inject(LanguageService);
   private router = inject(Router);
-  private reviewService = inject(ReviewService);
   private authService = inject(AuthService);
   private patientService = inject(PatientService);
 
@@ -137,12 +135,6 @@ export class DoctorsComponent implements OnInit {
     ];
   }
 
-  // Selected doctor details state
-  public selectedDoctorDetail: DoctorDetailResponse | null = null;
-  public showDetailModal: boolean = false;
-  public detailSpecialties: SpecialtyResponseDto[] = [];
-  public detailLanguages: LanguageResponseDto[] = [];
-  public doctorReviews: DoctorReviewResponse[] = [];
   public patientId: string = '';
 
   ngOnInit(): void {
@@ -324,12 +316,11 @@ export class DoctorsComponent implements OnInit {
   }
 
   viewDoctorDetails(doctorId: string): void {
-    this.router.navigate(['/doctors', doctorId]);
-  }
-
-  closeDetailModal(): void {
-    this.showDetailModal = false;
-    this.selectedDoctorDetail = null;
+    if (this.router.url.startsWith('/patient')) {
+      this.router.navigate(['/patient/doctors', doctorId]);
+    } else {
+      this.router.navigate(['/doctors', doctorId]);
+    }
   }
 
   bookAppointment(doctorId: string): void {
