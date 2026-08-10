@@ -55,4 +55,18 @@ export class ScheduleComponent implements OnInit {
       }
     });
   }
+
+  formatDate(dateStr: string): string {
+    if (!dateStr) return '';
+    try {
+      const d = new Date(dateStr);
+      return d.toLocaleDateString(this.languageService.isArabic ? 'ar-SA' : 'en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+    } catch {
+      return dateStr;
+    }
+  }
 }

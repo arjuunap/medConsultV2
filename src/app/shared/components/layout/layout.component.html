@@ -110,8 +110,8 @@
           
           <div class="user-details">
             <div class="d-flex align-center gap-1">
-              <span class="user-name">{{ user.fullName }}</span>
-              <span class="user-role-badge">{{ user.role.replace('_', ' ') }}</span>
+              <span class="user-name">{{ user.fullName | translate }}</span>
+              <span class="user-role-badge">{{ user.role | translate }}</span>
             </div>
           </div>
 

@@ -34,9 +34,9 @@
           <input type="file" #avatarInput accept="image/png, image/jpeg, image/webp" (change)="onAvatarSelected($event)" style="display: none;">
         </div>
         <div>
-          <h3 class="fs-xl text-primary m-0 fw-bold">{{ authService.currentUser()?.fullName }}</h3>
+          <h3 class="fs-xl text-primary m-0 fw-bold">{{ authService.currentUser()?.fullName | translate }}</h3>
           <div class="text-muted fs-xs mt-1">
-            ✉️ {{ authService.currentUser()?.email }} &bull; <span class="badge badge-success">{{ authService.currentUser()?.role }}</span>
+            ✉️ {{ authService.currentUser()?.email }} &bull; <span class="badge badge-success">{{ authService.currentUser()?.role | translate }}</span>
           </div>
           <div *ngIf="stagedAvatarPreviewUrl" class="text-amber fs-xs fw-bold mt-1">
             📷 {{ 'New profile photo selected. Click "Save Account Info" to upload.' | translate }}
@@ -115,7 +115,7 @@
     
     <div class="d-flex justify-between align-center flex-wrap gap-3">
       <div>
-        <h3 class="fs-xl text-primary m-0 fw-bold">{{ doctorDisplayName }}</h3>
+        <h3 class="fs-xl text-primary m-0 fw-bold">{{ doctorDisplayName | translate }}</h3>
         <div class="d-flex align-center gap-3 fs-xs text-muted mt-2 flex-wrap">
           <span>{{ 'Experience' | translate }}: <strong>{{ doctorProfile.experienceYears !== undefined && doctorProfile.experienceYears !== null ? doctorProfile.experienceYears : 0 }} {{ 'Years' | translate }}</strong></span>
           <span>{{ 'Rating:' | translate }} <strong>⭐ {{ doctorProfile.overallRating || 0 }} ({{ doctorProfile.reviewCount || 0 }} {{ 'reviews' | translate }})</strong></span>

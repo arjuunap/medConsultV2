@@ -78,13 +78,13 @@
                   {{ getPatientInitials(app.patientName) }}
                 </div>
                 <div>
-                  <div class="fw-bold text-dark">{{ app.patientName }}</div>
+                  <div class="fw-bold text-dark">{{ app.patientName | translate }}</div>
                   <div class="fs-xs text-muted">{{ 'ID' | translate }}: {{ app.patientId.substring(0,8) }}...</div>
                 </div>
               </div>
             </td>
             <td>
-              <div class="fw-bold">{{ app.scheduledDate | date:'mediumDate' }}</div>
+              <div class="fw-bold">{{ formatDate(app.scheduledDate) }}</div>
               <div class="fs-xs text-muted">⏰ {{ app.startTime.substring(0,5) }} ({{ app.durationMinutes }} {{ 'min' | translate }})</div>
             </td>
             <td>
@@ -128,7 +128,7 @@
             <div class="patient-avatar-sm" [style.background]="getAvatarBg(app.patientName)" [style.color]="getAvatarColor(app.patientName)">
               {{ getPatientInitials(app.patientName) }}
             </div>
-            <div class="fw-bold text-dark">{{ app.patientName }}</div>
+            <div class="fw-bold text-dark">{{ app.patientName | translate }}</div>
           </div>
           <span class="status-badge-sm" [class.status-completed]="app.status === 'COMPLETED'" 
             [class.status-confirmed]="app.status === 'CONFIRMED'" 
@@ -138,7 +138,7 @@
           </span>
         </div>
         <div class="fs-sm mb-1">
-          <strong>🗓️ {{ app.scheduledDate | date:'mediumDate' }}</strong> &#64; ⏰ {{ app.startTime.substring(0,5) }}
+          <strong>🗓️ {{ formatDate(app.scheduledDate) }}</strong> &#64; ⏰ {{ app.startTime.substring(0,5) }}
         </div>
         <div class="fs-xs text-muted mb-2">
           🏢 {{ languageService.isArabic ? app.clinicNameAr : app.clinicNameEn }} ({{ app.sessionType === 'IN_CLINIC' ? ('In-Clinic' | translate) : ('Video Call' | translate) }})
@@ -183,7 +183,7 @@
         </div>
         <div>
           <div class="d-flex align-center gap-2 flex-wrap">
-            <h3 class="m-0 text-white fw-bold fs-lg">{{ selectedAppointment.patientName }}</h3>
+            <h3 class="m-0 text-white fw-bold fs-lg">{{ selectedAppointment.patientName | translate }}</h3>
             <span class="status-badge" [class.status-completed]="selectedAppointment.status === 'COMPLETED'" 
               [class.status-confirmed]="selectedAppointment.status === 'CONFIRMED'" 
               [class.status-scheduled]="selectedAppointment.status === 'SCHEDULED'" 
@@ -212,7 +212,7 @@
             <div class="spec-card-body">
               <div class="d-flex align-center justify-between flex-wrap gap-2 mb-2">
                 <span class="fs-md fw-bold text-dark">
-                  🗓️ {{ selectedAppointment.scheduledDate | date:'fullDate' }}
+                  🗓️ {{ formatDate(selectedAppointment.scheduledDate) }}
                 </span>
                 <span class="badge badge-teal fs-xs">
                   ⏰ {{ selectedAppointment.startTime.substring(0,5) }} ({{ selectedAppointment.durationMinutes }} {{ 'minutes duration' | translate }})
