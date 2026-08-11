@@ -84,6 +84,24 @@ export class WebSocketService {
     }
   }
 
+  public watchCaseRoom(caseRoomId: string): Observable<any> {
+    try {
+      this.connect();
+      return this.rxStomp.watch(`/topic/caseroom/${caseRoomId}`).pipe(
+        map(message => {
+          try {
+            return JSON.parse(message.body);
+          } catch (e) {
+            return null as any;
+          }
+        }),
+        catchError(() => of(null as any))
+      );
+    } catch (e) {
+      return of(null as any);
+    }
+  }
+
   public sendChatMessage(dto: ConsultationMessageRequestDto): void {
     try {
       this.connect();

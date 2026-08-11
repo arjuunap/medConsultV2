@@ -49,6 +49,7 @@ export interface DoctorResponseDto {
   doctorId: string;
   userId: string;
   fullName: string;
+  email?: string;
   mohRegistrationNumber: string;
   mohVerified: boolean;
   title: DoctorTitle;

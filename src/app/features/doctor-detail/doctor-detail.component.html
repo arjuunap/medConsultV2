@@ -44,9 +44,15 @@
           </span>
         </div>
 
-        <div class="reg-number-text mt-2">
-          <span class="text-muted">{{ 'Registration ID:' | translate }}</span>
-          <strong class="text-dark ms-1">{{ doctorDetail.doctor.mohRegistrationNumber || 'N/A' }}</strong>
+        <div class="reg-number-text mt-2 d-flex align-center gap-3 flex-wrap">
+          <div>
+            <span class="text-muted">{{ 'Registration ID:' | translate }}</span>
+            <strong class="text-dark ms-1">{{ doctorDetail.doctor.mohRegistrationNumber || 'N/A' }}</strong>
+          </div>
+          <div *ngIf="doctorDetail.doctor.email" class="d-flex align-center gap-1">
+            <span class="text-muted">✉️ {{ 'Email:' | translate }}</span>
+            <a [href]="'mailto:' + doctorDetail.doctor.email" class="text-teal fw-semibold">{{ doctorDetail.doctor.email }}</a>
+          </div>
         </div>
       </div>
 

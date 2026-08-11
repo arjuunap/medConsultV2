@@ -21,7 +21,9 @@ import { CustomSelectComponent } from '../../../../shared/components/custom-sele
 import { LanguageService } from '../../../../core/services/language.service';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { ApiUrlPipe } from '../../../../shared/pipes/api-url.pipe';
-import { forkJoin } from 'rxjs';
+import { FileService, FileMetadataResponseDto } from '../../../../core/services/file.service';
+import { WebSocketService } from '../../../../core/services/websocket.service';
+import { forkJoin, of, catchError, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-case-rooms',
@@ -38,6 +40,8 @@ export class CaseRoomsComponent implements OnInit, OnDestroy {
   private consultationService = inject(ConsultationService);
   private doctorService = inject(DoctorService);
   private clinicalRecordService = inject(ClinicalRecordService);
+  public fileService = inject(FileService);
+  public webSocketService = inject(WebSocketService);
   private fb = inject(FormBuilder);
   public languageService = inject(LanguageService);
 
@@ -49,6 +53,56 @@ export class CaseRoomsComponent implements OnInit, OnDestroy {
   
   public patientsList: { patientId: string, patientName: string }[] = [];
   public chatFile: File | null = null;
+  private chatSubscription: Subscription | null = null;
+
+  // File & Media Handling State
+  public isUploadingFile = false;
+  public fileMetadataCache: { [fileId: string]: FileMetadataResponseDto } = {};
+  public fileBlobUrlMap: { [fileId: string]: string } = {};
+  public fileBlobTypeMap: { [fileId: string]: string } = {};
+  public previewImageUrl: string | null = null;
+  public previewImageTitle: string = '';
+  public previewFileId: string | null = null;
+
+  isImageFile(post: CaseRoomPostResponseDto): boolean {
+    if (!post.fileId) return false;
+    if (this.fileBlobTypeMap[post.fileId]?.startsWith('image/')) {
+      return true;
+    }
+    const meta = this.fileMetadataCache[post.fileId];
+    if (meta?.mimeType) {
+      return meta.mimeType.startsWith('image/');
+    }
+    if (meta?.originalFilename) {
+      return /\.(png|jpe?g|gif|webp|svg|bmp)$/i.test(meta.originalFilename);
+    }
+    if (post.body) {
+      return /\.(png|jpe?g|gif|webp|svg|bmp)$/i.test(post.body);
+    }
+    return false;
+  }
+
+  ensureFileBlob(fileId: string): void {
+    if (!fileId || this.fileBlobUrlMap[fileId]) return;
+    this.fileService.downloadFile(fileId).pipe(catchError(() => of(null))).subscribe(blob => {
+      if (blob) {
+        this.fileBlobTypeMap[fileId] = blob.type;
+        this.fileBlobUrlMap[fileId] = window.URL.createObjectURL(blob);
+      }
+    });
+  }
+
+  openImageModal(url: string, title?: string, fileId?: string): void {
+    this.previewImageUrl = url;
+    this.previewImageTitle = title || 'Image Preview';
+    this.previewFileId = fileId || null;
+  }
+
+  closeImageModal(): void {
+    this.previewImageUrl = null;
+    this.previewImageTitle = '';
+    this.previewFileId = null;
+  }
 
   get patientSelectOptions() {
     return this.patientsList.map(p => ({
@@ -162,7 +216,15 @@ export class CaseRoomsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.stopPolling();
+    if (this.chatSubscription) {
+      try {
+        this.chatSubscription.unsubscribe();
+      } catch (e) {}
+      this.chatSubscription = null;
+    }
+    Object.values(this.fileBlobUrlMap).forEach(url => {
+      if (url) window.URL.revokeObjectURL(url);
+    });
   }
 
   loadDoctors(): void {
@@ -265,7 +327,7 @@ export class CaseRoomsComponent implements OnInit, OnDestroy {
       error: () => this.roomMembers = []
     });
     this.loadPosts(room.caseRoomId);
-    this.startPolling(room.caseRoomId);
+    this.setupWebSocketSubscription(room.caseRoomId);
     this.isChatActive = true;
   }
 
@@ -273,37 +335,66 @@ export class CaseRoomsComponent implements OnInit, OnDestroy {
     this.isChatActive = false;
   }
 
-  loadPosts(roomId: string, isPolling = false): void {
-    if (!isPolling) this.uiService.showLoading();
+  loadPosts(roomId: string): void {
+    this.uiService.showLoading();
     this.caseRoomService.getPostsForRoom(roomId, 0, 100).subscribe({
       next: (page) => {
-        const newPosts = page.content ? page.content : [];
-        const isNewMessage = this.posts.length !== newPosts.length;
-        this.posts = newPosts;
-        
-        if (!isPolling) this.uiService.hideLoading();
-        
-        if (!isPolling || isNewMessage) {
-           this.scrollToBottom();
-        }
+        this.posts = page.content ? page.content : [];
+        this.posts.forEach(p => {
+          if (p.fileId) {
+            this.ensureFileBlob(p.fileId);
+            if (!this.fileMetadataCache[p.fileId]) {
+              this.fileService.getFileMetadata(p.fileId).pipe(catchError(() => of(null))).subscribe(meta => {
+                if (meta) {
+                  this.fileMetadataCache[p.fileId!] = meta;
+                }
+              });
+            }
+          }
+        });
+        this.uiService.hideLoading();
+        this.scrollToBottom();
       },
       error: () => {
-        if (!isPolling) this.uiService.hideLoading();
+        this.uiService.hideLoading();
       }
     });
   }
 
-  startPolling(roomId: string): void {
-    this.stopPolling();
-    this.pollInterval = setInterval(() => {
-      this.loadPosts(roomId, true);
-    }, 3000);
-  }
-
-  stopPolling(): void {
-    if (this.pollInterval) {
-      clearInterval(this.pollInterval);
-      this.pollInterval = null;
+  setupWebSocketSubscription(caseRoomId: string): void {
+    if (this.chatSubscription) {
+      try {
+        this.chatSubscription.unsubscribe();
+      } catch (e) {}
+      this.chatSubscription = null;
+    }
+    try {
+      this.chatSubscription = this.webSocketService.watchCaseRoom(caseRoomId).subscribe({
+        next: (post: CaseRoomPostResponseDto) => {
+          if (post && post.caseRoomId === this.selectedRoom?.caseRoomId) {
+            const exists = this.posts.some(p => p.postId === post.postId);
+            if (!exists) {
+              if (post.fileId) {
+                this.ensureFileBlob(post.fileId);
+                if (!this.fileMetadataCache[post.fileId]) {
+                  this.fileService.getFileMetadata(post.fileId).pipe(catchError(() => of(null))).subscribe(meta => {
+                    if (meta) {
+                      this.fileMetadataCache[post.fileId!] = meta;
+                    }
+                  });
+                }
+              }
+              this.posts.push(post);
+              this.scrollToBottom();
+            }
+          }
+        },
+        error: (err) => {
+          console.warn('CaseRoom STOMP subscription error:', err);
+        }
+      });
+    } catch (e) {
+      console.warn('Failed to setup CaseRoom STOMP subscription:', e);
     }
   }
 
@@ -349,11 +440,18 @@ export class CaseRoomsComponent implements OnInit, OnDestroy {
     this.uiService.showLoading();
 
     if (this.chatFile) {
+      const tempFile = this.chatFile;
       // Upload file first
-      this.caseRoomService.uploadFile(this.chatFile, 'MEDICAL_RECORD', this.selectedRoom.patientId).subscribe({
+      this.caseRoomService.uploadFile(tempFile, 'MEDICAL_RECORD', this.selectedRoom.patientId).subscribe({
         next: (fileMeta) => {
+          this.fileMetadataCache[fileMeta.fileId] = fileMeta;
+          if (tempFile.type) {
+            this.fileBlobTypeMap[fileMeta.fileId] = tempFile.type;
+          }
+          this.fileBlobUrlMap[fileMeta.fileId] = window.URL.createObjectURL(tempFile);
+
           const postType = PostType.FILE;
-          const body = val.body || this.chatFile!.name;
+          const body = val.body || fileMeta.originalFilename || tempFile.name;
 
           this.caseRoomService.createPost({
             caseRoomId: this.selectedRoom!.caseRoomId,
@@ -363,7 +461,11 @@ export class CaseRoomsComponent implements OnInit, OnDestroy {
           }).subscribe({
             next: (post) => {
               this.uiService.hideLoading();
-              this.posts.push(post); // Append to bottom
+              this.ensureFileBlob(fileMeta.fileId);
+              const exists = this.posts.some(p => p.postId === post.postId);
+              if (!exists) {
+                this.posts.push(post);
+              }
               this.postForm.reset({ postType: PostType.NOTE });
               this.chatFile = null;
               this.scrollToBottom();
@@ -387,7 +489,10 @@ export class CaseRoomsComponent implements OnInit, OnDestroy {
       }).subscribe({
         next: (post) => {
           this.uiService.hideLoading();
-          this.posts.push(post); // Append to bottom
+          const exists = this.posts.some(p => p.postId === post.postId);
+          if (!exists) {
+            this.posts.push(post);
+          }
           this.postForm.reset({ postType: PostType.NOTE });
           this.scrollToBottom();
         },
