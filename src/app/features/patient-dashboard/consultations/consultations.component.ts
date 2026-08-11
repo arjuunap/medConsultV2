@@ -17,6 +17,8 @@ import { ApiUrlPipe } from '../../../shared/pipes/api-url.pipe';
 import { RouterLink } from '@angular/router';
 
 import { FileService, FileMetadataResponseDto } from '../../../core/services/file.service';
+import { WebSocketService } from '../../../core/services/websocket.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-consultations',
@@ -31,6 +33,7 @@ export class ConsultationsComponent implements OnInit, OnDestroy {
   private patientService = inject(PatientService);
   private uiService = inject(UiService);
   public fileService = inject(FileService);
+  public webSocketService = inject(WebSocketService);
   private fb = inject(FormBuilder);
   public authService = inject(AuthService);
   private reviewService = inject(ReviewService);
@@ -153,7 +156,7 @@ export class ConsultationsComponent implements OnInit, OnDestroy {
 
   public showBookModal = false;
 
-  private pollInterval: any;
+  private chatSubscription: Subscription | null = null;
 
   ngOnInit(): void {
     this.loadPatientProfile();
@@ -161,7 +164,10 @@ export class ConsultationsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.stopPolling();
+    if (this.chatSubscription) {
+      this.chatSubscription.unsubscribe();
+      this.chatSubscription = null;
+    }
     Object.values(this.fileBlobUrlMap).forEach(url => {
       if (url) window.URL.revokeObjectURL(url);
     });
@@ -210,16 +216,14 @@ export class ConsultationsComponent implements OnInit, OnDestroy {
   selectConsultation(c: ConsultationResponseDto): void {
     this.selectedConsultation = c;
     this.loadMessages(c.consultationId);
-    this.startPolling(c.consultationId);
+    this.setupWebSocketSubscription(c.consultationId);
   }
 
-  loadMessages(consultationId: string, isPolling = false): void {
-    if (!isPolling) this.uiService.showLoading();
+  loadMessages(consultationId: string): void {
+    this.uiService.showLoading();
     this.consultationService.getMessagesForConsultation(consultationId).subscribe({
       next: (msgs) => {
-        const isNewMessage = this.messages.length !== msgs.length;
-        this.messages = msgs;
-
+        this.messages = msgs || [];
         this.messages.forEach(m => {
           if (m.fileId) {
             this.ensureFileBlob(m.fileId);
@@ -235,30 +239,52 @@ export class ConsultationsComponent implements OnInit, OnDestroy {
             }
           }
         });
-
-        if (!isPolling) this.uiService.hideLoading();
-        
-        if (!isPolling || isNewMessage) {
-           this.scrollToBottom();
-        }
+        this.uiService.hideLoading();
+        this.scrollToBottom();
       },
       error: () => {
-        if (!isPolling) this.uiService.hideLoading();
+        this.uiService.hideLoading();
       }
     });
   }
 
-  startPolling(consultationId: string): void {
-    this.stopPolling();
-    this.pollInterval = setInterval(() => {
-      this.loadMessages(consultationId, true);
-    }, 3000);
-  }
-
-  stopPolling(): void {
-    if (this.pollInterval) {
-      clearInterval(this.pollInterval);
-      this.pollInterval = null;
+  setupWebSocketSubscription(consultationId: string): void {
+    if (this.chatSubscription) {
+      try {
+        this.chatSubscription.unsubscribe();
+      } catch (e) {}
+      this.chatSubscription = null;
+    }
+    try {
+      this.chatSubscription = this.webSocketService.watchConsultation(consultationId).subscribe({
+        next: (msg: ConsultationMessageResponseDto) => {
+          if (msg && msg.consultationId === this.selectedConsultation?.consultationId) {
+            const exists = this.messages.some(m => m.messageId === msg.messageId);
+            if (!exists) {
+              if (msg.fileId) {
+                this.ensureFileBlob(msg.fileId);
+                if (this.fileMetadataCache[msg.fileId]) {
+                  msg.fileMetadata = this.fileMetadataCache[msg.fileId];
+                } else {
+                  this.fileService.getFileMetadata(msg.fileId).pipe(catchError(() => of(null))).subscribe(meta => {
+                    if (meta) {
+                      this.fileMetadataCache[msg.fileId!] = meta;
+                      msg.fileMetadata = meta;
+                    }
+                  });
+                }
+              }
+              this.messages.push(msg);
+              this.scrollToBottom();
+            }
+          }
+        },
+        error: (err) => {
+          console.warn('STOMP subscription error:', err);
+        }
+      });
+    } catch (e) {
+      console.warn('Failed to setup STOMP subscription:', e);
     }
   }
 
@@ -304,7 +330,10 @@ export class ConsultationsComponent implements OnInit, OnDestroy {
               this.isUploadingFile = false;
               msg.fileMetadata = fileMeta;
               this.ensureFileBlob(fileMeta.fileId);
-              this.messages.push(msg);
+              const exists = this.messages.some(m => m.messageId === msg.messageId);
+              if (!exists) {
+                this.messages.push(msg);
+              }
               this.messageForm.reset();
               this.clearSelectedFile(fileInput);
               this.scrollToBottom();
@@ -330,7 +359,10 @@ export class ConsultationsComponent implements OnInit, OnDestroy {
         body: body
       }).subscribe({
         next: (msg) => {
-          this.messages.push(msg);
+          const exists = this.messages.some(m => m.messageId === msg.messageId);
+          if (!exists) {
+            this.messages.push(msg);
+          }
           this.messageForm.reset();
           this.scrollToBottom();
         },
