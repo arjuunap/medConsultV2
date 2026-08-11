@@ -47,47 +47,62 @@
 
     <!-- Active Case Room View -->
     <div class="chat-viewport-container" *ngIf="selectedRoom">
-      <div class="active-chat-header align-start">
-        <div class="active-user-info">
-          <!-- Back button for mobile view -->
-          <button class="btn-back-to-inbox" (click)="backToInbox()" title="Back to Inbox">
-            ⬅ {{ 'Cases' | translate }}
-          </button>
+      <div class="active-chat-header">
+        <!-- Top Row: Back button, Title & Status Action -->
+        <div class="active-header-top-row">
+          <div class="active-header-left">
+            <button class="btn-back-to-inbox" (click)="backToInbox()" title="{{ 'Back to Cases' | translate }}">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+              <span>{{ 'Cases' | translate }}</span>
+            </button>
 
-          <div>
-            <h3 class="chat-subject-title">{{ selectedRoom.title }}</h3>
-            <div class="chat-patient-subtitle">
-              {{ 'Patient:' | translate }} <strong>{{ selectedRoom.patientName }}</strong> •
-              {{ 'Opened by:' | translate }} <strong>Dr. {{ selectedRoom.openedByName }}</strong>
+            <div class="header-title-group">
+              <h3 class="chat-subject-title" [title]="selectedRoom.title">{{ selectedRoom.title }}</h3>
+              <span class="status-indicator-dot" [ngClass]="selectedRoom.status === 'ACTIVE' ? 'dot-success' : 'dot-secondary'"></span>
             </div>
+          </div>
 
-            <!-- Room Members List -->
-            <div class="room-members-bar mt-2 d-flex align-center gap-2 flex-wrap">
-              <span class="fs-xs text-muted fw-bold">{{ 'Case Specialists:' | translate }}</span>
-              <a *ngFor="let member of roomMembers" [routerLink]="['/doctors', member.doctorId]"
-                class="member-doctor-chip" title="Click to view profile">
-                👨‍⚕️ {{ member.doctorName }}
-              </a>
-            </div>
-
-            <p class="case-description" *ngIf="selectedRoom.description">
-              📝 {{ selectedRoom.description }}
-            </p>
+          <!-- Status Update Action -->
+          <div class="header-actions">
+            <form [formGroup]="statusForm" class="status-update-form">
+              <div class="custom-select-wrapper">
+                <app-custom-select formControlName="status" [options]="statusSelectOptions" bindLabel="label"
+                  bindValue="value" size="sm" [placeholder]="'Status' | translate">
+                </app-custom-select>
+              </div>
+              <button class="btn btn-primary btn-sm btn-update-status" type="button"
+                (click)="updateRoomStatus()" title="{{ 'Update Status' | translate }}">
+                <span>{{ 'Update' | translate }}</span>
+              </button>
+            </form>
           </div>
         </div>
 
-        <!-- Status Update Action -->
-        <div class="header-actions flex-shrink-0">
-          <form [formGroup]="statusForm" class="status-update-form">
-            <div class="custom-select-wrapper">
-              <app-custom-select formControlName="status" [options]="statusSelectOptions" bindLabel="label"
-                bindValue="value" size="sm" [placeholder]="'Select status' | translate">
-              </app-custom-select>
-            </div>
-            <button class="btn btn-primary btn-sm btn-update-status" type="button"
-              (click)="updateRoomStatus()">{{ 'Update' | translate }}</button>
-          </form>
+        <!-- Subtitle Info Row -->
+        <div class="chat-patient-subtitle">
+          <span>{{ 'Patient:' | translate }} <strong>{{ selectedRoom.patientName }}</strong></span>
+          <span class="divider-dot">•</span>
+          <span>{{ 'Opened by:' | translate }} <strong>{{ selectedRoom.openedByName.startsWith('Dr') || selectedRoom.openedByName.startsWith('د') ? selectedRoom.openedByName : 'Dr. ' + selectedRoom.openedByName }}</strong></span>
         </div>
+
+        <!-- Room Members / Specialists Horizontal Scroll Bar -->
+        <div class="room-members-bar" *ngIf="roomMembers && roomMembers.length > 0">
+          <span class="members-label">{{ 'Case Specialists:' | translate }}</span>
+          <div class="members-chips-scroll">
+            <a *ngFor="let member of roomMembers" [routerLink]="['/doctors', member.doctorId]"
+              class="member-doctor-chip" title="Click to view profile">
+              👨‍⚕️ {{ member.doctorName }}
+            </a>
+          </div>
+        </div>
+
+        <!-- Case Description -->
+        <p class="case-description" *ngIf="selectedRoom.description">
+          📝 {{ selectedRoom.description }}
+        </p>
       </div>
 
       <!-- Post stream / message list -->
@@ -185,35 +200,73 @@
         </div>
       </div>
 
-      <!-- Text reply block -->
+      <!-- Text reply block / Chat bar -->
       <div class="chat-footer-input" *ngIf="selectedRoom.status !== 'RESOLVED' && selectedRoom.status !== 'ARCHIVED'">
 
         <!-- File staging preview strip -->
-        <div *ngIf="chatFile" class="d-flex align-center gap-2 mb-2 p-2 bg-light rounded border"
-          style="max-width: 400px; margin-left: auto; border-color: var(--teal);">
-          <span class="fs-xs text-muted">📄 {{ 'staged:' | translate }} <strong>{{ chatFile.name }}</strong> ({{ chatFile.size | number }}
-            bytes)</span>
-          <button type="button" class="btn btn-outline btn-xs text-danger" style="padding: 2px 6px;"
-            (click)="clearChatFile()">{{ 'Remove' | translate }}</button>
+        <div *ngIf="chatFile" class="staged-file-chip-container">
+          <div class="staged-file-chip">
+            <div class="staged-file-preview" *ngIf="stagedFilePreviewUrl">
+              <img [src]="stagedFilePreviewUrl" alt="Preview">
+            </div>
+            <div class="staged-file-icon" *ngIf="!stagedFilePreviewUrl">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+            </div>
+            <div class="staged-file-meta">
+              <span class="staged-file-name" [title]="chatFile.name">{{ chatFile.name }}</span>
+              <span class="staged-file-size">{{ (chatFile.size / 1024) | number:'1.0-1' }} KB</span>
+            </div>
+            <button type="button" class="btn-remove-staged-file" (click)="clearChatFile(chatFileInput)" title="{{ 'Remove attachment' | translate }}">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
         </div>
 
-        <form [formGroup]="postForm" (ngSubmit)="submitPost()" class="chat-form align-start gap-2">
-          <div style="width: 140px; flex-shrink: 0;">
+        <form [formGroup]="postForm" (ngSubmit)="submitPost()" class="chat-bar-form">
+          <div class="chat-bar-type-select">
             <app-custom-select formControlName="postType" [options]="postTypeSelectOptions" bindLabel="label"
-              bindValue="value" [placeholder]="'Post Type' | translate" placement="top">
+              bindValue="value" [placeholder]="'Type' | translate" placement="top">
             </app-custom-select>
           </div>
-          <textarea formControlName="body" class="chat-text-input flex-1 m-0"
-            [placeholder]="'Share clinical notes, assign action items, or post files...' | translate" rows="2"
-            style="resize: none; border-radius: 12px;"></textarea>
 
-          <!-- Attachment action trigger -->
-          <div class="d-flex flex-col gap-1 flex-shrink-0">
-            <input type="file" #chatFileInput (change)="onChatFileSelected($event)" style="display: none;">
+          <div class="chat-bar-input-wrapper">
+            <textarea formControlName="body" class="chat-bar-textarea"
+              [placeholder]="'Share clinical notes, assign action items, or attach files...' | translate" rows="1"
+              (keydown.enter)="$any($event).ctrlKey || $any($event).metaKey ? submitPost() : null"></textarea>
           </div>
 
-          <button type="submit" class="btn-send-message px-4" style="border-radius: 12px; height: 50px;"
-            [disabled]="!postForm.get('body')?.value && !chatFile">{{ 'Post' | translate }}</button>
+          <div class="chat-bar-actions">
+            <!-- Attachment Button -->
+            <button type="button" class="chat-bar-attach-btn" 
+                    [class.has-attachment]="!!chatFile"
+                    (click)="chatFileInput.click()" 
+                    title="{{ 'Attach File or Image' | translate }}">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+              </svg>
+              <span class="attachment-dot" *ngIf="chatFile"></span>
+            </button>
+            <input type="file" #chatFileInput (change)="onChatFileSelected($event)" style="display: none;">
+
+            <!-- Send Button -->
+            <button type="submit" class="chat-bar-send-btn"
+              [disabled]="!postForm.get('body')?.value && !chatFile" title="{{ 'Post message' | translate }}">
+              <span>{{ 'Post' | translate }}</span>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </div>
         </form>
       </div>
 

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -54,15 +54,17 @@ export class CaseRoomsComponent implements OnInit, OnDestroy {
   public patientsList: { patientId: string, patientName: string }[] = [];
   public chatFile: File | null = null;
   private chatSubscription: Subscription | null = null;
+  @ViewChild('chatFileInput') private chatFileInput?: ElementRef<HTMLInputElement>;
 
   // File & Media Handling State
   public isUploadingFile = false;
-  public fileMetadataCache: { [fileId: string]: FileMetadataResponseDto } = {};
+  public fileMetadataCache: { [fileId: string]: FileMetadataResponseDto | undefined } = {};
   public fileBlobUrlMap: { [fileId: string]: string } = {};
   public fileBlobTypeMap: { [fileId: string]: string } = {};
   public previewImageUrl: string | null = null;
   public previewImageTitle: string = '';
   public previewFileId: string | null = null;
+  public stagedFilePreviewUrl: string | null = null;
 
   isImageFile(post: CaseRoomPostResponseDto): boolean {
     if (!post.fileId) return false;
@@ -221,6 +223,10 @@ export class CaseRoomsComponent implements OnInit, OnDestroy {
         this.chatSubscription.unsubscribe();
       } catch (e) {}
       this.chatSubscription = null;
+    }
+    if (this.stagedFilePreviewUrl) {
+      window.URL.revokeObjectURL(this.stagedFilePreviewUrl);
+      this.stagedFilePreviewUrl = null;
     }
     Object.values(this.fileBlobUrlMap).forEach(url => {
       if (url) window.URL.revokeObjectURL(url);
@@ -401,12 +407,31 @@ export class CaseRoomsComponent implements OnInit, OnDestroy {
   onChatFileSelected(event: Event): void {
     const target = event.target as HTMLInputElement;
     if (target.files && target.files.length > 0) {
+      if (this.stagedFilePreviewUrl) {
+        window.URL.revokeObjectURL(this.stagedFilePreviewUrl);
+      }
       this.chatFile = target.files[0];
+      if (this.chatFile.type?.startsWith('image/')) {
+        this.stagedFilePreviewUrl = window.URL.createObjectURL(this.chatFile);
+      } else {
+        this.stagedFilePreviewUrl = null;
+      }
     }
   }
 
-  clearChatFile(): void {
+  private getUploadErrorMessage(error: any): string {
+    return error?.error?.error || error?.error?.message || error?.message || 'Failed to upload file.';
+  }
+
+  clearChatFile(inputRef?: HTMLInputElement): void {
+    if (this.stagedFilePreviewUrl) {
+      window.URL.revokeObjectURL(this.stagedFilePreviewUrl);
+      this.stagedFilePreviewUrl = null;
+    }
     this.chatFile = null;
+    if (inputRef) {
+      inputRef.value = '';
+    }
   }
 
   downloadChatFile(fileId: string, filename: string): void {
@@ -442,7 +467,7 @@ export class CaseRoomsComponent implements OnInit, OnDestroy {
     if (this.chatFile) {
       const tempFile = this.chatFile;
       // Upload file first
-      this.caseRoomService.uploadFile(tempFile, 'MEDICAL_RECORD', this.selectedRoom.patientId).subscribe({
+      this.fileService.uploadChatFile(tempFile, this.selectedRoom.patientId).subscribe({
         next: (fileMeta) => {
           this.fileMetadataCache[fileMeta.fileId] = fileMeta;
           if (tempFile.type) {
@@ -467,7 +492,7 @@ export class CaseRoomsComponent implements OnInit, OnDestroy {
                 this.posts.push(post);
               }
               this.postForm.reset({ postType: PostType.NOTE });
-              this.chatFile = null;
+              this.clearChatFile(this.chatFileInput?.nativeElement);
               this.scrollToBottom();
             },
             error: () => {
@@ -476,9 +501,9 @@ export class CaseRoomsComponent implements OnInit, OnDestroy {
             }
           });
         },
-        error: () => {
+        error: (error) => {
           this.uiService.hideLoading();
-          this.uiService.showError('Failed to upload file.');
+          this.uiService.showError(this.getUploadErrorMessage(error));
         }
       });
     } else {
