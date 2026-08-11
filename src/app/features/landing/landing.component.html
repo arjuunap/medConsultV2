@@ -246,7 +246,10 @@
                 <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
                 <circle cx="12" cy="10" r="3"></circle>
               </svg>
-              <span>{{ clinic.addressLine1 || clinic.cityName }}</span>
+              <span>{{ clinic.fullAddress || clinic.addressLine1 || clinic.cityName }}</span>
+              <span *ngIf="clinic.openingHours" style="font-weight: 600; color: var(--teal-d); font-size: 11.5px; margin-inline-start: 6px;">
+                · 🕒 {{ clinic.openingHours }}
+              </span>
             </div>
             <div class="clinic-meta">
               <div class="clinic-rating">
@@ -329,7 +332,15 @@
             </div>
           </div>
           <div class="clinic-actions">
-            <div class="clinic-dist">{{ clinic.cityName || ('Saudi Arabia' | translate) }}</div>
+            <div class="clinic-dist" [title]="clinic.fullAddress || clinic.cityName">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                style="color: var(--teal-d); margin-inline-end: 4px; vertical-align: middle;">
+                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <span>{{ clinic.fullAddress || clinic.cityName || ('Saudi Arabia' | translate) }}</span>
+            </div>
             <button class="btn btn-primary btn-sm" (click)="selectClinic(clinic)">{{ 'View Facility →' | translate
               }}</button>
           </div>
@@ -352,7 +363,7 @@
 
           <div *ngFor="let branch of clinic.branchesWithDocs">
             <div *ngIf="clinic.expanded || hasVisibleDoctors(clinic, branch)" class="branch-group-container">
-              <div class="branch-group-header d-flex align-center gap-2 mt-3 mb-2"
+              <div class="branch-group-header d-flex align-center gap-2 mt-3 mb-2 flex-wrap"
                 style="font-weight: 700; color: var(--teal-d); font-size: 13.5px; border-bottom: 1px dashed var(--border); padding-bottom: 4px;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -361,6 +372,12 @@
                   <circle cx="12" cy="10" r="3"></circle>
                 </svg>
                 <span>{{ branch | translateObj:'branchName' }}</span>
+                <span *ngIf="branch.fullAddress || branch.addressLine1" style="font-weight: 500; color: var(--t2); font-size: 12px; margin-inline-start: 2px;">
+                  — 📍 {{ branch.fullAddress || branch.addressLine1 }}
+                </span>
+                <span *ngIf="branch.openingHours" style="font-weight: 600; color: var(--teal-d); font-size: 11.5px; margin-inline-start: 2px;">
+                  · 🕒 {{ branch.openingHours }}
+                </span>
                 <span class="badge"
                   style="background-color: var(--teal-l); color: var(--teal-d); font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600;">
                   {{ branch.doctors.length }} {{ 'doctor(s)' | translate }}
@@ -1013,7 +1030,18 @@
               {{ 'Primary Location' | translate }}
             </span>
           </div>
-          <div class="text-muted mt-1">{{ b | translateObj:'addressLine1' }}</div>
+          <div class="text-muted mt-1" *ngIf="b.addressLine1 || b.cityId">
+            📍 {{ b.addressLine1 }}{{ b.addressLine2 ? ', ' + b.addressLine2 : '' }}{{ getCityName(b.cityId) && (!b.addressLine1 || !b.addressLine1.includes(getCityName(b.cityId))) ? ', ' + getCityName(b.cityId) : '' }}
+          </div>
+          <div class="text-muted d-flex align-center gap-1 mt-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              style="color: var(--t3);">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span>{{ 'Working Hours:' | translate }} {{ formatBranchHours(branchHoursMap[b.branchId]) }}</span>
+          </div>
           <div class="text-muted d-flex align-center gap-1 mt-1" *ngIf="b.phone">
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"

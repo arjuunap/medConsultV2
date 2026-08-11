@@ -1369,6 +1369,8 @@ const translations: { [lang in Lang]: { [key: string]: string } } = {
     'Hide Reviews': 'Hide Reviews',
     'Show Reviews': 'Show Reviews',
     'Verified Patient': 'Verified Patient',
+    'Loading media...': 'Loading media...',
+    'Save': 'Save',
 
     // Doctor Consultation Schedule Module
     'Doctor Consultation Schedule': 'Doctor Consultation Schedule',
@@ -2650,6 +2652,8 @@ const translations: { [lang in Lang]: { [key: string]: string } } = {
     'Hide Reviews': 'إخفاء التقييمات',
     'Show Reviews': 'عرض التقييمات',
     'Verified Patient': 'مريض موثق',
+    'Loading media...': 'جاري تحميل الوسائط...',
+    'Save': 'حفظ',
 
     'Previous': 'السابق',
 

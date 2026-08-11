@@ -16,7 +16,7 @@ import { AppConfigService } from '../../core/services/app-config.service';
 import { TranslatePipe, TranslateObjPipe } from '../../shared/pipes/translate.pipe';
 import { ApiUrlPipe, getFullImageUrl } from '../../shared/pipes/api-url.pipe';
 import { environment } from '../../../environments/environment';
-import { ClinicResponseDto, ClinicDetailResponse } from '../../core/models/clinic.model';
+import { ClinicResponseDto, ClinicDetailResponse, ClinicOperatingHourResponseDto } from '../../core/models/clinic.model';
 import { SpecialtyResponseDto, LanguageResponseDto, CityResponseDto, InsuranceProviderResponseDto } from '../../core/models/reference.model';
 import { DoctorResponseDto, DoctorDetailResponse, AppointmentSlotResponseDto, SlotStatus } from '../../core/models/doctor.model';
 
@@ -46,6 +46,9 @@ export interface BranchCardDisplay {
   branchNameEn: string;
   branchNameAr: string;
   addressLine1?: string;
+  addressLine2?: string;
+  fullAddress?: string;
+  openingHours?: string;
   isPrimary?: boolean;
   doctors: DoctorCardDisplay[];
 }
@@ -55,6 +58,9 @@ export interface ClinicCardDisplay extends ClinicResponseDto {
   cityId?: string;
   cityName?: string;
   addressLine1?: string;
+  addressLine2?: string;
+  fullAddress?: string;
+  openingHours?: string;
   specs?: string[];
   specialtyIds?: string[];
   languages?: string[];
@@ -284,6 +290,8 @@ export class LandingComponent implements OnInit {
     });
   }
 
+  public branchHoursMap: { [branchId: string]: ClinicOperatingHourResponseDto[] } = {};
+
   processRealClinicsAndDoctors(): void {
     if (!this.rawClinics || this.rawClinics.length === 0) {
       this.clinics = [];
@@ -299,12 +307,46 @@ export class LandingComponent implements OnInit {
 
     forkJoin(detailRequests).subscribe({
       next: (details) => {
-        this.clinics = this.rawClinics.map((c, idx) => {
-          const detail = details[idx];
-          return this.buildClinicDisplayCard(c, detail, idx);
+        const branchIds: string[] = [];
+        details.forEach(d => {
+          if (d?.branches) {
+            d.branches.forEach(b => {
+              if (b.branchId) branchIds.push(b.branchId);
+            });
+          }
         });
-        this.applyFilters();
-        this.fetchRealSlotsForLandingDoctors();
+
+        if (branchIds.length > 0) {
+          const hoursRequests = branchIds.map(bId =>
+            this.clinicService.getBranchHours(bId).pipe(catchError(() => of([])))
+          );
+          forkJoin(hoursRequests).subscribe({
+            next: (allHours) => {
+              this.branchHoursMap = {};
+              branchIds.forEach((bId, idx) => {
+                this.branchHoursMap[bId] = allHours[idx] || [];
+              });
+              this.clinics = this.rawClinics.map((c, idx) => {
+                const detail = details[idx];
+                return this.buildClinicDisplayCard(c, detail, idx);
+              });
+              this.applyFilters();
+              this.fetchRealSlotsForLandingDoctors();
+            },
+            error: () => {
+              this.clinics = this.rawClinics.map((c, idx) => this.buildClinicDisplayCard(c, details[idx], idx));
+              this.applyFilters();
+              this.fetchRealSlotsForLandingDoctors();
+            }
+          });
+        } else {
+          this.clinics = this.rawClinics.map((c, idx) => {
+            const detail = details[idx];
+            return this.buildClinicDisplayCard(c, detail, idx);
+          });
+          this.applyFilters();
+          this.fetchRealSlotsForLandingDoctors();
+        }
       },
       error: () => {
         this.clinics = this.rawClinics.map((c, idx) => this.buildClinicDisplayCard(c, null, idx));
@@ -379,12 +421,43 @@ export class LandingComponent implements OnInit {
     return `${hours}:${minutes} ${ampm}`;
   }
 
+  formatBranchHours(hours?: ClinicOperatingHourResponseDto[]): string {
+    if (!hours || hours.length === 0) {
+      return this.languageService.translate('Sun - Thu: 08:00 AM - 08:00 PM', 'الأحد - الخميس: 08:00 ص - 08:00 م');
+    }
+    const openHours = hours.filter(h => !h.isClosed);
+    if (openHours.length === 0) {
+      return this.languageService.translate('Closed', 'مغلق');
+    }
+    const sample = openHours[0];
+    const openStr = this.formatSlotTime(sample.openTime);
+    const closeStr = this.formatSlotTime(sample.closeTime);
+
+    if (openHours.length >= 6) {
+      return `${this.languageService.translate('Daily', 'يومياً')}: ${openStr} - ${closeStr}`;
+    } else {
+      return `${this.languageService.translate('Sat - Thu', 'السبت - الخميس')}: ${openStr} - ${closeStr}`;
+    }
+  }
+
   private buildClinicDisplayCard(c: ClinicResponseDto, detail: ClinicDetailResponse | null, idx: number = 0): ClinicCardDisplay {
     const primaryBranch = detail?.branches?.find(b => b.isPrimary) || detail?.branches?.[0];
     const fallbackCityId = (this.cities && this.cities.length > 0) ? this.cities[idx % this.cities.length].cityId : '';
     const cityId = primaryBranch?.cityId || fallbackCityId;
     const cityName = cityId ? this.getCityName(cityId) : this.languageService.translate('Saudi Arabia', 'المملكة العربية السعودية');
     const area = primaryBranch ? (this.languageService.translate(primaryBranch.addressLine1, primaryBranch.branchNameAr) || this.languageService.translate(primaryBranch.branchNameEn, primaryBranch.branchNameAr)) : cityName;
+
+    const streetParts = [primaryBranch?.addressLine1, primaryBranch?.addressLine2].filter(Boolean);
+    const streetAddress = streetParts.length > 0 ? streetParts.join(', ') : '';
+    let fullAddress = streetAddress;
+    if (fullAddress && cityName && !fullAddress.toLowerCase().includes(cityName.toLowerCase())) {
+      fullAddress += `, ${cityName}`;
+    } else if (!fullAddress) {
+      fullAddress = cityName;
+    }
+
+    const primaryHours = primaryBranch?.branchId ? (this.branchHoursMap[primaryBranch.branchId] || []) : [];
+    const openingHours = this.formatBranchHours(primaryHours);
 
     const specNames = detail?.specialties?.map(s => {
       const found = this.specialties.find(x => x.specialtyId === s.specialtyId);
@@ -468,11 +541,27 @@ export class LandingComponent implements OnInit {
       detail.branches.forEach(branch => {
         const doctorsInBranch = matchedDoctors.filter(d => d.branchId === branch.branchId);
         if (doctorsInBranch.length > 0) {
+          const bStreetParts = [branch.addressLine1, branch.addressLine2].filter(Boolean);
+          const bStreetAddr = bStreetParts.length > 0 ? bStreetParts.join(', ') : '';
+          const bCityName = branch.cityId ? this.getCityName(branch.cityId) : cityName;
+          let bFullAddr = bStreetAddr;
+          if (bFullAddr && bCityName && !bFullAddr.toLowerCase().includes(bCityName.toLowerCase())) {
+            bFullAddr += `, ${bCityName}`;
+          } else if (!bFullAddr) {
+            bFullAddr = bCityName;
+          }
+
+          const bHours = branch.branchId ? (this.branchHoursMap[branch.branchId] || []) : [];
+          const bOpeningHours = this.formatBranchHours(bHours);
+
           branchesWithDocs.push({
             branchId: branch.branchId,
             branchNameEn: branch.branchNameEn,
             branchNameAr: branch.branchNameAr,
             addressLine1: branch.addressLine1,
+            addressLine2: branch.addressLine2,
+            fullAddress: bFullAddr,
+            openingHours: bOpeningHours,
             isPrimary: branch.isPrimary,
             doctors: doctorsInBranch
           });
@@ -490,12 +579,28 @@ export class LandingComponent implements OnInit {
         } else {
           // If no branches exist in branchesWithDocs (meaning no branch had doctors yet), create one for the primary branch
           const primaryBranch = detail.branches.find(b => b.isPrimary) || detail.branches[0];
+          const bStreetParts = primaryBranch ? [primaryBranch.addressLine1, primaryBranch.addressLine2].filter(Boolean) : [];
+          const bStreetAddr = bStreetParts.length > 0 ? bStreetParts.join(', ') : '';
+          const bCityName = primaryBranch?.cityId ? this.getCityName(primaryBranch.cityId) : cityName;
+          let bFullAddr = bStreetAddr;
+          if (bFullAddr && bCityName && !bFullAddr.toLowerCase().includes(bCityName.toLowerCase())) {
+            bFullAddr += `, ${bCityName}`;
+          } else if (!bFullAddr) {
+            bFullAddr = bCityName;
+          }
+
+          const bHours = primaryBranch?.branchId ? (this.branchHoursMap[primaryBranch.branchId] || []) : [];
+          const bOpeningHours = this.formatBranchHours(bHours);
+
           branchesWithDocs.push({
-            branchId: primaryBranch.branchId,
-            branchNameEn: primaryBranch.branchNameEn,
-            branchNameAr: primaryBranch.branchNameAr,
-            addressLine1: primaryBranch.addressLine1,
-            isPrimary: primaryBranch.isPrimary,
+            branchId: primaryBranch ? primaryBranch.branchId : 'fallback',
+            branchNameEn: primaryBranch ? primaryBranch.branchNameEn : 'Main Branch',
+            branchNameAr: primaryBranch ? primaryBranch.branchNameAr : 'الفرع الرئيسي',
+            addressLine1: primaryBranch?.addressLine1,
+            addressLine2: primaryBranch?.addressLine2,
+            fullAddress: bFullAddr,
+            openingHours: bOpeningHours,
+            isPrimary: primaryBranch?.isPrimary,
             doctors: orphanDoctors
           });
         }
@@ -507,6 +612,8 @@ export class LandingComponent implements OnInit {
           branchId: 'fallback',
           branchNameEn: 'Main Branch',
           branchNameAr: 'الفرع الرئيسي',
+          fullAddress: fullAddress,
+          openingHours: openingHours,
           isPrimary: true,
           doctors: matchedDoctors
         });
@@ -521,6 +628,9 @@ export class LandingComponent implements OnInit {
       cityName,
       cityId,
       addressLine1: primaryBranch?.addressLine1 || area,
+      addressLine2: primaryBranch?.addressLine2,
+      fullAddress,
+      openingHours,
       specs: specNames.length > 0 ? specNames : [this.languageService.translate('General Practice', 'الطب العام'), this.languageService.translate('Internal Medicine', 'الطب الباطني')],
       languages: langNames.length > 0 ? langNames : [this.languageService.translate('Arabic', 'العربية'), this.languageService.translate('English', 'الإنجليزية')],
       insurances: insNames,

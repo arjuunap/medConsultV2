@@ -94,15 +94,92 @@
                  'border-top-left-radius': '12px',
                  'border-top-right-radius': '12px'
                }">
-            {{ msg.body }}
+            <!-- Only show message text if it's not duplicating the uploaded filename -->
+            <div *ngIf="msg.body && (!msg.fileId || (msg.body !== msg.fileMetadata?.originalFilename && msg.body !== 'Sent an attachment'))" class="mb-1" style="word-break: break-word;">
+              {{ msg.body }}
+            </div>
+
+            <!-- Image Attachment Display Card with Thin Bezel Frame -->
+            <div *ngIf="msg.fileId && isImageFile(msg)" 
+                 class="chat-image-wrapper mt-1 rounded-lg overflow-hidden shadow-sm" 
+                 [style.border]="msg.senderId === authService.currentUser()?.userId ? '2px solid rgba(255, 255, 255, 0.4)' : '2px solid rgba(15, 23, 42, 0.12)'"
+                 [style.background]="msg.senderId === authService.currentUser()?.userId ? 'rgba(0, 0, 0, 0.15)' : '#ffffff'"
+                 style="max-width: 290px; position: relative; border-radius: 12px; box-shadow: 0 4px 14px rgba(0,0,0,0.08);">
+              
+              <!-- Loading Placeholder -->
+              <div *ngIf="!fileBlobUrlMap[msg.fileId]" class="p-3 text-center fs-xs opacity-75 d-flex align-center justify-center gap-2" style="background: rgba(0,0,0,0.04); min-height: 140px; border-radius: 10px;">
+                <span>{{ 'Loading media...' | translate }}</span>
+              </div>
+
+              <!-- Main Image Preview with Thin Inner Bezel -->
+              <img *ngIf="fileBlobUrlMap[msg.fileId]" [src]="fileBlobUrlMap[msg.fileId]" [alt]="msg.fileMetadata?.originalFilename || 'Attachment'"
+                   (click)="openImageModal(fileBlobUrlMap[msg.fileId], msg.fileMetadata?.originalFilename, msg.fileId)"
+                   style="width: 100%; max-height: 230px; object-fit: cover; border-top-left-radius: 10px; border-top-right-radius: 10px; cursor: pointer; display: block;" title="{{ 'Click to view full image' | translate }}">
+              
+              <!-- Integrated Sleek Save Action Bar -->
+              <div class="d-flex align-center justify-between p-2"
+                   [dir]="languageService.isArabic ? 'rtl' : 'ltr'"
+                   [style.background]="msg.senderId === authService.currentUser()?.userId ? 'rgba(0,0,0,0.22)' : '#f8fafc'"
+                   style="border-top: 1px solid rgba(0,0,0,0.06);">
+                <span class="fs-xs text-truncate fw-medium px-1" [style.color]="msg.senderId === authService.currentUser()?.userId ? '#ffffff' : '#334155'" style="font-size: 11px; max-width: 175px;">
+                  {{ msg.fileMetadata?.originalFilename || ('Image' | translate) }}
+                </span>
+                <button type="button" class="btn btn-xs d-inline-flex align-center gap-1" (click)="downloadChatFile(msg.fileId, msg.fileMetadata?.originalFilename)"
+                        [style.background]="msg.senderId === authService.currentUser()?.userId ? '#ffffff' : 'var(--teal, #0d9488)'"
+                        [style.color]="msg.senderId === authService.currentUser()?.userId ? 'var(--teal-d, #0f766e)' : '#ffffff'"
+                        style="border: none; padding: 4px 10px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 11px; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  <span>{{ 'Save' | translate }}</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Non-Image File Attachment Display Card -->
+            <div *ngIf="msg.fileId && !isImageFile(msg)" class="chat-file-card p-2 mt-2 rounded d-flex align-center justify-between gap-2"
+                 [style.background]="msg.senderId === authService.currentUser()?.userId ? 'rgba(255,255,255,0.18)' : 'var(--off)'"
+                 [style.border]="msg.senderId === authService.currentUser()?.userId ? '1px solid rgba(255,255,255,0.3)' : '1px solid var(--border)'">
+              <div class="d-flex align-center gap-2 overflow-hidden">
+                <span style="font-size: 1.2rem;">📄</span>
+                <div class="overflow-hidden" style="line-height: 1.2;">
+                  <div class="fw-bold fs-xs text-truncate" [style.color]="msg.senderId === authService.currentUser()?.userId ? '#ffffff' : 'var(--text)'">
+                    {{ msg.fileMetadata?.originalFilename || ('Attachment' | translate) }}
+                  </div>
+                  <div class="fs-xs" [style.color]="msg.senderId === authService.currentUser()?.userId ? 'rgba(255,255,255,0.8)' : 'var(--t3)'" style="font-size: 10px;">
+                    {{ formatFileSize(msg.fileMetadata?.sizeBytes) }}
+                  </div>
+                </div>
+              </div>
+              <button type="button" class="btn btn-xs" (click)="downloadChatFile(msg.fileId, msg.fileMetadata?.originalFilename)"
+                      [style.background]="msg.senderId === authService.currentUser()?.userId ? '#ffffff' : 'var(--teal)'"
+                      [style.color]="msg.senderId === authService.currentUser()?.userId ? 'var(--teal-d)' : '#ffffff'"
+                      style="border: none; padding: 4px 10px; border-radius: 6px; font-weight: 600; cursor: pointer; flex-shrink: 0;">
+                📥 {{ 'Download' | translate }}
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="chat-input-bar" *ngIf="selectedConsultation.status !== 'CLOSED'">
-        <form [formGroup]="messageForm" (ngSubmit)="sendMessage()" class="d-flex gap-2 m-0">
-          <input type="text" formControlName="body" class="form-control m-0 flex-1" [placeholder]="'Type your message here...' | translate">
-          <button type="submit" class="btn btn-primary" [disabled]="messageForm.invalid">{{ 'Send' | translate }}</button>
+      <div class="chat-input-bar p-3 bg-white border-top" *ngIf="selectedConsultation.status !== 'CLOSED'">
+        <!-- File Preview Badge -->
+        <div *ngIf="selectedFile" class="d-inline-flex align-center justify-between px-3 py-1 mb-2 rounded bg-light border fs-xs" style="max-width: 320px;">
+          <span class="text-truncate fw-semibold style-teal">📎 {{ selectedFile.name }} ({{ formatFileSize(selectedFile.size) }})</span>
+          <button type="button" (click)="clearSelectedFile(pFileInput)" style="border: none; background: transparent; color: var(--red-d); font-weight: bold; cursor: pointer; margin-inline-start: 8px;">✕</button>
+        </div>
+
+        <form [formGroup]="messageForm" (ngSubmit)="sendMessage(pFileInput)" class="d-flex align-center gap-2 m-0">
+          <input type="file" #pFileInput (change)="onFileSelected($event)" style="display: none;">
+          <button type="button" class="btn btn-outline p-2 d-inline-flex align-center justify-center" (click)="pFileInput.click()" [title]="'Attach Document / Image' | translate" style="border-radius: 8px; width: 42px; height: 42px; flex-shrink: 0; font-size: 1.1rem; border-color: var(--border);">
+            📎
+          </button>
+          <input type="text" formControlName="body" class="form-control m-0 flex-1" style="height: 42px;" [placeholder]="'Type your message here...' | translate">
+          <button type="submit" class="btn btn-primary" style="height: 42px; padding: 0 20px;" [disabled]="!selectedFile && messageForm.invalid">
+            {{ (isUploadingFile ? 'Uploading...' : 'Send') | translate }}
+          </button>
         </form>
       </div>
       <div class="chat-input-bar d-flex justify-between align-center bg-light p-3" *ngIf="selectedConsultation.status === 'CLOSED'">
@@ -245,6 +322,52 @@
       <button class="btn btn-primary" [disabled]="reviewForm.invalid" (click)="submitReview()" style="padding: 10px 24px; font-weight: 600;">
         ⭐ {{ 'Submit Feedback' | translate }}
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- Full Image Lightbox Modal -->
+<div *ngIf="previewImageUrl" 
+     style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(8px); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 20px;" 
+     (click)="closeImageModal()">
+  
+  <div (click)="$event.stopPropagation()" 
+       style="position: relative; display: flex; flex-direction: column; max-width: 90vw; max-height: 90vh; background: #0f172a; border: 1px solid rgba(255,255,255,0.15); border-radius: 14px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);">
+    
+    <!-- Modal Header Bar -->
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: #1e293b; border-bottom: 1px solid rgba(255,255,255,0.1); color: #ffffff; gap: 12px;">
+      <div style="display: flex; align-items: center; gap: 8px; min-width: 0;">
+        <span style="font-weight: 600; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #f8fafc; max-width: 60vw;">
+          {{ previewImageTitle }}
+        </span>
+      </div>
+      
+      <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+        <button type="button" 
+                *ngIf="previewFileId"
+                (click)="downloadChatFile(previewFileId, previewImageTitle)" 
+                style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; background: var(--teal, #0d9488); color: #ffffff; border: none; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s ease;">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>{{ 'Save' | translate }}</span>
+        </button>
+
+        <button type="button" 
+                (click)="closeImageModal()" 
+                style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; background: rgba(255,255,255,0.12); color: #ffffff; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s ease;">
+          ✕ {{ 'Close' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Image Display Box -->
+    <div style="display: flex; align-items: center; justify-content: center; padding: 16px; background: #020617; overflow: auto; max-height: calc(90vh - 60px);">
+      <img [src]="previewImageUrl" 
+           [alt]="previewImageTitle" 
+           style="max-width: 100%; max-height: 80vh; object-fit: contain; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
     </div>
   </div>
 </div>

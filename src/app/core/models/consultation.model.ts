@@ -39,6 +39,8 @@ export interface ConsultationResponseDto {
   createdAt: string;
 }
 
+import { FileMetadataResponseDto } from '../services/file.service';
+
 export interface ConsultationMessageRequestDto {
   consultationId: string;
   messageType: MessageType;
@@ -58,6 +60,10 @@ export interface ConsultationMessageResponseDto {
   messageType: MessageType;
   body?: string;
   fileId?: string;
+  fileName?: string;
+  fileMimeType?: string;
+  fileSizeBytes?: number;
+  fileMetadata?: FileMetadataResponseDto;
   prescriptionId?: string;
   labResultId?: string;
   isRead: boolean;

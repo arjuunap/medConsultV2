@@ -16,6 +16,8 @@ import { ApiUrlPipe } from '../../../shared/pipes/api-url.pipe';
 
 import { RouterLink } from '@angular/router';
 
+import { FileService, FileMetadataResponseDto } from '../../../core/services/file.service';
+
 @Component({
   selector: 'app-consultations',
   standalone: true,
@@ -28,10 +30,61 @@ export class ConsultationsComponent implements OnInit, OnDestroy {
   private doctorService = inject(DoctorService);
   private patientService = inject(PatientService);
   private uiService = inject(UiService);
+  public fileService = inject(FileService);
   private fb = inject(FormBuilder);
   public authService = inject(AuthService);
   private reviewService = inject(ReviewService);
   public languageService = inject(LanguageService);
+
+  // File Sharing State
+  public selectedFile: File | null = null;
+  public isUploadingFile = false;
+  public fileMetadataCache: { [fileId: string]: FileMetadataResponseDto } = {};
+  public fileBlobUrlMap: { [fileId: string]: string } = {};
+  public fileBlobTypeMap: { [fileId: string]: string } = {};
+  public previewImageUrl: string | null = null;
+  public previewImageTitle: string = '';
+  public previewFileId: string | null = null;
+
+  isImageFile(msg: ConsultationMessageResponseDto): boolean {
+    if (!msg.fileId) return false;
+    if (this.fileBlobTypeMap[msg.fileId]?.startsWith('image/')) {
+      return true;
+    }
+    const meta = msg.fileMetadata || this.fileMetadataCache[msg.fileId];
+    if (meta?.mimeType) {
+      return meta.mimeType.startsWith('image/');
+    }
+    if (meta?.originalFilename) {
+      return /\.(png|jpe?g|gif|webp|svg|bmp)$/i.test(meta.originalFilename);
+    }
+    if (msg.body) {
+      return /\.(png|jpe?g|gif|webp|svg|bmp)$/i.test(msg.body);
+    }
+    return false;
+  }
+
+  ensureFileBlob(fileId: string): void {
+    if (!fileId || this.fileBlobUrlMap[fileId]) return;
+    this.fileService.downloadFile(fileId).pipe(catchError(() => of(null))).subscribe(blob => {
+      if (blob) {
+        this.fileBlobTypeMap[fileId] = blob.type;
+        this.fileBlobUrlMap[fileId] = window.URL.createObjectURL(blob);
+      }
+    });
+  }
+
+  openImageModal(url: string, title?: string, fileId?: string): void {
+    this.previewImageUrl = url;
+    this.previewImageTitle = title || 'Image Preview';
+    this.previewFileId = fileId || null;
+  }
+
+  closeImageModal(): void {
+    this.previewImageUrl = null;
+    this.previewImageTitle = '';
+    this.previewFileId = null;
+  }
 
   // Review Modal State
   public showReviewModal = false;
@@ -89,7 +142,7 @@ export class ConsultationsComponent implements OnInit, OnDestroy {
 
   // Forms
   public messageForm: FormGroup = this.fb.group({
-    body: ['', Validators.required]
+    body: ['']
   });
 
   public bookForm: FormGroup = this.fb.group({
@@ -109,6 +162,9 @@ export class ConsultationsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.stopPolling();
+    Object.values(this.fileBlobUrlMap).forEach(url => {
+      if (url) window.URL.revokeObjectURL(url);
+    });
   }
 
   loadPatientProfile(): void {
@@ -163,6 +219,23 @@ export class ConsultationsComponent implements OnInit, OnDestroy {
       next: (msgs) => {
         const isNewMessage = this.messages.length !== msgs.length;
         this.messages = msgs;
+
+        this.messages.forEach(m => {
+          if (m.fileId) {
+            this.ensureFileBlob(m.fileId);
+            if (this.fileMetadataCache[m.fileId]) {
+              m.fileMetadata = this.fileMetadataCache[m.fileId];
+            } else {
+              this.fileService.getFileMetadata(m.fileId).pipe(catchError(() => of(null))).subscribe(meta => {
+                if (meta) {
+                  this.fileMetadataCache[m.fileId!] = meta;
+                  m.fileMetadata = meta;
+                }
+              });
+            }
+          }
+        });
+
         if (!isPolling) this.uiService.hideLoading();
         
         if (!isPolling || isNewMessage) {
@@ -179,7 +252,7 @@ export class ConsultationsComponent implements OnInit, OnDestroy {
     this.stopPolling();
     this.pollInterval = setInterval(() => {
       this.loadMessages(consultationId, true);
-    }, 3000); // poll every 3 seconds
+    }, 3000);
   }
 
   stopPolling(): void {
@@ -189,22 +262,111 @@ export class ConsultationsComponent implements OnInit, OnDestroy {
     }
   }
 
-  sendMessage(): void {
-    if (this.messageForm.invalid || !this.selectedConsultation) return;
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+    }
+  }
 
-    const body = this.messageForm.value.body;
-    this.consultationService.sendMessage({
-      consultationId: this.selectedConsultation.consultationId,
-      messageType: MessageType.TEXT,
-      body: body
-    }).subscribe({
-      next: (msg) => {
-        this.messages.push(msg);
-        this.messageForm.reset();
-        this.scrollToBottom();
+  clearSelectedFile(inputRef?: HTMLInputElement): void {
+    this.selectedFile = null;
+    if (inputRef) {
+      inputRef.value = '';
+    }
+  }
+
+  sendMessage(fileInput?: HTMLInputElement): void {
+    if (!this.selectedConsultation) return;
+    const body = this.messageForm.value.body?.trim();
+    if (!body && !this.selectedFile) return;
+
+    if (this.selectedFile) {
+      const tempFile = this.selectedFile;
+      this.isUploadingFile = true;
+      this.uiService.showLoading();
+      this.fileService.uploadChatFile(tempFile, this.patientId).subscribe({
+        next: (fileMeta) => {
+          this.fileMetadataCache[fileMeta.fileId] = fileMeta;
+          if (tempFile.type) {
+            this.fileBlobTypeMap[fileMeta.fileId] = tempFile.type;
+          }
+          this.fileBlobUrlMap[fileMeta.fileId] = window.URL.createObjectURL(tempFile);
+
+          this.consultationService.sendMessage({
+            consultationId: this.selectedConsultation!.consultationId,
+            messageType: MessageType.FILE,
+            fileId: fileMeta.fileId,
+            body: body || fileMeta.originalFilename || 'Sent an attachment'
+          }).subscribe({
+            next: (msg) => {
+              this.uiService.hideLoading();
+              this.isUploadingFile = false;
+              msg.fileMetadata = fileMeta;
+              this.ensureFileBlob(fileMeta.fileId);
+              this.messages.push(msg);
+              this.messageForm.reset();
+              this.clearSelectedFile(fileInput);
+              this.scrollToBottom();
+            },
+            error: () => {
+              this.uiService.hideLoading();
+              this.isUploadingFile = false;
+              this.uiService.showError('Failed to send attachment message.');
+            }
+          });
+        },
+        error: () => {
+          this.uiService.hideLoading();
+          this.isUploadingFile = false;
+          this.uiService.showError('Failed to upload file attachment.');
+        }
+      });
+    } else {
+      if (!body) return;
+      this.consultationService.sendMessage({
+        consultationId: this.selectedConsultation.consultationId,
+        messageType: MessageType.TEXT,
+        body: body
+      }).subscribe({
+        next: (msg) => {
+          this.messages.push(msg);
+          this.messageForm.reset();
+          this.scrollToBottom();
+        },
+        error: () => this.uiService.showError('Failed to send message')
+      });
+    }
+  }
+
+  downloadChatFile(fileId: string, filename?: string): void {
+    if (!fileId) return;
+    this.uiService.showLoading();
+    this.fileService.downloadFile(fileId).subscribe({
+      next: (blob: Blob) => {
+        this.uiService.hideLoading();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename || `attachment_${fileId.substring(0, 8)}`;
+        a.target = '_blank';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
       },
-      error: () => this.uiService.showError('Failed to send message')
+      error: () => {
+        this.uiService.hideLoading();
+        this.uiService.showError('Failed to download file attachment.');
+      }
     });
+  }
+
+  formatFileSize(bytes?: number): string {
+    if (!bytes) return 'File';
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   }
 
   openBookModal(): void {
