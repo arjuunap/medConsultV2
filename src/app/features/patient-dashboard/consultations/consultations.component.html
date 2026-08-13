@@ -165,10 +165,29 @@
       </div>
 
       <div class="chat-input-bar p-3 bg-white border-top" *ngIf="selectedConsultation.status !== 'CLOSED'">
-        <!-- File Preview Badge -->
-        <div *ngIf="selectedFile" class="d-inline-flex align-center justify-between px-3 py-1 mb-2 rounded bg-light border fs-xs" style="max-width: 320px;">
-          <span class="text-truncate fw-semibold style-teal">📎 {{ selectedFile.name }} ({{ formatFileSize(selectedFile.size) }})</span>
-          <button type="button" (click)="clearSelectedFile(pFileInput)" style="border: none; background: transparent; color: var(--red-d); font-weight: bold; cursor: pointer; margin-inline-start: 8px;">✕</button>
+        <!-- Compact File / Image Preview Badge -->
+        <div *ngIf="selectedFile" class="chat-file-preview-card d-inline-flex align-center gap-2 p-1 px-2 mb-2 rounded-lg bg-white border shadow-sm" style="max-width: 260px; width: fit-content;">
+          <!-- Thumbnail for Images -->
+          <div *ngIf="selectedFilePreviewUrl" class="chat-preview-thumb-wrap" style="position: relative; width: 42px; height: 42px; flex-shrink: 0;">
+            <img [src]="selectedFilePreviewUrl" [alt]="selectedFile.name" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-color, #e2e8f0);">
+          </div>
+          <!-- Document Icon for Non-Images -->
+          <div *ngIf="!selectedFilePreviewUrl" class="d-flex align-center justify-center rounded bg-light" style="width: 34px; height: 34px; flex-shrink: 0; font-size: 1rem;">
+            📄
+          </div>
+
+          <div class="overflow-hidden flex-1" style="min-width: 0;">
+            <div class="fs-xs fw-semibold text-truncate text-teal-d" style="font-size: 11px; max-width: 160px;">
+              {{ selectedFile.name }}
+            </div>
+            <div class="fs-xs text-muted" style="font-size: 10px;">
+              {{ formatFileSize(selectedFile.size) }}
+            </div>
+          </div>
+
+          <button type="button" (click)="clearSelectedFile(pFileInput)" title="{{ 'Remove file' | translate }}" style="border: none; background: #fee2e2; color: #dc2626; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; font-size: 10px; flex-shrink: 0; margin-inline-start: 4px;">
+            ✕
+          </button>
         </div>
 
         <form [formGroup]="messageForm" (ngSubmit)="sendMessage(pFileInput)" class="d-flex align-center gap-2 m-0">

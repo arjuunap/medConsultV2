@@ -61,6 +61,7 @@ export class DoctorConsultationsComponent implements OnInit, OnDestroy {
 
   // File Sharing State
   public selectedChatFile: File | null = null;
+  public selectedChatFilePreviewUrl: string | null = null;
   public isUploadingFile = false;
   public fileMetadataCache: { [fileId: string]: FileMetadataResponseDto } = {};
   public fileBlobUrlMap: { [fileId: string]: string } = {};
@@ -591,10 +592,19 @@ export class DoctorConsultationsComponent implements OnInit, OnDestroy {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.selectedChatFile = input.files[0];
+      if (this.selectedChatFile.type && this.selectedChatFile.type.startsWith('image/')) {
+        this.selectedChatFilePreviewUrl = window.URL.createObjectURL(this.selectedChatFile);
+      } else {
+        this.selectedChatFilePreviewUrl = null;
+      }
     }
   }
 
   clearSelectedChatFile(inputRef?: HTMLInputElement): void {
+    if (this.selectedChatFilePreviewUrl) {
+      window.URL.revokeObjectURL(this.selectedChatFilePreviewUrl);
+      this.selectedChatFilePreviewUrl = null;
+    }
     this.selectedChatFile = null;
     if (inputRef) {
       inputRef.value = '';

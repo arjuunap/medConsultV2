@@ -273,22 +273,31 @@
 
 /* Chat Header */
 .active-chat-header {
-  padding: 16px 24px;
+  padding: 14px 20px;
   border-bottom: 1px solid var(--border-color);
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
+  flex-direction: column;
+  gap: 12px;
   background: var(--white);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
   z-index: 10;
 }
 
+.chat-header-main-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
 .active-user-info {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
+  min-width: 0;
+  flex: 1;
 }
 
 .header-avatar {
@@ -297,18 +306,25 @@
   border-color: rgba(29, 158, 117, 0.1);
 }
 
+.header-patient-text {
+  min-width: 0;
+}
+
 .chat-subject-title {
   font-family: 'Outfit', sans-serif;
   font-weight: 700;
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   color: var(--dark);
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .chat-patient-subtitle {
   font-size: 0.85rem;
   color: var(--t3);
-  margin-top: 3px;
+  margin-top: 2px;
 }
 
 .badge-urgent {
@@ -320,12 +336,8 @@
   font-size: 0.72rem;
 }
 
-/* Actions in Header */
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+.header-status-wrapper {
+  flex-shrink: 0;
 }
 
 .status-update-form {
@@ -335,7 +347,7 @@
 }
 
 .custom-select-wrapper {
-  width: 140px;
+  width: 130px;
 }
 
 .btn-update-status {
@@ -343,6 +355,133 @@
   font-size: 0.82rem !important;
   font-weight: 600;
   border-radius: var(--radius-sm);
+}
+
+/* Consultation Segmented Tools Bar */
+.consultation-tools-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--off, #f8fafc);
+  padding: 5px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border-color, #e2e8f0);
+  width: 100%;
+}
+
+.tool-tab-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--t2, #475569);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.tool-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--teal-d, #085041);
+}
+
+.tool-tab-btn.active {
+  background: #ffffff;
+  border-color: var(--teal);
+  color: var(--teal);
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.15);
+}
+
+.tool-tab-btn.btn-rx.active {
+  border-color: #7c3aed;
+  color: #6d28d9;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.15);
+}
+
+.tool-tab-btn.btn-lab.active {
+  border-color: #0284c7;
+  color: #0369a1;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.15);
+}
+
+.tool-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 10px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+}
+
+.rx-badge {
+  background: #7c3aed;
+  color: #ffffff;
+}
+
+.lab-badge {
+  background: #0284c7;
+  color: #ffffff;
+}
+
+@media (max-width: 576px) {
+  .active-chat-header {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .chat-header-main-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .header-status-wrapper {
+    width: 100%;
+  }
+
+  .status-update-form {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .custom-select-wrapper {
+    flex: 1;
+  }
+
+  .btn-update-status {
+    flex-shrink: 0;
+  }
+
+  .consultation-tools-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    padding: 4px;
+  }
+
+  .tool-tab-btn {
+    padding: 7px 4px;
+    font-size: 0.75rem;
+    gap: 3px;
+  }
+
+  .tool-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 /* Message Stream */
@@ -1749,4 +1888,32 @@
   .lab-slide-panel {
     width: 100vw;
   }
+}
+
+/* Compact Selected File Preview Card in Chat Input */
+.chat-file-preview-card {
+  background: #ffffff;
+  border: 1.5px solid var(--border-color, #e2e8f0);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  animation: fadeIn 0.15s ease-out;
+}
+
+.chat-preview-thumb-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.btn-clear-preview {
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.btn-clear-preview:hover {
+  background-color: #f87171 !important;
+  color: #ffffff !important;
+  transform: scale(1.1);
 }

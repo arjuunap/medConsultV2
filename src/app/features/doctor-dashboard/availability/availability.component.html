@@ -299,85 +299,89 @@
         </div>
       </div>
 
-      <!-- SLOTS TAB -->
-      <div *ngIf="activeTab === 'slots'">
-        <div class="d-flex flex-wrap justify-between align-end mb-4 gap-3 bg-light p-4 rounded border shadow-sm">
-          <form [formGroup]="slotFilterForm" class="d-flex align-end gap-3 flex-1 flex-wrap">
-            <div class="flex-1" style="max-width: 300px;">
-              <label class="form-label">{{ 'Manage Slots For Date' | translate }}</label>
-              <input type="date" formControlName="date" class="form-control">
-            </div>
-            <div class="d-flex gap-2">
-              <button type="button" (click)="loadSlots()" class="btn btn-outline">{{ 'Load Slots' | translate }}</button>
-              <button type="button" (click)="generateSlotsForDate()" class="btn btn-primary flex-align-center gap-1">
-                <svg class="btn-zap-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-                </svg>
-                <span>{{ 'Auto-Generate' | translate }}</span>
-              </button>
-            </div>
-          </form>
-        </div>
-
-        <div class="bg-white p-4 rounded mb-4 border shadow-sm">
-          <h4 class="fs-md fw-bold mb-3 text-dark flex-align-center gap-2">
-            <svg class="sec-plus-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="12" y1="8" x2="12" y2="16"></line>
-              <line x1="8" y1="12" x2="16" y2="12"></line>
-            </svg>
-            <span>{{ 'Add Manual Single Slot' | translate }}</span>
-          </h4>
-          <form [formGroup]="slotForm" (ngSubmit)="submitSlot()" class="d-flex flex-wrap gap-3 align-end">
-            <div class="flex-1">
-              <label class="form-label">{{ 'Start Time *' | translate }}</label>
-              <input type="time" formControlName="startTime" class="form-control">
-            </div>
-            <div class="flex-1">
-              <label class="form-label">{{ 'End Time *' | translate }}</label>
-              <input type="time" formControlName="endTime" class="form-control">
-            </div>
-            <div class="flex-1">
-              <label class="form-label">{{ 'Type *' | translate }}</label>
-              <app-custom-select 
-                formControlName="sessionType" 
-                [options]="sessionTypeSelectOptions" 
-                bindLabel="label" 
-                bindValue="value" 
-                [placeholder]="'Select Type' | translate">
-              </app-custom-select>
-            </div>
-            <div>
-              <button type="submit" [disabled]="slotForm.invalid" class="btn btn-primary w-100">{{ 'Add Single Slot' | translate }}</button>
-            </div>
-          </form>
-        </div>
-
-        <!-- Weekly Grid -->
-        <div class="slots-grid-view">
-          <div *ngFor="let slot of slots" 
-               class="slot-card-item" 
-               [class.status-available]="slot.status === 'AVAILABLE'"
-               [class.status-blocked]="slot.status === 'BLOCKED' || slot.status === 'NO_SHOW'"
-               [class.status-booked]="slot.status === 'BOOKED'">
-            
-            <div class="slot-time-text">{{ slot.startTime.substring(0,5) }}</div>
-            <div class="fs-xs text-muted mt-1">{{ slot.sessionType | translate }}</div>
-            <div class="mt-2">
-              <span class="badge" [ngClass]="{
-                'badge-success': slot.status === 'AVAILABLE',
-                'badge-info': slot.status === 'BOOKED',
-                'badge-danger': slot.status === 'BLOCKED' || slot.status === 'NO_SHOW'
-              }">{{ slot.status | translate }}</span>
-            </div>
-            
-            <button *ngIf="slot.status === 'AVAILABLE'" 
-                    (click)="deleteSlot(slot.slotId)"
-                    class="btn btn-danger position-absolute" style="top: 4px; right: 4px; padding: 2px 6px; font-size: 0.7rem; border-radius: 4px;">
-              &times;
-            </button>
+        <!-- SLOTS TAB -->
+        <div *ngIf="activeTab === 'slots'">
+          <div class="slot-filter-banner d-flex flex-wrap justify-between align-end mb-4 gap-3 bg-light p-3 p-md-4 rounded border shadow-sm">
+            <form [formGroup]="slotFilterForm" class="d-flex align-end gap-3 flex-1 flex-wrap w-100">
+              <div class="flex-1 filter-date-group">
+                <label class="form-label fw-semibold">{{ 'Manage Slots For Date' | translate }}</label>
+                <input type="date" formControlName="date" class="form-control">
+              </div>
+              <div class="d-flex gap-2 slot-filter-actions">
+                <button type="button" (click)="loadSlots()" class="btn btn-outline flex-1">{{ 'Load Slots' | translate }}</button>
+                <button type="button" (click)="generateSlotsForDate()" class="btn btn-primary flex-1 flex-align-center justify-center gap-1">
+                  <svg class="btn-zap-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                  </svg>
+                  <span>{{ 'Auto-Generate' | translate }}</span>
+                </button>
+              </div>
+            </form>
           </div>
-        </div>
+
+          <div class="bg-white p-3 p-md-4 rounded mb-4 border shadow-sm">
+            <h4 class="fs-md fw-bold mb-3 text-dark flex-align-center gap-2">
+              <svg class="sec-plus-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="16"></line>
+                <line x1="8" y1="12" x2="16" y2="12"></line>
+              </svg>
+              <span>{{ 'Add Manual Single Slot' | translate }}</span>
+            </h4>
+            <form [formGroup]="slotForm" (ngSubmit)="submitSlot()" class="d-flex flex-wrap gap-3 align-end">
+              <div class="flex-1">
+                <label class="form-label">{{ 'Start Time *' | translate }}</label>
+                <input type="time" formControlName="startTime" class="form-control">
+              </div>
+              <div class="flex-1">
+                <label class="form-label">{{ 'End Time *' | translate }}</label>
+                <input type="time" formControlName="endTime" class="form-control">
+              </div>
+              <div class="flex-1">
+                <label class="form-label">{{ 'Type *' | translate }}</label>
+                <app-custom-select 
+                  formControlName="sessionType" 
+                  [options]="sessionTypeSelectOptions" 
+                  bindLabel="label" 
+                  bindValue="value" 
+                  [placeholder]="'Select Type' | translate">
+                </app-custom-select>
+              </div>
+              <div class="slot-add-btn-wrap">
+                <button type="submit" [disabled]="slotForm.invalid" class="btn btn-primary w-100">{{ 'Add Single Slot' | translate }}</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Weekly Grid -->
+          <div class="slots-grid-view">
+            <div *ngFor="let slot of slots" 
+                 class="slot-card-item" 
+                 [class.status-available]="slot.status === 'AVAILABLE'"
+                 [class.status-blocked]="slot.status === 'BLOCKED' || slot.status === 'NO_SHOW'"
+                 [class.status-booked]="slot.status === 'BOOKED'">
+              
+              <div class="slot-card-top d-flex justify-between align-center mb-1">
+                <div class="slot-time-text">{{ slot.startTime.substring(0,5) }}</div>
+                <button *ngIf="slot.status === 'AVAILABLE'" 
+                        (click)="deleteSlot(slot.slotId)"
+                        class="btn-delete-slot" 
+                        title="{{ 'Delete slot' | translate }}">
+                  &times;
+                </button>
+              </div>
+              
+              <div class="slot-mode-chip text-truncate mb-2">{{ slot.sessionType | translate }}</div>
+              
+              <div class="slot-status-wrap">
+                <span class="badge" [ngClass]="{
+                  'badge-success': slot.status === 'AVAILABLE',
+                  'badge-info': slot.status === 'BOOKED',
+                  'badge-danger': slot.status === 'BLOCKED' || slot.status === 'NO_SHOW'
+                }">{{ slot.status | translate }}</span>
+              </div>
+            </div>
+          </div>
 
         <div *ngIf="slots.length === 0" class="text-center p-5 border rounded bg-light mt-4">
           <h4 class="fw-bold mb-2">{{ 'No Slots Available for Selected Date' | translate }}</h4>

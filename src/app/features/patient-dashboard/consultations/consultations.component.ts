@@ -41,6 +41,7 @@ export class ConsultationsComponent implements OnInit, OnDestroy {
 
   // File Sharing State
   public selectedFile: File | null = null;
+  public selectedFilePreviewUrl: string | null = null;
   public isUploadingFile = false;
   public fileMetadataCache: { [fileId: string]: FileMetadataResponseDto } = {};
   public fileBlobUrlMap: { [fileId: string]: string } = {};
@@ -292,10 +293,19 @@ export class ConsultationsComponent implements OnInit, OnDestroy {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.selectedFile = input.files[0];
+      if (this.selectedFile.type && this.selectedFile.type.startsWith('image/')) {
+        this.selectedFilePreviewUrl = window.URL.createObjectURL(this.selectedFile);
+      } else {
+        this.selectedFilePreviewUrl = null;
+      }
     }
   }
 
   clearSelectedFile(inputRef?: HTMLInputElement): void {
+    if (this.selectedFilePreviewUrl) {
+      window.URL.revokeObjectURL(this.selectedFilePreviewUrl);
+      this.selectedFilePreviewUrl = null;
+    }
     this.selectedFile = null;
     if (inputRef) {
       inputRef.value = '';

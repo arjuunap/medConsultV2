@@ -1,6 +1,6 @@
 <div class="history-container">
   <!-- Header Card -->
-  <div class="history-header d-flex justify-between align-center flex-wrap gap-3">
+  <div class="history-header d-flex justify-between align-center flex-wrap gap-3 mb-3 mb-md-4">
     <div>
       <h2 class="fs-xl text-primary m-0 fw-bold">📜 {{ 'Patient Appointments History' | translate }}</h2>
       <p class="text-muted fs-sm mt-1 m-0">{{ 'Search, filter, and review details of all patient clinical appointments' | translate }}</p>
@@ -9,7 +9,7 @@
   </div>
 
   <!-- Filters Section -->
-  <div class="filters-card card shadow-sm p-4 mb-4">
+  <div class="filters-card card shadow-sm p-3 p-md-4 mb-3 mb-md-4">
     <div class="filters-grid">
       <div class="filter-item">
         <label class="filter-label">{{ 'Status' | translate }}</label>
@@ -44,11 +44,11 @@
       </div>
     </div>
 
-    <div class="d-flex justify-end gap-2 mt-3">
-      <button class="btn btn-outline btn-sm" (click)="clearFilters()">
+    <div class="filter-actions d-flex justify-end gap-2 mt-3">
+      <button class="btn btn-outline btn-sm filter-btn" (click)="clearFilters()">
         🧹 {{ 'Clear Filters' | translate }}
       </button>
-      <button class="btn btn-primary btn-sm" (click)="loadAppointments()">
+      <button class="btn btn-primary btn-sm filter-btn" (click)="loadAppointments()">
         🔍 {{ 'Refresh' | translate }}
       </button>
     </div>
@@ -121,14 +121,14 @@
     </div>
 
     <!-- Mobile Card View -->
-    <div class="d-block d-md-none p-3">
-      <div *ngFor="let app of appointments" class="mobile-app-card p-3 mb-3 border rounded">
-        <div class="d-flex justify-between align-center mb-2">
+    <div class="mobile-list-container d-block d-md-none">
+      <div *ngFor="let app of appointments" class="mobile-app-card border rounded">
+        <div class="d-flex justify-between align-center mb-2 flex-wrap gap-2">
           <div class="d-flex align-center gap-2">
             <div class="patient-avatar-sm" [style.background]="getAvatarBg(app.patientName)" [style.color]="getAvatarColor(app.patientName)">
               {{ getPatientInitials(app.patientName) }}
             </div>
-            <div class="fw-bold text-dark">{{ app.patientName | translate }}</div>
+            <div class="fw-bold text-dark text-truncate" style="max-width: 180px;">{{ app.patientName | translate }}</div>
           </div>
           <span class="status-badge-sm" [class.status-completed]="app.status === 'COMPLETED'" 
             [class.status-confirmed]="app.status === 'CONFIRMED'" 
@@ -157,10 +157,10 @@
 
     <!-- Pagination Footer -->
     <div class="pagination-footer d-flex justify-between align-center p-3 border-top flex-wrap gap-2">
-      <span class="fs-sm text-muted">
+      <span class="fs-sm text-muted pagination-info">
         {{ 'Showing page' | translate }} {{ page + 1 }} {{ 'of' | translate }} {{ totalPages }}
       </span>
-      <div class="d-flex gap-2">
+      <div class="d-flex gap-2 pagination-nav">
         <button class="btn btn-outline btn-sm" [disabled]="page === 0" (click)="prevPage()">
           ◀ {{ 'Previous' | translate }}
         </button>
@@ -176,7 +176,7 @@
 <div class="modal-overlay" *ngIf="showDetailsModal && selectedAppointment" (click)="closeDetails()">
   <div class="modal-box spec-modal-box" (click)="$event.stopPropagation()">
     <!-- Modal Header Banner -->
-    <div class="spec-modal-header d-flex justify-between align-center p-4">
+    <div class="spec-modal-header d-flex justify-between align-center p-3 p-md-4">
       <div class="d-flex align-center gap-3">
         <div class="patient-avatar-lg shadow-sm" [style.background]="getAvatarBg(selectedAppointment.patientName)" [style.color]="getAvatarColor(selectedAppointment.patientName)">
           {{ getPatientInitials(selectedAppointment.patientName) }}
@@ -199,7 +199,7 @@
       <button class="btn-close-modal-glass" (click)="closeDetails()" aria-label="Close dialog">✕</button>
     </div>
 
-    <div class="modal-body p-4">
+    <div class="modal-body p-3 p-md-4">
       <div class="details-grid">
         <!-- Main Details Column -->
         <div class="details-main">

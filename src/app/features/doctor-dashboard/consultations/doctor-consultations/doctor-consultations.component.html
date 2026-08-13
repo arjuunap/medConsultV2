@@ -48,58 +48,65 @@
     <div class="chat-viewport-container" *ngIf="selectedConsultation">
       <!-- Active Chat Header -->
       <div class="active-chat-header">
-        <div class="active-user-info">
-          <!-- Back button for mobile view -->
-          <button class="btn-back-to-inbox" (click)="backToInbox()" title="Back to Inbox">
-            ⬅ {{ 'Inbox' | translate }}
-          </button>
+        <!-- Main Header Row: Patient info, Avatar & Status form -->
+        <div class="chat-header-main-row">
+          <div class="active-user-info">
+            <!-- Back button for mobile view -->
+            <button class="btn-back-to-inbox" (click)="backToInbox()" title="Back to Inbox">
+              ⬅ {{ 'Inbox' | translate }}
+            </button>
 
-          <img *ngIf="selectedConsultation.patientAvatarUrl" [src]="selectedConsultation.patientAvatarUrl | apiUrl" (error)="selectedConsultation.patientAvatarUrl = ''" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0;" [alt]="selectedConsultation.patientName">
-          <div *ngIf="!selectedConsultation.patientAvatarUrl" class="avatar-circle header-avatar">
-            {{ selectedConsultation.patientName.charAt(0).toUpperCase() }}
-          </div>
-          <div>
-            <h3 class="chat-subject-title">{{ selectedConsultation.subject }}</h3>
-            <div class="chat-patient-subtitle">
-              {{ 'Patient:' | translate }} <strong>{{ selectedConsultation.patientName }}</strong>
-              <span class="badge badge-urgent ms-2" *ngIf="selectedConsultation.isUrgent">⚠️ {{ 'Urgent' | translate }}</span>
+            <img *ngIf="selectedConsultation.patientAvatarUrl" [src]="selectedConsultation.patientAvatarUrl | apiUrl" (error)="selectedConsultation.patientAvatarUrl = ''" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0;" [alt]="selectedConsultation.patientName">
+            <div *ngIf="!selectedConsultation.patientAvatarUrl" class="avatar-circle header-avatar">
+              {{ selectedConsultation.patientName.charAt(0).toUpperCase() }}
             </div>
+            <div class="header-patient-text">
+              <h3 class="chat-subject-title">{{ selectedConsultation.subject }}</h3>
+              <div class="chat-patient-subtitle">
+                {{ 'Patient:' | translate }} <strong>{{ selectedConsultation.patientName }}</strong>
+                <span class="badge badge-urgent ms-2" *ngIf="selectedConsultation.isUrgent">⚠️ {{ 'Urgent' | translate }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Status Actions -->
+          <div class="header-status-wrapper">
+            <form [formGroup]="statusForm" class="status-update-form">
+              <div class="custom-select-wrapper">
+                <app-custom-select 
+                  formControlName="status" 
+                  [options]="statusSelectOptions" 
+                  bindLabel="label" 
+                  bindValue="value" 
+                  size="sm"
+                  [placeholder]="'Status' | translate">
+                </app-custom-select>
+              </div>
+              <button class="btn btn-primary btn-sm btn-update-status" type="button" (click)="updateStatus()">
+                {{ 'Update' | translate }}
+              </button>
+            </form>
           </div>
         </div>
 
-        <!-- Status Actions -->
-        <div class="header-actions">
-          <button type="button" class="btn btn-outline btn-sm btn-toggle-info" (click)="togglePatientInfo()" [class.active]="showPatientInfo">
-            ℹ️ {{ 'Patient Info' | translate }}
+        <!-- Segmented Toolbar: Patient Info, Prescriptions & Lab Results -->
+        <div class="consultation-tools-bar">
+          <button type="button" class="tool-tab-btn btn-toggle-info" (click)="togglePatientInfo()" [class.active]="showPatientInfo">
+            <span class="tool-icon">ℹ️</span>
+            <span class="tool-label">{{ 'Patient Info' | translate }}</span>
           </button>
 
-          <!-- Prescription Button -->
-          <button type="button" class="btn btn-rx btn-sm" (click)="togglePrescriptionPanel()" [class.active]="showPrescriptionPanel">
-            💊 {{ 'Prescriptions' | translate }}
-            <span *ngIf="prescriptions.length > 0" class="rx-count-badge">{{ prescriptions.length }}</span>
+          <button type="button" class="tool-tab-btn btn-rx" (click)="togglePrescriptionPanel()" [class.active]="showPrescriptionPanel">
+            <span class="tool-icon">💊</span>
+            <span class="tool-label">{{ 'Prescriptions' | translate }}</span>
+            <span *ngIf="prescriptions.length > 0" class="tool-badge rx-badge">{{ prescriptions.length }}</span>
           </button>
 
-          <!-- Lab Results Button -->
-          <button type="button" class="btn btn-lab btn-sm" (click)="toggleLabPanel()" [class.active]="showLabPanel">
-            🔬 {{ 'Lab Results' | translate }}
-            <span *ngIf="labResults.length > 0" class="lab-count-badge">{{ labResults.length }}</span>
+          <button type="button" class="tool-tab-btn btn-lab" (click)="toggleLabPanel()" [class.active]="showLabPanel">
+            <span class="tool-icon">🔬</span>
+            <span class="tool-label">{{ 'Lab Results' | translate }}</span>
+            <span *ngIf="labResults.length > 0" class="tool-badge lab-badge">{{ labResults.length }}</span>
           </button>
-          
-          <form [formGroup]="statusForm" class="status-update-form">
-            <div class="custom-select-wrapper">
-              <app-custom-select 
-                formControlName="status" 
-                [options]="statusSelectOptions" 
-                bindLabel="label" 
-                bindValue="value" 
-                size="sm"
-                [placeholder]="'Status' | translate">
-              </app-custom-select>
-            </div>
-            <button class="btn btn-primary btn-sm btn-update-status" type="button" (click)="updateStatus()">
-              {{ 'Update' | translate }}
-            </button>
-          </form>
         </div>
       </div>
       
@@ -124,36 +131,38 @@
               {{ msg.body }}
             </div>
 
-            <!-- Image Attachment Display Card with Thin Bezel Frame -->
+            <!-- Image Attachment Display Card with Compact Frame -->
             <div *ngIf="msg.fileId && isImageFile(msg)" 
                  class="chat-image-wrapper mt-1 rounded-lg overflow-hidden shadow-sm" 
-                 [style.border]="msg.senderId === authService.currentUser()?.userId ? '2px solid rgba(255, 255, 255, 0.4)' : '2px solid rgba(15, 23, 42, 0.12)'"
+                 [style.border]="msg.senderId === authService.currentUser()?.userId ? '1.5px solid rgba(255, 255, 255, 0.4)' : '1.5px solid rgba(15, 23, 42, 0.12)'"
                  [style.background]="msg.senderId === authService.currentUser()?.userId ? 'rgba(0, 0, 0, 0.15)' : '#ffffff'"
-                 style="max-width: 290px; position: relative; border-radius: 12px; box-shadow: 0 4px 14px rgba(0,0,0,0.08);">
+                 style="max-width: 180px; position: relative; border-radius: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.06);">
               
               <!-- Loading Placeholder -->
-              <div *ngIf="!fileBlobUrlMap[msg.fileId]" class="p-3 text-center fs-xs opacity-75 d-flex align-center justify-center gap-2" style="background: rgba(0,0,0,0.04); min-height: 140px; border-radius: 10px;">
+              <div *ngIf="!fileBlobUrlMap[msg.fileId]" class="p-2 text-center fs-xs opacity-75 d-flex align-center justify-center gap-2" style="background: rgba(0,0,0,0.04); min-height: 100px; border-radius: 8px;">
                 <span>{{ 'Loading media...' | translate }}</span>
               </div>
 
-              <!-- Main Image Preview with Thin Inner Bezel -->
-              <img *ngIf="fileBlobUrlMap[msg.fileId]" [src]="fileBlobUrlMap[msg.fileId]" [alt]="msg.fileMetadata?.originalFilename || 'Attachment'"
-                   (click)="openImageModal(fileBlobUrlMap[msg.fileId], msg.fileMetadata?.originalFilename, msg.fileId)"
-                   style="width: 100%; max-height: 230px; object-fit: cover; border-top-left-radius: 10px; border-top-right-radius: 10px; cursor: pointer; display: block;" title="{{ 'Click to view full image' | translate }}">
+              <!-- Main Image Preview Thumbnail -->
+              <div *ngIf="fileBlobUrlMap[msg.fileId]" style="position: relative; height: 120px; overflow: hidden;">
+                <img [src]="fileBlobUrlMap[msg.fileId]" [alt]="msg.fileMetadata?.originalFilename || 'Attachment'"
+                     (click)="openImageModal(fileBlobUrlMap[msg.fileId], msg.fileMetadata?.originalFilename, msg.fileId)"
+                     style="width: 100%; height: 100%; object-fit: cover; cursor: pointer; display: block;" title="{{ 'Click to view full image' | translate }}">
+              </div>
               
               <!-- Integrated Sleek Save Action Bar -->
-              <div class="d-flex align-center justify-between p-2"
+              <div class="d-flex align-center justify-between p-1 px-2"
                    [dir]="languageService.isArabic ? 'rtl' : 'ltr'"
                    [style.background]="msg.senderId === authService.currentUser()?.userId ? 'rgba(0,0,0,0.22)' : '#f8fafc'"
                    style="border-top: 1px solid rgba(0,0,0,0.06);">
-                <span class="fs-xs text-truncate fw-medium px-1" [style.color]="msg.senderId === authService.currentUser()?.userId ? '#ffffff' : '#334155'" style="font-size: 11px; max-width: 175px;">
+                <span class="fs-xs text-truncate fw-medium px-1" [style.color]="msg.senderId === authService.currentUser()?.userId ? '#ffffff' : '#334155'" style="font-size: 10px; max-width: 105px;">
                   {{ msg.fileMetadata?.originalFilename || ('Image' | translate) }}
                 </span>
                 <button type="button" class="btn btn-xs d-inline-flex align-center gap-1" (click)="downloadChatFile(msg.fileId, msg.fileMetadata?.originalFilename)"
                         [style.background]="msg.senderId === authService.currentUser()?.userId ? '#ffffff' : 'var(--teal, #0d9488)'"
                         [style.color]="msg.senderId === authService.currentUser()?.userId ? 'var(--teal-d, #0f766e)' : '#ffffff'"
-                        style="border: none; padding: 4px 10px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 11px; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5">
+                        style="border: none; padding: 3px 8px; border-radius: 5px; font-weight: 600; cursor: pointer; font-size: 10px; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                  <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                     <polyline points="7 10 12 15 17 10"></polyline>
                     <line x1="12" y1="15" x2="12" y2="3"></line>
@@ -191,10 +200,29 @@
 
       <!-- Footer Input Area -->
       <div class="chat-footer-input d-flex flex-column gap-2" *ngIf="selectedConsultation.status !== 'CLOSED'">
-        <!-- File Preview Badge -->
-        <div *ngIf="selectedChatFile" class="d-inline-flex align-center justify-between px-3 py-1 rounded bg-light border fs-xs" style="max-width: 320px;">
-          <span class="text-truncate fw-semibold text-teal-d">📎 {{ selectedChatFile.name }} ({{ formatFileSize(selectedChatFile.size) }})</span>
-          <button type="button" (click)="clearSelectedChatFile(docFileInput)" style="border: none; background: transparent; color: var(--red-d); font-weight: bold; cursor: pointer; margin-inline-start: 8px;">✕</button>
+        <!-- Compact File / Image Preview Badge -->
+        <div *ngIf="selectedChatFile" class="chat-file-preview-card d-inline-flex align-center gap-2 p-1 px-2 rounded-lg bg-white border shadow-sm" style="max-width: 260px; width: fit-content;">
+          <!-- Thumbnail for Images -->
+          <div *ngIf="selectedChatFilePreviewUrl" class="chat-preview-thumb-wrap" style="position: relative; width: 42px; height: 42px; flex-shrink: 0;">
+            <img [src]="selectedChatFilePreviewUrl" [alt]="selectedChatFile.name" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-color, #e2e8f0);">
+          </div>
+          <!-- Document Icon for Non-Images -->
+          <div *ngIf="!selectedChatFilePreviewUrl" class="d-flex align-center justify-center rounded bg-light" style="width: 34px; height: 34px; flex-shrink: 0; font-size: 1rem;">
+            📄
+          </div>
+
+          <div class="overflow-hidden flex-1" style="min-width: 0;">
+            <div class="fs-xs fw-semibold text-truncate text-teal-d" style="font-size: 11px; max-width: 160px;">
+              {{ selectedChatFile.name }}
+            </div>
+            <div class="fs-xs text-muted" style="font-size: 10px;">
+              {{ formatFileSize(selectedChatFile.size) }}
+            </div>
+          </div>
+
+          <button type="button" (click)="clearSelectedChatFile(docFileInput)" title="{{ 'Remove file' | translate }}" style="border: none; background: #fee2e2; color: #dc2626; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; font-size: 10px; flex-shrink: 0; margin-inline-start: 4px;">
+            ✕
+          </button>
         </div>
 
         <form [formGroup]="messageForm" (ngSubmit)="sendMessage(docFileInput)" class="chat-form d-flex align-center gap-2">

@@ -16,7 +16,7 @@
       <svg class="badge-mini-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
         <circle cx="9" cy="7" r="4"></circle>
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+        <path d="M23 21v-2a4 4 0 0 3-3.87"></path>
         <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
       </svg>
       <span>{{ 'Total Scheduled:' | translate }} {{ upcomingAppointments.length }}</span>
@@ -30,13 +30,18 @@
       class="timeline-item-card"
       [class.current-active]="app.status === 'CONFIRMED' || i === 0"
     >
-      <!-- Time slot badge -->
-      <div class="slot-time-badge flex-align-center gap-1">
-        <svg class="slot-clock-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"></circle>
-          <polyline points="12 6 12 12 16 14"></polyline>
-        </svg>
-        <span>{{ app.startTime.substring(0, 5) }}</span>
+      <!-- Header row for small screens (Time slot & Mobile Status Badge) -->
+      <div class="timeline-card-header">
+        <div class="slot-time-badge flex-align-center gap-1">
+          <svg class="slot-clock-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span>{{ app.startTime.substring(0, 5) }}</span>
+        </div>
+        <span class="badge status-badge-mobile" [class.badge-success]="app.status==='CONFIRMED' || app.status==='COMPLETED'" [class.badge-warning]="app.status==='SCHEDULED'" [class.badge-danger]="app.status==='CANCELLED' || app.status==='NO_SHOW'">
+          {{ app.status | translate }}
+        </span>
       </div>
 
       <!-- Patient Info -->
@@ -47,72 +52,76 @@
             <circle cx="12" cy="7" r="4"></circle>
           </svg>
         </div>
-        <div>
+        <div class="patient-details flex-1">
           <div class="patient-name-title">{{ app.patientName | translate }}</div>
-          <div class="fs-xs text-muted flex-align-center gap-1 mt-1">
-            <svg class="meta-mini-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
-            <span>{{ 'Date:' | translate }} {{ formatDate(app.scheduledDate) }}</span>
-            <span>|</span>
-            <svg class="meta-mini-svg" *ngIf="app.sessionType === 'IN_CLINIC'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M18 6H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"></path>
-              <path d="M12 2v4M9 12h6M12 9v6"></path>
-            </svg>
-            <svg class="meta-mini-svg" *ngIf="app.sessionType !== 'IN_CLINIC'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-              <line x1="8" y1="21" x2="16" y2="21"></line>
-              <line x1="12" y1="17" x2="12" y2="21"></line>
-            </svg>
-            <span>{{ 'Mode:' | translate }} <strong>{{ app.sessionType | translate }}</strong></span>
+          <div class="patient-sub-meta">
+            <span class="meta-chip">
+              <svg class="meta-mini-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span>{{ 'Date:' | translate }} {{ formatDate(app.scheduledDate) }}</span>
+            </span>
+            <span class="meta-chip">
+              <svg class="meta-mini-svg" *ngIf="app.sessionType === 'IN_CLINIC'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"></path>
+                <path d="M12 2v4M9 12h6M12 9v6"></path>
+              </svg>
+              <svg class="meta-mini-svg" *ngIf="app.sessionType !== 'IN_CLINIC'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+              <span>{{ 'Mode:' | translate }} <strong>{{ app.sessionType | translate }}</strong></span>
+            </span>
           </div>
         </div>
       </div>
 
-      <!-- Status & Action Buttons -->
-      <div class="d-flex align-center gap-3 flex-wrap">
-        <span class="badge" [class.badge-success]="app.status==='CONFIRMED' || app.status==='COMPLETED'" [class.badge-warning]="app.status==='SCHEDULED'" [class.badge-danger]="app.status==='CANCELLED' || app.status==='NO_SHOW'">
+      <!-- Actions & Desktop Status Wrapper -->
+      <div class="actions-wrapper">
+        <span class="badge status-badge-desktop" [class.badge-success]="app.status==='CONFIRMED' || app.status==='COMPLETED'" [class.badge-warning]="app.status==='SCHEDULED'" [class.badge-danger]="app.status==='CANCELLED' || app.status==='NO_SHOW'">
           {{ app.status | translate }}
         </span>
 
-        <!-- Confirm Appointment Action Button for doctor -->
-        <button 
-          *ngIf="app.status === 'SCHEDULED'" 
-          class="btn btn-success btn-sm flex-align-center gap-1"
-          style="background-color: #0d9488; color: #ffffff; border: none; font-weight: 700; padding: 6px 14px; border-radius: 8px; box-shadow: 0 2px 6px rgba(13,148,136,0.25);"
-          (click)="changeStatus(app.appointmentId, 'CONFIRMED')"
-        >
-          <svg class="btn-check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width: 15px; height: 15px;">
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
-          <span>{{ 'Confirm Appointment' | translate }}</span>
-        </button>
+        <div class="timeline-actions">
+          <!-- Confirm Appointment Action Button for doctor -->
+          <button 
+            *ngIf="app.status === 'SCHEDULED'" 
+            class="btn btn-confirm btn-sm flex-align-center gap-1"
+            (click)="changeStatus(app.appointmentId, 'CONFIRMED')"
+          >
+            <svg class="btn-check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span>{{ 'Confirm Appointment' | translate }}</span>
+          </button>
 
-        <button 
-          *ngIf="app.status === 'CONFIRMED'" 
-          class="btn btn-accent btn-sm flex-align-center gap-1"
-          (click)="changeStatus(app.appointmentId, 'COMPLETED')"
-        >
-          <svg class="btn-check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
-          <span>{{ 'Mark Complete' | translate }}</span>
-        </button>
+          <button 
+            *ngIf="app.status === 'CONFIRMED'" 
+            class="btn btn-accent btn-sm flex-align-center gap-1"
+            (click)="changeStatus(app.appointmentId, 'COMPLETED')"
+          >
+            <svg class="btn-check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span>{{ 'Mark Complete' | translate }}</span>
+          </button>
 
-        <button 
-          *ngIf="app.status === 'CONFIRMED' || app.status === 'SCHEDULED'" 
-          class="btn btn-outline btn-danger btn-sm flex-align-center gap-1"
-          (click)="changeStatus(app.appointmentId, 'NO_SHOW')"
-        >
-          <svg class="btn-noshow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
-          </svg>
-          <span>{{ 'No Show' | translate }}</span>
-        </button>
+          <button 
+            *ngIf="app.status === 'CONFIRMED' || app.status === 'SCHEDULED'" 
+            class="btn btn-outline btn-danger btn-sm flex-align-center gap-1"
+            (click)="changeStatus(app.appointmentId, 'NO_SHOW')"
+          >
+            <svg class="btn-noshow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+            </svg>
+            <span>{{ 'No Show' | translate }}</span>
+          </button>
+        </div>
       </div>
     </div>
 
