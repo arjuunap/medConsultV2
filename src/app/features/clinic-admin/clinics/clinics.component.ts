@@ -145,8 +145,9 @@ export class ClinicsComponent implements OnInit {
 
   public selectedBranchForHours: ClinicBranchResponseDto | null = null;
   public branchHours: ClinicOperatingHourResponseDto[] = [];
-  // For simplicity, we can use an array of form groups inside a form array, or just an array of objects for ngModel
   public branchHoursFormList: ClinicOperatingHourRequestDto[] = [];
+  public branchHoursMap: { [branchId: string]: ClinicOperatingHourResponseDto[] } = {};
+  public expandedBranchScheduleId: string | null = null;
 
   clinicId: string = ''
   ngOnInit(): void {
@@ -159,8 +160,6 @@ export class ClinicsComponent implements OnInit {
     this.clinicService.getAllClinics().subscribe({
       next: (data) => {
         this.clinics = data;
-        // console.log(data[0])
-        // this.clinicId= data[0].clinicId
         console.log(this.clinicId)
         this.uiService.hideLoading();
         if (data.length > 0) {
@@ -197,7 +196,10 @@ export class ClinicsComponent implements OnInit {
 
     this.uiService.showLoading();
     this.clinicService.getClinicBranches(id).subscribe({
-      next: (data) => this.branches = data
+      next: (data) => {
+        this.branches = data;
+        this.loadAllBranchHours();
+      }
     });
     this.clinicService.getClinicSpecialties(id).subscribe({
       next: (data) => this.clinicSpecialties = data
@@ -214,6 +216,138 @@ export class ClinicsComponent implements OnInit {
       },
       error: () => this.uiService.hideLoading()
     });
+  }
+
+  loadAllBranchHours(): void {
+    for (const b of this.branches) {
+      this.clinicService.getBranchHours(b.branchId).subscribe({
+        next: (hours) => {
+          this.branchHoursMap[b.branchId] = hours;
+        }
+      });
+    }
+  }
+
+  toggleScheduleExpand(branchId: string): void {
+    this.expandedBranchScheduleId = this.expandedBranchScheduleId === branchId ? null : branchId;
+  }
+
+  getBranchHoursList(branchId: string): ClinicOperatingHourResponseDto[] {
+    const hours = this.branchHoursMap[branchId] || [];
+    const days = [0, 1, 2, 3, 4, 5, 6];
+    return days.map(day => {
+      const existing = hours.find(h => Number(h.dayOfWeek) === day);
+      return existing || {
+        hoursId: '',
+        branchId: branchId,
+        dayOfWeek: day,
+        isClosed: day === 5,
+        openTime: '08:00:00',
+        closeTime: '22:00:00',
+        breakStart: '',
+        breakEnd: '',
+        notes: ''
+      };
+    });
+  }
+
+  getDayName(dayOfWeek: number): { en: string; ar: string } {
+    switch (Number(dayOfWeek)) {
+      case 0: return { en: 'Sunday', ar: 'الأحد' };
+      case 1: return { en: 'Monday', ar: 'الإثنين' };
+      case 2: return { en: 'Tuesday', ar: 'الثلاثاء' };
+      case 3: return { en: 'Wednesday', ar: 'الأربعاء' };
+      case 4: return { en: 'Thursday', ar: 'الخميس' };
+      case 5: return { en: 'Friday', ar: 'الجمعة' };
+      case 6: return { en: 'Saturday', ar: 'السبت' };
+      default: return { en: 'Day', ar: 'يوم' };
+    }
+  }
+
+  getBranchStatus(branchId: string): { isOpen: boolean; labelEn: string; labelAr: string; badgeClass: string; currentHoursText: string } {
+    const hours = this.branchHoursMap[branchId];
+    if (!hours || hours.length === 0) {
+      return {
+        isOpen: false,
+        labelEn: 'Hours Not Configured',
+        labelAr: 'لم تحدد ساعات العمل',
+        badgeClass: 'badge-secondary',
+        currentHoursText: 'N/A'
+      };
+    }
+
+    const now = new Date();
+    const currentDay = now.getDay(); // 0 = Sunday ... 6 = Saturday
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const currentTimeStr = `${String(currentHour).padStart(2, '0')}:${String(currentMinute).padStart(2, '0')}`;
+
+    const todayHour = hours.find(h => Number(h.dayOfWeek) === currentDay);
+    if (!todayHour || todayHour.isClosed || !todayHour.openTime || !todayHour.closeTime) {
+      return {
+        isOpen: false,
+        labelEn: 'Closed Today',
+        labelAr: 'مغلق اليوم',
+        badgeClass: 'badge-danger',
+        currentHoursText: 'Closed'
+      };
+    }
+
+    const openClean = todayHour.openTime.substring(0, 5);
+    const closeClean = todayHour.closeTime.substring(0, 5);
+
+    // Check break time
+    if (todayHour.breakStart && todayHour.breakEnd) {
+      const breakStartClean = todayHour.breakStart.substring(0, 5);
+      const breakEndClean = todayHour.breakEnd.substring(0, 5);
+      if (currentTimeStr >= breakStartClean && currentTimeStr < breakEndClean) {
+        return {
+          isOpen: false,
+          labelEn: `On Break (until ${breakEndClean})`,
+          labelAr: `استراحة (حتى ${breakEndClean})`,
+          badgeClass: 'badge-warning',
+          currentHoursText: `${openClean} - ${closeClean}`
+        };
+      }
+    }
+
+    if (currentTimeStr >= openClean && currentTimeStr < closeClean) {
+      return {
+        isOpen: true,
+        labelEn: `Open (until ${closeClean})`,
+        labelAr: `مفتوح (حتى ${closeClean})`,
+        badgeClass: 'badge-success',
+        currentHoursText: `${openClean} - ${closeClean}`
+      };
+    } else if (currentTimeStr < openClean) {
+      return {
+        isOpen: false,
+        labelEn: `Closed (Opens at ${openClean})`,
+        labelAr: `مغلق (يفتح عند ${openClean})`,
+        badgeClass: 'badge-secondary',
+        currentHoursText: `${openClean} - ${closeClean}`
+      };
+    } else {
+      return {
+        isOpen: false,
+        labelEn: 'Closed for the day',
+        labelAr: 'مغلق لباقي اليوم',
+        badgeClass: 'badge-secondary',
+        currentHoursText: `${openClean} - ${closeClean}`
+      };
+    }
+  }
+
+  getCityName(cityId: string): string {
+    const c = this.globalCities.find(x => x.cityId === cityId);
+    if (!c) return '';
+    return this.languageService.isArabic ? c.nameAr : c.nameEn;
+  }
+
+  getLocalityName(localityId: string): string {
+    const l = this.branchLocalities.find(x => x.localityId === localityId);
+    if (!l) return '';
+    return this.languageService.isArabic ? l.nameAr : l.nameEn;
   }
 
   switchSubTab(tab: 'branches' | 'specialties' | 'insurances' | 'languages'): void {
@@ -801,18 +935,18 @@ export class ClinicsComponent implements OnInit {
 
     this.clinicService.getBranchHours(branch.branchId).subscribe({
       next: (hours) => {
-        // Initialize 7 days if empty
-        const days = [1, 2, 3, 4, 5, 6, 7];
+        // 0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday
+        const days = [0, 1, 2, 3, 4, 5, 6];
         this.branchHoursFormList = days.map(day => {
-          const existing = hours.find(h => h.dayOfWeek === day);
+          const existing = hours.find(h => Number(h.dayOfWeek) === day);
           return {
             branchId: branch.branchId,
             dayOfWeek: day,
-            isClosed: existing ? existing.isClosed : false,
-            openTime: existing?.openTime || '09:00',
-            closeTime: existing?.closeTime || '17:00',
-            breakStart: existing?.breakStart || '',
-            breakEnd: existing?.breakEnd || '',
+            isClosed: existing ? Boolean(existing.isClosed) : (day === 5), // default Friday closed if unconfigured
+            openTime: existing?.openTime ? existing.openTime.substring(0, 5) : '08:00',
+            closeTime: existing?.closeTime ? existing.closeTime.substring(0, 5) : '22:00',
+            breakStart: existing?.breakStart ? existing.breakStart.substring(0, 5) : '',
+            breakEnd: existing?.breakEnd ? existing.breakEnd.substring(0, 5) : '',
             notes: existing?.notes || ''
           };
         });
@@ -825,23 +959,78 @@ export class ClinicsComponent implements OnInit {
     });
   }
 
+  applyHoursPreset(preset: 'standard' | '24_7' | 'business'): void {
+    if (preset === 'standard') {
+      // Sun - Thu: 08:00 - 22:00, Fri: Closed, Sat: 09:00 - 17:00
+      this.branchHoursFormList.forEach(h => {
+        if (h.dayOfWeek >= 0 && h.dayOfWeek <= 4) {
+          h.isClosed = false;
+          h.openTime = '08:00';
+          h.closeTime = '22:00';
+          h.breakStart = '';
+          h.breakEnd = '';
+        } else if (h.dayOfWeek === 5) {
+          h.isClosed = true;
+          h.openTime = '';
+          h.closeTime = '';
+          h.breakStart = '';
+          h.breakEnd = '';
+        } else if (h.dayOfWeek === 6) {
+          h.isClosed = false;
+          h.openTime = '09:00';
+          h.closeTime = '17:00';
+          h.breakStart = '';
+          h.breakEnd = '';
+        }
+      });
+    } else if (preset === '24_7') {
+      this.branchHoursFormList.forEach(h => {
+        h.isClosed = false;
+        h.openTime = '00:00';
+        h.closeTime = '23:59';
+        h.breakStart = '';
+        h.breakEnd = '';
+      });
+    } else if (preset === 'business') {
+      // Sun - Thu: 09:00 - 17:00, Fri - Sat: Closed
+      this.branchHoursFormList.forEach(h => {
+        if (h.dayOfWeek >= 0 && h.dayOfWeek <= 4) {
+          h.isClosed = false;
+          h.openTime = '09:00';
+          h.closeTime = '17:00';
+          h.breakStart = '';
+          h.breakEnd = '';
+        } else {
+          h.isClosed = true;
+          h.openTime = '';
+          h.closeTime = '';
+          h.breakStart = '';
+          h.breakEnd = '';
+        }
+      });
+    }
+  }
+
   submitBranchHours(): void {
     if (!this.selectedBranchForHours) return;
     this.uiService.showLoading();
 
-    // ensure time formatting is hh:mm, if empty use null
-    const dtos = this.branchHoursFormList.map(h => ({
-      ...h,
-      openTime: h.openTime ? (h.openTime.length === 5 ? h.openTime + ':00' : h.openTime) : null,
-      closeTime: h.closeTime ? (h.closeTime.length === 5 ? h.closeTime + ':00' : h.closeTime) : null,
-      breakStart: h.breakStart ? (h.breakStart.length === 5 ? h.breakStart + ':00' : h.breakStart) : null,
-      breakEnd: h.breakEnd ? (h.breakEnd.length === 5 ? h.breakEnd + ':00' : h.breakEnd) : null,
-    })) as any[];
+    const dtos: ClinicOperatingHourRequestDto[] = this.branchHoursFormList.map(h => ({
+      branchId: this.selectedBranchForHours!.branchId,
+      dayOfWeek: h.dayOfWeek,
+      isClosed: Boolean(h.isClosed),
+      openTime: (!h.isClosed && h.openTime) ? (h.openTime.length === 5 ? `${h.openTime}:00` : h.openTime) : '00:00:00',
+      closeTime: (!h.isClosed && h.closeTime) ? (h.closeTime.length === 5 ? `${h.closeTime}:00` : h.closeTime) : '00:00:00',
+      breakStart: (!h.isClosed && h.breakStart) ? (h.breakStart.length === 5 ? `${h.breakStart}:00` : h.breakStart) : undefined,
+      breakEnd: (!h.isClosed && h.breakEnd) ? (h.breakEnd.length === 5 ? `${h.breakEnd}:00` : h.breakEnd) : undefined,
+      notes: h.notes || undefined
+    }));
 
     this.clinicService.updateBranchHours(this.selectedBranchForHours.branchId, dtos).subscribe({
-      next: () => {
+      next: (updatedHours) => {
         this.uiService.hideLoading();
         this.uiService.showSuccess('Branch hours updated successfully.');
+        this.branchHoursMap[this.selectedBranchForHours!.branchId] = updatedHours;
         this.closeModal();
       },
       error: () => {

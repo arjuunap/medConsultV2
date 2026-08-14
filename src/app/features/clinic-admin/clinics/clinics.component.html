@@ -139,57 +139,127 @@
         <!-- Sub-tab 1: Branches -->
         <div *ngIf="activeSubTab === 'branches'">
           <div class="d-flex justify-between align-center mb-4 flex-wrap gap-2">
-            <h3 class="fs-sm text-primary m-0 fw-semibold">{{ 'Facility Branch Locations' | translate }}</h3>
-            <button class="btn btn-accent btn-sm" (click)="openModal('addBranch')">+ {{ 'Add Branch' | translate }}</button>
+            <div>
+              <h3 class="fs-sm text-primary m-0 fw-bold d-flex align-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path><path d="M8 6h.01"></path><path d="M16 6h.01"></path><path d="M8 10h.01"></path><path d="M16 10h.01"></path></svg>
+                <span>{{ 'Facility Branch Locations & Operating Hours' | translate }}</span>
+              </h3>
+              <p class="text-muted fs-xs m-0 mt-0.5">{{ 'Manage physical facility branches, operating hours, and location coordinates' | translate }}</p>
+            </div>
+            <button class="btn btn-primary btn-sm d-inline-flex align-center gap-1.5" (click)="openModal('addBranch')">
+              <span>+ {{ 'Add Branch' | translate }}</span>
+            </button>
           </div>
 
-          <div class="table-responsive">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>{{ 'Branch Name' | translate }}</th>
-                  <th>{{ 'Address' | translate }}</th>
-                  <th>{{ 'Contact Phone' | translate }}</th>
-                  <th>{{ 'Type' | translate }}</th>
-                  <th class="text-end">{{ 'Actions' | translate }}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let b of branches">
-                  <td class="fw-bold text-primary">
-                    📍 {{ languageService.isArabic ? (b.branchNameAr || b.branchNameEn) : b.branchNameEn }}
-                  </td>
-                  <td class="fs-xs text-muted">{{ b.addressLine1 }}{{ b.addressLine2 ? ', ' + b.addressLine2 : '' }}</td>
-                  <td class="fs-xs">{{ b.phone || 'N/A' }}</td>
-                  <td>
-                    <span class="badge" [class.badge-success]="b.isPrimary" [class.badge-secondary]="!b.isPrimary">
-                      {{ (b.isPrimary ? 'Primary' : 'Branch') | translate }}
-                    </span>
-                  </td>
-                  <td class="text-end">
-                    <div class="d-flex justify-end gap-2">
-                      <button class="btn btn-outline btn-sm" (click)="openEditBranchModal(b)">
-                        ✏️ {{ 'Edit' | translate }}
-                      </button>
-                      <button class="btn btn-outline btn-sm" (click)="openEditHoursModal(b)">
-                        ⏰ {{ 'Hours' | translate }}
-                      </button>
-                      <button class="btn btn-outline btn-danger btn-sm" (click)="deleteBranch(b.branchId)">
-                        {{ 'Delete' | translate }}
-                      </button>
+          <!-- Branches Rich Grid -->
+          <div class="branches-grid" *ngIf="branches.length > 0">
+            <div *ngFor="let b of branches" class="branch-facility-card">
+              <!-- Top Header -->
+              <div class="branch-card-header">
+                <div class="d-flex align-center gap-2 overflow-hidden flex-1">
+                  <div class="branch-icon-box">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                  </div>
+                  <div class="overflow-hidden flex-1">
+                    <div class="d-flex align-center gap-2 flex-wrap">
+                      <h4 class="fs-sm fw-bold text-primary m-0 truncate">
+                        {{ languageService.isArabic ? (b.branchNameAr || b.branchNameEn) : b.branchNameEn }}
+                      </h4>
+                      <span class="badge" [class.badge-success]="b.isPrimary" [class.badge-secondary]="!b.isPrimary" style="font-size: 0.65rem;">
+                        {{ (b.isPrimary ? 'Primary Facility' : 'Secondary Branch') | translate }}
+                      </span>
                     </div>
-                  </td>
-                </tr>
-                <tr *ngIf="branches.length === 0">
-                  <td colspan="5">
-                    <div class="empty-state-card my-2">
-                      <div class="empty-state-icon">🏢</div>
-                      <p class="empty-state-text">{{ 'No branch locations added yet.' | translate }}</p>
+                    <div class="fs-xs text-muted truncate mt-0.5" *ngIf="b.branchNameAr && b.branchNameEn">
+                      {{ languageService.isArabic ? b.branchNameEn : b.branchNameAr }}
                     </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                  </div>
+                </div>
+
+                <!-- Live Open/Closed Status Badge -->
+                <div class="d-flex align-center gap-1 flex-shrink-0">
+                  <span class="badge" [ngClass]="getBranchStatus(b.branchId).badgeClass" style="font-size: 0.72rem; padding: 4px 8px;">
+                    {{ languageService.isArabic ? getBranchStatus(b.branchId).labelAr : getBranchStatus(b.branchId).labelEn }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Body: Location & Contact -->
+              <div class="branch-card-body">
+                <div class="branch-info-row">
+                  <span class="info-icon">📍</span>
+                  <div class="fs-xs text-dark flex-1">
+                    <strong>{{ b.addressLine1 }}</strong>{{ b.addressLine2 ? ', ' + b.addressLine2 : '' }}
+                    <div class="d-flex align-center gap-1 mt-1 flex-wrap" *ngIf="b.cityId">
+                      <span class="badge badge-info fs-2xs" *ngIf="getCityName(b.cityId)">{{ getCityName(b.cityId) }}</span>
+                      <span class="badge badge-teal fs-2xs" *ngIf="getLocalityName(b.localityId)">{{ getLocalityName(b.localityId) }}</span>
+                      <span class="fs-2xs text-muted" *ngIf="b.latitude && b.longitude">GPS: {{ b.latitude | number:'1.2-2' }}, {{ b.longitude | number:'1.2-2' }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="branch-info-row" *ngIf="b.phone || b.email">
+                  <span class="info-icon">📞</span>
+                  <div class="fs-xs text-muted d-flex align-center gap-3 flex-wrap">
+                    <span *ngIf="b.phone"><strong>{{ b.phone }}</strong></span>
+                    <span *ngIf="b.email">✉️ {{ b.email }}</span>
+                  </div>
+                </div>
+
+                <!-- Operating Hours Summary & Dropdown Toggle -->
+                <div class="branch-schedule-box mt-3 p-2.5 rounded border bg-off">
+                  <div class="d-flex justify-between align-center cursor-pointer" (click)="toggleScheduleExpand(b.branchId)">
+                    <div class="d-flex align-center gap-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                      <strong class="fs-xs text-primary">{{ 'Operating Hours Schedule' | translate }}</strong>
+                    </div>
+                    <button class="btn btn-xs btn-outline d-inline-flex align-center gap-1" (click)="toggleScheduleExpand(b.branchId); $event.stopPropagation()">
+                      <span>{{ (expandedBranchScheduleId === b.branchId ? 'Hide Schedule' : 'View 7-Day Schedule') | translate }}</span>
+                      <span>{{ expandedBranchScheduleId === b.branchId ? '▲' : '▼' }}</span>
+                    </button>
+                  </div>
+
+                  <!-- 7-Day Schedule Table when expanded -->
+                  <div class="mt-2.5 pt-2 border-top" *ngIf="expandedBranchScheduleId === b.branchId">
+                    <div class="weekly-schedule-grid">
+                      <div *ngFor="let h of getBranchHoursList(b.branchId)" class="day-schedule-row">
+                        <span class="day-name fw-semibold">{{ languageService.isArabic ? getDayName(h.dayOfWeek).ar : getDayName(h.dayOfWeek).en }}</span>
+                        <div class="day-time">
+                          <span *ngIf="h.isClosed" class="text-danger fw-bold fs-2xs">{{ 'Closed' | translate }}</span>
+                          <span *ngIf="!h.isClosed" class="text-dark fs-2xs">
+                            {{ h.openTime ? h.openTime.substring(0, 5) : '08:00' }} - {{ h.closeTime ? h.closeTime.substring(0, 5) : '22:00' }}
+                            <small *ngIf="h.breakStart && h.breakEnd" class="text-muted ms-1">({{ 'Break' | translate }}: {{ h.breakStart.substring(0, 5) }}-{{ h.breakEnd.substring(0, 5) }})</small>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Footer Actions -->
+              <div class="branch-card-footer">
+                <button class="btn btn-primary btn-sm d-inline-flex align-center gap-1.5 flex-1 justify-center" (click)="openEditHoursModal(b)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                  <span>{{ 'Set Operating Hours' | translate }}</span>
+                </button>
+                <button class="btn btn-outline btn-sm d-inline-flex align-center gap-1" (click)="openEditBranchModal(b)" [title]="'Edit Branch Details' | translate">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path></svg>
+                  <span>{{ 'Edit' | translate }}</span>
+                </button>
+                <button class="btn btn-outline btn-danger btn-sm" (click)="deleteBranch(b.branchId)" [title]="'Delete Branch' | translate">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="branches.length === 0" class="empty-state-card my-2">
+            <div class="empty-state-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-muted"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path></svg>
+            </div>
+            <p class="empty-state-text">{{ 'No branch locations added yet.' | translate }}</p>
+            <button class="btn btn-outline btn-sm mt-2" (click)="openModal('addBranch')">+ {{ 'Add First Branch' | translate }}</button>
           </div>
         </div>
 
@@ -619,24 +689,43 @@
 
 <!-- Modal 6: Edit Branch Operating Hours -->
 <div *ngIf="activeModal === 'editBranchHours'" class="modal-backdrop" (click)="closeModal()">
-  <div class="modal-content admin-modal-card" style="max-width: 720px;" (click)="$event.stopPropagation()">
+  <div class="modal-content admin-modal-card" style="max-width: 760px;" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <div>
-        <h3 class="fs-md text-primary m-0 fw-bold">{{ 'Edit Branch Operating Hours' | translate }}</h3>
+        <h3 class="fs-md text-primary m-0 fw-bold d-flex align-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          <span>{{ 'Edit Branch Operating Hours' | translate }}</span>
+        </h3>
         <p class="text-muted fs-xs m-0 mt-1" *ngIf="selectedBranchForHours">
-          {{ 'Branch' | translate }}: <strong>{{ languageService.isArabic ? (selectedBranchForHours.branchNameAr || selectedBranchForHours.branchNameEn) : selectedBranchForHours.branchNameEn }}</strong>
+          {{ 'Facility Branch' | translate }}: <strong>{{ languageService.isArabic ? (selectedBranchForHours.branchNameAr || selectedBranchForHours.branchNameEn) : selectedBranchForHours.branchNameEn }}</strong>
         </p>
       </div>
       <button class="btn-close" (click)="closeModal()">&times;</button>
     </div>
 
     <div class="modal-body">
+      <!-- Quick Schedule Presets -->
+      <div class="mb-3 p-2.5 bg-off rounded border">
+        <label class="fs-xs fw-bold text-primary mb-1.5 d-block">{{ 'Quick Schedule Presets' | translate }}:</label>
+        <div class="d-flex gap-2 flex-wrap">
+          <button type="button" class="btn btn-outline btn-xs" (click)="applyHoursPreset('standard')">
+            🏥 {{ 'Standard Medical (Sun-Thu 8am-10pm, Sat 9am-5pm, Fri Closed)' | translate }}
+          </button>
+          <button type="button" class="btn btn-outline btn-xs" (click)="applyHoursPreset('24_7')">
+            🚨 {{ '24/7 Continuous Emergency Care' | translate }}
+          </button>
+          <button type="button" class="btn btn-outline btn-xs" (click)="applyHoursPreset('business')">
+            🏢 {{ 'Office Hours (Sun-Thu 9am-5pm)' | translate }}
+          </button>
+        </div>
+      </div>
+
       <div class="table-responsive">
         <table class="table">
           <thead>
             <tr>
-              <th>{{ 'Day of Week' | translate }}</th>
-              <th class="text-center">{{ 'Closed?' | translate }}</th>
+              <th style="min-width: 105px;">{{ 'Day of Week' | translate }}</th>
+              <th class="text-center" style="width: 85px;">{{ 'Closed?' | translate }}</th>
               <th>{{ 'Open Time' | translate }}</th>
               <th>{{ 'Close Time' | translate }}</th>
               <th>{{ 'Break Start' | translate }}</th>
@@ -644,14 +733,9 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let h of branchHoursFormList">
+            <tr *ngFor="let h of branchHoursFormList" [class.bg-light]="h.isClosed">
               <td class="fw-bold text-primary">
-                {{ (h.dayOfWeek === 1 ? 'Monday' : 
-                   h.dayOfWeek === 2 ? 'Tuesday' : 
-                   h.dayOfWeek === 3 ? 'Wednesday' : 
-                   h.dayOfWeek === 4 ? 'Thursday' : 
-                   h.dayOfWeek === 5 ? 'Friday' : 
-                   h.dayOfWeek === 6 ? 'Saturday' : 'Sunday') | translate }}
+                {{ languageService.isArabic ? getDayName(h.dayOfWeek).ar : getDayName(h.dayOfWeek).en }}
               </td>
               <td class="text-center">
                 <input type="checkbox" [(ngModel)]="h.isClosed" class="cursor-pointer">
@@ -674,9 +758,12 @@
       </div>
     </div>
 
-    <div class="modal-footer">
-      <button type="button" class="btn btn-outline" (click)="closeModal()">{{ 'Cancel' | translate }}</button>
-      <button type="button" class="btn btn-primary" (click)="submitBranchHours()">{{ 'Save Hours' | translate }}</button>
+    <div class="modal-footer d-flex justify-between align-center">
+      <small class="text-muted fs-2xs">{{ 'Changes will apply to patient booking slots and branch open status.' | translate }}</small>
+      <div class="d-flex gap-2">
+        <button type="button" class="btn btn-outline" (click)="closeModal()">{{ 'Cancel' | translate }}</button>
+        <button type="button" class="btn btn-primary" (click)="submitBranchHours()">{{ 'Save Operating Hours' | translate }}</button>
+      </div>
     </div>
   </div>
 </div>

@@ -5,7 +5,7 @@ import { DoctorService } from '../../../core/services/doctor.service';
 import { ClinicService } from '../../../core/services/clinic.service';
 import { ReferenceService } from '../../../core/services/reference.service';
 import { UiService } from '../../../core/services/ui.service';
-import { 
+import {
   DoctorResponseDto, DoctorClinicResponseDto, DoctorDetailResponse,
   DoctorSpecialtyResponseDto, DoctorLanguageResponseDto, DoctorQualificationResponseDto,
   DoctorScheduleRequestDto, DoctorScheduleResponseDto, SessionType,
@@ -36,7 +36,7 @@ export class DoctorsComponent implements OnInit {
   public languageService = inject(LanguageService);
 
   public activeMainTab: 'placements' | 'profiles' = 'placements';
-  
+
   // Placements state
   public clinics: ClinicResponseDto[] = [];
   public branches: ClinicBranchResponseDto[] = [];
@@ -84,6 +84,88 @@ export class DoctorsComponent implements OnInit {
     ];
   }
 
+  public selectedBranchFilter: string = 'ALL';
+
+  get branchFilterOptions() {
+    const options = [
+      { label: this.languageService.translate('All Branches', 'جميع الفروع'), value: 'ALL' }
+    ];
+    this.branches.forEach(b => {
+      options.push({
+        label: this.languageService.isArabic ? (b.branchNameAr || b.branchNameEn) : b.branchNameEn,
+        value: b.branchId
+      });
+    });
+    return options;
+  }
+
+  get groupedDoctors(): {
+    doctorId: string;
+    doctor?: DoctorResponseDto;
+    doctorName: string;
+    avatarUrl: string;
+    placements: DoctorClinicResponseDto[];
+    totalBranches: number;
+    hasPrimaryPlacement: boolean;
+  }[] {
+    const map = new Map<string, DoctorClinicResponseDto[]>();
+    for (const dc of this.doctorClinics) {
+      if (!map.has(dc.doctorId)) {
+        map.set(dc.doctorId, []);
+      }
+      map.get(dc.doctorId)!.push(dc);
+    }
+
+    const result: any[] = [];
+    map.forEach((placements, docId) => {
+      const doc = this.doctors.find(d => d.doctorId === docId);
+      result.push({
+        doctorId: docId,
+        doctor: doc,
+        doctorName: this.getDoctorName(docId),
+        avatarUrl: this.getDoctorAvatarUrl(docId),
+        placements: placements,
+        totalBranches: placements.length,
+        hasPrimaryPlacement: placements.some(p => p.isPrimary)
+      });
+    });
+
+    return result;
+  }
+
+  get filteredGroupedDoctors(): {
+    doctorId: string;
+    doctor?: DoctorResponseDto;
+    doctorName: string;
+    avatarUrl: string;
+    placements: DoctorClinicResponseDto[];
+    totalBranches: number;
+    hasPrimaryPlacement: boolean;
+  }[] {
+    let list = this.groupedDoctors;
+
+    // Filter by branch
+    if (this.selectedBranchFilter && this.selectedBranchFilter !== 'ALL') {
+      list = list.map(item => ({
+        ...item,
+        placements: item.placements.filter(p => p.branchId === this.selectedBranchFilter)
+      })).filter(item => item.placements.length > 0);
+    }
+
+    // Filter by search term
+    if (this.searchTerm && this.searchTerm.trim()) {
+      const term = this.searchTerm.toLowerCase();
+      list = list.filter(item => {
+        const matchesName = item.doctorName.toLowerCase().includes(term);
+        const matchesDept = item.placements.some(p => (p.department || '').toLowerCase().includes(term));
+        const matchesBranch = item.placements.some(p => this.getBranchName(p.branchId).toLowerCase().includes(term));
+        return matchesName || matchesDept || matchesBranch;
+      });
+    }
+
+    return list;
+  }
+
   get filteredDoctorClinics(): DoctorClinicResponseDto[] {
     if (!this.searchTerm.trim()) return this.doctorClinics;
     const term = this.searchTerm.toLowerCase();
@@ -94,7 +176,7 @@ export class DoctorsComponent implements OnInit {
       return docName.includes(term) || branchName.includes(term) || dept.includes(term);
     });
   }
-  
+
   public linkForm: FormGroup = this.fb.group({
     clinicId: ['', [Validators.required]],
     branchId: ['', [Validators.required]],
@@ -111,7 +193,7 @@ export class DoctorsComponent implements OnInit {
   public doctors: DoctorResponseDto[] = [];
   public selectedDoctor: DoctorDetailResponse | null = null;
   public activeProfileTab: 'specialties' | 'languages' | 'qualifications' = 'specialties';
-  
+
   // Reference data
   public globalSpecialties: SpecialtyResponseDto[] = [];
   public globalSubSpecialties: SubSpecialtyResponseDto[] = [];
@@ -460,6 +542,22 @@ export class DoctorsComponent implements OnInit {
     this.isAddModalOpen = true;
   }
 
+  openAddModalForDoctor(doctorId: string): void {
+    const currentClinic = this.linkForm.value.clinicId;
+    const currentBranch = this.linkForm.value.branchId;
+    this.linkForm.patchValue({
+      clinicId: currentClinic,
+      branchId: currentBranch || (this.branches.length > 0 ? this.branches[0].branchId : ''),
+      doctorId: doctorId,
+      department: 'General Practice',
+      consultationFeeSar: 150,
+      isPrimary: false,
+      startDate: new Date().toISOString().split('T')[0],
+      isActive: true
+    });
+    this.isAddModalOpen = true;
+  }
+
   closeAddModal(): void {
     this.isAddModalOpen = false;
   }
@@ -540,12 +638,12 @@ export class DoctorsComponent implements OnInit {
   submitSpecialty(): void {
     if (this.specialtyForm.invalid || !this.selectedDoctor) return;
     this.uiService.showLoading();
-    
+
     const payload = {
       ...this.specialtyForm.value,
       doctorId: this.selectedDoctor.doctorId
     };
-    
+
     // Convert empty string subSpecialtyId to undefined
     if (!payload.subSpecialtyId) delete payload.subSpecialtyId;
 
@@ -655,7 +753,7 @@ export class DoctorsComponent implements OnInit {
     if (!s) return specialtyId;
     return this.languageService.isArabic ? s.nameAr : s.nameEn;
   }
-  
+
   getLanguageName(languageId: string): string {
     const l = this.globalLanguages.find(x => x.languageId === languageId);
     if (!l) return languageId;

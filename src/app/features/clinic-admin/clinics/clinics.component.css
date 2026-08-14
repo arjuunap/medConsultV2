@@ -331,3 +331,110 @@
   font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   font-size: 0.82rem;
 }
+
+/* ── Branch Facility Cards & Operating Hours Styling ──────── */
+.branches-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 16px;
+}
+
+.branch-facility-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.branch-facility-card:hover {
+  border-color: var(--teal);
+  box-shadow: 0 4px 14px rgba(13, 148, 136, 0.08);
+}
+
+.branch-card-header {
+  padding: 14px 16px;
+  background: var(--off, #f8fafc);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.branch-icon-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: rgba(13, 148, 136, 0.1);
+  color: var(--teal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.branch-card-body {
+  padding: 14px 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.branch-info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.branch-info-row .info-icon {
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.branch-schedule-box {
+  transition: all 0.2s ease;
+}
+
+.weekly-schedule-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.day-schedule-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+
+.day-schedule-row:nth-child(even) {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.day-name {
+  font-size: 0.75rem;
+  color: var(--primary);
+  min-width: 75px;
+}
+
+.branch-card-footer {
+  padding: 10px 16px;
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 768px) {
+  .branches-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -116,7 +116,7 @@ export class ClinicService {
   }
 
   updateBranchHours(branchId: string, dtos: ClinicOperatingHourRequestDto[]): Observable<ClinicOperatingHourResponseDto[]> {
-    return this.http.put<ClinicOperatingHourResponseDto[]>(`${environment.apiUrl}/api/medconsult/clinics/branches/${branchId}/hours`, dtos);
+    return this.http.put<ClinicOperatingHourResponseDto[]>(`${environment.apiUrl}/api/medconsult/clinic-admin/branches/${branchId}/hours`, dtos);
   }
 
   addClinicSpecialty(clinicId: string, specialtyId: string): Observable<ClinicSpecialtyResponseDto> {

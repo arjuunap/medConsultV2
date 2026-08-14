@@ -156,12 +156,12 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'clinics',
+        redirectTo: 'dashboard',
         pathMatch: 'full'
       },
       {
         path: 'dashboard',
-        loadComponent: () => import('./features/clinic-admin/clinics/clinics.component').then(m => m.ClinicsComponent)
+        loadComponent: () => import('./features/clinic-admin/dashboard/clinic-dashboard.component').then(m => m.ClinicDashboardComponent)
       },
       {
         path: 'clinics',
@@ -177,11 +177,11 @@ export const routes: Routes = [
       },
       {
         path: 'appointments',
-        loadComponent: () => import('./features/clinic-admin/clinics/clinics.component').then(m => m.ClinicsComponent)
+        loadComponent: () => import('./features/clinic-admin/dashboard/clinic-dashboard.component').then(m => m.ClinicDashboardComponent)
       },
       {
         path: 'reviews',
-        loadComponent: () => import('./features/clinic-admin/clinics/clinics.component').then(m => m.ClinicsComponent)
+        loadComponent: () => import('./features/clinic-admin/dashboard/clinic-dashboard.component').then(m => m.ClinicDashboardComponent)
       },
       {
         path: 'settings',
