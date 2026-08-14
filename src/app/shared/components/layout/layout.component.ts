@@ -68,7 +68,9 @@ export class LayoutComponent {
           { label: 'Tele-Consultations', route: '/patient/consultations', icon: 'consultations' },
           { label: 'Medical Records (EMR)', route: '/patient/emr', icon: 'records' },
           { label: 'Personal Health Metrics', route: '/patient/health-profile', icon: 'health' },
-          { label: 'My General Profile', route: '/patient/profile', icon: 'profile' }
+          { label: 'My General Profile', route: '/patient/profile', icon: 'profile' },
+          { label: 'Become a Doctor', route: '/patient/become-doctor', icon: 'doctor-join' },
+          { label: 'Register a Clinic', route: '/patient/become-clinic', icon: 'clinic-join' }
         ];
       case UserRole.DOCTOR:
         return [

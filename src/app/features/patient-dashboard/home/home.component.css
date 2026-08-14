@@ -374,3 +374,97 @@
   stroke: #DC2626;
   flex-shrink: 0;
 }
+
+/* ── Onboarding Cards Grid (Doctor / Clinic) ──────────────── */
+.onboarding-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.onboard-card {
+  background: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.onboard-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--teal);
+  box-shadow: 0 10px 25px -5px rgba(13, 148, 136, 0.12);
+}
+
+.onboard-doctor {
+  background: linear-gradient(145deg, #ffffff 0%, #f0fdfa 100%);
+  border-left: 4px solid var(--teal);
+}
+
+.onboard-clinic {
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  border-left: 4px solid #3b82f6;
+}
+
+.onboard-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--teal);
+  background: rgba(13, 148, 136, 0.1);
+  padding: 4px 10px;
+  border-radius: 20px;
+  width: fit-content;
+}
+
+.onboard-badge.badge-teal {
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.1);
+}
+
+.onboard-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: rgba(13, 148, 136, 0.12);
+  color: var(--teal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.onboard-icon.icon-teal {
+  background: rgba(37, 99, 235, 0.12);
+  color: #2563eb;
+}
+
+.onboard-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 4px 0;
+}
+
+.onboard-desc {
+  font-size: 0.85rem;
+  color: var(--t3);
+  margin: 0;
+  line-height: 1.45;
+}
+
+.onboard-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 4px;
+}

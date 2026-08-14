@@ -246,4 +246,44 @@
       </div>
     </form>
   </div>
+
+  <!-- Card 3: Healthcare Network Onboarding Options (Become Doctor / Register Clinic) -->
+  <div class="patient-profile-card">
+    <h3 class="section-divider-title">3. {{ 'Healthcare Provider & Facility Registration' | translate }}</h3>
+    <p class="text-muted fs-xs mb-3" style="line-height: 1.5;">
+      {{ 'Are you a licensed physician or medical facility manager? Expand your role on MedConsult to consult patients or manage clinical branches.' | translate }}
+    </p>
+
+    <div class="onboarding-options-container">
+      <div class="onboarding-option-card doctor-card">
+        <div class="d-flex align-center gap-3 flex-1 overflow-hidden">
+          <div class="onboarding-option-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          </div>
+          <div class="onboarding-option-content">
+            <h4 class="onboarding-option-title">{{ 'Join as a Doctor' | translate }}</h4>
+            <p class="onboarding-option-desc">{{ 'Apply for medical credentials & consult patients' | translate }}</p>
+          </div>
+        </div>
+        <a routerLink="/patient/become-doctor" class="btn btn-sm btn-primary flex-shrink-0">
+          {{ 'Apply Now' | translate }} &rarr;
+        </a>
+      </div>
+
+      <div class="onboarding-option-card clinic-card">
+        <div class="d-flex align-center gap-3 flex-1 overflow-hidden">
+          <div class="onboarding-option-icon clinic-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18"></path><path d="M16 22H8"></path><path d="M12 5v4"></path><path d="M10 7h4"></path><path d="M12 13v8"></path></svg>
+          </div>
+          <div class="onboarding-option-content">
+            <h4 class="onboarding-option-title">{{ 'Register a Clinic' | translate }}</h4>
+            <p class="onboarding-option-desc">{{ 'List medical center & manage clinic branches' | translate }}</p>
+          </div>
+        </div>
+        <a routerLink="/patient/become-clinic" class="btn btn-sm btn-outline flex-shrink-0">
+          {{ 'Register Clinic' | translate }} &rarr;
+        </a>
+      </div>
+    </div>
+  </div>
 </div>

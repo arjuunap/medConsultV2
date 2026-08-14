@@ -107,7 +107,48 @@
     </div>
   </div>
 
-  <!-- 3. Prominent Upcoming Appointment Cards (Favoring cards over dense tables) -->
+  <!-- 3. Join Healthcare Network (Become a Doctor / Register Clinic) -->
+  <div class="onboarding-cards-grid">
+    <div class="onboard-card onboard-doctor" (click)="navigateToSection('/patient/become-doctor')">
+      <div class="onboard-badge">{{ 'For Medical Professionals' | translate }}</div>
+      <div class="d-flex align-center gap-3">
+        <div class="onboard-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        </div>
+        <div class="flex-1">
+          <h3 class="onboard-title">{{ 'Become a Doctor' | translate }}</h3>
+          <p class="onboard-desc">{{ 'Join our certified medical network, set your consultation fees, and provide telehealth or clinic care.' | translate }}</p>
+        </div>
+      </div>
+      <div class="onboard-footer">
+        <span class="btn btn-sm btn-primary d-inline-flex align-center gap-1">
+          <span>{{ 'Apply as Doctor' | translate }}</span>
+          <span>&rarr;</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="onboard-card onboard-clinic" (click)="navigateToSection('/patient/become-clinic')">
+      <div class="onboard-badge badge-teal">{{ 'For Healthcare Facilities' | translate }}</div>
+      <div class="d-flex align-center gap-3">
+        <div class="onboard-icon icon-teal">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18"></path><path d="M16 22H8"></path><path d="M12 5v4"></path><path d="M10 7h4"></path><path d="M12 13v8"></path></svg>
+        </div>
+        <div class="flex-1">
+          <h3 class="onboard-title">{{ 'Register a Clinic' | translate }}</h3>
+          <p class="onboard-desc">{{ 'List your medical center, manage branch locations, operating hours, accepted insurances, and doctor roster.' | translate }}</p>
+        </div>
+      </div>
+      <div class="onboard-footer">
+        <span class="btn btn-sm btn-outline d-inline-flex align-center gap-1">
+          <span>{{ 'Register Facility' | translate }}</span>
+          <span>&rarr;</span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Prominent Upcoming Appointment Cards (Favoring cards over dense tables) -->
   <div class="section-card">
     <div class="section-header">
       <h2 class="section-title flex-align-center gap-2">

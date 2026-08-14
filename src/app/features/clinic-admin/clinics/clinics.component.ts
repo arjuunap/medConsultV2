@@ -144,12 +144,10 @@ export class ClinicsComponent implements OnInit {
   });
 
   public selectedBranchForHours: ClinicBranchResponseDto | null = null;
-  public branchHours: ClinicOperatingHourResponseDto[] = [];
   public branchHoursFormList: ClinicOperatingHourRequestDto[] = [];
   public branchHoursMap: { [branchId: string]: ClinicOperatingHourResponseDto[] } = {};
   public expandedBranchScheduleId: string | null = null;
 
-  clinicId: string = ''
   ngOnInit(): void {
     this.loadClinics();
     this.loadGlobalReferences();
@@ -160,7 +158,6 @@ export class ClinicsComponent implements OnInit {
     this.clinicService.getAllClinics().subscribe({
       next: (data) => {
         this.clinics = data;
-        console.log(this.clinicId)
         this.uiService.hideLoading();
         if (data.length > 0) {
           this.selectClinic(data[0]);
@@ -407,26 +404,6 @@ export class ClinicsComponent implements OnInit {
     }
   }
 
-  onCityChange(event: any): void {
-    const cityId = event.target.value;
-    if (cityId) {
-      this.uiService.showLoading();
-      this.referenceService.getLocalities(cityId).subscribe({
-        next: (data) => {
-          this.branchLocalities = data;
-          this.uiService.hideLoading();
-        },
-        error: () => {
-          this.branchLocalities = [];
-          this.uiService.hideLoading();
-        }
-      });
-    } else {
-      this.branchLocalities = [];
-      this.branchForm.get('localityId')?.setValue('');
-    }
-  }
-
   // ── Modal Actions ──────────────────────────────────────────────────
   openModal(type: 'addClinic' | 'editClinic' | 'addBranch' | 'editBranch' | 'addSpecialty' | 'addInsurance' | 'addLanguage'): void {
     this.activeModal = type;
@@ -642,42 +619,112 @@ export class ClinicsComponent implements OnInit {
     }, 350);
   }
 
+  private async fetchGeocodingResults(query: string): Promise<Array<{ display_name: string; lat: number; lon: number; subtitle?: string }>> {
+    const rawQuery = query.trim();
+    if (!rawQuery) return [];
+    const encodedQuery = encodeURIComponent(rawQuery);
+    const lang = this.languageService.isArabic ? 'ar' : 'en';
+    const results: Array<{ display_name: string; lat: number; lon: number; subtitle?: string }> = [];
+
+    // Provider 1: Photon Geocoder (OSM-based, high performance, global + local with fuzzy tolerance)
+    try {
+      const photonRes = await fetch(`https://photon.komoot.io/api/?q=${encodedQuery}&limit=10&lang=${lang}`);
+      if (photonRes.ok) {
+        const data = await photonRes.json();
+        if (data && data.features && data.features.length > 0) {
+          for (const f of data.features) {
+            const p = f.properties || {};
+            const name = p.name || p.street || p.city || p.district || '';
+            const subParts = [p.district, p.city, p.state, p.country].filter(Boolean);
+            const subtitle = subParts.filter(s => s !== name).join(', ');
+            const coords = f.geometry?.coordinates;
+            if (coords && coords.length >= 2) {
+              results.push({
+                display_name: name ? (subtitle ? `${name}, ${subtitle}` : name) : subtitle,
+                lat: Number(coords[1]),
+                lon: Number(coords[0]),
+                subtitle: subtitle
+              });
+            }
+          }
+          if (results.length > 0) return results;
+        }
+      }
+    } catch (e) {
+      console.warn('Photon geocoding failed, trying fallback provider...', e);
+    }
+
+    // Provider 2: Open-Meteo Geocoding API (Fast worldwide cities, towns, administrative areas, completely unrestricted CORS)
+    try {
+      const meteoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodedQuery}&count=10&language=${lang}&format=json`);
+      if (meteoRes.ok) {
+        const data = await meteoRes.json();
+        if (data && data.results && data.results.length > 0) {
+          for (const item of data.results) {
+            const subParts = [item.admin2, item.admin1, item.country].filter(Boolean);
+            const subtitle = subParts.join(', ');
+            results.push({
+              display_name: `${item.name}${subtitle ? ', ' + subtitle : ''}`,
+              lat: Number(item.latitude),
+              lon: Number(item.longitude),
+              subtitle: subtitle
+            });
+          }
+          if (results.length > 0) return results;
+        }
+      }
+    } catch (e) {
+      console.warn('Open-Meteo geocoding failed, trying Nominatim fallback...', e);
+    }
+
+    // Provider 3: OpenStreetMap Nominatim with proper contact and format params
+    try {
+      const nominatimUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodedQuery}&limit=10&addressdetails=1&email=medconsult-app@local.dev`;
+      const nomRes = await fetch(nominatimUrl, { headers: { 'Accept-Language': lang } });
+      if (nomRes.ok) {
+        const data: any[] = await nomRes.json();
+        if (data && data.length > 0) {
+          for (const item of data) {
+            results.push({
+              display_name: item.display_name,
+              lat: parseFloat(item.lat),
+              lon: parseFloat(item.lon)
+            });
+          }
+          if (results.length > 0) return results;
+        }
+      }
+    } catch (e) {
+      console.warn('Nominatim geocoding failed:', e);
+    }
+
+    return results;
+  }
+
   public async performLiveMapSearch(queryText: string): Promise<void> {
     if (!queryText || !queryText.trim()) return;
     this.isSearchingLocation = true;
     this.searchError = null;
 
-    const rawQuery = queryText.trim();
-    const encodedQuery = encodeURIComponent(rawQuery);
-    const lang = this.languageService.isArabic ? 'ar' : 'en';
-
-    const primaryUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodedQuery}&limit=10&addressdetails=1&countrycodes=sa`;
-
     try {
-      const res = await fetch(primaryUrl, { headers: { 'Accept-Language': lang } });
-      const data: any[] = await res.json();
-      if (data && data.length > 0) {
-        this.isSearchingLocation = false;
-        this.searchResults = data;
-        return;
-      }
-
-      // Fallback search without countrycodes=sa restriction for global/flexible matches
-      const fallbackUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodedQuery}&limit=10&addressdetails=1`;
-      const fallbackRes = await fetch(fallbackUrl, { headers: { 'Accept-Language': lang } });
-      const fallbackData: any[] = await fallbackRes.json();
-
+      const results = await this.fetchGeocodingResults(queryText);
       this.isSearchingLocation = false;
-      if (fallbackData && fallbackData.length > 0) {
-        this.searchResults = fallbackData;
+      if (results.length > 0) {
+        this.searchResults = results;
       } else {
         this.searchResults = [];
-        this.searchError = this.languageService.translate('No locations found matching your query. Try searching by city or landmark name.', 'لم يتم العثور على موقع. جرب البحث باسم المدينة أو المعلم.');
+        this.searchError = this.languageService.translate(
+          'No locations found matching your query. Try searching by city, district, or landmark name.',
+          'لم يتم العثور على موقع مطابق. جرب البحث باسم المدينة أو الحي أو المعلم.'
+        );
       }
     } catch (e) {
       this.isSearchingLocation = false;
       this.searchResults = [];
-      this.searchError = this.languageService.translate('Failed to search location. Please try again.', 'فشل البحث عن الموقع. يرجى المحاولة مرة أخرى.');
+      this.searchError = this.languageService.translate(
+        'Failed to search location. Please try again.',
+        'فشل البحث عن الموقع. يرجى المحاولة مرة أخرى.'
+      );
     }
   }
 
@@ -690,42 +737,27 @@ export class ClinicsComponent implements OnInit {
     this.isSearchingLocation = true;
     this.searchError = null;
 
-    const rawQuery = this.mapSearchQuery.trim();
-    const encodedQuery = encodeURIComponent(rawQuery);
-    const lang = this.languageService.isArabic ? 'ar' : 'en';
-
-    const primaryUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodedQuery}&limit=10&addressdetails=1&countrycodes=sa`;
-
     try {
-      const res = await fetch(primaryUrl, { headers: { 'Accept-Language': lang } });
-      const data: any[] = await res.json();
-
-      if (data && data.length > 0) {
-        this.isSearchingLocation = false;
-        this.searchResults = data;
-        const top = data[0];
-        this.selectSearchResult(parseFloat(top.lat), parseFloat(top.lon));
-        return;
-      }
-
-      // Fallback search without country restriction
-      const fallbackUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodedQuery}&limit=10&addressdetails=1`;
-      const fallbackRes = await fetch(fallbackUrl, { headers: { 'Accept-Language': lang } });
-      const fallbackData: any[] = await fallbackRes.json();
-
+      const results = await this.fetchGeocodingResults(this.mapSearchQuery);
       this.isSearchingLocation = false;
-      if (fallbackData && fallbackData.length > 0) {
-        this.searchResults = fallbackData;
-        const top = fallbackData[0];
-        this.selectSearchResult(parseFloat(top.lat), parseFloat(top.lon));
+      if (results.length > 0) {
+        this.searchResults = results;
+        const top = results[0];
+        this.selectSearchResult(top.lat, top.lon);
       } else {
         this.searchResults = [];
-        this.searchError = this.languageService.translate('No locations found matching your query. Try searching by city or landmark name.', 'لم يتم العثور على موقع. جرب البحث باسم المدينة أو المعلم.');
+        this.searchError = this.languageService.translate(
+          'No locations found matching your query. Try searching by city, district, or landmark name.',
+          'لم يتم العثور على موقع مطابق. جرب البحث باسم المدينة أو الحي أو المعلم.'
+        );
       }
     } catch (e) {
       this.isSearchingLocation = false;
       this.searchResults = [];
-      this.searchError = this.languageService.translate('Failed to search location. Please try again.', 'فشل البحث عن الموقع. يرجى المحاولة مرة أخرى.');
+      this.searchError = this.languageService.translate(
+        'Failed to search location. Please try again.',
+        'فشل البحث عن الموقع. يرجى المحاولة مرة أخرى.'
+      );
     }
   }
 

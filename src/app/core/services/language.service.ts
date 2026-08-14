@@ -1471,8 +1471,23 @@ const translations: { [lang in Lang]: { [key: string]: string } } = {
     'Standard Medical (Sun-Thu 8am-10pm, Sat 9am-5pm, Fri Closed)': 'Standard Medical (Sun-Thu 8am-10pm, Sat 9am-5pm, Fri Closed)',
     '24/7 Continuous Emergency Care': '24/7 Continuous Emergency Care',
     'Office Hours (Sun-Thu 9am-5pm)': 'Office Hours (Sun-Thu 9am-5pm)',
-    'Changes will apply to patient booking slots and branch open status.': 'Changes will apply to patient booking slots and branch open status.',
-    'Save Operating Hours': 'Save Operating Hours'
+    'Save Operating Hours': 'Save Operating Hours',
+
+    // ── Healthcare Network Onboarding (Doctor / Clinic) ──
+    'Become a Doctor': 'Become a Doctor',
+    'Register a Clinic': 'Register a Clinic',
+    'For Medical Professionals': 'For Medical Professionals',
+    'Join our certified medical network, set your consultation fees, and provide telehealth or clinic care.': 'Join our certified medical network, set your consultation fees, and provide telehealth or clinic care.',
+    'Apply as Doctor': 'Apply as Doctor',
+    'For Healthcare Facilities': 'For Healthcare Facilities',
+    'List your medical center, manage branch locations, operating hours, accepted insurances, and doctor roster.': 'List your medical center, manage branch locations, operating hours, accepted insurances, and doctor roster.',
+    'Register Facility': 'Register Facility',
+    'Healthcare Provider & Facility Registration': 'Healthcare Provider & Facility Registration',
+    'Are you a licensed physician or medical facility manager? Expand your role on MedConsult to consult patients or manage clinical branches.': 'Are you a licensed physician or medical facility manager? Expand your role on MedConsult to consult patients or manage clinical branches.',
+    'Join as a Doctor': 'Join as a Doctor',
+    'Apply for medical credentials & consult patients': 'Apply for medical credentials & consult patients',
+    'Apply Now': 'Apply Now',
+    'List medical center & manage clinic branches': 'List medical center & manage clinic branches'
   },
   ar: {
     'Upload Avatar Photo': 'رفع صورة البروفايل',
@@ -2913,7 +2928,22 @@ const translations: { [lang in Lang]: { [key: string]: string } } = {
     'Standard Medical (Sun-Thu 8am-10pm, Sat 9am-5pm, Fri Closed)': 'طبي قياسي (الأحد-الخميس 8ص-10م، السبت 9ص-5م، الجمعة مغلق)',
     '24/7 Continuous Emergency Care': 'طوارئ مستمرة 24/7 على مدار الساعة',
     'Office Hours (Sun-Thu 9am-5pm)': 'ساعات إدارية (الأحد-الخميس 9ص-5م)',
-    'Changes will apply to patient booking slots and branch open status.': 'ستنعكس التغييرات على فترات حجز المرضى وحالة فتح الفرع.',
-    'Save Operating Hours': 'حفظ ساعات العمل'
+    'Save Operating Hours': 'حفظ ساعات العمل',
+
+    // ── Healthcare Network Onboarding (Doctor / Clinic) ──
+    'Become a Doctor': 'الانضمام كطبيب',
+    'Register a Clinic': 'تسجيل منشأة طبية',
+    'For Medical Professionals': 'للممارسين الطبيين',
+    'Join our certified medical network, set your consultation fees, and provide telehealth or clinic care.': 'انضم إلى شبكتنا الطبية المعتمدة، وحدد رسوم استشاراتك، وقدم الرعاية عن بُعد أو في العيادة.',
+    'Apply as Doctor': 'التقديم كطبيب',
+    'For Healthcare Facilities': 'للمنشآت والمراكز الصحية',
+    'List your medical center, manage branch locations, operating hours, accepted insurances, and doctor roster.': 'أدرج مركزك الطبي، وأدر فروعك وساعات العمل وشركات التأمين وقائمة الأطباء.',
+    'Register Facility': 'تسجيل المنشأة',
+    'Healthcare Provider & Facility Registration': 'تسجيل مقدمي الرعاية والمنشآت الصحية',
+    'Are you a licensed physician or medical facility manager? Expand your role on MedConsult to consult patients or manage clinical branches.': 'هل أنت طبيب مرخص أو مدير منشأة طبية؟ طور حسابك لتقديم الاستشارات أو إدارة الفروع السريرية.',
+    'Join as a Doctor': 'الانضمام كطبيب',
+    'Apply for medical credentials & consult patients': 'التقديم بالاعتمادات الطبية واستشارة المرضى',
+    'Apply Now': 'قدّم الآن',
+    'List medical center & manage clinic branches': 'إدراج المركز الطبي وإدارة فروع العيادة'
   }
 };
