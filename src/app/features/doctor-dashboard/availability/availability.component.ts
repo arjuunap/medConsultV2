@@ -244,19 +244,43 @@ export class AvailabilityComponent implements OnInit {
     if (!this.selectedDcId) return;
     
     this.uiService.showLoading();
-    if (this.activeTab === 'schedule') {
-      this.doctorService.getDcSchedules(this.selectedDcId).subscribe({
-        next: (data) => { this.schedules = data; this.uiService.hideLoading(); },
-        error: () => this.uiService.hideLoading()
-      });
-    } else if (this.activeTab === 'leaves') {
-      this.doctorService.getDcLeave(this.selectedDcId).subscribe({
-        next: (data) => { this.leaves = data; this.uiService.hideLoading(); },
-        error: () => this.uiService.hideLoading()
-      });
-    } else if (this.activeTab === 'slots') {
-      this.loadSlots();
-    }
+    // Fetch leaves so leave dates are known across tabs
+    this.doctorService.getDcLeave(this.selectedDcId).subscribe({
+      next: (leavesData) => {
+        this.leaves = leavesData;
+        if (this.activeTab === 'schedule') {
+          this.doctorService.getDcSchedules(this.selectedDcId).subscribe({
+            next: (data) => { this.schedules = data; this.uiService.hideLoading(); },
+            error: () => this.uiService.hideLoading()
+          });
+        } else if (this.activeTab === 'leaves') {
+          this.uiService.hideLoading();
+        } else if (this.activeTab === 'slots') {
+          this.loadSlots();
+        }
+      },
+      error: () => {
+        if (this.activeTab === 'schedule') {
+          this.doctorService.getDcSchedules(this.selectedDcId).subscribe({
+            next: (data) => { this.schedules = data; this.uiService.hideLoading(); },
+            error: () => this.uiService.hideLoading()
+          });
+        } else if (this.activeTab === 'slots') {
+          this.loadSlots();
+        } else {
+          this.uiService.hideLoading();
+        }
+      }
+    });
+  }
+
+  isDateOnLeave(dateStr: string): boolean {
+    if (!dateStr || !this.leaves || this.leaves.length === 0) return false;
+    return this.leaves.some(l => {
+      const start = l.startDate;
+      const end = l.endDate;
+      return dateStr >= start && dateStr <= end;
+    });
   }
 
   // ── SCHEDULES ──────────────────────────────────────────────
