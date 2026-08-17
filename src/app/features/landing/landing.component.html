@@ -81,8 +81,7 @@
         <span class="badge badge-dark">{{ 'MOH Eyebrow' | translate }}</span>
       </div>
       <h1 class="hero-h1" [innerHTML]="'Find a clinic.Connect with the right doctor.' | translate"></h1>
-      <p class="hero-sub">{{ 'Search verified private clinics across Saudi Arabia. Browse doctors, filter by specialty,
-        city, language, and availability — and book real appointments online.' | translate }}</p>
+      <p class="hero-sub">{{ 'Search verified private clinics across Saudi Arabia. Browse doctors, filter by specialty, city, language, and availability — and book real appointments online.' | translate }}</p>
 
       <div class="hero-trust">
         <div class="hero-trust-item">
@@ -444,8 +443,7 @@
       </div>
 
       <div *ngIf="filteredClinics.length === 0" class="card p-6 text-center text-muted border-0 bg-light rounded-md">
-        {{ 'No medical clinics found matching your current filter criteria. Click "Clear all" to reset filters.' |
-        translate }}
+        {{ 'No medical clinics found matching your current filter criteria. Click "Clear all" to reset filters.' | translate }}
       </div>
     </div>
   </div>
@@ -458,8 +456,7 @@
 <section class="how-section">
   <div class="sh" style="margin-bottom:clamp(28px,4vw,44px)">
     <div style="margin-bottom:12px"><span class="badge badge-teal">{{ 'How it works' | translate }}</span></div>
-    <h2 style="font-size:clamp(24px,3.5vw,36px);font-weight:800;letter-spacing:-.02em;margin-bottom:10px">{{ 'Three
-      steps to your appointment' | translate }}</h2>
+    <h2 style="font-size:clamp(24px,3.5vw,36px);font-weight:800;letter-spacing:-.02em;margin-bottom:10px">{{ 'Three steps to your appointment' | translate }}</h2>
   </div>
   <div class="how-grid">
     <div class="how-step">
@@ -476,8 +473,7 @@
         </svg>
       </div>
       <div class="how-title">{{ 'Search for a clinic' | translate }}</div>
-      <div class="how-sub">{{ 'Search by clinic name, city location, specialty or doctor. Filter by ratings, language,
-        and insurance.' | translate }}</div>
+      <div class="how-sub">{{ 'Search by clinic name, city location, specialty or doctor. Filter by ratings, language, and insurance.' | translate }}</div>
     </div>
     <div class="how-step">
       <div class="how-num">2</div>
@@ -490,8 +486,7 @@
         </svg>
       </div>
       <div class="how-title">{{ 'Choose your doctor' | translate }}</div>
-      <div class="how-sub">{{ 'Review doctor credentials, experience, spoken languages, and live open slots.' |
-        translate }}</div>
+      <div class="how-sub">{{ 'Review doctor credentials, experience, spoken languages, and live open slots.' | translate }}</div>
     </div>
     <div class="how-step">
       <div class="how-num">3</div>
@@ -506,8 +501,7 @@
         </svg>
       </div>
       <div class="how-title">{{ 'Book your appointment' | translate }}</div>
-      <div class="how-sub">{{ 'Select your preferred date & time slot. Confirm directly into the clinic system.' |
-        translate }}</div>
+      <div class="how-sub">{{ 'Select your preferred date & time slot. Confirm directly into the clinic system.' | translate }}</div>
     </div>
   </div>
 </section>
@@ -533,8 +527,7 @@
         </svg>
       </div>
       <div class="feat-title">{{ 'Secure Consultation Chat' | translate }}</div>
-      <div class="feat-body">{{ 'Direct doctor-patient messaging with attachment support for medical records and
-        prescriptions.' | translate }}</div>
+      <div class="feat-body">{{ 'Direct doctor-patient messaging with attachment support for medical records and prescriptions.' | translate }}</div>
     </div>
     <div class="feat-card" style="border-color:var(--teal-l)">
       <div class="feat-icon d-flex align-center justify-center">
@@ -548,8 +541,7 @@
         </svg>
       </div>
       <div class="feat-title">{{ 'Case Discussion Rooms' | translate }}</div>
-      <div class="feat-body">{{ 'Multidisciplinary case rooms enabling doctors across clinics to collaborate on patient
-        care.' | translate }}</div>
+      <div class="feat-body">{{ 'Multidisciplinary case rooms enabling doctors across clinics to collaborate on patient care.' | translate }}</div>
     </div>
     <div class="feat-card">
       <div class="feat-icon d-flex align-center justify-center">
@@ -560,8 +552,7 @@
         </svg>
       </div>
       <div class="feat-title">{{ 'Lab Results & Test Reports' | translate }}</div>
-      <div class="feat-body">{{ 'Direct upload, preview, and download of clinical lab reports with reference range
-        tracking.' | translate }}</div>
+      <div class="feat-body">{{ 'Direct upload, preview, and download of clinical lab reports with reference range tracking.' | translate }}</div>
     </div>
     <div class="feat-card">
       <div class="feat-icon d-flex align-center justify-center">
@@ -729,10 +720,8 @@
           </button>
         </ng-container>
         <ng-template #guestCta>
-          <a routerLink="/register" class="btn btn-primary" style="font-size:15px;padding:14px 32px">{{ 'Sign up / List
-            clinic free →' | translate }}</a>
-          <a routerLink="/login" class="btn btn-outline" style="font-size:15px;padding:14px 32px">{{ 'Sign in to portal'
-            | translate }}</a>
+          <a routerLink="/register" class="btn btn-primary" style="font-size:15px;padding:14px 32px">{{ 'Sign up / List clinic free →' | translate }}</a>
+          <a routerLink="/login" class="btn btn-outline" style="font-size:15px;padding:14px 32px">{{ 'Sign in to portal' | translate }}</a>
         </ng-template>
       </div>
     </div>
@@ -771,8 +760,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <div class="footer-copy">© {{ appConfigService.copyrightYear() }} {{ appConfigService.name() }}. {{ 'All rights
-          reserved.' | translate }} {{ appConfigService.location() }}.</div>
+        <div class="footer-copy">© {{ appConfigService.copyrightYear() }} {{ appConfigService.name() }}. {{ 'All rights reserved.' | translate }} {{ appConfigService.location() }}.</div>
         <div class="footer-copy">{{ 'Footer Bottom' | translate }}</div>
       </div>
     </footer>
@@ -956,8 +944,7 @@
     <div style="padding:24px;max-height:75vh;overflow-y:auto;">
       <div class="mb-4">
         <h4 class="fs-sm text-primary fw-bold mb-1">{{ 'About Facility' | translate }}</h4>
-        <p class="fs-xs text-muted m-0">{{ (selectedClinicDetail | translateObj:'description') || ('Premier medical
-          facility description' | translate) }}</p>
+        <p class="fs-xs text-muted m-0">{{ (selectedClinicDetail | translateObj:'description') || ('Premier medical facility description' | translate) }}</p>
       </div>
 
       <div class="form-row mb-4">

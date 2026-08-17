@@ -18,7 +18,7 @@ import { LanguageService } from '../../../core/services/language.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { ApiUrlPipe } from '../../../shared/pipes/api-url.pipe';
 
-import { RouterLink } from '@angular/router';
+import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-doctors',
@@ -34,6 +34,11 @@ export class DoctorsComponent implements OnInit {
   private uiService = inject(UiService);
   private fb = inject(FormBuilder);
   public languageService = inject(LanguageService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+
+  private pendingClinicId: string | null = null;
+  private pendingAction: string | null = null;
 
   public activeMainTab: 'placements' | 'profiles' = 'placements';
 
@@ -416,6 +421,33 @@ export class DoctorsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      if (params['tab']) {
+        const tab = params['tab'].toLowerCase();
+        if (tab === 'placements' || tab === 'profiles') {
+          this.activeMainTab = tab;
+        }
+      }
+
+      if (params['clinicId']) {
+        this.pendingClinicId = params['clinicId'];
+        if (this.clinics.length > 0) {
+          const found = this.clinics.find(c => c.clinicId === params['clinicId']);
+          if (found && this.linkForm.value.clinicId !== found.clinicId) {
+            this.linkForm.patchValue({ clinicId: found.clinicId });
+            this.onClinicChange();
+          }
+        }
+      }
+
+      if (params['action']) {
+        this.pendingAction = params['action'];
+        if (this.pendingAction === 'addPlacement') {
+          setTimeout(() => this.openAddModal(), 100);
+        }
+      }
+    });
+
     this.loadInitialData();
   }
 
@@ -425,7 +457,14 @@ export class DoctorsComponent implements OnInit {
       next: (clinicsData) => {
         this.clinics = clinicsData;
         if (clinicsData.length > 0) {
-          this.linkForm.patchValue({ clinicId: clinicsData[0].clinicId });
+          let targetClinicId = clinicsData[0].clinicId;
+          if (this.pendingClinicId) {
+            const found = clinicsData.find(c => c.clinicId === this.pendingClinicId);
+            if (found) {
+              targetClinicId = found.clinicId;
+            }
+          }
+          this.linkForm.patchValue({ clinicId: targetClinicId });
           this.onClinicChange();
         }
       }
@@ -446,6 +485,11 @@ export class DoctorsComponent implements OnInit {
   switchMainTab(tab: 'placements' | 'profiles'): void {
     this.activeMainTab = tab;
     this.selectedDoctor = null;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab: tab },
+      queryParamsHandling: 'merge'
+    });
   }
 
   // ── PLACEMENTS LOGIC ────────────────────────────────────────────────
@@ -454,6 +498,12 @@ export class DoctorsComponent implements OnInit {
     this.branches = [];
     this.linkForm.patchValue({ branchId: '' });
     if (!clinicId) return;
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { clinicId: clinicId },
+      queryParamsHandling: 'merge'
+    });
 
     this.clinicService.getClinicBranches(clinicId).subscribe({
       next: (data) => {

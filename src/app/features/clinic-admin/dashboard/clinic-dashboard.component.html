@@ -34,11 +34,11 @@
         </select>
       </div>
 
-      <a routerLink="/clinic-admin/clinics" class="btn btn-outline btn-sm d-inline-flex align-center gap-2">
+      <a [routerLink]="['/clinic-admin/clinics']" [queryParams]="selectedClinic ? { clinicId: selectedClinic.clinicId } : null" class="btn btn-outline btn-sm d-inline-flex align-center gap-2">
         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18"></path><path d="M16 22H8"></path><path d="M12 5v4"></path><path d="M10 7h4"></path><path d="M12 13v8"></path></svg>
         <span>{{ 'Manage Facility' | translate }}</span>
       </a>
-      <a routerLink="/clinic-admin/doctors" class="btn btn-primary btn-sm d-inline-flex align-center gap-2">
+      <a [routerLink]="['/clinic-admin/doctors']" [queryParams]="selectedClinic ? { clinicId: selectedClinic.clinicId } : null" class="btn btn-primary btn-sm d-inline-flex align-center gap-2">
         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" x2="19" y1="8" y2="14"></line><line x1="22" x2="16" y1="11" y2="11"></line></svg>
         <span>{{ 'Doctor Placements' | translate }}</span>
       </a>
@@ -277,7 +277,7 @@
           <span>{{ 'Facility Operations Shortcuts' | translate }}</span>
         </h3>
         <div class="quick-actions-grid">
-          <a routerLink="/clinic-admin/clinics" class="quick-action-box">
+          <a [routerLink]="['/clinic-admin/clinics']" [queryParams]="selectedClinic ? { clinicId: selectedClinic.clinicId, tab: 'branches' } : { tab: 'branches' }" class="quick-action-box">
             <div class="action-icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path><path d="M8 6h.01"></path><path d="M16 6h.01"></path><path d="M8 10h.01"></path><path d="M16 10h.01"></path></svg>
             </div>
@@ -285,7 +285,7 @@
             <div class="action-desc">{{ 'Add branches & configure GPS locations' | translate }}</div>
           </a>
 
-          <a routerLink="/clinic-admin/doctors" class="quick-action-box">
+          <a [routerLink]="['/clinic-admin/doctors']" [queryParams]="selectedClinic ? { clinicId: selectedClinic.clinicId } : null" class="quick-action-box">
             <div class="action-icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-teal"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" x2="19" y1="8" y2="14"></line><line x1="22" x2="16" y1="11" y2="11"></line></svg>
             </div>
@@ -293,7 +293,7 @@
             <div class="action-desc">{{ 'Assign doctors to branch departments' | translate }}</div>
           </a>
 
-          <a routerLink="/clinic-admin/clinics" class="quick-action-box">
+          <a [routerLink]="['/clinic-admin/clinics']" [queryParams]="selectedClinic ? { clinicId: selectedClinic.clinicId, tab: 'insurances' } : { tab: 'insurances' }" class="quick-action-box">
             <div class="action-icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-info"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
             </div>
@@ -301,7 +301,7 @@
             <div class="action-desc">{{ 'Link accepted insurance policies' | translate }}</div>
           </a>
 
-          <a routerLink="/clinic-admin/clinics" class="quick-action-box">
+          <a [routerLink]="['/clinic-admin/clinics']" [queryParams]="selectedClinic ? { clinicId: selectedClinic.clinicId, tab: 'branches', action: 'hours' } : { tab: 'branches', action: 'hours' }" class="quick-action-box">
             <div class="action-icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-warning"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
             </div>
@@ -323,7 +323,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
             <span>{{ 'Doctor Roster' | translate }}</span>
           </h3>
-          <a routerLink="/clinic-admin/doctors" class="fs-xs text-primary text-decoration-none fw-semibold">
+          <a [routerLink]="['/clinic-admin/doctors']" [queryParams]="selectedClinic ? { clinicId: selectedClinic.clinicId } : null" class="fs-xs text-primary text-decoration-none fw-semibold">
             {{ 'View All' | translate }} →
           </a>
         </div>
@@ -364,7 +364,7 @@
 
         <div *ngIf="doctorClinics.length === 0" class="empty-state-card py-3">
           <p class="empty-state-text fs-xs m-0">{{ 'No doctors placed in this clinic yet.' | translate }}</p>
-          <a routerLink="/clinic-admin/doctors" class="btn btn-outline btn-sm mt-2">+ {{ 'Assign Doctors' | translate }}</a>
+          <a [routerLink]="['/clinic-admin/doctors']" [queryParams]="selectedClinic ? { clinicId: selectedClinic.clinicId, action: 'addPlacement' } : { action: 'addPlacement' }" class="btn btn-outline btn-sm mt-2">+ {{ 'Assign Doctors' | translate }}</a>
         </div>
       </div>
 
@@ -510,7 +510,7 @@
       </div>
 
       <div class="modal-footer d-flex justify-between align-center">
-        <a routerLink="/clinic-admin/doctors" (click)="closeDoctorProfileModal()" class="btn btn-primary btn-sm d-inline-flex align-center gap-1">
+        <a [routerLink]="['/clinic-admin/doctors']" (click)="closeDoctorProfileModal()" [queryParams]="selectedClinic ? { clinicId: selectedClinic.clinicId } : null" class="btn btn-primary btn-sm d-inline-flex align-center gap-1">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle><line x1="19" x2="19" y1="8" y2="14"></line><line x1="22" x2="16" y1="11" y2="11"></line></svg>
           <span>{{ 'Manage Doctor Schedules' | translate }}</span>
         </a>

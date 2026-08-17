@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import * as L from 'leaflet';
 import { ClinicService } from '../../../core/services/clinic.service';
 import { ReferenceService } from '../../../core/services/reference.service';
@@ -25,6 +26,12 @@ export class ClinicsComponent implements OnInit {
   private uiService = inject(UiService);
   private fb = inject(FormBuilder);
   public languageService = inject(LanguageService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+
+  private pendingClinicId: string | null = null;
+  private pendingAction: string | null = null;
+  private pendingBranchId: string | null = null;
 
   // Leaflet Map state for Branch Location Picker
   private map: L.Map | null = null;
@@ -149,8 +156,66 @@ export class ClinicsComponent implements OnInit {
   public expandedBranchScheduleId: string | null = null;
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      if (params['tab']) {
+        const tab = params['tab'].toLowerCase();
+        if (tab === 'branches' || tab === 'specialties' || tab === 'insurances' || tab === 'languages') {
+          this.activeSubTab = tab;
+        } else if (tab === 'hours') {
+          this.activeSubTab = 'branches';
+          this.pendingAction = 'hours';
+        }
+      }
+
+      if (params['clinicId']) {
+        this.pendingClinicId = params['clinicId'];
+        if (this.clinics.length > 0) {
+          const target = this.clinics.find(c => c.clinicId === params['clinicId']);
+          if (target && (!this.selectedClinic || this.selectedClinic.clinicId !== target.clinicId)) {
+            this.selectedClinic = target;
+            this.loadClinicDetails();
+          }
+        }
+      }
+
+      if (params['branchId']) {
+        this.pendingBranchId = params['branchId'];
+      }
+
+      if (params['action']) {
+        this.pendingAction = params['action'];
+      }
+
+      this.processPendingActions();
+    });
+
     this.loadClinics();
     this.loadGlobalReferences();
+  }
+
+  private processPendingActions(): void {
+    if (!this.pendingAction) return;
+
+    if (this.pendingAction === 'hours') {
+      this.activeSubTab = 'branches';
+      if (this.branches.length > 0) {
+        this.expandedBranchScheduleId = this.pendingBranchId || this.branches[0].branchId;
+      }
+    } else if (this.pendingAction === 'addBranch') {
+      this.activeSubTab = 'branches';
+      this.openModal('addBranch');
+    } else if (this.pendingAction === 'addSpecialty') {
+      this.activeSubTab = 'specialties';
+      this.openModal('addSpecialty');
+    } else if (this.pendingAction === 'addInsurance') {
+      this.activeSubTab = 'insurances';
+      this.openModal('addInsurance');
+    } else if (this.pendingAction === 'addLanguage') {
+      this.activeSubTab = 'languages';
+      this.openModal('addLanguage');
+    } else if (this.pendingAction === 'addClinic') {
+      this.openModal('addClinic');
+    }
   }
 
   loadClinics(): void {
@@ -160,7 +225,14 @@ export class ClinicsComponent implements OnInit {
         this.clinics = data;
         this.uiService.hideLoading();
         if (data.length > 0) {
-          this.selectClinic(data[0]);
+          let target = data[0];
+          if (this.pendingClinicId) {
+            const found = data.find(c => c.clinicId === this.pendingClinicId);
+            if (found) {
+              target = found;
+            }
+          }
+          this.selectClinic(target);
         }
       },
       error: () => this.uiService.hideLoading()
@@ -184,6 +256,11 @@ export class ClinicsComponent implements OnInit {
 
   selectClinic(clinic: ClinicResponseDto): void {
     this.selectedClinic = clinic;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { clinicId: clinic.clinicId },
+      queryParamsHandling: 'merge'
+    });
     this.loadClinicDetails();
   }
 
@@ -196,6 +273,9 @@ export class ClinicsComponent implements OnInit {
       next: (data) => {
         this.branches = data;
         this.loadAllBranchHours();
+        if (this.pendingAction === 'hours' && data.length > 0) {
+          this.expandedBranchScheduleId = this.pendingBranchId || data[0].branchId;
+        }
       }
     });
     this.clinicService.getClinicSpecialties(id).subscribe({
@@ -349,6 +429,11 @@ export class ClinicsComponent implements OnInit {
 
   switchSubTab(tab: 'branches' | 'specialties' | 'insurances' | 'languages'): void {
     this.activeSubTab = tab;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab: tab },
+      queryParamsHandling: 'merge'
+    });
   }
 
   // ── Specialty and Insurance Name Mappers ──────────────────────────
